@@ -233,29 +233,33 @@ public class RssFeed implements Parcelable, Serializable, Tasks.TaskListener {
     }
 
     Image tryToFindImageInAttributes(XmlPullParser parser) {
+        Image image = null;
+        int byteSize = 0;
+
         int attrCount = parser.getAttributeCount();
         for (int i = 0; i < attrCount; ++i) {
             String str = parser.getAttributeValue(i);
             if (stringIsImageUrl(str)) {
-                Image image = null;
                 URL url = null;
-
                 try {
                     url = new URL(str);
                     image = new Image();
-
                     image.setUrl(url);
                 } catch (MalformedURLException e) {
 
                 }
+            }
 
-                if (image != null) {
-                    return image;
-                }
+            if (parser.getAttributeName(i).equals("length")) {
+                byteSize = Integer.parseInt(parser.getAttributeValue(i));
             }
         }
 
-        return null;
+        if (image != null) {
+            image.setByteSize(byteSize);
+        }
+
+        return image;
     }
 
     boolean stringIsImageUrl(String string) {
@@ -284,6 +288,9 @@ public class RssFeed implements Parcelable, Serializable, Tasks.TaskListener {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+
+                    } else if (name.equals("length")) {
+                        item.setByteSize(Integer.parseInt(parser.getText()));
 
                     } else if (name.equals("width")) {
                         parser.next();

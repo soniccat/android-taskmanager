@@ -10,20 +10,21 @@ import java.util.ArrayList;
  */
 public abstract class AsyncTask extends android.os.AsyncTask<Void, Void, Void> implements Task {
 
-    Task.Callback startCallback;
-    Object cancellationInfo;
-    Task.Status taskStatus = Task.Status.NotStarted;
-    Object taskUserData;
-    boolean needCancelTask;
-    float progress;
-    Error error;
-    String taskId;
-    LoadPolicy loadPolicy = LoadPolicy.SkipIfAdded;
-    int priority;
-    int type;
+    protected Task.Callback startCallback;
+    protected Object cancellationInfo;
+    protected Task.Status taskStatus = Task.Status.NotStarted;
+    protected Object taskUserData;
+    protected boolean needCancelTask;
+    protected float progress;
+    protected float progressMinChange;
+    protected Error error;
+    protected String taskId;
+    protected LoadPolicy loadPolicy = LoadPolicy.SkipIfAdded;
+    protected int priority;
+    protected int type;
 
-    ArrayList<WeakReference<StatusListener>> statusListeners;
-    ArrayList<WeakReference<ProgressListener>> progressListeners;
+    protected ArrayList<WeakReference<StatusListener>> statusListeners;
+    protected ArrayList<WeakReference<ProgressListener>> progressListeners;
 
     public AsyncTask() {
         super();
@@ -76,7 +77,7 @@ public abstract class AsyncTask extends android.os.AsyncTask<Void, Void, Void> i
 
     @Override
     public Object getTaskUserData() {
-        return null;
+        return taskUserData;
     }
 
     @Override
@@ -122,6 +123,11 @@ public abstract class AsyncTask extends android.os.AsyncTask<Void, Void, Void> i
     @Override
     public float getTaskProgress() {
         return progress;
+    }
+
+    @Override
+    public void setTaskProgressMinChange(float value) {
+        progressMinChange = value;
     }
 
     public void setTaskProgress(float value) {
@@ -231,19 +237,23 @@ public abstract class AsyncTask extends android.os.AsyncTask<Void, Void, Void> i
     }
 
     public void triggerProgressListeners(final float oldProgress, final float newProgress) {
-        Tools.postOnMainLoop(new Runnable() {
-            @Override
-            public void run() {
-                ArrayList<WeakReference<ProgressListener>> emptyReferences = new ArrayList<WeakReference<ProgressListener>>();
+        if (progressListeners.size() > 0) {
+            Tools.postOnMainLoop(new Runnable() {
+                @Override
+                public void run() {
+                    ArrayList<WeakReference<ProgressListener>> emptyReferences = new ArrayList<WeakReference<ProgressListener>>();
 
-                for (WeakReference<ProgressListener> l : progressListeners) {
-                    if (l.get() != null) {
-                        l.get().onTaskProgressChanged(AsyncTask.this, oldProgress, newProgress);
+                    for (WeakReference<ProgressListener> l : progressListeners) {
+                        if (l.get() != null) {
+                            l.get().onTaskProgressChanged(AsyncTask.this, oldProgress, newProgress);
+                        } else {
+                            emptyReferences.add(l);
+                        }
                     }
-                }
 
-                progressListeners.removeAll(emptyReferences);
-            }
-        });
+                    progressListeners.removeAll(emptyReferences);
+                }
+            });
+        }
     }
 }

@@ -19,6 +19,7 @@ public class ImageLoader {
     public static Task loadImage(TaskManager taskManager, final Image image, String destinationId, final ImageLoader.LoadCallback callback) {
         final HttpLoadTask httpLoadTask = new HttpLoadTask(image.getUrlConnection(), image.getDataHandler());
         httpLoadTask.setLoadPolicy(image.getLoadPolicy());
+        httpLoadTask.setContentLength(image.getByteSize());
 
         Tasks.bindOnTaskCompletion(httpLoadTask, image);
 

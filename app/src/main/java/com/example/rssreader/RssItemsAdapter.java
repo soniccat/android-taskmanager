@@ -12,15 +12,18 @@ import com.ga.task.TaskManager;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class RssItemsAdapter extends ArrayAdapter<RssItem> {
+public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.ProgressListener {
 
     /**
      *
@@ -35,6 +38,7 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> {
         public ImageView imageView;
         public Image loadingImage;
         public int position;
+        public ProgressBar progressBar;
     }
 
     public RssItemsAdapter(Context context, ArrayList<RssItem> values, TaskManager taskManager) {
@@ -66,6 +70,9 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> {
             holder.text = textView;
             holder.imageView = imageView;
 
+            holder.progressBar = (ProgressBar)rowView.findViewById(R.id.progress);
+            holder.progressBar.setIndeterminate(false);
+
             convertView = rowView;
             convertView.setTag(holder);
         }
@@ -76,12 +83,17 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> {
         holder.text.setText(item.title());
         holder.position = position;
 
-        loadImage(item.image(), holder);
+        if (item.image() != null) {
+            holder.progressBar.setVisibility(View.VISIBLE);
+            loadImage(item.image(), holder);
+        } else {
+            holder.progressBar.setVisibility(View.INVISIBLE);
+        }
 
         return convertView;
     }
 
-    void loadImage(Image image, final ViewHolder holder) {
+    void loadImage(final Image image, final ViewHolder holder) {
 
         holder.imageView.setImageBitmap(null);
         holder.loadingImage = image;
@@ -90,9 +102,10 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> {
         }
 
         final int position = holder.position;
+        holder.progressBar.setProgress(0);
 
         //the position is used as a part of task id to handle the same images right
-        ImageLoader.loadImage(this.taskManager, image, Integer.toString(position), new ImageLoader.LoadCallback() {
+        Task task = ImageLoader.loadImage(this.taskManager, image, Integer.toString(position), new ImageLoader.LoadCallback() {
             @Override
             public void completed(Task task, final Image image, final Bitmap bitmap, Error error) {
                 View view = getListener().getViewAtPosition(position);
@@ -103,10 +116,32 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> {
                             holder.imageView.setImageBitmap(bitmap);
                         }
                         holder.loadingImage = null;
+                        holder.progressBar.setVisibility(View.INVISIBLE);
                     }
                 }
             }
         });
+
+        task.setTaskUserData(new Pair<Integer, Image>(position, image));
+
+        //due to progresslisteners are stored through weakreference we can't create anonymous object
+        task.addTaskProgressListener(this);
+        task.setTaskProgressMinChange(0.2f);
+    }
+
+    public void onTaskProgressChanged(Task task, float oldValue, float newValue) {
+        Pair<Integer, Image> taskData = (Pair<Integer, Image>)task.getTaskUserData();
+
+        View view = getListener().getViewAtPosition(taskData.first);
+        if (view != null) {
+            ViewHolder holder = (ViewHolder) view.getTag();
+            if (holder.loadingImage == taskData.second) {
+                holder.progressBar.setProgress((int)(newValue*100.0f));
+                Log.d("imageprogress","progress " + newValue);
+            } else {
+                Log.d("imageprogress","loadingImage is different");
+            }
+        }
     }
 
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {

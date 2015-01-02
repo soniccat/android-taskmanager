@@ -87,6 +87,7 @@ public interface Task extends TaskContainer {
     // Caller: Client, Task
     // Thread: Main thread
     float getTaskProgress();
+    void setTaskProgressMinChange(float value);
 
     //TODO: finish comments
 

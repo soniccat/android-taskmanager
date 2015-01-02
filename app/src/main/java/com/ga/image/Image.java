@@ -10,7 +10,6 @@ import org.apache.http.util.ByteArrayBuffer;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 //import android.media.Image;
 
 import com.ga.loader.data.DataHandler;
@@ -21,6 +20,7 @@ public class Image implements Serializable, Tasks.TaskListener {
     protected URL url;
     protected int width;
     protected int height;
+    protected int byteSize;
     protected Task.Status loadStatus;
     protected Task.LoadPolicy loadPolicy = Task.LoadPolicy.SkipIfAdded;
     protected Task processingTask;
@@ -61,6 +61,14 @@ public class Image implements Serializable, Tasks.TaskListener {
 
     public int height() {
         return height;
+    }
+
+    public int getByteSize() {
+        return byteSize;
+    }
+
+    public void setByteSize(int byteSize) {
+        this.byteSize = byteSize;
     }
 
     public Task.LoadPolicy getLoadPolicy() {
