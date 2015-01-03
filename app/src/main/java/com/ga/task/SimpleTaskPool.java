@@ -2,6 +2,7 @@ package com.ga.task;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,8 @@ import java.util.List;
  * Created by alexeyglushkov on 30.12.14.
  */
 public class SimpleTaskPool implements TaskPool, Task.StatusListener {
+    static final String TAG = "SimpleTaskPool";
+
     List<TaskPoolListener> listeners;
     Handler handler;
 
@@ -38,6 +41,20 @@ public class SimpleTaskPool implements TaskPool, Task.StatusListener {
             @Override
             public void run() {
                 task.addTaskStatusListener(SimpleTaskPool.this);
+
+                //search for the task with the same id
+                if (task.getTaskId() != null) {
+                    Task addedTask = getTask(task.getTaskId());
+                    if (addedTask != null) {
+                        if (task.getLoadPolicy() == Task.LoadPolicy.CancelAdded) {
+                            tasks.remove(addedTask);
+                        } else {
+                            Log.d(TAG, "The task was skipped due to the Load Policy " + task.getLoadPolicy().toString() + task.getClass().toString() + " " + task.getTaskId() + " " + task.getTaskStatus().toString());
+                            return;
+                        }
+                    }
+                }
+
                 tasks.add(task);
 
                 for (TaskPoolListener listener : listeners) {

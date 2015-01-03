@@ -63,8 +63,8 @@ public interface Task extends TaskContainer {
 
     // For tasks with the same id TaskManager uses a load policy to handle them
     //
-    // Caller: Client, TaskManager
-    // Thread:
+    // Caller: Client, TaskManager, TaskPool
+    // Thread: caller thread
     void setLoadPolicy(LoadPolicy loadPolicy);
     LoadPolicy getLoadPolicy();
 

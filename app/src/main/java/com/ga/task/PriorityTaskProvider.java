@@ -35,7 +35,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool.TaskPoolList
         return new PriorityQueue<Task>(11, new Comparator<Task>() {
             @Override
             public int compare(Task lhs, Task rhs) {
-                return Tools.compare(lhs.getTaskPriority(), rhs.getTaskPriority());
+                return Tools.inverseCompare(lhs.getTaskPriority(), rhs.getTaskPriority());
             }
         });
     }

@@ -149,16 +149,19 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
             ViewHolder holder = (ViewHolder) view.getTag();
             if (holder.loadingImage == taskData.second) {
                 holder.progressBar.setProgress((int)(newValue*100.0f));
-                Log.d("imageprogress","progress " + newValue);
+                //Log.d("imageprogress","progress " + newValue);
             } else {
-                Log.d("imageprogress","loadingImage is different");
+                //Log.d("imageprogress","loadingImage is different");
             }
         }
     }
 
     public void onScroll(AbsListView view, final int firstVisibleItem, final int visibleItemCount, int totalItemCount) {
-        if (taskProvider.getUserData() instanceof Integer && (Integer)taskProvider.getUserData() == firstVisibleItem) {
-            return;
+        if (taskProvider.getUserData() instanceof Integer) {
+            int distance = Math.abs((Integer)taskProvider.getUserData() - firstVisibleItem);
+            if (distance < 5) {
+                return;
+            }
         }
 
         taskProvider.setUserData(firstVisibleItem);
@@ -169,6 +172,8 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
 
                 Pair<Integer, Image> taskData = (Pair<Integer, Image>)task.getTaskUserData();
                 int taskPosition = taskData.first;
+
+                //for a test purpose we start load images from the center of the list view
                 int delta = Math.abs(firstVisibleItem + visibleItemCount/2 - taskPosition);
                 if (delta > 100) {
                     delta = 100;
