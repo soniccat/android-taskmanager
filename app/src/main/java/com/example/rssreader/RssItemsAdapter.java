@@ -7,11 +7,14 @@ import com.ga.image.ImageLoader;
 import com.ga.loader.http.HttpLoadTask;
 import com.ga.rss.RssFeed;
 import com.ga.rss.RssItem;
+import com.ga.task.PriorityTaskProvider;
+import com.ga.task.SimpleTaskPool;
 import com.ga.task.Task;
 import com.ga.task.TaskManager;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Handler;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -32,6 +35,7 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
     private final ArrayList<RssItem> values;
     private final TaskManager taskManager;
     private RssItemsAdapterListener listener;
+    private PriorityTaskProvider taskProvider;
 
     class ViewHolder {
         public TextView text;
@@ -46,6 +50,10 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
         this.context = context;
         this.values = values;
         this.taskManager = taskManager;
+
+        Handler taskManagerHandler = this.taskManager.getHandler();
+        this.taskProvider = new PriorityTaskProvider(taskManagerHandler, new SimpleTaskPool(taskManagerHandler));
+        this.taskManager.addTaskProvider(this.taskProvider);
     }
 
     public RssItemsAdapterListener getListener() {
@@ -105,7 +113,7 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
         holder.progressBar.setProgress(0);
 
         //the position is used as a part of task id to handle the same images right
-        Task task = ImageLoader.loadImage(this.taskManager, image, Integer.toString(position), new ImageLoader.LoadCallback() {
+        Task task = ImageLoader.loadImage(null, image, Integer.toString(position), new ImageLoader.LoadCallback() {
             @Override
             public void completed(Task task, final Image image, final Bitmap bitmap, Error error) {
                 View view = getListener().getViewAtPosition(position);
@@ -127,9 +135,13 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
         //due to progresslisteners are stored through weakreference we can't create anonymous object
         task.addTaskProgressListener(this);
         task.setTaskProgressMinChange(0.2f);
+
+        taskProvider.getTaskPool().addTask(task);
     }
 
     public void onTaskProgressChanged(Task task, float oldValue, float newValue) {
+        assert task.getTaskUserData() instanceof Pair;
+
         Pair<Integer, Image> taskData = (Pair<Integer, Image>)task.getTaskUserData();
 
         View view = getListener().getViewAtPosition(taskData.first);
@@ -144,8 +156,27 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
         }
     }
 
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+    public void onScroll(AbsListView view, final int firstVisibleItem, final int visibleItemCount, int totalItemCount) {
+        if (taskProvider.getUserData() instanceof Integer && (Integer)taskProvider.getUserData() == firstVisibleItem) {
+            return;
+        }
 
+        taskProvider.setUserData(firstVisibleItem);
+        taskProvider.updatePriorities(new PriorityTaskProvider.PriorityProvider() {
+            @Override
+            public int getPriority(Task task) {
+                assert task.getTaskUserData() instanceof Pair;
+
+                Pair<Integer, Image> taskData = (Pair<Integer, Image>)task.getTaskUserData();
+                int taskPosition = taskData.first;
+                int delta = Math.abs(firstVisibleItem + visibleItemCount/2 - taskPosition);
+                if (delta > 100) {
+                    delta = 100;
+                }
+
+                return 100 - delta;
+            }
+        });
     }
 
     public interface RssItemsAdapterListener {

@@ -4,7 +4,9 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.util.Log;
+import android.util.SparseArray;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,9 +23,11 @@ public class SimpleTaskManager implements TaskManager {
 
     HandlerThread handlerThread;
     Handler handler;
+    Handler callbackHandler;
 
     TaskPool loadingTasks;
     TaskProvider waitingTasks;
+    List<WeakReference<TaskProvider>> taskProviders;
 
     public int maxLoadingTasks;
 
@@ -33,9 +37,11 @@ public class SimpleTaskManager implements TaskManager {
         handlerThread = new HandlerThread("SimpleLoader Thread");
         handlerThread.start();
         handler = new Handler(handlerThread.getLooper());
+        callbackHandler = new Handler(Looper.myLooper());
 
         loadingTasks = new SimpleTaskPool(handler);
         waitingTasks = new PriorityTaskProvider(handler, new SimpleTaskPool(handler));
+        taskProviders = new ArrayList<WeakReference<TaskProvider>>();
     }
 
     @Override
@@ -43,10 +49,8 @@ public class SimpleTaskManager implements TaskManager {
         return handler;
     }
 
-    //TODO: add other thread support
     @Override
-    public void put(final Task task, final Task.Callback callback) {
-        assert (Looper.myLooper() == Looper.getMainLooper());
+    public void put(final Task task) {
         assert (task.getTaskStatus() == Task.Status.NotStarted);
 
         boolean canStartTask = task.getTaskStatus() == Task.Status.NotStarted;
@@ -54,21 +58,19 @@ public class SimpleTaskManager implements TaskManager {
             Log.d(TAG, "Can't put task " + task.getClass().toString() + " because it's already started " + task.getTaskStatus().toString());
         }
 
-        //Task Manager must set Waiting status on the main thread
+        //Task Manager must set Waiting status on the current thread
         task.setTaskStatus(Task.Status.Waiting);
 
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
-                putOnThread(task, callback);
+                putOnThread(task);
             }
         });
     }
 
     @Override
     public void cancel(final Task task, final Object info) {
-        assert (Looper.myLooper() == Looper.getMainLooper());
-
         Tools.runOnHandlerThread(handler,new Runnable() {
             @Override
             public void run() {
@@ -77,17 +79,39 @@ public class SimpleTaskManager implements TaskManager {
         });
     }
 
+    @Override
+    public void addTaskProvider(TaskProvider provider) {
+        assert provider.getHandler() == handler;
+
+        provider.addListener(new TaskProvider.TaskProviderListener() {
+            @Override
+            public void onTaskAdded(Task task) {
+                checkTasksToRunOnThread();
+            }
+
+            @Override
+            public void onTaskRemoved(Task task) {
+
+            }
+        });
+
+        taskProviders.add(new WeakReference<TaskProvider>(provider));
+    }
+
+    public void setWaitingTaskProvider(TaskProvider provider) {
+        this.waitingTasks = provider;
+    }
+
     // Private
 
     // functions called on a handler's thread
     // actual work
 
-    private void putOnThread(Task task, Task.Callback callback) {
+    private void putOnThread(Task task) {
         checkHandlerThread();
 
         //search for the task with the same id
         if (task.getTaskId() != null) {
-
             Task addedTask = getWaitingTaskByIdOnThread(task.getTaskId());
             if (addedTask == null) {
                 addedTask = getLoadingTaskByIdOnThread(task.getTaskId());
@@ -103,7 +127,6 @@ public class SimpleTaskManager implements TaskManager {
             }
         }
 
-        task.setTaskCallback(callback);
         addWaitingTaskOnThread(task);
         checkTasksToRunOnThread();
     }
@@ -134,7 +157,42 @@ public class SimpleTaskManager implements TaskManager {
     Task takeTaskToRunOnThread() {
         checkHandlerThread();
 
-        return this.waitingTasks.takeTopTask();
+        Task topWaitingTask = this.waitingTasks.getTopTask();
+        ArrayList<WeakReference<TaskProvider>> emptyReferences = new ArrayList<WeakReference<TaskProvider>>();
+
+        int topPriorityTaskIndex = -1;
+        Task topPriorityTask = null;
+        int topPriority = -1;
+
+        if (topWaitingTask != null) {
+            topPriorityTask = topWaitingTask;
+            topPriority = topWaitingTask.getTaskPriority();
+        }
+
+        int i = 0;
+        for (WeakReference<TaskProvider> provider : taskProviders) {
+            if (provider.get() != null) {
+                Task t = provider.get().getTopTask();
+                if ( t != null && t.getTaskPriority() > topPriority) {
+                    topPriorityTask = t;
+                    topPriorityTaskIndex = i;
+                }
+            } else {
+                emptyReferences.add(provider);
+            }
+
+            ++i;
+        }
+
+        if (topPriorityTaskIndex == -1 && topPriorityTask != null) {
+            topPriorityTask = waitingTasks.takeTopTask();
+
+        } else if (topPriorityTaskIndex != -1) {
+            topPriorityTask = taskProviders.get(topPriorityTaskIndex).get().takeTopTask();
+        }
+
+        taskProviders.removeAll(emptyReferences);
+        return topPriorityTask;
     }
 
     private void startTaskOnThread(final Task task) {
@@ -177,7 +235,7 @@ public class SimpleTaskManager implements TaskManager {
         checkHandlerThread();
         task.setTaskStatus(status);
 
-        Tools.postOnMainLoop(new Runnable() {
+        Tools.runOnHandlerThread(callbackHandler, new Runnable() {
             @Override
             public void run() {
                 callback.finished();
@@ -206,7 +264,7 @@ public class SimpleTaskManager implements TaskManager {
         checkHandlerThread();
 
         this.waitingTasks.getTaskPool().addTask(task);
-        Log.d(TAG,"waiting tasks " + this.waitingTasks.getTaskPool().getTaskCount());
+        Log.d(TAG, "waiting tasks " + this.waitingTasks.getTaskPool().getTaskCount());
     }
 
     void addLoadingTaskOnThread(Task task) {

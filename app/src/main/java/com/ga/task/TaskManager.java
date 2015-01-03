@@ -11,7 +11,7 @@ public interface TaskManager {
     Handler getHandler();
 
     // Put a task, the same task can't be putted twice to the TaskManager
-    void put(Task task, Task.Callback callback);
-
+    void put(Task task);
     void cancel(Task task, Object info);
+    void addTaskProvider(TaskProvider provider);
 }

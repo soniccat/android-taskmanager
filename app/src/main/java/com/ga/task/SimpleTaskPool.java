@@ -28,6 +28,11 @@ public class SimpleTaskPool implements TaskPool, Task.StatusListener {
     }
 
     @Override
+    public Handler getHandler() {
+        return handler;
+    }
+
+    @Override
     public void addTask(final Task task) {
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override

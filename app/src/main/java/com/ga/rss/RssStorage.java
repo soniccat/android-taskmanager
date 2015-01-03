@@ -51,8 +51,7 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
     public void load(TaskManager taskManager, Context context, final RssStorageCallback callback) {
         final RssStorage storage = this;
         final FileLoadTask httpLoadTask = new FileLoadTask(getFileName(), getDataHandler(), context);
-
-        taskManager.put(httpLoadTask, new Task.Callback() {
+        httpLoadTask.setTaskCallback(new Task.Callback() {
             @Override
             public void finished() {
                 if (callback != null) {
@@ -60,13 +59,14 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
                 }
             }
         });
+
+        taskManager.put(httpLoadTask);
     }
 
     public void keep(TaskManager taskManager, Context context, final RssStorageCallback callback) {
         final RssStorage storage = this;
         final ObjectKeepTask keepTask = new ObjectKeepTask(getFileName(), getDataProvider(), context);
-
-        taskManager.put(keepTask, new Task.Callback() {
+        keepTask.setTaskCallback(new Task.Callback() {
             @Override
             public void finished() {
                 if (callback != null) {
@@ -74,6 +74,8 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
                 }
             }
         });
+
+        taskManager.put(keepTask);
     }
 
     public void addFeed(RssFeed feed) {
@@ -95,8 +97,7 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
     public void loadFeed(TaskManager taskManager, Context context, final RssFeed feed, final RssFeedCallback callback) {
 
         final HttpLoadTask loatTask = new HttpLoadTask(feed.getUrlConnection(), feed.getDataHandler());
-
-        taskManager.put(loatTask, new Task.Callback() {
+        loatTask.setTaskCallback(new Task.Callback() {
             @Override
             public void finished() {
                 if (callback != null) {
@@ -104,6 +105,8 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
                 }
             }
         });
+
+        taskManager.put(loatTask);
     }
 
     // TextFileLoadable

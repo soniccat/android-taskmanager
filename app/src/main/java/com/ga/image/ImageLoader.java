@@ -27,7 +27,7 @@ public class ImageLoader {
             httpLoadTask.setTaskId(httpLoadTask.getTaskId() + destinationId);
         }
 
-        taskManager.put(httpLoadTask, new Task.Callback() {
+        httpLoadTask.setTaskCallback(new Task.Callback() {
             @Override
             public void finished() {
                 //ignore a cancelled result
@@ -41,6 +41,10 @@ public class ImageLoader {
                 }
             }
         });
+
+        if (taskManager != null) {
+            taskManager.put(httpLoadTask);
+        }
 
         return httpLoadTask;
     }

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.ListView;
 
 
@@ -38,6 +39,20 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
         rssStorage = application.rssStorage();
         listView = (ListView) this.findViewById(R.id.listview);
 
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                final RssItemsAdapter adapter = (RssItemsAdapter)view.getAdapter();
+                if (adapter != null) {
+                    adapter.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
+                }
+            }
+        });
 
         final RssItemsActivity acitvity = this;
 

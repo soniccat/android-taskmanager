@@ -106,6 +106,7 @@ public class FeedsAdapter extends ArrayAdapter<RssFeed> {
                             holder.imageView.setImageBitmap(bitmap);
                         }
                         holder.loadingImage = null;
+                        //TODO: hide progress bar
                     }
                 }
             }

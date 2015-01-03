@@ -14,6 +14,7 @@ import java.util.List;
 
 public interface TaskPool {
     void setHandler(Handler handler);
+    Handler getHandler();
 
     void addTask(Task task);
     void removeTask(Task task);

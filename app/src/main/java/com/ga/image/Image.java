@@ -16,6 +16,7 @@ import com.ga.loader.data.DataHandler;
 import com.ga.task.Task;
 import com.ga.task.Tasks;
 
+//TODO: think about implementing task container and moving check of setTaskCompleted to taskmanager
 public class Image implements Serializable, Tasks.TaskListener {
     protected URL url;
     protected int width;

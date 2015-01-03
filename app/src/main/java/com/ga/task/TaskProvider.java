@@ -10,11 +10,23 @@ import android.os.Handler;
 // A provider must remove a task from the pool in the takeTopTask method
 
 public interface TaskProvider {
+    Task getTopTask();
+    Task takeTopTask();
+
     void setTaskPool(TaskPool pool);
     TaskPool getTaskPool();
 
     void setHandler(Handler handler);
+    Handler getHandler();
 
-    Task getTopTask();
-    Task takeTopTask();
+    void setUserData(Object data);
+    Object getUserData();
+
+    void addListener(TaskProviderListener listener);
+    void removeListener(TaskProviderListener listener);
+
+    public interface TaskProviderListener {
+        void onTaskAdded(Task task);
+        void onTaskRemoved(Task task);
+    }
 }
