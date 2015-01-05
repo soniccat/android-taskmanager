@@ -1,5 +1,7 @@
 package com.ga.task;
 
+import java.util.Date;
+
 /**
  * Created by alexeyglushkov on 20.09.14.
  */
@@ -88,6 +90,9 @@ public interface Task extends TaskContainer {
     // Thread: Main thread
     float getTaskProgress();
     void setTaskProgressMinChange(float value);
+
+    void setTaskStartDate(Date date);
+    long getTaskDuration();
 
     //TODO: finish comments
 

@@ -27,7 +27,15 @@ public class Tools {
         hd.post(runnable);
     }
 
-    public static int inverseCompare(int lhs, int rhs) {
-        return lhs < rhs ? 1 : (lhs == rhs ? 0 : -1);
+    public static int reverseIntCompare(int lhs, int rhs) {
+        if (lhs > rhs) {
+            return -1;
+        }
+
+        if (lhs == rhs) {
+            return 0;
+        }
+
+        return 1;
     }
 }

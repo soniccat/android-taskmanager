@@ -11,6 +11,7 @@ import com.ga.task.PriorityTaskProvider;
 import com.ga.task.SimpleTaskPool;
 import com.ga.task.Task;
 import com.ga.task.TaskManager;
+import com.google.common.collect.Range;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -130,6 +131,8 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
             }
         });
 
+        Range<Integer> range = getListener().getVisibleRange();
+        task.setTaskPriority(getTaskPriority(position, range.lowerEndpoint(), range.upperEndpoint() - range.lowerEndpoint() + 1));
         task.setTaskUserData(new Pair<Integer, Image>(position, image));
 
         //due to progresslisteners are stored through weakreference we can't create anonymous object
@@ -172,19 +175,23 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
 
                 Pair<Integer, Image> taskData = (Pair<Integer, Image>)task.getTaskUserData();
                 int taskPosition = taskData.first;
-
-                //for a test purpose we start load images from the center of the list view
-                int delta = Math.abs(firstVisibleItem + visibleItemCount/2 - taskPosition);
-                if (delta > 100) {
-                    delta = 100;
-                }
-
-                return 100 - delta;
+                return getTaskPriority(taskPosition, firstVisibleItem, visibleItemCount);
             }
         });
     }
 
+    private int getTaskPriority(int taskPosition, int firstVisibleItem, int visibleItemCount) {
+        //for a test purpose we start load images from the center of the list view
+        int delta = Math.abs(firstVisibleItem + visibleItemCount/2 - taskPosition);
+        if (delta > 100) {
+            delta = 100;
+        }
+
+        return 100 - delta;
+    }
+
     public interface RssItemsAdapterListener {
         View getViewAtPosition(int position);
+        Range<Integer> getVisibleRange();
     }
 }

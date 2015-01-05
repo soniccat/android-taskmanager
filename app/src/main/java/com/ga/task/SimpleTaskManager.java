@@ -10,6 +10,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -201,6 +202,7 @@ public class SimpleTaskManager implements TaskManager {
 
         logTask(task, "Task started");
         task.setTaskStatus(Task.Status.Started);
+        task.setTaskStartDate(new Date());
 
         final Task.Callback originalCallback = task.getTaskCallback();
         Task.Callback callback = new Task.Callback() {
@@ -220,7 +222,7 @@ public class SimpleTaskManager implements TaskManager {
     }
 
     private void logTask(Task task, String prefix) {
-        Log.d(TAG, prefix + " " + task.getClass().toString() + " " + task.getTaskId());
+        Log.d(TAG, prefix + " " + task.getClass().toString() + " id= " + task.getTaskId() + " priority= " + task.getTaskPriority() + " time " + task.getTaskDuration());
     }
 
     private void checkHandlerThread() {

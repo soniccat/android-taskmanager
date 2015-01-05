@@ -6,6 +6,7 @@ import com.ga.rss.RssFeed;
 import com.ga.rss.RssStorage;
 import com.ga.rss.RssItem;
 import com.ga.task.TaskManager;
+import com.google.common.collect.Range;
 
 import android.support.v7.app.ActionBarActivity;
 import android.content.Intent;
@@ -90,6 +91,11 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
         }
 
         return null;
+    }
+
+    @Override
+    public Range<Integer> getVisibleRange() {
+        return Range.closed(listView.getFirstVisiblePosition(), listView.getFirstVisiblePosition() + listView.getChildCount() - 1);
     }
 
     void updateTableAdapter() {

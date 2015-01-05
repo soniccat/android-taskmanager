@@ -4,6 +4,7 @@ import com.example.rssreader.Tools;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by alexeyglushkov on 20.09.14.
@@ -22,6 +23,7 @@ public abstract class AsyncTask extends android.os.AsyncTask<Void, Void, Void> i
     protected LoadPolicy loadPolicy = LoadPolicy.SkipIfAdded;
     protected int priority;
     protected int type;
+    protected Date startDate;
 
     protected ArrayList<WeakReference<StatusListener>> statusListeners;
     protected ArrayList<WeakReference<ProgressListener>> progressListeners;
@@ -193,6 +195,19 @@ public abstract class AsyncTask extends android.os.AsyncTask<Void, Void, Void> i
 
             ++i;
         }
+    }
+
+    @Override
+    public long getTaskDuration() {
+        if (startDate != null) {
+            return new Date().getTime() - startDate.getTime();
+        }
+        return -1;
+    }
+
+    @Override
+    public void setTaskStartDate(Date date) {
+        this.startDate = date;
     }
 
     //TODO: add dependencies support
