@@ -90,8 +90,9 @@ public class TaskBarView extends View {
                 paint.setStyle(Paint.Style.STROKE);
                 paint.setColor(Color.RED);
                 canvas.drawRect(left, paddingTop, left + len, paddingTop + contentHeight, paint);
-                left += len;
             }
+
+            left += len;
         }
     }
 

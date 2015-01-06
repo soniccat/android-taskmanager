@@ -134,8 +134,9 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
         });
 
         Range<Integer> range = getListener().getVisibleRange();
-        task.setTaskType(1);
+        task.setTaskType(position%2 + 1);
         taskManager.setLimit(1, 0.5f);
+        taskManager.setLimit(2, 0.5f);
         task.setTaskPriority(getTaskPriority(position, range.lowerEndpoint(), range.upperEndpoint() - range.lowerEndpoint() + 1));
         task.setTaskUserData(new Pair<Integer, Image>(position, image));
 
