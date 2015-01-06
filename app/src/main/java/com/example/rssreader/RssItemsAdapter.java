@@ -134,6 +134,8 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
         });
 
         Range<Integer> range = getListener().getVisibleRange();
+        task.setTaskType(1);
+        taskManager.setLimit(1, 0.2f);
         task.setTaskPriority(getTaskPriority(position, range.lowerEndpoint(), range.upperEndpoint() - range.lowerEndpoint() + 1));
         task.setTaskUserData(new Pair<Integer, Image>(position, image));
 
@@ -172,7 +174,6 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
         com.ga.task.Tools.runOnHandlerThread(taskProvider.getTaskPool().getHandler(), new Runnable() {
             @Override
             public void run() {
-
                 List<Task> tasks = new ArrayList<Task>();
                 tasks.addAll(taskProvider.getTaskPool().getTasks());
 

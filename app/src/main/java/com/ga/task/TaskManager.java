@@ -14,6 +14,9 @@ public interface TaskManager {
 
     // Put a task, the same task can't be putted twice to the TaskManager
     void put(Task task);
+    void startImmediately(Task task);
     void cancel(Task task, Object info);
     void addTaskProvider(TaskProvider provider);
+
+    void setLimit(int taskType, float availableQueuePart);
 }

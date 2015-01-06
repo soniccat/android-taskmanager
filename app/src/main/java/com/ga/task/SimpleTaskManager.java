@@ -10,12 +10,8 @@ import junit.framework.Assert;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by alexeyglushkov on 20.09.14.
@@ -32,6 +28,9 @@ public class SimpleTaskManager implements TaskManager {
     TaskProvider waitingTasks;
     List<WeakReference<TaskProvider>> taskProviders;
 
+    SparseArray<Float> limits;
+    SparseArray<Integer> usedSpace; //type -> task count from loadingTasks
+
     public int maxLoadingTasks;
 
     public SimpleTaskManager(int maxLoadingTasks) {
@@ -45,6 +44,9 @@ public class SimpleTaskManager implements TaskManager {
         loadingTasks = new SimpleTaskPool(handler);
         waitingTasks = new PriorityTaskProvider(handler, new SimpleTaskPool(handler));
         taskProviders = new ArrayList<WeakReference<TaskProvider>>();
+
+        limits = new SparseArray<Float>();
+        usedSpace = new SparseArray<Integer>();
     }
 
     @Override
@@ -68,6 +70,18 @@ public class SimpleTaskManager implements TaskManager {
             public void run() {
                 waitingTasks.getTaskPool().addTask(task);
                 putOnThread(task);
+            }
+        });
+    }
+
+    @Override
+    public void startImmediately(final Task task) {
+        Tools.runOnHandlerThread(handler, new Runnable() {
+            @Override
+            public void run() {
+                if (handleTaskLoadPolicy(task)) {
+                    startTaskOnThread(task);
+                }
             }
         });
     }
@@ -101,8 +115,23 @@ public class SimpleTaskManager implements TaskManager {
         taskProviders.add(new WeakReference<TaskProvider>(provider));
     }
 
+    @Override
+    public void setLimit(final int taskType, final float availableQueuePart) {
+        Tools.runOnHandlerThread(handler, new Runnable() {
+            @Override
+            public void run() {
+                if (availableQueuePart == -1.0f) {
+                    limits.remove(taskType);
+                } else {
+                    limits.put(taskType, availableQueuePart);
+                }
+            }
+        });
+    }
+
     public void setWaitingTaskProvider(TaskProvider provider) {
         Assert.assertEquals(provider.getTaskPool().getHandler(), handler);
+        Assert.assertEquals(provider.getHandler(), handler);
 
         this.waitingTasks = provider;
     }
@@ -110,9 +139,16 @@ public class SimpleTaskManager implements TaskManager {
     // Private
 
     // functions called on a handler's thread
-    // actual work
 
     private void putOnThread(Task task) {
+        checkHandlerThread();
+
+        if (handleTaskLoadPolicy(task)) {
+            checkTasksToRunOnThread();
+        }
+    }
+
+    private boolean handleTaskLoadPolicy(Task task) {
         checkHandlerThread();
 
         //search for the task with the same id
@@ -123,12 +159,11 @@ public class SimpleTaskManager implements TaskManager {
                     cancelTaskOnThread(addedTask, null);
                 } else {
                     Log.d(TAG, "The task was skipped due to the Load Policy " + task.getLoadPolicy().toString() + task.getClass().toString() + " " + task.getTaskId() + " " + task.getTaskStatus().toString());
-                    return;
+                    return false;
                 }
             }
         }
-
-        checkTasksToRunOnThread();
+        return true;
     }
 
     void checkTasksToRunOnThread() {
@@ -139,6 +174,7 @@ public class SimpleTaskManager implements TaskManager {
 
             if (task != null) {
                 addLoadingTaskOnThread(task);
+                updateUsedSpace(task.getTaskType(), true);
                 startTaskOnThread(task);
             }
         }
@@ -174,11 +210,15 @@ public class SimpleTaskManager implements TaskManager {
             ++i;
         }
 
-        if (topPriorityTaskIndex == -1 && topPriorityTask != null) {
-            topPriorityTask = waitingTasks.takeTopTask();
+        if (topPriorityTask != null && !reachedLimit(topPriorityTask.getTaskType())) {
+            if (topPriorityTaskIndex == -1 && topPriorityTask != null) {
+                topPriorityTask = waitingTasks.takeTopTask();
 
-        } else if (topPriorityTaskIndex != -1) {
-            topPriorityTask = taskProviders.get(topPriorityTaskIndex).get().takeTopTask();
+            } else if (topPriorityTaskIndex != -1) {
+                topPriorityTask = taskProviders.get(topPriorityTaskIndex).get().takeTopTask();
+            }
+        } else {
+            topPriorityTask = null;
         }
 
         taskProviders.removeAll(emptyReferences);
@@ -187,7 +227,7 @@ public class SimpleTaskManager implements TaskManager {
 
     private void startTaskOnThread(final Task task) {
         checkHandlerThread();
-        checkTaskIsWaiting(task);
+        Assert.assertTrue(Tasks.isTaskReadyToStart(task));
 
         logTask(task, "Task started");
         task.setTaskStatus(Task.Status.Started);
@@ -201,6 +241,7 @@ public class SimpleTaskManager implements TaskManager {
                     @Override
                     public void run() {
                         logTask(task, "Task finished");
+                        updateUsedSpace(task.getTaskType(), false);
                         handleTaskCompletionOnThread(task, originalCallback, Task.Status.Finished);
                     }
                 });
@@ -216,10 +257,6 @@ public class SimpleTaskManager implements TaskManager {
 
     private void checkHandlerThread() {
         Assert.assertEquals(Thread.currentThread(), handlerThread);
-    }
-
-    private void checkTaskIsWaiting(Task task) {
-        Assert.assertTrue(Tasks.isTaskReadyToStart(task));
     }
 
     public void handleTaskCompletionOnThread(final Task task, final Task.Callback callback, Task.Status status) {
@@ -257,6 +294,26 @@ public class SimpleTaskManager implements TaskManager {
                 logTask(task, "Cancelled");
             }
         }
+    }
+
+    private boolean reachedLimit(int taskType) {
+        if (limits.get(taskType,-1.0f) == -1.0f) {
+            return false;
+        }
+
+        return (float)usedSpace.get(taskType,0) / (float)maxLoadingTasks >= limits.get(taskType, 0.0f);
+    }
+
+    private void updateUsedSpace(int taskType, boolean add) {
+        Integer count = usedSpace.get(taskType, 0);
+        if (add) {
+            ++count;
+        } else {
+            Assert.assertTrue(count > 0);
+            --count;
+        }
+
+        usedSpace.put(taskType, count);
     }
 
     // helpers

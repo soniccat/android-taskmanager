@@ -32,6 +32,8 @@ public class MainActivity extends ActionBarActivity implements FeedsAdapter.Feed
     public final static String FEED_OBJECT = "com.ga.mainActivity.FEED_OBJECT";
 
     TaskManager loader;
+
+    //TODO: delete it
     TaskManager keeper;
     RssStorage rssStorage;
 
