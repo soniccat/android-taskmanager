@@ -6,6 +6,8 @@ import android.os.Looper;
 import android.util.Log;
 import android.util.SparseArray;
 
+import junit.framework.Assert;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,7 +54,7 @@ public class SimpleTaskManager implements TaskManager {
 
     @Override
     public void put(final Task task) {
-        assert (task.getTaskStatus() == Task.Status.NotStarted);
+        Assert.assertEquals(task.getTaskStatus(), Task.Status.NotStarted);
 
         if (!Tasks.isTaskReadyToStart(task)) {
             Log.d(TAG, "Can't put task " + task.getClass().toString() + " because it's already started " + task.getTaskStatus().toString());
@@ -82,7 +84,7 @@ public class SimpleTaskManager implements TaskManager {
 
     @Override
     public void addTaskProvider(TaskProvider provider) {
-        assert provider.getHandler() == handler;
+        Assert.assertEquals(provider.getHandler(),handler);
 
         provider.addListener(new TaskProvider.TaskProviderListener() {
             @Override
@@ -100,7 +102,7 @@ public class SimpleTaskManager implements TaskManager {
     }
 
     public void setWaitingTaskProvider(TaskProvider provider) {
-        assert provider.getTaskPool().getHandler() == handler;
+        Assert.assertEquals(provider.getTaskPool().getHandler(), handler);
 
         this.waitingTasks = provider;
     }
@@ -213,11 +215,11 @@ public class SimpleTaskManager implements TaskManager {
     }
 
     private void checkHandlerThread() {
-        assert Thread.currentThread() == handlerThread;
+        Assert.assertEquals(Thread.currentThread(), handlerThread);
     }
 
     private void checkTaskIsWaiting(Task task) {
-        assert Tasks.isTaskReadyToStart(task);
+        Assert.assertTrue(Tasks.isTaskReadyToStart(task));
     }
 
     public void handleTaskCompletionOnThread(final Task task, final Task.Callback callback, Task.Status status) {

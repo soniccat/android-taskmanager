@@ -4,6 +4,8 @@ import android.os.Looper;
 
 import com.example.rssreader.Tools;
 
+import junit.framework.Assert;
+
 /**
  * Created by alexeyglushkov on 28.12.14.
  */
@@ -11,7 +13,7 @@ public class Tasks {
 
     // To automatically sync task state with your object state (isLoading for example)
     public static void bindOnTaskCompletion(final Task task, final TaskListener listener) {
-        assert task.getTaskStatus() == Task.Status.NotStarted;
+        Assert.assertEquals(task.getTaskStatus(), Task.Status.NotStarted);
 
         if (task.getTaskId() != null) {
             task.setTaskId(task.getTaskId() + listener.hashCode());
@@ -22,7 +24,7 @@ public class Tasks {
             public void onTaskStatusChanged(final Task task, final Task.Status oldStatus, final Task.Status newStatus) {
                 //Waiting status is set in the main thread
                 if (newStatus == Task.Status.Waiting) {
-                    assert (Looper.myLooper() == Looper.getMainLooper());
+                    Assert.assertEquals(Looper.myLooper(), Looper.getMainLooper());
                     listener.setTaskInProgress(task);
 
                 } else if (newStatus == Task.Status.Finished || newStatus == Task.Status.Cancelled)

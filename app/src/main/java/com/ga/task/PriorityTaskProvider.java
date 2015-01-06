@@ -4,6 +4,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import junit.framework.Assert;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -150,7 +152,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool.TaskPoolList
     }
 
     private void checkHandlerThread() {
-        assert Looper.myLooper() == handler.getLooper();
+        Assert.assertEquals(Looper.myLooper(), handler.getLooper());
     }
 
     public interface PriorityProvider {

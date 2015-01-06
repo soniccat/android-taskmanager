@@ -26,6 +26,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import junit.framework.Assert;
+
 public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.ProgressListener {
 
     /**
@@ -143,7 +145,7 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
     }
 
     public void onTaskProgressChanged(Task task, float oldValue, float newValue) {
-        assert task.getTaskUserData() instanceof Pair;
+        Assert.assertTrue(task.getTaskUserData() instanceof Pair);
 
         Pair<Integer, Image> taskData = (Pair<Integer, Image>)task.getTaskUserData();
 
@@ -173,7 +175,7 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
 
                 List<Task> tasks = new ArrayList<Task>();
                 tasks.addAll(taskProvider.getTaskPool().getTasks());
-                
+
                 for (Task t : tasks) {
                     Pair<Integer, Image> taskData = (Pair<Integer, Image>)t.getTaskUserData();
                     int distance = Math.abs((Integer)taskProvider.getUserData() - taskData.first);
@@ -188,7 +190,7 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
         taskProvider.updatePriorities(new PriorityTaskProvider.PriorityProvider() {
             @Override
             public int getPriority(Task task) {
-                assert task.getTaskUserData() instanceof Pair;
+                Assert.assertTrue(task.getTaskUserData() instanceof Pair);
 
                 Pair<Integer, Image> taskData = (Pair<Integer, Image>)task.getTaskUserData();
                 int taskPosition = taskData.first;

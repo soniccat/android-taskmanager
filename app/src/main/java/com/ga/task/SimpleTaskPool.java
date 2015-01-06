@@ -4,6 +4,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import junit.framework.Assert;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,8 +39,6 @@ public class SimpleTaskPool implements TaskPool, Task.StatusListener {
 
     @Override
     public void addTask(final Task task) {
-        assert (task.getTaskStatus() == Task.Status.NotStarted);
-
         if (!Tasks.isTaskReadyToStart(task)) {
             Log.d(TAG, "Can't put task " + task.getClass().toString() + " because it's already started " + task.getTaskStatus().toString());
             return;
@@ -138,6 +138,6 @@ public class SimpleTaskPool implements TaskPool, Task.StatusListener {
     }
 
     private void handlerThreadCheck() {
-        assert Looper.getMainLooper() == handler.getLooper();
+        Assert.assertEquals(Looper.myLooper(),handler.getLooper());
     }
 }
