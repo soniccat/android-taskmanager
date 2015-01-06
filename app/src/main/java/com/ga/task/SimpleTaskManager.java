@@ -136,6 +136,13 @@ public class SimpleTaskManager implements TaskManager {
         this.waitingTasks = provider;
     }
 
+    @Override
+    public TaskManagerSnapshot createSnapshot() {
+        checkHandlerThread();
+
+        return new SimpleTaskManagerSnapshot();
+    }
+
     // Private
 
     // functions called on a handler's thread
@@ -322,5 +329,66 @@ public class SimpleTaskManager implements TaskManager {
         checkHandlerThread();
 
         this.loadingTasks.addTask(task);
+    }
+
+    private class SimpleTaskManagerSnapshot implements TaskManagerSnapshot {
+        int loadingTaskCount;
+        int waitingTaskCount;
+        int maxQueueSize;
+        SparseArray<Float> loadingLimits;
+        SparseArray<Integer> usedLoadingSpace;
+        SparseArray<Integer> waitingTaskInfo;
+
+        public SimpleTaskManagerSnapshot() {
+            loadingTaskCount = loadingTasks.getTaskCount();
+
+            waitingTaskInfo = new SparseArray<Integer>();
+            for (WeakReference<TaskProvider> taskProvider : taskProviders) {
+                if (taskProvider.get() != null) {
+                    waitingTaskCount += taskProvider.get().getTaskPool().getTaskCount();
+
+                    for (Task task : taskProvider.get().getTaskPool().getTasks()) {
+                        int count = waitingTaskInfo.get(task.getTaskType(), 0);
+                        ++count;
+                        waitingTaskInfo.put(task.getTaskType(), count);
+                    }
+                }
+            }
+
+            maxQueueSize = maxLoadingTasks;
+
+            loadingLimits = limits.clone();
+            usedLoadingSpace = usedSpace.clone();
+        }
+
+        @Override
+        public int getLoadingTasksCount() {
+            return loadingTaskCount;
+        }
+
+        @Override
+        public int getWaitingTasksCount() {
+            return waitingTaskCount;
+        }
+
+        @Override
+        public int getMaxQueueSize() {
+            return maxQueueSize;
+        }
+
+        @Override
+        public SparseArray<Float> getLoadingLimits() {
+            return loadingLimits;
+        }
+
+        @Override
+        public SparseArray<Integer> getUsedLoadingSpace() {
+            return usedLoadingSpace;
+        }
+
+        @Override
+        public SparseArray<Integer> getWaitingTaskInfo() {
+            return waitingTaskInfo;
+        }
     }
 }

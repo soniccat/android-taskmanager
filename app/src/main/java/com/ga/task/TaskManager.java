@@ -1,6 +1,7 @@
 package com.ga.task;
 
 import android.os.Handler;
+import android.util.SparseArray;
 
 import java.util.List;
 
@@ -17,6 +18,16 @@ public interface TaskManager {
     void startImmediately(Task task);
     void cancel(Task task, Object info);
     void addTaskProvider(TaskProvider provider);
-
     void setLimit(int taskType, float availableQueuePart);
+    TaskManagerSnapshot createSnapshot();
+
+    //Store information to show it outside for debugging purpose
+    public interface TaskManagerSnapshot {
+        int getLoadingTasksCount();
+        int getWaitingTasksCount();
+        int getMaxQueueSize();
+        SparseArray<Float> getLoadingLimits();
+        SparseArray<Integer> getUsedLoadingSpace();
+        SparseArray<Integer> getWaitingTaskInfo();
+    }
 }
