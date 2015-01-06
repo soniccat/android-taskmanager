@@ -153,7 +153,8 @@ public abstract class AsyncTask extends android.os.AsyncTask<Void, Void, Void> i
         return type;
     }
 
-    protected boolean getNeedCancelTask() {
+    @Override
+    public boolean getNeedCancelTask() {
         return needCancelTask;
     }
 
@@ -236,23 +237,25 @@ public abstract class AsyncTask extends android.os.AsyncTask<Void, Void, Void> i
     }
 
     public void triggerStatusListeners(Task.Status oldStatus, Task.Status newStatus) {
-        synchronized (statusListeners) {
-            ArrayList<WeakReference<StatusListener>> emptyReferences = new ArrayList<WeakReference<StatusListener>>();
+        if (oldStatus != newStatus) {
+            synchronized (statusListeners) {
+                ArrayList<WeakReference<StatusListener>> emptyReferences = new ArrayList<WeakReference<StatusListener>>();
 
-            for (WeakReference<StatusListener> l : statusListeners) {
-                if (l.get() != null) {
-                    l.get().onTaskStatusChanged(this, oldStatus, newStatus);
-                } else {
-                    emptyReferences.add(l);
+                for (WeakReference<StatusListener> l : statusListeners) {
+                    if (l.get() != null) {
+                        l.get().onTaskStatusChanged(this, oldStatus, newStatus);
+                    } else {
+                        emptyReferences.add(l);
+                    }
                 }
-            }
 
-            statusListeners.removeAll(emptyReferences);
+                statusListeners.removeAll(emptyReferences);
+            }
         }
     }
 
     public void triggerProgressListeners(final float oldProgress, final float newProgress) {
-        if (progressListeners.size() > 0) {
+        if (progressListeners.size() > 0 && oldProgress != newProgress) {
             Tools.postOnMainLoop(new Runnable() {
                 @Override
                 public void run() {

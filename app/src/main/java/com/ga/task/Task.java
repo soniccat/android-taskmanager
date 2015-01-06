@@ -35,6 +35,7 @@ public interface Task extends TaskContainer {
     // Caller: TaskManager
     // Thread: TaskManager's thread
     void cancelTask(Object info);
+    boolean getNeedCancelTask();
 
     // Return info passed in the cancel method
     Object getCancellationInfo();
@@ -116,7 +117,7 @@ public interface Task extends TaskContainer {
 
     public enum Status {
         NotStarted, //not started
-        Waiting, //in queue, must be set in the main thread
+        Waiting, //in queue, must be set in the caller thread
         Blocked, //is waiting until all dependencies finish
         Started, //started
         Finished, //successfully loaded

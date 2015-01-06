@@ -95,6 +95,10 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
 
     @Override
     public Range<Integer> getVisibleRange() {
+        if (listView.getChildCount() == 0) {
+            return Range.closed(0,0);
+        }
+
         return Range.closed(listView.getFirstVisiblePosition(), listView.getFirstVisiblePosition() + listView.getChildCount() - 1);
     }
 

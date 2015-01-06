@@ -37,31 +37,47 @@ public class SimpleTaskPool implements TaskPool, Task.StatusListener {
 
     @Override
     public void addTask(final Task task) {
+        assert (task.getTaskStatus() == Task.Status.NotStarted);
+
+        if (!Tasks.isTaskReadyToStart(task)) {
+            Log.d(TAG, "Can't put task " + task.getClass().toString() + " because it's already started " + task.getTaskStatus().toString());
+            return;
+        }
+
+        //Task Manager must set Waiting status on the current thread
+        task.setTaskStatus(Task.Status.Waiting);
+
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
-                task.addTaskStatusListener(SimpleTaskPool.this);
-
-                //search for the task with the same id
-                if (task.getTaskId() != null) {
-                    Task addedTask = getTask(task.getTaskId());
-                    if (addedTask != null) {
-                        if (task.getLoadPolicy() == Task.LoadPolicy.CancelAdded) {
-                            tasks.remove(addedTask);
-                        } else {
-                            Log.d(TAG, "The task was skipped due to the Load Policy " + task.getLoadPolicy().toString() + task.getClass().toString() + " " + task.getTaskId() + " " + task.getTaskStatus().toString());
-                            return;
-                        }
-                    }
-                }
-
-                tasks.add(task);
-
-                for (TaskPoolListener listener : listeners) {
-                    listener.onTaskAdded(task);
-                }
+                addTaskOnThread(task);
             }
         });
+    }
+
+    private void addTaskOnThread(Task task) {
+        handlerThreadCheck();
+
+        task.addTaskStatusListener(this);
+
+        //search for the task with the same id
+        if (task.getTaskId() != null) {
+            Task addedTask = getTask(task.getTaskId());
+            if (addedTask != null) {
+                if (task.getLoadPolicy() == Task.LoadPolicy.CancelAdded) {
+                    removeTask(addedTask);
+                } else {
+                    Log.d(TAG, "The task was skipped due to the Load Policy " + task.getLoadPolicy().toString() + task.getClass().toString() + " " + task.getTaskId() + " " + task.getTaskStatus().toString());
+                    return;
+                }
+            }
+        }
+
+        tasks.add(task);
+
+        for (TaskPoolListener listener : listeners) {
+            listener.onTaskAdded(task);
+        }
     }
 
     public void onTaskStatusChanged(Task task, Task.Status oldStatus, Task.Status newStatus) {
@@ -75,10 +91,10 @@ public class SimpleTaskPool implements TaskPool, Task.StatusListener {
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
-                tasks.remove(task);
-
-                for (TaskPoolListener listener : listeners) {
-                    listener.onTaskRemoved(task);
+                if (tasks.remove(task)) {
+                    for (TaskPoolListener listener : listeners) {
+                        listener.onTaskRemoved(task);
+                    }
                 }
             }
         });

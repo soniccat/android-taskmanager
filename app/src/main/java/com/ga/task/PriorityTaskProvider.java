@@ -140,10 +140,10 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool.TaskPoolList
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
-                taskQueue.remove(task);
-
-                for (TaskProviderListener listener : listeners) {
-                    listener.onTaskRemoved(task);
+                if (taskQueue.remove(task)) {
+                    for (TaskProviderListener listener : listeners) {
+                        listener.onTaskRemoved(task);
+                    }
                 }
             }
         });

@@ -54,17 +54,17 @@ public class SimpleTaskManager implements TaskManager {
     public void put(final Task task) {
         assert (task.getTaskStatus() == Task.Status.NotStarted);
 
-        boolean canStartTask = task.getTaskStatus() == Task.Status.NotStarted;
-        if (!canStartTask) {
+        if (!Tasks.isTaskReadyToStart(task)) {
             Log.d(TAG, "Can't put task " + task.getClass().toString() + " because it's already started " + task.getTaskStatus().toString());
+            return;
         }
 
-        //Task Manager must set Waiting status on the current thread
         task.setTaskStatus(Task.Status.Waiting);
 
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
+                waitingTasks.getTaskPool().addTask(task);
                 putOnThread(task);
             }
         });
@@ -92,7 +92,7 @@ public class SimpleTaskManager implements TaskManager {
 
             @Override
             public void onTaskRemoved(Task task) {
-
+                cancelTaskOnThread(task, null);
             }
         });
 
@@ -100,6 +100,8 @@ public class SimpleTaskManager implements TaskManager {
     }
 
     public void setWaitingTaskProvider(TaskProvider provider) {
+        assert provider.getTaskPool().getHandler() == handler;
+
         this.waitingTasks = provider;
     }
 
@@ -113,11 +115,7 @@ public class SimpleTaskManager implements TaskManager {
 
         //search for the task with the same id
         if (task.getTaskId() != null) {
-            Task addedTask = getWaitingTaskByIdOnThread(task.getTaskId());
-            if (addedTask == null) {
-                addedTask = getLoadingTaskByIdOnThread(task.getTaskId());
-            }
-
+            Task addedTask = loadingTasks.getTask(task.getTaskId());
             if (addedTask != null) {
                 if (task.getLoadPolicy() == Task.LoadPolicy.CancelAdded) {
                     cancelTaskOnThread(addedTask, null);
@@ -128,18 +126,7 @@ public class SimpleTaskManager implements TaskManager {
             }
         }
 
-        addWaitingTaskOnThread(task);
         checkTasksToRunOnThread();
-    }
-
-    private Task getWaitingTaskByIdOnThread(String taskId) {
-        checkHandlerThread();
-        return waitingTasks.getTaskPool().getTask(taskId);
-    }
-
-    private Task getLoadingTaskByIdOnThread(String taskId) {
-        checkHandlerThread();
-        return loadingTasks.getTask(taskId);
     }
 
     void checkTasksToRunOnThread() {
@@ -251,23 +238,26 @@ public class SimpleTaskManager implements TaskManager {
 
     void cancelTaskOnThread(Task task, final Object info) {
         checkHandlerThread();
-        task.cancelTask(info);
 
-        if (task.getTaskStatus() == Task.Status.Waiting) {
-            handleTaskCompletionOnThread(task, task.getTaskCallback(), Task.Status.Cancelled);
+        if (!task.getNeedCancelTask()) {
+            Task.Status st = task.getTaskStatus();
+            task.cancelTask(info);
 
-            logTask(task, "Cancelled");
+            if (st == Task.Status.Waiting) {
+                waitingTasks.getTaskPool().removeTask(task);
+
+                for (WeakReference<TaskProvider> taskProvider : taskProviders) {
+                    if (taskProvider.get() != null) {
+                        taskProvider.get().getTaskPool().removeTask(task);
+                    }
+                }
+
+                logTask(task, "Cancelled");
+            }
         }
     }
 
     // helpers
-
-    void addWaitingTaskOnThread(Task task) {
-        checkHandlerThread();
-
-        this.waitingTasks.getTaskPool().addTask(task);
-        Log.d(TAG, "waiting tasks " + this.waitingTasks.getTaskPool().getTaskCount());
-    }
 
     void addLoadingTaskOnThread(Task task) {
         checkHandlerThread();

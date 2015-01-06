@@ -7,6 +7,8 @@ import java.util.List;
 /**
  * Created by alexeyglushkov on 20.09.14.
  */
+
+// TODO: think about implementing TaskPool
 public interface TaskManager {
     Handler getHandler();
 

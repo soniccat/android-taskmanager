@@ -1,21 +1,20 @@
 package com.example.rssreader;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.ga.image.Image;
 import com.ga.image.ImageLoader;
 import com.ga.loader.http.HttpLoadTask;
 import com.ga.rss.RssFeed;
 import com.ga.rss.RssItem;
-import com.ga.task.PriorityTaskProvider;
-import com.ga.task.SimpleTaskPool;
-import com.ga.task.Task;
-import com.ga.task.TaskManager;
+import com.ga.task.*;
 import com.google.common.collect.Range;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -53,6 +52,7 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
         this.taskManager = taskManager;
 
         Handler taskManagerHandler = this.taskManager.getHandler();
+        Handler mainThreadHandler = new Handler(Looper.myLooper());
         this.taskProvider = new PriorityTaskProvider(taskManagerHandler, new SimpleTaskPool(taskManagerHandler));
         this.taskManager.addTaskProvider(this.taskProvider);
     }
@@ -166,6 +166,23 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
                 return;
             }
         }
+
+        com.ga.task.Tools.runOnHandlerThread(taskProvider.getTaskPool().getHandler(), new Runnable() {
+            @Override
+            public void run() {
+
+                List<Task> tasks = new ArrayList<Task>();
+                tasks.addAll(taskProvider.getTaskPool().getTasks());
+                
+                for (Task t : tasks) {
+                    Pair<Integer, Image> taskData = (Pair<Integer, Image>)t.getTaskUserData();
+                    int distance = Math.abs((Integer)taskProvider.getUserData() - taskData.first);
+                    if (distance > 30) {
+                        taskManager.cancel(t,null);
+                    }
+                }
+            }
+        });
 
         taskProvider.setUserData(firstVisibleItem);
         taskProvider.updatePriorities(new PriorityTaskProvider.PriorityProvider() {
