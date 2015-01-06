@@ -60,6 +60,7 @@ public class TaskManagerView extends LinearLayout {
         updateAllTypesArray();
         updateLoadingTasks();
         updateWaitingTasks();
+        updateBar();
     }
 
     void updateLoadingTasks() {
@@ -90,6 +91,37 @@ public class TaskManagerView extends LinearLayout {
         }
 
         waitingTasks.setText(str);
+    }
+
+    void updateBar() {
+        int maxQueueSize = snapshot.getMaxQueueSize();
+        SparseArray<Integer> loadingSpace = snapshot.getUsedLoadingSpace();
+        SparseArray<Float> loadingLimits = snapshot.getLoadingLimits();
+
+        barView.clearItems();
+
+        int count;
+        float usedSpace;
+        boolean reachedLimit = false;
+        for (int type : allTypes) {
+            count = loadingSpace.get(type, 0);
+            usedSpace = (float)count / (float)maxQueueSize;
+            reachedLimit = false;
+            if (loadingLimits.get(type,-1.0f) != -1.0f) {
+                reachedLimit = usedSpace >= snapshot.getLoadingLimits().get(type, 0.0f);
+            }
+
+            TaskBarView.TaskBarItem item = new TaskBarView.TaskBarItem(type, (float)count / (float)maxQueueSize, getColor(type), reachedLimit);
+            barView.addItem(item);
+        }
+    }
+
+    private Integer getColor(int index) {
+        if (index < colors.size()) {
+            return colors.get(index);
+        }
+
+        return Color.BLACK;
     }
 
     private void updateAllTypesArray() {

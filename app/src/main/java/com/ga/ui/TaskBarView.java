@@ -12,11 +12,14 @@ import android.view.View;
 
 import com.example.rssreader.R;
 
+import java.util.ArrayList;
+
 /**
  * TODO: document your custom view class.
  */
 public class TaskBarView extends View {
     Paint paint;
+    ArrayList<TaskBarItem> items;
 
     public TaskBarView(Context context) {
         super(context);
@@ -43,7 +46,17 @@ public class TaskBarView extends View {
         */
 
         paint = new Paint();
-        paint.setColor(Color.WHITE);
+        items = new ArrayList<TaskBarItem>();
+    }
+
+    public void clearItems() {
+        items.clear();
+        postInvalidate();
+    }
+
+    public void addItem(TaskBarItem item) {
+        items.add(item);
+        postInvalidate();
     }
 
     @Override
@@ -60,6 +73,39 @@ public class TaskBarView extends View {
         int contentWidth = getWidth() - paddingLeft - paddingRight;
         int contentHeight = getHeight() - paddingTop - paddingBottom;
 
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(Color.BLACK);
+        paint.setStrokeWidth(4);
         canvas.drawRect(paddingLeft,paddingTop,paddingLeft + contentWidth, paddingTop + contentHeight, paint);
+
+        int left = paddingLeft;
+        for (TaskBarItem item : items) {
+            int len = (int)((float)contentWidth * item.length);
+
+            paint.setStyle(Paint.Style.FILL);
+            paint.setColor(item.color);
+            canvas.drawRect(left, paddingTop, left + len, paddingTop + contentHeight, paint);
+
+            if (item.highlight) {
+                paint.setStyle(Paint.Style.STROKE);
+                paint.setColor(Color.RED);
+                canvas.drawRect(left, paddingTop, left + len, paddingTop + contentHeight, paint);
+                left += len;
+            }
+        }
+    }
+
+    public static class TaskBarItem {
+        int type;
+        float length;
+        int color;
+        boolean highlight;
+
+        public TaskBarItem(int type, float length, int color, boolean highlight) {
+            this.type = type;
+            this.length = length;
+            this.color = color;
+            this.highlight = highlight;
+        }
     }
 }
