@@ -1,13 +1,17 @@
 package com.example.rssreader;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.ga.rss.RssFeed;
 import com.ga.rss.RssStorage;
 import com.ga.rss.RssItem;
 import com.ga.task.TaskManager;
+import com.ga.ui.TaskManagerView;
 import com.google.common.collect.Range;
 
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -38,6 +42,28 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
 
         taskManager = application.loader();
         rssStorage = application.rssStorage();
+        
+        final TaskManagerView taskManagerView = (TaskManagerView) findViewById(R.id.task_manager_view);
+
+        //Link taskManagerView and TaskManager
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                com.ga.task.Tools.runOnHandlerThread(taskManager.getHandler(), new Runnable() {
+                    @Override
+                    public void run() {
+                        final TaskManager.TaskManagerSnapshot snapshot = taskManager.createSnapshot();
+                        Tools.postOnMainLoop(new Runnable() {
+                            @Override
+                            public void run() {
+                                taskManagerView.showSnapshot(snapshot);
+                            }
+                        });
+                    }
+                });
+            }
+        }, 0, 500);
+        
         listView = (ListView) this.findViewById(R.id.listview);
 
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
