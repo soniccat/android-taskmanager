@@ -182,7 +182,7 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
                     Pair<Integer, Image> taskData = (Pair<Integer, Image>)t.getTaskUserData();
                     int distance = Math.abs((Integer)taskProvider.getUserData() - taskData.first);
                     if (distance > 30) {
-                        //taskManager.cancel(t,null);
+                        taskManager.cancel(t,null);
                     }
                 }
             }

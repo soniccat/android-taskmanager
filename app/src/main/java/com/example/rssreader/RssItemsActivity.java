@@ -47,27 +47,6 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
         taskManager.startSnapshotRecording();
         taskManager.addSnapshotListener(this);
 
-        //Link taskManagerView and TaskManager
-        /*
-        new Timer().scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                com.ga.task.Tools.runOnHandlerThread(taskManager.getHandler(), new Runnable() {
-                    @Override
-                    public void run() {
-                        final TaskManager.TaskManagerSnapshot snapshot = taskManager.getSnapshot();
-                        Tools.postOnMainLoop(new Runnable() {
-                            @Override
-                            public void run() {
-                                taskManagerView.showSnapshot(snapshot);
-                            }
-                        });
-                    }
-                });
-            }
-        }, 0, 500);
-        */
-
         listView = (ListView) this.findViewById(R.id.listview);
 
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {

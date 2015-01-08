@@ -194,6 +194,10 @@ public class SimpleTaskManager implements TaskManager {
 
     @Override
     public void startSnapshotRecording() {
+        if (needUpdateSnapshot) {
+            return;
+        }
+
         needUpdateSnapshot = true;
 
         Tools.runOnHandlerThread(handler, new Runnable() {
@@ -214,6 +218,10 @@ public class SimpleTaskManager implements TaskManager {
 
     @Override
     public void stopSnapshotRecording() {
+        if (!needUpdateSnapshot) {
+            return;
+        }
+
         Tools.runOnHandlerThread(callbackHandler, new Runnable() {
             @Override
             public void run() {
@@ -411,6 +419,9 @@ public class SimpleTaskManager implements TaskManager {
             }
         });
 
+        //TODO: for the another status like cancelled new task won't be started
+        //but we cant't just call checkTasksToRunOnThread due to Task.LoadPolicy.CancelAdded
+        //because we want to have new task already in waiting queue
         if (status == Task.Status.Finished) {
             Log.d(TAG,"loading queue at the end " + this.loadingTasks.getTaskCount());
             checkTasksToRunOnThread();
