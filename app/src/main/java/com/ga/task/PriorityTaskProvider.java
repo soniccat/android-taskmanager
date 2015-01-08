@@ -3,6 +3,7 @@ package com.ga.task;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.util.SparseArray;
 
 import junit.framework.Assert;
 
@@ -23,10 +24,11 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool.TaskPoolList
     List<TaskProviderListener> listeners;
     Object userData;
 
-    PriorityQueue<Task> taskQueue;
+    // Task type -> priority queue
+    SparseArray<PriorityQueue<Task>> taskQueues;
 
     public PriorityTaskProvider(Handler handler, TaskPool taskPool) {
-        taskQueue = createPriorityQueue();
+        taskQueues = new SparseArray<PriorityQueue<Task>>();
 
         listeners = new ArrayList<TaskProviderListener>();
         setHandler(handler);
@@ -43,22 +45,35 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool.TaskPoolList
     }
 
     @Override
-    public Task getTopTask() {
+    public Task getTopTask(List<Integer> typesToFilter) {
         checkHandlerThread();
 
-        return taskQueue.peek();
+        Task topTask = null;
+        int topPriority = -1;
+
+        for (int i = 0; i < taskQueues.size(); i++) {
+            if (!typesToFilter.contains(taskQueues.keyAt(i))) {
+                PriorityQueue<Task> queue = taskQueues.get(taskQueues.keyAt(i));
+                Task queueTask = queue.peek();
+                if (queueTask != null && queueTask.getTaskPriority() > topPriority) {
+                    topTask = queueTask;
+                    topPriority = topTask.getTaskPriority();
+                }
+            }
+        }
+
+        return topTask;
     }
 
     @Override
-    public Task takeTopTask() {
+    public Task takeTopTask(List<Integer> typesToFilter) {
         checkHandlerThread();
 
-        Task task = taskQueue.poll();
+        Task task = getTopTask(typesToFilter);
         if (task != null) {
+            taskQueues.get(task.getTaskType()).poll();
             getTaskPool().removeTask(task);
         }
-
-        Log.d("prioirtyprovider", "in queue " + taskQueue.size() + " last priority " + task.getTaskPriority());
 
         return task;
     }
@@ -67,14 +82,16 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool.TaskPoolList
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
-                PriorityQueue<Task> queue = createPriorityQueue();
+                for (int i = 0; i < taskQueues.size(); i++) {
 
-                for (Task t : taskQueue) {
-                    t.setTaskPriority(provider.getPriority(t));
-                    queue.add(t);
+                    PriorityQueue<Task> queue = createPriorityQueue();
+                    for (Task t : taskQueues.get(taskQueues.keyAt(i))) {
+                        t.setTaskPriority(provider.getPriority(t));
+                        queue.add(t);
+                    }
+
+                    taskQueues.put(taskQueues.keyAt(i), queue);
                 }
-
-                taskQueue = queue;
                 Log.d("prioirtyprovider","queue replaced");
             }
         });
@@ -129,7 +146,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool.TaskPoolList
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
-                taskQueue.add(task);
+                addTaskToQueue(task);
 
                 for (TaskProviderListener listener : listeners) {
                     listener.onTaskAdded(task);
@@ -142,13 +159,32 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool.TaskPoolList
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
-                if (taskQueue.remove(task)) {
+                if (removeTaskFromQueue(task)) {
                     for (TaskProviderListener listener : listeners) {
                         listener.onTaskRemoved(task);
                     }
                 }
             }
         });
+    }
+
+    private void addTaskToQueue(Task task) {
+        PriorityQueue<Task> queue = taskQueues.get(task.getTaskType());
+        if (queue == null) {
+            queue = createPriorityQueue();
+            taskQueues.put(task.getTaskType(), queue);
+        }
+
+        queue.add(task);
+    }
+
+    private boolean removeTaskFromQueue(Task task) {
+        PriorityQueue<Task> queue = taskQueues.get(task.getTaskType());
+        if (queue != null) {
+            return queue.remove(task);
+        }
+
+        return false;
     }
 
     private void checkHandlerThread() {

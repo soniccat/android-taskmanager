@@ -11,7 +11,6 @@ import com.ga.task.TaskManager;
 import com.ga.ui.TaskManagerView;
 import com.google.common.collect.Range;
 
-import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,11 +21,12 @@ import android.widget.AbsListView;
 import android.widget.ListView;
 
 
-public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapter.RssItemsAdapterListener {
+public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapter.RssItemsAdapterListener, TaskManager.OnSnapshotChangedListener {
 
     TaskManager taskManager;
     ListView listView;
     RssStorage rssStorage;
+    TaskManagerView taskManagerView;
 
     RssFeed feed;
 
@@ -43,16 +43,19 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
         taskManager = application.loader();
         rssStorage = application.rssStorage();
         
-        final TaskManagerView taskManagerView = (TaskManagerView) findViewById(R.id.task_manager_view);
+        taskManagerView = (TaskManagerView) findViewById(R.id.task_manager_view);
+        taskManager.startSnapshotRecording();
+        taskManager.addSnapshotListener(this);
 
         //Link taskManagerView and TaskManager
+        /*
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 com.ga.task.Tools.runOnHandlerThread(taskManager.getHandler(), new Runnable() {
                     @Override
                     public void run() {
-                        final TaskManager.TaskManagerSnapshot snapshot = taskManager.createSnapshot();
+                        final TaskManager.TaskManagerSnapshot snapshot = taskManager.getSnapshot();
                         Tools.postOnMainLoop(new Runnable() {
                             @Override
                             public void run() {
@@ -63,7 +66,8 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
                 });
             }
         }, 0, 500);
-        
+        */
+
         listView = (ListView) this.findViewById(R.id.listview);
 
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -104,6 +108,10 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
                 });
             }
         });
+    }
+
+    public void onSnapshotChanged(TaskManager.TaskManagerSnapshot snapshot) {
+        taskManagerView.showSnapshot(snapshot);
     }
 
     @Override

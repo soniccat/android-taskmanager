@@ -18,10 +18,18 @@ public interface TaskManager {
     void startImmediately(Task task);
     void cancel(Task task, Object info);
     void addTaskProvider(TaskProvider provider);
+    void removeTaskProvider(TaskProvider provider);
     void setLimit(int taskType, float availableQueuePart);
-    TaskManagerSnapshot createSnapshot();
 
-    //Store information to show it outside for debugging purpose
+    // Work with snapshots
+    void startSnapshotRecording();
+    void stopSnapshotRecording();
+
+    TaskManagerSnapshot getSnapshot();
+    void addSnapshotListener(OnSnapshotChangedListener listener);
+    void removeSnapshotListener(OnSnapshotChangedListener listener);
+
+    //Store information to show it outside for debugging purpose on the main thread
     public interface TaskManagerSnapshot {
         int getLoadingTasksCount();
         int getWaitingTasksCount();
@@ -29,5 +37,9 @@ public interface TaskManager {
         SparseArray<Float> getLoadingLimits();
         SparseArray<Integer> getUsedLoadingSpace();
         SparseArray<Integer> getWaitingTaskInfo();
+    }
+
+    public interface OnSnapshotChangedListener {
+        void onSnapshotChanged(TaskManagerSnapshot snapshot);
     }
 }

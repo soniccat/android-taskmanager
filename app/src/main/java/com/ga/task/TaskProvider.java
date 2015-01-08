@@ -1,6 +1,9 @@
 package com.ga.task;
 
 import android.os.Handler;
+import android.util.SparseArray;
+
+import java.util.List;
 
 /**
  * Created by alexeyglushkov on 30.12.14.
@@ -10,8 +13,8 @@ import android.os.Handler;
 // A provider must remove a task from the pool in the takeTopTask method
 
 public interface TaskProvider {
-    Task getTopTask();
-    Task takeTopTask();
+    Task getTopTask(List<Integer> typesToFilter);
+    Task takeTopTask(List<Integer> typesToFilter);
 
     void setTaskPool(TaskPool pool);
     TaskPool getTaskPool();

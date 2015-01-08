@@ -22,6 +22,8 @@ public class Tasks {
         task.addTaskStatusListener(new Task.StatusListener() {
             @Override
             public void onTaskStatusChanged(final Task task, final Task.Status oldStatus, final Task.Status newStatus) {
+                final Task.StatusListener thisListener = this;
+
                 //Waiting status is set in the main thread
                 if (newStatus == Task.Status.Waiting) {
                     Assert.assertEquals(Looper.myLooper(), Looper.getMainLooper());
@@ -31,6 +33,7 @@ public class Tasks {
                 Tools.postOnMainLoop(new Runnable() {
                     @Override
                     public void run() {
+                        task.removeTaskStatusListener(thisListener);
                         listener.setTaskCompleted(task);
                     }
                 });
