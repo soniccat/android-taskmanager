@@ -15,6 +15,7 @@ import java.util.List;
 public class SimpleTaskPool implements TaskPool, Task.StatusListener {
     static final String TAG = "SimpleTaskPool";
 
+    //TODO: think about weakref
     List<TaskPoolListener> listeners;
     Handler handler;
 
@@ -76,7 +77,7 @@ public class SimpleTaskPool implements TaskPool, Task.StatusListener {
         tasks.add(task);
 
         for (TaskPoolListener listener : listeners) {
-            listener.onTaskAdded(task);
+            listener.onTaskAdded(this,task);
         }
     }
 
@@ -95,7 +96,7 @@ public class SimpleTaskPool implements TaskPool, Task.StatusListener {
                     task.removeTaskStatusListener(SimpleTaskPool.this);
 
                     for (TaskPoolListener listener : listeners) {
-                        listener.onTaskRemoved(task);
+                        listener.onTaskRemoved(SimpleTaskPool.this, task);
                     }
                 }
             }

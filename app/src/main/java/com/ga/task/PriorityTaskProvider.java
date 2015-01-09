@@ -21,6 +21,8 @@ import java.util.PriorityQueue;
 public class PriorityTaskProvider implements TaskProvider, TaskPool.TaskPoolListener {
     TaskPool taskPool;
     Handler handler;
+
+    //TODO: think about weakref
     List<TaskProviderListener> listeners;
     Object userData;
 
@@ -113,12 +115,12 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool.TaskPoolList
     }
 
     @Override
-    public void onTaskAdded(Task task) {
+    public void onTaskAdded(TaskPool pool, Task task) {
         addOnThread(task);
     }
 
     @Override
-    public void onTaskRemoved(Task task) {
+    public void onTaskRemoved(TaskPool pool, Task task) {
         removeOnThread(task);
     }
 
@@ -149,7 +151,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool.TaskPoolList
                 addTaskToQueue(task);
 
                 for (TaskProviderListener listener : listeners) {
-                    listener.onTaskAdded(task);
+                    listener.onTaskAdded(PriorityTaskProvider.this,task);
                 }
             }
         });
@@ -161,7 +163,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool.TaskPoolList
             public void run() {
                 if (removeTaskFromQueue(task)) {
                     for (TaskProviderListener listener : listeners) {
-                        listener.onTaskRemoved(task);
+                        listener.onTaskRemoved(PriorityTaskProvider.this,task);
                     }
                 }
             }

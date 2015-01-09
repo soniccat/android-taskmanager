@@ -29,7 +29,7 @@ public interface TaskProvider {
     void removeListener(TaskProviderListener listener);
 
     public interface TaskProviderListener {
-        void onTaskAdded(Task task);
-        void onTaskRemoved(Task task);
+        void onTaskAdded(TaskProvider provider, Task task);
+        void onTaskRemoved(TaskProvider provider, Task task);
     }
 }

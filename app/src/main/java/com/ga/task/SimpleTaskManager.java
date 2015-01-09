@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Created by alexeyglushkov on 20.09.14.
  */
-public class SimpleTaskManager implements TaskManager {
+public class SimpleTaskManager implements TaskManager, TaskProvider.TaskProviderListener, TaskPool.TaskPoolListener {
 
     static final String TAG = "SimpleTaskManager";
 
@@ -46,7 +46,11 @@ public class SimpleTaskManager implements TaskManager {
         callbackHandler = new Handler(Looper.myLooper());
 
         loadingTasks = new SimpleTaskPool(handler);
+        loadingTasks.addListener(this);
+
         waitingTasks = new PriorityTaskProvider(handler, new SimpleTaskPool(handler));
+        waitingTasks.getTaskPool().addListener(this);
+
         taskProviders = new ArrayList<WeakReference<TaskProvider>>();
 
         limits = new SparseArray<Float>();
@@ -75,16 +79,6 @@ public class SimpleTaskManager implements TaskManager {
             @Override
             public void run() {
                 waitingTasks.getTaskPool().addTask(task);
-
-                if (snapshot != null) {
-                    Tools.runOnHandlerThread(callbackHandler, new Runnable() {
-                        @Override
-                        public void run() {
-                            snapshot.updateWaitingTaskInfo(task.getTaskType(), true);
-                        }
-                    });
-                }
-
                 putOnThread(task);
             }
         });
@@ -116,44 +110,75 @@ public class SimpleTaskManager implements TaskManager {
     public void addTaskProvider(TaskProvider provider) {
         Assert.assertEquals(provider.getHandler(),handler);
 
-        provider.addListener(new TaskProvider.TaskProviderListener() {
-            @Override
-            public void onTaskAdded(final Task task) {
-                if (snapshot != null) {
-                    Tools.runOnHandlerThread(callbackHandler, new Runnable() {
-                        @Override
-                        public void run() {
-                            snapshot.updateWaitingTaskInfo(task.getTaskType(), true);
-                        }
-                    });
-                }
-
-                checkTasksToRunOnThread();
-            }
-
-            @Override
-            public void onTaskRemoved(final Task task) {
-                if (snapshot != null) {
-                    Tools.runOnHandlerThread(callbackHandler, new Runnable() {
-                        @Override
-                        public void run() {
-                            snapshot.updateWaitingTaskInfo(task.getTaskType(), false);
-                        }
-                    });
-                }
-
-                cancelTaskOnThread(task, null);
-            }
-        });
-
+        provider.addListener(this);
+        provider.getTaskPool().addListener(this); //for snapshots
         taskProviders.add(new WeakReference<TaskProvider>(provider));
     }
+
+    // == TaskProvider.TaskProviderListener
+    @Override
+    public void onTaskAdded(TaskProvider provider, final Task task) {
+        //run on the next iteration to give ability to handle added event for other listeners before moving the task to the loading queue
+        //otherwise removed event will be sent before added for TaskPool.TaskPoolListener (see functions below)
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                checkTasksToRunOnThread();
+            }
+        });
+    }
+
+    @Override
+    public void onTaskRemoved(TaskProvider provider, final Task task) {
+        cancelTaskOnThread(task, null);
+    }
+
+    // == TaskPool.TaskPoolListener
+    @Override
+    public void onTaskAdded(TaskPool pool, final Task task) {
+        if (snapshot != null) {
+            final boolean isLoadingPool = pool == loadingTasks;
+
+            Tools.runOnHandlerThread(callbackHandler, new Runnable() {
+                @Override
+                public void run() {
+                    if (isLoadingPool) {
+                        snapshot.updateUsedLoadingSpace(task.getTaskType(), true);
+                    } else {
+                        snapshot.updateWaitingTaskInfo(task.getTaskType(), true);
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onTaskRemoved(TaskPool pool, final Task task) {
+        if (snapshot != null) {
+
+            final boolean isLoadingPool = pool == loadingTasks;
+
+            Tools.runOnHandlerThread(callbackHandler, new Runnable() {
+                @Override
+                public void run() {
+                    if (isLoadingPool) {
+                        snapshot.updateUsedLoadingSpace(task.getTaskType(), false);
+                    } else {
+                        snapshot.updateWaitingTaskInfo(task.getTaskType(), false);
+                    }
+                }
+            });
+        }
+    }
+
+    // ==
 
     @Override
     public void removeTaskProvider(TaskProvider provider) {
         int i = 0;
         for (WeakReference<TaskProvider> providerRef : taskProviders) {
             if (providerRef.get() != null) {
+                providerRef.get().removeListener(this);
                 taskProviders.remove(i);
                 break;
             }
@@ -233,7 +258,7 @@ public class SimpleTaskManager implements TaskManager {
 
     @Override
     public TaskManagerSnapshot getSnapshot() {
-        checkHandlerThread();
+        Assert.assertEquals(Thread.currentThread(), callbackHandler);
 
         return snapshot;
     }
@@ -296,16 +321,6 @@ public class SimpleTaskManager implements TaskManager {
                 addLoadingTaskOnThread(task);
                 updateUsedSpace(task.getTaskType(), true);
                 startTaskOnThread(task);
-
-                if (snapshot != null) {
-                    Tools.runOnHandlerThread(callbackHandler, new Runnable() {
-                        @Override
-                        public void run() {
-                            snapshot.updateWaitingTaskInfo(task.getTaskType(), false);
-                            snapshot.updateUsedLoadingSpace(task.getTaskType(), true);
-                        }
-                    });
-                }
             }
         }
     }
@@ -402,21 +417,7 @@ public class SimpleTaskManager implements TaskManager {
         checkHandlerThread();
 
         Task.Status oldStatus = task.getTaskStatus();
-
-        Log.d(TAG,"loading queue size before state change " + this.loadingTasks.getTaskCount());
         task.setTaskStatus(status);
-        Log.d(TAG,"loading queue size after state change " + this.loadingTasks.getTaskCount());
-
-        if (oldStatus == Task.Status.Started) {
-            if (snapshot != null) {
-                Tools.runOnHandlerThread(callbackHandler, new Runnable() {
-                    @Override
-                    public void run() {
-                        snapshot.updateUsedLoadingSpace(task.getTaskType(), false);
-                    }
-                });
-            }
-        }
 
         Tools.runOnHandlerThread(callbackHandler, new Runnable() {
             @Override
@@ -429,7 +430,6 @@ public class SimpleTaskManager implements TaskManager {
         //but we cant't just call checkTasksToRunOnThread due to Task.LoadPolicy.CancelAdded
         //because we want to have new task already in waiting queue but now it isn't
         if (status == Task.Status.Finished) {
-            Log.d(TAG,"loading queue at the end " + this.loadingTasks.getTaskCount());
             checkTasksToRunOnThread();
         }
     }
@@ -570,9 +570,16 @@ public class SimpleTaskManager implements TaskManager {
                 ++waitingTaskCount;
                 ++count;
             } else {
-                Assert.assertTrue(count > 0);
                 --waitingTaskCount;
                 --count;
+
+                if (count < 0) {
+                    count = 0;
+                }
+
+                if (waitingTaskCount < 0) {
+                    waitingTaskCount = 0;
+                }
             }
 
             waitingTaskInfo.put(taskType, count);

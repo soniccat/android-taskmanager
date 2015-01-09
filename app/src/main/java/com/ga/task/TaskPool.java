@@ -26,7 +26,7 @@ public interface TaskPool {
     void removeListener(TaskPoolListener listener);
 
     public interface TaskPoolListener {
-        void onTaskAdded(Task task);
-        void onTaskRemoved(Task task);
+        void onTaskAdded(TaskPool pool, Task task);
+        void onTaskRemoved(TaskPool pool, Task task);
     }
 }
