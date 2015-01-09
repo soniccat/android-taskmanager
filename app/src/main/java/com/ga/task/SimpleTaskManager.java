@@ -373,13 +373,15 @@ public class SimpleTaskManager implements TaskManager {
         final Task.Callback originalCallback = task.getTaskCallback();
         Task.Callback callback = new Task.Callback() {
             @Override
-            public void finished() {
+            public void finished(final boolean cancelled) {
                 Tools.runOnHandlerThread(handler, new Runnable() {
                     @Override
                     public void run() {
                         logTask(task, "Task finished");
                         updateUsedSpace(task.getTaskType(), false);
-                        handleTaskCompletionOnThread(task, originalCallback, Task.Status.Finished);
+
+                        Task.Status newStatus = cancelled ? Task.Status.Cancelled : Task.Status.Finished;
+                        handleTaskCompletionOnThread(task, originalCallback, newStatus);
                     }
                 });
             }
@@ -396,32 +398,36 @@ public class SimpleTaskManager implements TaskManager {
         Assert.assertEquals(Thread.currentThread(), handlerThread);
     }
 
-    public void handleTaskCompletionOnThread(final Task task, final Task.Callback callback, Task.Status status) {
+    public void handleTaskCompletionOnThread(final Task task, final Task.Callback callback, final Task.Status status) {
         checkHandlerThread();
+
+        Task.Status oldStatus = task.getTaskStatus();
 
         Log.d(TAG,"loading queue size before state change " + this.loadingTasks.getTaskCount());
         task.setTaskStatus(status);
         Log.d(TAG,"loading queue size after state change " + this.loadingTasks.getTaskCount());
 
-        if (snapshot != null) {
-            Tools.runOnHandlerThread(callbackHandler, new Runnable() {
-                @Override
-                public void run() {
-                    snapshot.updateUsedLoadingSpace(task.getTaskType(), false);
-                }
-            });
+        if (oldStatus == Task.Status.Started) {
+            if (snapshot != null) {
+                Tools.runOnHandlerThread(callbackHandler, new Runnable() {
+                    @Override
+                    public void run() {
+                        snapshot.updateUsedLoadingSpace(task.getTaskType(), false);
+                    }
+                });
+            }
         }
 
         Tools.runOnHandlerThread(callbackHandler, new Runnable() {
             @Override
             public void run() {
-                callback.finished();
+                callback.finished(status == Task.Status.Cancelled);
             }
         });
 
         //TODO: for the another status like cancelled new task won't be started
         //but we cant't just call checkTasksToRunOnThread due to Task.LoadPolicy.CancelAdded
-        //because we want to have new task already in waiting queue
+        //because we want to have new task already in waiting queue but now it isn't
         if (status == Task.Status.Finished) {
             Log.d(TAG,"loading queue at the end " + this.loadingTasks.getTaskCount());
             checkTasksToRunOnThread();
@@ -437,6 +443,7 @@ public class SimpleTaskManager implements TaskManager {
 
             if (st == Task.Status.Waiting) {
                 waitingTasks.getTaskPool().removeTask(task);
+                handleTaskCompletionOnThread(task, task.getTaskCallback(), Task.Status.Cancelled);
 
                 for (WeakReference<TaskProvider> taskProvider : taskProviders) {
                     if (taskProvider.get() != null) {

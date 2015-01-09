@@ -29,7 +29,7 @@ public class ImageLoader {
 
         httpLoadTask.setTaskCallback(new Task.Callback() {
             @Override
-            public void finished() {
+            public void finished(boolean cancelled) {
                 //ignore a cancelled result
                 if (callback != null && httpLoadTask.getTaskStatus() == Task.Status.Finished) {
                     Bitmap bitmap = null;

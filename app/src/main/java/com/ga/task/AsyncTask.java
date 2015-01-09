@@ -16,6 +16,7 @@ public abstract class AsyncTask extends android.os.AsyncTask<Void, Void, Void> i
     protected Task.Status taskStatus = Task.Status.NotStarted;
     protected Object taskUserData;
     protected boolean needCancelTask;
+    protected boolean isCancelled;
     protected float progress;
     protected float progressMinChange;
     protected Error error;
@@ -227,7 +228,7 @@ public abstract class AsyncTask extends android.os.AsyncTask<Void, Void, Void> i
 
     public void callStartCallback() {
         if (startCallback != null) {
-            startCallback.finished();
+            startCallback.finished(isCancelled);
             startCallback = null;
         }
     }

@@ -121,7 +121,7 @@ public interface Task extends TaskContainer {
         Blocked, //is waiting until all dependencies finish
         Started, //started
         Finished, //successfully loaded
-        Cancelled //has cancelled but still is loading
+        Cancelled //has cancelled but still is loading or cancelled while waiting in a queue
     }
 
     public enum LoadPolicy {
@@ -130,7 +130,7 @@ public interface Task extends TaskContainer {
     }
 
     public interface Callback {
-        void finished();
+        void finished(boolean cancelled);
     }
 
     public interface StatusListener {
