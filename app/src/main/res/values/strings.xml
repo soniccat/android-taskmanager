@@ -15,4 +15,20 @@
     <string name="playground_create_tasks_title">Create</string>
     <string name="playground_change_tasks_title">Change</string>
 
+    <string name="create_task_cell_button_title">Create</string>
+    <string name="create_task_cell_create_new_title">Add task config</string>
+
+    <string name="task_confing_done">Done</string>
+    <string name="task_config_field_name">Name</string>
+    <string name="task_config_field_count">Count</string>
+    <string name="task_config_field_start_id">Start Id</string>
+    <string name="task_config_field_duration">Duration</string>
+    <string name="task_config_field_priority">Priority</string>
+    <string name="task_config_field_load_policy">Load Policy</string>
+
+    <string-array name="task_config_load_policy_values">
+        <item>Skip If Added"</item>
+        <item>Cancel If Added</item>
+    </string-array>
+
 </resources>

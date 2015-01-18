@@ -1,0 +1,12 @@
+<resources>
+    <declare-styleable name="SettingsField">
+        <attr name="text" format="string" />
+        <attr name="default_value" format="string" />
+        <attr name="input_type" format="enum">
+            <enum name="string" value="0"/>
+            <enum name="number" value="1"/>
+            <enum name="values" value="2"/>
+        </attr>
+        <attr name="values" format="reference"/>
+    </declare-styleable>
+</resources>
