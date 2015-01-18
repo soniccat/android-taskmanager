@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
+import com.playground.PlaygroundActivity;
 import com.rssclient.controllers.MainRssActivity;
 import com.rssclient.controllers.R;
 
@@ -41,7 +42,8 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void showPlayground() {
-
+        Intent intent = new Intent(this, PlaygroundActivity.class);
+        startActivity(intent);
     }
 
     @Override
