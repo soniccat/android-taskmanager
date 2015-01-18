@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">RssReader</string>
+    <string name="app_name">Examples</string>
+    <string name="rss_name">RssReader</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="add_feed_menu_title">Add Feed</string>
     <string name="action_delete_feed">Delete Feed</string>
     <string name="title_activity_rss_items">RssItemsActivity</string>
+    <string name="title_activity_main">MainActivity</string>
 
 </resources>

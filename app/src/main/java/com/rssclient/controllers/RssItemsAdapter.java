@@ -1,13 +1,11 @@
-package com.example.rssreader;
+package com.rssclient.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.ga.image.Image;
 import com.ga.image.ImageLoader;
-import com.ga.loader.http.HttpLoadTask;
-import com.ga.rss.RssFeed;
-import com.ga.rss.RssItem;
+import com.rssclient.model.RssItem;
 import com.ga.task.*;
 import com.google.common.collect.Range;
 
@@ -15,7 +13,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;

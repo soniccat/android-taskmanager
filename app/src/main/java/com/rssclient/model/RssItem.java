@@ -1,8 +1,7 @@
-package com.ga.rss;
+package com.rssclient.model;
 
 import java.io.IOException;
 
-import org.w3c.dom.Element;
 import org.xmlpull.v1.XmlSerializer;
 
 import com.ga.image.Image;

@@ -1,6 +1,6 @@
-package com.example.rssreader;
+package com.rssclient.controllers;
 
-import com.ga.rss.RssStorage;
+import com.rssclient.model.RssStorage;
 import com.ga.task.SimpleTaskManager;
 import com.ga.task.TaskManager;
 

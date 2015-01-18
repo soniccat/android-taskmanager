@@ -1,4 +1,4 @@
-package com.ga.rss;
+package com.rssclient.model;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -19,8 +19,6 @@ import android.util.Xml;
 
 import com.ga.image.Image;
 import com.ga.loader.data.DataHandler;
-import com.ga.task.DataFormat;
-import com.ga.loader.http.HttpLoadTask;
 import com.ga.task.Task;
 import com.ga.task.Tasks;
 

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.rssreader"
+    package="com.rssclient.controllers"
     android:versionCode="1"
-    android:versionName="1.0">
+    android:versionName="1.0" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -11,28 +11,44 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <android:uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18" />
+    <android:uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <android:uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18" />
+
     <application
+        android:name=".RssApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:name="com.example.rssreader.RssApplication">
+        android:theme="@style/AppTheme" >
         <activity
-            android:name="com.example.rssreader.MainActivity"
-            android:label="@string/app_name">
+            android:name="com.main.MainActivity"
+            android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name="com.example.rssreader.RssItemsActivity"
-            android:label="@string/title_activity_rss_items"
-            android:parentActivityName="com.example.rssreader.MainActivity">
+            android:name=".MainRssActivity"
+            android:label="@string/rss_name" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.rssreader.MainActivity" />
+                android:value="com.main.MainActivity" />
+        </activity>
+
+        <activity
+            android:name=".RssItemsActivity"
+            android:label="@string/title_activity_rss_items"
+            android:parentActivityName=".MainRssActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.rssclient.controllers.MainRssActivity" />
         </activity>
     </application>
 

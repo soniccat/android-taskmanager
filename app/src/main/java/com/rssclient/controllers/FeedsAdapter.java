@@ -1,11 +1,10 @@
-package com.example.rssreader;
+package com.rssclient.controllers;
 
 import java.util.ArrayList;
 
-import com.example.rssreader.RssItemsAdapter.ViewHolder;
 import com.ga.image.Image;
 import com.ga.image.ImageLoader;
-import com.ga.rss.RssFeed;
+import com.rssclient.model.RssFeed;
 import com.ga.task.Task;
 import com.ga.task.TaskManager;
 

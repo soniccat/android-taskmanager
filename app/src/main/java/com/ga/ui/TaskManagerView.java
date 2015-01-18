@@ -4,11 +4,10 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.SparseArray;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.rssreader.R;
+import com.rssclient.controllers.R;
 import com.ga.task.TaskManager;
 
 import java.util.ArrayList;

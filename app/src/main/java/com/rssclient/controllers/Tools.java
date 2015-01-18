@@ -1,4 +1,4 @@
-package com.example.rssreader;
+package com.rssclient.controllers;
 
 import android.app.AlertDialog;
 import android.content.Context;

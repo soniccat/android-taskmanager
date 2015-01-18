@@ -1,4 +1,4 @@
-package com.example.rssreader;
+package com.rssclient.controllers;
 
 public interface EmptyCompletion {
     void completed();

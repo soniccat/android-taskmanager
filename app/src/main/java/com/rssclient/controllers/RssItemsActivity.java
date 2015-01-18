@@ -1,12 +1,10 @@
-package com.example.rssreader;
+package com.rssclient.controllers;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import com.ga.rss.RssFeed;
-import com.ga.rss.RssStorage;
-import com.ga.rss.RssItem;
+import com.rssclient.model.RssFeed;
+import com.rssclient.model.RssStorage;
+import com.rssclient.model.RssItem;
 import com.ga.task.TaskManager;
 import com.ga.ui.TaskManagerView;
 import com.google.common.collect.Range;
@@ -38,7 +36,7 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
         RssApplication application = (RssApplication) getApplication();
 
         Intent intent = getIntent();
-        feed = (RssFeed) intent.getSerializableExtra(MainActivity.FEED_OBJECT);
+        feed = (RssFeed) intent.getSerializableExtra(MainRssActivity.FEED_OBJECT);
 
         taskManager = application.loader();
         rssStorage = application.rssStorage();

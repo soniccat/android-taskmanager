@@ -2,7 +2,7 @@ package com.ga.task;
 
 import android.os.Looper;
 
-import com.example.rssreader.Tools;
+import com.rssclient.controllers.Tools;
 
 import junit.framework.Assert;
 

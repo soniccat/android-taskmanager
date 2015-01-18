@@ -1,6 +1,6 @@
 package com.ga.task;
 
-import com.example.rssreader.Tools;
+import com.rssclient.controllers.Tools;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

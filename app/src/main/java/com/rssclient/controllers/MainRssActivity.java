@@ -1,4 +1,4 @@
-package com.example.rssreader;
+package com.rssclient.controllers;
 
 import java.io.Serializable;
 import java.net.MalformedURLException;
@@ -6,8 +6,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import com.ga.rss.RssFeed;
-import com.ga.rss.RssStorage;
+import com.rssclient.model.RssFeed;
+import com.rssclient.model.RssStorage;
 import com.ga.task.TaskManager;
 
 import android.support.v7.app.ActionBarActivity;
@@ -28,7 +28,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 @SuppressLint("NewApi")
-public class MainActivity extends ActionBarActivity implements FeedsAdapter.FeedsAdapterListener {
+public class MainRssActivity extends ActionBarActivity implements FeedsAdapter.FeedsAdapterListener {
     public final static String FEED_OBJECT = "com.ga.mainActivity.FEED_OBJECT";
 
     TaskManager loader;
@@ -57,11 +57,11 @@ public class MainActivity extends ActionBarActivity implements FeedsAdapter.Feed
             rssStorage = application.rssStorage();
         }
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main_rss);
 
         final ListView listview = (ListView) findViewById(R.id.listview);
         this.listView = listview;
-        final MainActivity activity = this;
+        final MainRssActivity activity = this;
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -158,7 +158,7 @@ public class MainActivity extends ActionBarActivity implements FeedsAdapter.Feed
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         String[] items = {"Delete", "Cancel"};
-        final MainActivity activity = this;
+        final MainRssActivity activity = this;
 
         builder.setTitle("Choose an action");
         builder.setItems(items, new DialogInterface.OnClickListener() {
@@ -212,7 +212,7 @@ public class MainActivity extends ActionBarActivity implements FeedsAdapter.Feed
 
         } else if (id == R.id.add_feed) {
 
-            final MainActivity activity = this;
+            final MainRssActivity activity = this;
             this.showAlertDialog(new ObjectCompletion<String>() {
 
                 @Override
@@ -267,7 +267,7 @@ public class MainActivity extends ActionBarActivity implements FeedsAdapter.Feed
     void addRssFeed(URL url) {
         RssFeed feed = new RssFeed(url, url.toString());
 
-        final MainActivity activity = this;
+        final MainRssActivity activity = this;
         this.rssStorage.loadFeed(this.loader, this, feed, new RssStorage.RssFeedCallback() {
 
             @Override
@@ -303,7 +303,7 @@ public class MainActivity extends ActionBarActivity implements FeedsAdapter.Feed
     }
 
     void loadRssStorage() {
-        final MainActivity activity = this;
+        final MainRssActivity activity = this;
         rssStorage.load(loader, this, new RssStorage.RssStorageCallback() {
 
             @Override
@@ -322,7 +322,7 @@ public class MainActivity extends ActionBarActivity implements FeedsAdapter.Feed
     }
 
     void saveRssStorage() {
-        final MainActivity activity = this;
+        final MainRssActivity activity = this;
 
         rssStorage.keep(keeper, this, new RssStorage.RssStorageCallback() {
 
