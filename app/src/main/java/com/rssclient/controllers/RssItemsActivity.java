@@ -2,6 +2,7 @@ package com.rssclient.controllers;
 
 import java.util.ArrayList;
 
+import com.main.MainApplication;
 import com.rssclient.model.RssFeed;
 import com.rssclient.model.RssStorage;
 import com.rssclient.model.RssItem;
@@ -33,7 +34,7 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rss_items);
 
-        RssApplication application = (RssApplication) getApplication();
+        MainApplication application = (MainApplication) getApplication();
 
         Intent intent = getIntent();
         feed = (RssFeed) intent.getSerializableExtra(MainRssActivity.FEED_OBJECT);

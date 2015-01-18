@@ -10,25 +10,43 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.ga.task.TaskManager;
+import com.ga.ui.TaskBarView;
+import com.ga.ui.TaskManagerView;
+import com.main.MainApplication;
 import com.rssclient.controllers.R;
 
-public class PlaygroundActivity extends ActionBarActivity {
+public class PlaygroundActivity extends ActionBarActivity implements TaskManager.OnSnapshotChangedListener {
 
     protected CreateTasksFragment createTasksFragment;
     protected ChangeTasksFragment changeTasksFragment;
 
+    TaskManager taskManager;
+    TaskManagerView taskManagerView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        MainApplication application = (MainApplication) getApplication();
+        taskManager = application.loader();
+
         setContentView(R.layout.activity_playground);
 
+        taskManagerView = (TaskManagerView)findViewById(R.id.task_manager_view);
         createTasksFragment = new CreateTasksFragment();
         changeTasksFragment = new ChangeTasksFragment();
 
         ViewPager pager = (ViewPager)findViewById(R.id.view_pager);
         pager.setAdapter(createPagerAdapter());
+
+        taskManager.addSnapshotListener(this);
     }
 
+    @Override
+    public void onSnapshotChanged(TaskManager.TaskManagerSnapshot snapshot) {
+        taskManagerView.showSnapshot(snapshot);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

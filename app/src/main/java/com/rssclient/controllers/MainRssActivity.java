@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import com.main.MainApplication;
 import com.rssclient.model.RssFeed;
 import com.rssclient.model.RssStorage;
 import com.ga.task.TaskManager;
@@ -43,7 +44,7 @@ public class MainRssActivity extends ActionBarActivity implements FeedsAdapter.F
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        RssApplication application = (RssApplication) getApplication();
+        MainApplication application = (MainApplication) getApplication();
 
         if (loader == null) {
             loader = application.loader();
