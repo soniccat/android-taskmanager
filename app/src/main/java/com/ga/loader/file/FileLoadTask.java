@@ -1,28 +1,27 @@
 package com.ga.loader.file;
 
-import java.io.FileInputStream;
+import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-
-import org.apache.http.util.ByteArrayBuffer;
-
 import android.content.Context;
-
-import com.ga.loader.data.DataHandler;
+import com.ga.loader.data.InputStreamHandler;
 import com.ga.task.AsyncTask;
-import com.ga.task.DataFormat;
 
 public class FileLoadTask extends AsyncTask {
-    String fileName;
-    DataHandler dataHandler;
-    Context context;
+    protected String fileName;
+    protected InputStreamHandler handler;
+    protected Context context;
 
-    public FileLoadTask(String fileName, DataHandler dataHandler, Context context) {
+    public FileLoadTask(String fileName, InputStreamHandler dataHandler, Context context) {
         super();
         this.context = context;
         this.fileName = fileName;
-        this.dataHandler = dataHandler;
+        this.handler = dataHandler;
+    }
+
+    public void setHandler(InputStreamHandler handler) {
+        this.handler = handler;
     }
 
     @Override
@@ -32,13 +31,11 @@ public class FileLoadTask extends AsyncTask {
         }
 
         String name = this.fileName;
-        FileInputStream fis = null;
+        InputStream fis = null;
 
         try {
-            fis = this.context.openFileInput(name);
-
-            ByteArrayBuffer data = this.readStream(fis);
-            setTaskError(dataHandler.handleData(data));
+            fis = new BufferedInputStream(this.context.openFileInput(name));
+            setTaskError(handleStream(fis));
 
         } catch (Exception e) {
             setTaskError(new Error("Load exception"));
@@ -58,16 +55,13 @@ public class FileLoadTask extends AsyncTask {
         return null;
     }
 
-    public ByteArrayBuffer readStream(InputStream stream) throws IOException, UnsupportedEncodingException {
-        ByteArrayBuffer buffer = new ByteArrayBuffer(1024);
-        int nRead;
-        byte[] data = new byte[1024];
+    protected Error handleStream(InputStream fis) {
+        return handler.handleStream(fis);
+    }
 
-        while ((nRead = stream.read(data, 0, data.length)) != -1) {
-            buffer.append(data, 0, nRead);
-        }
-
-        return buffer;
+    protected long getFileSize() {
+        File file = new File(context.getFilesDir(), fileName);
+        return file.length();
     }
 
     //old serialization part

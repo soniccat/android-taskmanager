@@ -23,7 +23,6 @@ public class TextFileLoadTask extends AsyncTask {
 
     @Override
     protected Void doInBackground(Void... params) {
-
         String path = this.path;
         File f = new File(path);
         String text = this.readFile(f);

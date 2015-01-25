@@ -1,5 +1,7 @@
 package com.ga.task;
 
+import com.ga.loader.ProgressInfo;
+import com.ga.loader.ProgressUpdater;
 import com.rssclient.controllers.Tools;
 
 import java.lang.ref.WeakReference;
@@ -134,9 +136,7 @@ public abstract class AsyncTask extends android.os.AsyncTask<Void, Void, Void> i
     }
 
     public void setTaskProgress(float value) {
-        float oldValue = progress;
         this.progress = value;
-        triggerProgressListeners(oldValue, this.progress);
     }
 
     @Override
@@ -226,6 +226,16 @@ public abstract class AsyncTask extends android.os.AsyncTask<Void, Void, Void> i
 
     // useful methods
 
+    protected ProgressUpdater createProgressUpdater(float contentSize) {
+        ProgressUpdater updater = new ProgressUpdater(contentSize, progressMinChange, new ProgressUpdater.ProgressUpdaterListener() {
+            @Override
+            public void onProgressUpdated(ProgressUpdater updater) {
+                triggerProgressListeners(updater);
+            }
+        });
+        return updater;
+    }
+
     public void callStartCallback() {
         if (startCallback != null) {
             startCallback.finished(isCancelled);
@@ -255,8 +265,8 @@ public abstract class AsyncTask extends android.os.AsyncTask<Void, Void, Void> i
         }
     }
 
-    public void triggerProgressListeners(final float oldProgress, final float newProgress) {
-        if (progressListeners.size() > 0 && oldProgress != newProgress) {
+    public void triggerProgressListeners(final ProgressInfo progressInfo) {
+        if (progressListeners.size() > 0) {
             Tools.postOnMainLoop(new Runnable() {
                 @Override
                 public void run() {
@@ -264,7 +274,7 @@ public abstract class AsyncTask extends android.os.AsyncTask<Void, Void, Void> i
 
                     for (WeakReference<ProgressListener> l : progressListeners) {
                         if (l.get() != null) {
-                            l.get().onTaskProgressChanged(AsyncTask.this, oldProgress, newProgress);
+                            l.get().onTaskProgressChanged(AsyncTask.this, progressInfo);
                         } else {
                             emptyReferences.add(l);
                         }

@@ -12,7 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 //import android.media.Image;
 
-import com.ga.loader.data.DataHandler;
+import com.ga.loader.data.ByteArrayBufferHandler;
 import com.ga.task.Task;
 import com.ga.task.Tasks;
 
@@ -124,11 +124,11 @@ public class Image implements Serializable, Tasks.TaskListener {
         return connection;
     }
 
-    public DataHandler getDataHandler() {
-        return new DataHandler() {
+    public ByteArrayBufferHandler getDataHandler() {
+        return new ByteArrayBufferHandler() {
             @Override
-            public Error handleData(ByteArrayBuffer data) {
-                return loadData(data);
+            public Error handleByteArrayBuffer(ByteArrayBuffer byteArray) {
+                return loadData(byteArray);
             }
         };
     }

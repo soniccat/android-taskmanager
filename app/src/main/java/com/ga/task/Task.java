@@ -1,5 +1,7 @@
 package com.ga.task;
 
+import com.ga.loader.ProgressInfo;
+
 import java.util.Date;
 
 /**
@@ -138,6 +140,6 @@ public interface Task extends TaskContainer {
     }
 
     public interface ProgressListener {
-        void onTaskProgressChanged(Task task, float oldValue, float newValue);
+        void onTaskProgressChanged(Task task, ProgressInfo progressInfo);
     }
 }

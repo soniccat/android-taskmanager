@@ -13,9 +13,13 @@ import android.os.Parcelable;
 
 import com.ga.keeper.data.DataProvider;
 import com.ga.keeper.file.ObjectKeepTask;
-import com.ga.loader.data.DataHandler;
+import com.ga.loader.data.ByteArrayBufferHandler;
+import com.ga.loader.data.InputStreamHandler;
+import com.ga.loader.data.InputStreamToByteArrayBufferHandler;
+import com.ga.loader.file.FileDataLoadTask;
 import com.ga.loader.file.FileLoadTask;
-import com.ga.loader.http.HttpLoadTask;
+import com.ga.loader.http.HttpDataLoadTask;
+import com.ga.loader.http.HttpLoadTaskBase;
 import com.ga.task.Task;
 import com.ga.task.TaskManager;
 import com.ga.task.Tasks;
@@ -49,7 +53,7 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
 
     public void load(TaskManager taskManager, Context context, final RssStorageCallback callback) {
         final RssStorage storage = this;
-        final FileLoadTask httpLoadTask = new FileLoadTask(getFileName(), getDataHandler(), context);
+        final FileLoadTask httpLoadTask = new FileDataLoadTask(getFileName(), getByteArrayHandler(), context);
         httpLoadTask.setTaskCallback(new Task.Callback() {
             @Override
             public void finished(boolean cancelled) {
@@ -95,7 +99,7 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
 
     public void loadFeed(TaskManager taskManager, Context context, final RssFeed feed, final RssFeedCallback callback) {
 
-        final HttpLoadTask loatTask = new HttpLoadTask(feed.getUrlConnection(), feed.getDataHandler());
+        final HttpLoadTaskBase loatTask = new HttpDataLoadTask(feed.getUrlConnection(), feed.getDataHandler());
         loatTask.setTaskCallback(new Task.Callback() {
             @Override
             public void finished(boolean cancelled) {
@@ -118,11 +122,11 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
         loadStatus = st;
     }
 
-    public DataHandler getDataHandler() {
-        return new DataHandler() {
+    public  ByteArrayBufferHandler getByteArrayHandler() {
+        return new ByteArrayBufferHandler() {
             @Override
-            public Error handleData(ByteArrayBuffer data) {
-                return loadData(data);
+            public Error handleByteArrayBuffer(ByteArrayBuffer byteArray) {
+                return loadData(byteArray);
             }
         };
     }

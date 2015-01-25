@@ -1,11 +1,7 @@
 package com.ga.image;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
-import com.ga.loader.data.DataHandler;
-import com.ga.task.DataFormat;
-
+import com.ga.loader.data.ByteArrayBufferHandler;
 import org.apache.http.util.ByteArrayBuffer;
 
 /**
@@ -18,11 +14,11 @@ public class ImageWithData extends Image {
         return bitmap;
     }
 
-    public DataHandler getDataHandler() {
-        return new DataHandler() {
+    public ByteArrayBufferHandler getDataHandler() {
+        return new ByteArrayBufferHandler() {
             @Override
-            public Error handleData(ByteArrayBuffer data) {
-                return loadData(data);
+            public Error handleByteArrayBuffer(ByteArrayBuffer byteArray) {
+                return loadData(byteArray);
             }
         };
     }

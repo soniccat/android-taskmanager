@@ -8,22 +8,18 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-
 import org.apache.http.util.ByteArrayBuffer;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Xml;
-
 import com.ga.image.Image;
-import com.ga.loader.data.DataHandler;
+import com.ga.loader.data.ByteArrayBufferHandler;
 import com.ga.task.Task;
 import com.ga.task.Tasks;
 
 public class RssFeed implements Parcelable, Serializable, Tasks.TaskListener {
-
     String name;
     URL url;
     Task.Status loadStatus = Task.Status.NotStarted;
@@ -99,11 +95,11 @@ public class RssFeed implements Parcelable, Serializable, Tasks.TaskListener {
         return connection;
     }
 
-    public DataHandler getDataHandler() {
-        return new DataHandler() {
+    public ByteArrayBufferHandler getDataHandler() {
+        return new ByteArrayBufferHandler() {
             @Override
-            public Error handleData(ByteArrayBuffer data) {
-                return loadData(data);
+            public Error handleByteArrayBuffer(ByteArrayBuffer byteArray) {
+                return loadData(byteArray);
             }
         };
     }

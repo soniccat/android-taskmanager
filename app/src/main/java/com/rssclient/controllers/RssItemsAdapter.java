@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.ga.image.Image;
 import com.ga.image.ImageLoader;
+import com.ga.loader.ProgressInfo;
 import com.rssclient.model.RssItem;
 import com.ga.task.*;
 import com.google.common.collect.Range;
@@ -144,7 +145,7 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
         taskProvider.getTaskPool().addTask(task);
     }
 
-    public void onTaskProgressChanged(Task task, float oldValue, float newValue) {
+    public void onTaskProgressChanged(Task task, ProgressInfo info) {
         Assert.assertTrue(task.getTaskUserData() instanceof Pair);
 
         Pair<Integer, Image> taskData = (Pair<Integer, Image>)task.getTaskUserData();
@@ -153,7 +154,7 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
         if (view != null) {
             ViewHolder holder = (ViewHolder) view.getTag();
             if (holder.loadingImage == taskData.second) {
-                holder.progressBar.setProgress((int)(newValue*100.0f));
+                holder.progressBar.setProgress((int)(info.getNormalizedValue()*100.0f));
                 //Log.d("imageprogress","progress " + newValue);
             } else {
                 //Log.d("imageprogress","loadingImage is different");

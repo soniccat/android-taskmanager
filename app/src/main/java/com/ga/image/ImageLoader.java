@@ -2,8 +2,8 @@ package com.ga.image;
 
 import android.graphics.Bitmap;
 
-import com.ga.task.DataFormat;
-import com.ga.loader.http.HttpLoadTask;
+import com.ga.loader.http.HttpDataLoadTask;
+import com.ga.loader.http.HttpLoadTaskBase;
 import com.ga.task.Task;
 import com.ga.task.TaskManager;
 import com.ga.task.Tasks;
@@ -17,7 +17,7 @@ public class ImageLoader {
     }
 
     public static Task loadImage(TaskManager taskManager, final Image image, String destinationId, final ImageLoader.LoadCallback callback) {
-        final HttpLoadTask httpLoadTask = new HttpLoadTask(image.getUrlConnection(), image.getDataHandler());
+        final HttpDataLoadTask httpLoadTask = new HttpDataLoadTask(image.getUrlConnection(), image.getDataHandler());
         httpLoadTask.setLoadPolicy(image.getLoadPolicy());
         httpLoadTask.setContentLength(image.getByteSize());
 
