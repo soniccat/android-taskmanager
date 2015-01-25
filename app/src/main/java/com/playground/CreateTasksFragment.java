@@ -13,6 +13,7 @@ import android.widget.ListView;
 import com.rssclient.controllers.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CreateTasksFragment extends Fragment {
 
@@ -20,6 +21,8 @@ public class CreateTasksFragment extends Fragment {
 
     ListView list;
     TaskConfigAdapter configAdapter;
+
+    CreateTaskFragmentListener listener;
 
     public CreateTasksFragment() {
         // Required empty public constructor
@@ -51,6 +54,14 @@ public class CreateTasksFragment extends Fragment {
         });
     }
 
+    public CreateTaskFragmentListener getListener() {
+        return listener;
+    }
+
+    public void setListener(CreateTaskFragmentListener listener) {
+        this.listener = listener;
+    }
+
     private void showAddConfigFragment() {
         final TaskConfigFragment changeFragment = new TaskConfigFragment();
         changeFragment.setDoneListener(new TaskConfigFragment.TaskConfigFragmentListener() {
@@ -58,8 +69,11 @@ public class CreateTasksFragment extends Fragment {
             public void onDonePressed() {
                 TestTaskConfig config = changeFragment.getConfig();
                 configAdapter.insert(config, configAdapter.getCount()-1);
-
                 getFragmentManager().popBackStack();
+
+                if (getListener() != null) {
+                    getListener().onConfigCreated(config);
+                }
 
             }
         });
@@ -80,5 +94,24 @@ public class CreateTasksFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+    }
+
+    public List<TestTaskConfig> getConfigList() {
+        List<TestTaskConfig> list = new ArrayList<TestTaskConfig>();
+        for (int i=0; i<configAdapter.getCount(); ++i) {
+            list.add((TestTaskConfig)configAdapter.getItem(i));
+        }
+
+        return list;
+    }
+
+    public void setConfigList(List<TestTaskConfig> list) {
+        for (TestTaskConfig config : list) {
+            configAdapter.add(config);
+        }
+    }
+
+    public interface CreateTaskFragmentListener {
+        void onConfigCreated(TestTaskConfig config);
     }
 }

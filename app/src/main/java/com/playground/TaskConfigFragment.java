@@ -23,7 +23,6 @@ public class TaskConfigFragment extends Fragment {
     TaskConfigFragmentListener listener;
 
     public TaskConfigFragment() {
-        // Required empty public constructor
     }
 
     public void setConfig(TestTaskConfig config) {

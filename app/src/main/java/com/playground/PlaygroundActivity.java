@@ -16,6 +16,8 @@ import com.ga.ui.TaskManagerView;
 import com.main.MainApplication;
 import com.rssclient.controllers.R;
 
+import java.util.List;
+
 public class PlaygroundActivity extends ActionBarActivity implements TaskManager.OnSnapshotChangedListener {
 
     protected CreateTasksFragment createTasksFragment;
@@ -35,6 +37,13 @@ public class PlaygroundActivity extends ActionBarActivity implements TaskManager
 
         taskManagerView = (TaskManagerView)findViewById(R.id.task_manager_view);
         createTasksFragment = new CreateTasksFragment();
+        createTasksFragment.setListener(new CreateTasksFragment.CreateTaskFragmentListener() {
+            @Override
+            public void onConfigCreated(TestTaskConfig config) {
+                storeConfigList(createTasksFragment.getConfigList());
+            }
+        });
+
         changeTasksFragment = new ChangeTasksFragment();
 
         ViewPager pager = (ViewPager)findViewById(R.id.view_pager);
@@ -100,5 +109,13 @@ public class PlaygroundActivity extends ActionBarActivity implements TaskManager
                 return "";
             }
         };
+    }
+
+    private void storeConfigList(List<TestTaskConfig> configList) {
+
+    }
+
+    private List<TestTaskConfig>  loadConfigList() {
+        return null;
     }
 }
