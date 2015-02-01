@@ -6,27 +6,32 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import com.ga.loader.ProgressUpdater;
-import com.ga.loader.data.InputStreamHandler;
+
+import com.ga.loader.data.InputStreamReader;
 import com.ga.task.AsyncTask;
 
-public class HttpLoadTaskBase extends AsyncTask {
+// Reader - object which converts a stream to an object of another data type and then delegates it to its handler or just return it if handler is empty
+// Handler - object which converts a stream or other input type to an object of another data type and return it, after that it is stored in handledData
+// Reader is an extended Handler
+
+public class HttpLoadTask extends AsyncTask {
     protected HttpURLConnection connection;
     protected int contentLength;
-    protected InputStreamHandler handler;
+    protected InputStreamReader handler;
+    protected Object handledData;
 
-    public HttpLoadTaskBase(HttpURLConnection connection, InputStreamHandler handler) {
+    public HttpLoadTask(HttpURLConnection connection, InputStreamReader handler) {
         super();
         this.connection = connection;
         this.handler = handler;
         setTaskId(connection.getURL().toString());
     }
 
-    public void setHandler(InputStreamHandler handler) {
+    public void setHandler(InputStreamReader handler) {
         this.handler = handler;
     }
 
-    public InputStreamHandler getHandler() {
+    public InputStreamReader getHandler() {
         return handler;
     }
 
@@ -52,8 +57,15 @@ public class HttpLoadTaskBase extends AsyncTask {
             int response = connection.getResponseCode();
             Log.d("HttpLoadTask","HttpLoadingContext: The response is: " + response + "\n");
 
+            handler.setProgressUpdater(createProgressUpdater(contentLength));
+
             stream = new BufferedInputStream(connection.getInputStream());
-            setTaskError(handleStream(stream));
+            Object data = handleStream(stream);
+            if (data instanceof Error) {
+                setTaskError((Error) data);
+            } else {
+                setHandledData(data);
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -74,7 +86,15 @@ public class HttpLoadTaskBase extends AsyncTask {
         return null;
     }
 
-    protected Error handleStream(InputStream stream) {
-        return handler.handleStream(stream);
+    protected Object handleStream(InputStream stream) {
+        return handler.readStream(stream);
+    }
+
+    public Object getHandledData() {
+        return handledData;
+    }
+
+    public void setHandledData(Object handledData) {
+        this.handledData = handledData;
     }
 }

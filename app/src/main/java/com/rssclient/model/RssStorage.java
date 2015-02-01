@@ -11,15 +11,13 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.ga.keeper.data.DataProvider;
-import com.ga.keeper.file.ObjectKeepTask;
-import com.ga.loader.data.ByteArrayBufferHandler;
-import com.ga.loader.data.InputStreamHandler;
-import com.ga.loader.data.InputStreamToByteArrayBufferHandler;
-import com.ga.loader.file.FileDataLoadTask;
+import com.ga.keeper.file.ByteArrayProvider;
+import com.ga.keeper.file.ByteArrayWriter;
+import com.ga.keeper.file.FileKeepTask;
+import com.ga.loader.data.ByteArrayHandler;
+import com.ga.loader.data.ByteArrayReader;
 import com.ga.loader.file.FileLoadTask;
-import com.ga.loader.http.HttpDataLoadTask;
-import com.ga.loader.http.HttpLoadTaskBase;
+import com.ga.loader.http.HttpLoadTask;
 import com.ga.task.Task;
 import com.ga.task.TaskManager;
 import com.ga.task.Tasks;
@@ -53,7 +51,7 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
 
     public void load(TaskManager taskManager, Context context, final RssStorageCallback callback) {
         final RssStorage storage = this;
-        final FileLoadTask httpLoadTask = new FileDataLoadTask(getFileName(), getByteArrayHandler(), context);
+        final FileLoadTask httpLoadTask = new FileLoadTask(getFileName(), new ByteArrayReader(getByteArrayHandler()), context);
         httpLoadTask.setTaskCallback(new Task.Callback() {
             @Override
             public void finished(boolean cancelled) {
@@ -68,7 +66,13 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
 
     public void keep(TaskManager taskManager, Context context, final RssStorageCallback callback) {
         final RssStorage storage = this;
-        final ObjectKeepTask keepTask = new ObjectKeepTask(getFileName(), getDataProvider(), context);
+        final FileKeepTask keepTask = new FileKeepTask(getFileName(), new ByteArrayWriter(new ByteArrayProvider() {
+            @Override
+            public ByteArrayBuffer getByteArray() {
+                return RssStorage.this.getData();
+            }
+        }), context);
+
         keepTask.setTaskCallback(new Task.Callback() {
             @Override
             public void finished(boolean cancelled) {
@@ -99,7 +103,7 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
 
     public void loadFeed(TaskManager taskManager, Context context, final RssFeed feed, final RssFeedCallback callback) {
 
-        final HttpLoadTaskBase loatTask = new HttpDataLoadTask(feed.getUrlConnection(), feed.getDataHandler());
+        final HttpLoadTask loatTask = new HttpLoadTask(feed.getUrlConnection(), new ByteArrayReader(feed.getDataHandler()));
         loatTask.setTaskCallback(new Task.Callback() {
             @Override
             public void finished(boolean cancelled) {
@@ -122,8 +126,8 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
         loadStatus = st;
     }
 
-    public  ByteArrayBufferHandler getByteArrayHandler() {
-        return new ByteArrayBufferHandler() {
+    public ByteArrayHandler getByteArrayHandler() {
+        return new ByteArrayHandler() {
             @Override
             public Error handleByteArrayBuffer(ByteArrayBuffer byteArray) {
                 return loadData(byteArray);
@@ -153,17 +157,6 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
             setLoadStatus(Task.Status.Finished);
             processingTask = null;
         }
-    }
-
-    // TextFileKeepable
-
-    public DataProvider getDataProvider() {
-        return new DataProvider() {
-            @Override
-            public ByteArrayBuffer getData() {
-                return RssStorage.this.getData();
-            }
-        };
     }
 
     private ByteArrayBuffer getData() {

@@ -1,6 +1,7 @@
 package com.ga.task;
 
 import android.os.Looper;
+import android.util.Log;
 
 import com.rssclient.controllers.Tools;
 
@@ -24,18 +25,20 @@ public class Tasks {
             public void onTaskStatusChanged(final Task task, final Task.Status oldStatus, final Task.Status newStatus) {
                 final Task.StatusListener thisListener = this;
 
+                Log.d("Image--", "start " + task + " " + task.getTaskStatus());
+
                 //Waiting status is set in the main thread
                 if (newStatus == Task.Status.Waiting) {
                     Assert.assertEquals(Looper.myLooper(), Looper.getMainLooper());
                     listener.setTaskInProgress(task);
 
                 } else if (newStatus == Task.Status.Finished || newStatus == Task.Status.Cancelled)
-                Tools.postOnMainLoop(new Runnable() {
-                    @Override
-                    public void run() {
-                        task.removeTaskStatusListener(thisListener);
-                        listener.setTaskCompleted(task);
-                    }
+                    Tools.postOnMainLoop(new Runnable() {
+                        @Override
+                        public void run() {
+                            task.removeTaskStatusListener(thisListener);
+                            listener.setTaskCompleted(task);
+                        }
                 });
             }
         });

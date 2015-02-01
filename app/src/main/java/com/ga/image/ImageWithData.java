@@ -1,7 +1,8 @@
 package com.ga.image;
 
 import android.graphics.Bitmap;
-import com.ga.loader.data.ByteArrayBufferHandler;
+import com.ga.loader.data.ByteArrayHandler;
+
 import org.apache.http.util.ByteArrayBuffer;
 
 /**
@@ -14,17 +15,7 @@ public class ImageWithData extends Image {
         return bitmap;
     }
 
-    public ByteArrayBufferHandler getDataHandler() {
-        return new ByteArrayBufferHandler() {
-            @Override
-            public Error handleByteArrayBuffer(ByteArrayBuffer byteArray) {
-                return loadData(byteArray);
-            }
-        };
-    }
-
-    private Error loadData(ByteArrayBuffer data) {
-        bitmap = Image.bitmapFromByteArray(data);
-        return null;
+    public void setBitmap(Bitmap bitmap) {
+        this.bitmap = bitmap;
     }
 }

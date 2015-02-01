@@ -15,7 +15,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Xml;
 import com.ga.image.Image;
-import com.ga.loader.data.ByteArrayBufferHandler;
+import com.ga.loader.data.ByteArrayHandler;
 import com.ga.task.Task;
 import com.ga.task.Tasks;
 
@@ -95,8 +95,8 @@ public class RssFeed implements Parcelable, Serializable, Tasks.TaskListener {
         return connection;
     }
 
-    public ByteArrayBufferHandler getDataHandler() {
-        return new ByteArrayBufferHandler() {
+    public ByteArrayHandler getDataHandler() {
+        return new ByteArrayHandler() {
             @Override
             public Error handleByteArrayBuffer(ByteArrayBuffer byteArray) {
                 return loadData(byteArray);

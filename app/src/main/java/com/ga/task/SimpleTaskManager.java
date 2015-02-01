@@ -415,8 +415,6 @@ public class SimpleTaskManager implements TaskManager, TaskProvider.TaskProvider
 
     public void handleTaskCompletionOnThread(final Task task, final Task.Callback callback, final Task.Status status) {
         checkHandlerThread();
-
-        Task.Status oldStatus = task.getTaskStatus();
         task.setTaskStatus(status);
 
         Tools.runOnHandlerThread(callbackHandler, new Runnable() {

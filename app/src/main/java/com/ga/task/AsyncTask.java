@@ -11,6 +11,8 @@ import java.util.Date;
 /**
  * Created by alexeyglushkov on 20.09.14.
  */
+
+//TODO: detach from AcyncTask to a separate TaskLauncher class/interface
 public abstract class AsyncTask extends android.os.AsyncTask<Void, Void, Void> implements Task {
 
     protected Task.Callback startCallback;

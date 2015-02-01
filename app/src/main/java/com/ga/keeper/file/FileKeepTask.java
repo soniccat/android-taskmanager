@@ -1,25 +1,24 @@
 package com.ga.keeper.file;
 
+import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
-import java.util.Date;
-
-import org.apache.http.util.ByteArrayBuffer;
 
 import android.content.Context;
 
-import com.ga.keeper.data.DataProvider;
 import com.ga.task.AsyncTask;
 
-public class ObjectKeepTask extends AsyncTask {
+public class FileKeepTask extends AsyncTask {
     Context context;
-    String fileName;
-    DataProvider dataProvider;
 
-    public ObjectKeepTask(String fileName, DataProvider dataProvider, Context context) {
+    //TODO: think about path
+    String fileName;
+    OutputStreamWriter writer;
+
+    public FileKeepTask(String fileName, OutputStreamWriter writer, Context context) {
         super();
         this.context = context;
         this.fileName = fileName;
-        this.dataProvider = dataProvider;
+        this.writer = writer;
     }
 
     @Override
@@ -34,22 +33,19 @@ public class ObjectKeepTask extends AsyncTask {
 
         try {
             fos = this.context.openFileOutput(name, Context.MODE_PRIVATE);
-
-            ByteArrayBuffer data = dataProvider.getData();
-            fos.write(data.toByteArray());
+            BufferedOutputStream bufferedStream = new BufferedOutputStream(fos);
+            setTaskError(writer.writeToStream(bufferedStream));
 
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
 
-            setTaskError(new Error("Keep exception"));
+            setTaskError(new Error("Keep exception " + e.getMessage()));
         } finally {
             try {
                 if (fos != null) {
                     fos.close();
                 }
             } catch (Exception e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -57,14 +53,4 @@ public class ObjectKeepTask extends AsyncTask {
         handleTaskCompletion();
         return null;
     }
-
-	/* old stuff
-	 * ObjectOutputStream os = null;
-	 * os = new ObjectOutputStream(fos);
-			os.writeObject(this.keepable);
-			if (os != null) {
-					os.close(); 
-				}
-	 * 
-	 */
 }

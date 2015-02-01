@@ -32,10 +32,7 @@ import android.widget.ListView;
 public class MainRssActivity extends ActionBarActivity implements FeedsAdapter.FeedsAdapterListener {
     public final static String FEED_OBJECT = "com.ga.mainActivity.FEED_OBJECT";
 
-    TaskManager loader;
-
-    //TODO: delete it
-    TaskManager keeper;
+    TaskManager taskManager;
     RssStorage rssStorage;
 
     ListView listView;
@@ -46,16 +43,12 @@ public class MainRssActivity extends ActionBarActivity implements FeedsAdapter.F
 
         MainApplication application = (MainApplication) getApplication();
 
-        if (loader == null) {
-            loader = application.loader();
-        }
-
-        if (keeper == null) {
-            keeper = application.keeper();
+        if (taskManager == null) {
+            taskManager = application.getTaskManager();
         }
 
         if (rssStorage == null) {
-            rssStorage = application.rssStorage();
+            rssStorage = application.getRssStorage();
         }
 
         setContentView(R.layout.activity_main_rss);
@@ -177,7 +170,7 @@ public class MainRssActivity extends ActionBarActivity implements FeedsAdapter.F
 
     void loadFeedAtPos(int pos) {
         RssFeed feed = this.rssStorage.feeds().get(pos);
-        this.rssStorage.loadFeed(this.loader, this, feed, new RssStorage.RssFeedCallback() {
+        this.rssStorage.loadFeed(this.taskManager, this, feed, new RssStorage.RssFeedCallback() {
 
             @Override
             public void completed(RssFeed feed, Error error) {
@@ -190,7 +183,7 @@ public class MainRssActivity extends ActionBarActivity implements FeedsAdapter.F
         final ListView listview = (ListView) findViewById(R.id.listview);
         final ArrayList<RssFeed> feeds = new ArrayList<RssFeed>(this.rssStorage.feeds());
 
-        final FeedsAdapter adapter = new FeedsAdapter(this, feeds, this.loader);
+        final FeedsAdapter adapter = new FeedsAdapter(this, feeds, this.taskManager);
         adapter.setListener(this);
         listview.setAdapter(adapter);
     }
@@ -269,7 +262,7 @@ public class MainRssActivity extends ActionBarActivity implements FeedsAdapter.F
         RssFeed feed = new RssFeed(url, url.toString());
 
         final MainRssActivity activity = this;
-        this.rssStorage.loadFeed(this.loader, this, feed, new RssStorage.RssFeedCallback() {
+        this.rssStorage.loadFeed(this.taskManager, this, feed, new RssStorage.RssFeedCallback() {
 
             @Override
             public void completed(final RssFeed feed, final Error error) {
@@ -305,7 +298,7 @@ public class MainRssActivity extends ActionBarActivity implements FeedsAdapter.F
 
     void loadRssStorage() {
         final MainRssActivity activity = this;
-        rssStorage.load(loader, this, new RssStorage.RssStorageCallback() {
+        rssStorage.load(taskManager, this, new RssStorage.RssStorageCallback() {
 
             @Override
             public void completed(final RssStorage storage, final Error error) {
@@ -325,8 +318,7 @@ public class MainRssActivity extends ActionBarActivity implements FeedsAdapter.F
     void saveRssStorage() {
         final MainRssActivity activity = this;
 
-        rssStorage.keep(keeper, this, new RssStorage.RssStorageCallback() {
-
+        rssStorage.keep(taskManager, this, new RssStorage.RssStorageCallback() {
             @Override
             public void completed(final RssStorage storage, final Error error) {
                 if (error != null) {

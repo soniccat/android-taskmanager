@@ -10,9 +10,10 @@ import org.apache.http.util.ByteArrayBuffer;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 //import android.media.Image;
 
-import com.ga.loader.data.ByteArrayBufferHandler;
+import com.ga.loader.data.ByteArrayHandler;
 import com.ga.task.Task;
 import com.ga.task.Tasks;
 
@@ -24,10 +25,13 @@ public class Image implements Serializable, Tasks.TaskListener {
     protected int byteSize;
     protected Task.Status loadStatus;
     protected Task.LoadPolicy loadPolicy = Task.LoadPolicy.SkipIfAdded;
+
+    //TODO: make weak ref
     protected Task processingTask;
 
     @Override
     public void setTaskInProgress(Task task) {
+        Log.d("Image--", "start " + task);
         processingTask = task;
         loadStatus = Task.Status.Started;
     }
@@ -38,6 +42,8 @@ public class Image implements Serializable, Tasks.TaskListener {
             loadStatus = Task.Status.Finished;
             processingTask = null;
         }
+
+        Log.d("Image--", "completed " + task);
     }
 
     public void setUrl(URL url) {
@@ -122,20 +128,6 @@ public class Image implements Serializable, Tasks.TaskListener {
         }
 
         return connection;
-    }
-
-    public ByteArrayBufferHandler getDataHandler() {
-        return new ByteArrayBufferHandler() {
-            @Override
-            public Error handleByteArrayBuffer(ByteArrayBuffer byteArray) {
-                return loadData(byteArray);
-            }
-        };
-    }
-
-    private Error loadData(ByteArrayBuffer data) {
-        //suppose that data will be handled later
-        return null;
     }
 
     public static Bitmap bitmapFromByteArray(ByteArrayBuffer data) {

@@ -6,37 +6,45 @@ import org.apache.http.util.ByteArrayBuffer;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 
 /**
  * Created by alexeyglushkov on 25.01.15.
  */
-public class InputStreamToByteArrayBufferHandler implements InputStreamHandler {
+public class ByteArrayReader implements InputStreamReader {
 
-    ByteArrayBufferHandler byteArrayBufferHandler;
+    //TODO: think about cancellation
+    ByteArrayHandler byteArrayHandler;
     ProgressUpdater progressUpdater;
 
-    public InputStreamToByteArrayBufferHandler(ByteArrayBufferHandler handler) {
-        byteArrayBufferHandler = handler;
+    public ByteArrayReader(ByteArrayHandler handler) {
+        byteArrayHandler = handler;
     }
 
-    public InputStreamToByteArrayBufferHandler(ByteArrayBufferHandler handler, ProgressUpdater progressUpdater) {
-        byteArrayBufferHandler = handler;
+    public ByteArrayReader(ByteArrayHandler handler, ProgressUpdater progressUpdater) {
+        byteArrayHandler = handler;
         this.progressUpdater = progressUpdater;
     }
 
     @Override
-    public Error handleStream(InputStream stream) {
+    public Object readStream(InputStream stream) {
         try {
-            ByteArrayBuffer byteArray = this.readStream(stream);
-            return byteArrayBufferHandler.handleByteArrayBuffer(byteArray);
+            ByteArrayBuffer byteArray = this.readStreamToByteArray(stream);
+            Object result = null;
+            if (byteArrayHandler != null) {
+                result = byteArrayHandler.handleByteArrayBuffer(byteArray);
+            } else {
+                result = byteArray;
+            }
+
+            return result;
 
         } catch (Exception e) {
-            return new Error("handleStream exception: " + e.getMessage());
+            e.printStackTrace();
+            return new Error("InputStreamToByteArrayBufferHandler exception: " + e.getMessage());
         }
     }
 
-    public ByteArrayBuffer readStream(InputStream stream) throws IOException {
+    public ByteArrayBuffer readStreamToByteArray(InputStream stream) throws IOException {
         ByteArrayBuffer buffer = new ByteArrayBuffer(1024);
         int nRead;
         byte[] data = new byte[1024];

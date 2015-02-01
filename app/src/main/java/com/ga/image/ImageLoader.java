@@ -2,8 +2,9 @@ package com.ga.image;
 
 import android.graphics.Bitmap;
 
-import com.ga.loader.http.HttpDataLoadTask;
-import com.ga.loader.http.HttpLoadTaskBase;
+import com.ga.loader.data.BitmapReader;
+import com.ga.loader.data.ByteArrayReader;
+import com.ga.loader.http.HttpLoadTask;
 import com.ga.task.Task;
 import com.ga.task.TaskManager;
 import com.ga.task.Tasks;
@@ -17,7 +18,8 @@ public class ImageLoader {
     }
 
     public static Task loadImage(TaskManager taskManager, final Image image, String destinationId, final ImageLoader.LoadCallback callback) {
-        final HttpDataLoadTask httpLoadTask = new HttpDataLoadTask(image.getUrlConnection(), image.getDataHandler());
+        final HttpLoadTask httpLoadTask = new HttpLoadTask(image.getUrlConnection(), new ByteArrayReader(new BitmapReader(null)));
+
         httpLoadTask.setLoadPolicy(image.getLoadPolicy());
         httpLoadTask.setContentLength(image.getByteSize());
 
@@ -33,8 +35,13 @@ public class ImageLoader {
                 //ignore a cancelled result
                 if (callback != null && httpLoadTask.getTaskStatus() == Task.Status.Finished) {
                     Bitmap bitmap = null;
-                    if (httpLoadTask.getData() != null) {
-                        bitmap = Image.bitmapFromByteArray(httpLoadTask.getData());
+                    if (httpLoadTask.getHandledData() != null) {
+                        bitmap = (Bitmap)httpLoadTask.getHandledData();
+                    }
+
+                    if (image instanceof ImageWithData) {
+                        ImageWithData imageWithData = (ImageWithData)image;
+                        imageWithData.setBitmap(bitmap);
                     }
 
                     callback.completed(httpLoadTask, image, bitmap, httpLoadTask.getTaskError());

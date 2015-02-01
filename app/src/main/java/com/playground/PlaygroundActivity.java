@@ -8,10 +8,14 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
+import com.ga.keeper.file.FileKeepTask;
+import com.ga.keeper.file.ObjectWriter;
+import com.ga.loader.data.ObjectHandler;
+import com.ga.loader.data.ObjectReader;
+import com.ga.loader.file.FileLoadTask;
+import com.ga.task.Task;
 import com.ga.task.TaskManager;
-import com.ga.ui.TaskBarView;
 import com.ga.ui.TaskManagerView;
 import com.main.MainApplication;
 import com.rssclient.controllers.R;
@@ -19,6 +23,8 @@ import com.rssclient.controllers.R;
 import java.util.List;
 
 public class PlaygroundActivity extends ActionBarActivity implements TaskManager.OnSnapshotChangedListener {
+
+    final String CONFIGS_FILE_NAME = "TextTaskConfig";
 
     protected CreateTasksFragment createTasksFragment;
     protected ChangeTasksFragment changeTasksFragment;
@@ -31,7 +37,7 @@ public class PlaygroundActivity extends ActionBarActivity implements TaskManager
         super.onCreate(savedInstanceState);
 
         MainApplication application = (MainApplication) getApplication();
-        taskManager = application.loader();
+        taskManager = application.getTaskManager();
 
         setContentView(R.layout.activity_playground);
 
@@ -112,10 +118,28 @@ public class PlaygroundActivity extends ActionBarActivity implements TaskManager
     }
 
     private void storeConfigList(List<TestTaskConfig> configList) {
-
+        taskManager.put(new FileKeepTask(CONFIGS_FILE_NAME, new ObjectWriter(configList), this));
     }
 
-    private List<TestTaskConfig>  loadConfigList() {
-        return null;
+    private void loadConfigList(LoadTaskConfigCallback callback) {
+        FileLoadTask fileLoadTask = new FileLoadTask(CONFIGS_FILE_NAME, new ObjectReader(new ObjectHandler() {
+            @Override
+            public Error handleObject(Object obj) {
+                return null;
+            }
+        }), this);
+
+        fileLoadTask.setTaskCallback(new Task.Callback() {
+            @Override
+            public void finished(boolean cancelled) {
+
+            }
+        });
+
+        taskManager.put(fileLoadTask);
+    }
+
+    public interface LoadTaskConfigCallback {
+        void completed(List<TestTaskConfig> configs, Error error);
     }
 }

@@ -99,7 +99,10 @@ public class CreateTasksFragment extends Fragment {
     public List<TestTaskConfig> getConfigList() {
         List<TestTaskConfig> list = new ArrayList<TestTaskConfig>();
         for (int i=0; i<configAdapter.getCount(); ++i) {
-            list.add((TestTaskConfig)configAdapter.getItem(i));
+            Object obj = configAdapter.getItem(i);
+            if (obj instanceof TestTaskConfig) {
+                list.add((TestTaskConfig) configAdapter.getItem(i));
+            }
         }
 
         return list;

@@ -39,8 +39,8 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
         Intent intent = getIntent();
         feed = (RssFeed) intent.getSerializableExtra(MainRssActivity.FEED_OBJECT);
 
-        taskManager = application.loader();
-        rssStorage = application.rssStorage();
+        taskManager = application.getTaskManager();
+        rssStorage = application.getRssStorage();
         
         taskManagerView = (TaskManagerView) findViewById(R.id.task_manager_view);
         taskManager.startSnapshotRecording();

@@ -5,22 +5,23 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import android.content.Context;
-import com.ga.loader.data.InputStreamHandler;
+import com.ga.loader.data.InputStreamReader;
 import com.ga.task.AsyncTask;
 
 public class FileLoadTask extends AsyncTask {
     protected String fileName;
-    protected InputStreamHandler handler;
+    protected InputStreamReader handler;
     protected Context context;
+    protected Object handledData;
 
-    public FileLoadTask(String fileName, InputStreamHandler dataHandler, Context context) {
+    public FileLoadTask(String fileName, InputStreamReader dataHandler, Context context) {
         super();
         this.context = context;
         this.fileName = fileName;
         this.handler = dataHandler;
     }
 
-    public void setHandler(InputStreamHandler handler) {
+    public void setHandler(InputStreamReader handler) {
         this.handler = handler;
     }
 
@@ -34,8 +35,15 @@ public class FileLoadTask extends AsyncTask {
         InputStream fis = null;
 
         try {
+            handler.setProgressUpdater(createProgressUpdater(getFileSize()));
+
             fis = new BufferedInputStream(this.context.openFileInput(name));
-            setTaskError(handleStream(fis));
+            Object data = handleStream(fis);
+            if (data instanceof Error) {
+                setTaskError((Error)data);
+            } else {
+                setHandledData(data);
+            }
 
         } catch (Exception e) {
             setTaskError(new Error("Load exception"));
@@ -55,38 +63,20 @@ public class FileLoadTask extends AsyncTask {
         return null;
     }
 
-    protected Error handleStream(InputStream fis) {
-        return handler.handleStream(fis);
+    public Object getHandledData() {
+        return handledData;
+    }
+
+    public void setHandledData(Object handledData) {
+        this.handledData = handledData;
+    }
+
+    protected Object handleStream(InputStream fis) {
+        return handler.readStream(fis);
     }
 
     protected long getFileSize() {
         File file = new File(context.getFilesDir(), fileName);
         return file.length();
     }
-
-    //old serialization part
-    /*
-	Object readObject(FileInputStream fis) {
-		Object obj = null;
-		ObjectInputStream is = null;
-		
-		try {
-			is = new ObjectInputStream(fis);
-			obj =  is.readObject();
-			
-		} catch (Exception ex) {
-			this.error = new Error("Load exception");
-			
-		} finally {
-			try {
-				is.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		return obj;
-	}
-	*/
 }
