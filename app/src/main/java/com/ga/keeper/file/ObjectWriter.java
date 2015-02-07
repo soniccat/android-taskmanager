@@ -16,13 +16,22 @@ public class ObjectWriter implements OutputStreamWriter {
 
     @Override
     public Error writeToStream(OutputStream stream) {
+
+        ObjectOutputStream objectOutputStream = null;
         try {
-            ObjectOutputStream os = new ObjectOutputStream(stream);
-			os.writeObject(object);
+            objectOutputStream = new ObjectOutputStream(stream);
+            objectOutputStream.writeObject(object);
 
         } catch (IOException e) {
             e.printStackTrace();
             return new Error("ObjectWriter exception: " + e.getMessage());
+
+        } finally {
+            try {
+                objectOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         return null;

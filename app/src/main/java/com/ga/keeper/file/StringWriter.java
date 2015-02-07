@@ -18,13 +18,22 @@ public class StringWriter implements OutputStreamWriter {
 
     @Override
     public Error writeToStream(OutputStream stream) {
+
+        java.io.OutputStreamWriter writer = null;
         try {
-            java.io.OutputStreamWriter writer = new java.io.OutputStreamWriter(stream);
+            writer = new java.io.OutputStreamWriter(stream);
             writer.write(string);
 
         } catch (IOException e) {
             e.printStackTrace();
             return new Error("StringWriter exception: " + e.getMessage());
+
+        } finally {
+            try {
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         return null;

@@ -420,7 +420,9 @@ public class SimpleTaskManager implements TaskManager, TaskProvider.TaskProvider
         Tools.runOnHandlerThread(callbackHandler, new Runnable() {
             @Override
             public void run() {
-                callback.finished(status == Task.Status.Cancelled);
+                if (callback != null) {
+                    callback.finished(status == Task.Status.Cancelled);
+                }
             }
         });
 

@@ -20,6 +20,7 @@ import com.ga.ui.TaskManagerView;
 import com.main.MainApplication;
 import com.rssclient.controllers.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PlaygroundActivity extends ActionBarActivity implements TaskManager.OnSnapshotChangedListener {
@@ -56,6 +57,14 @@ public class PlaygroundActivity extends ActionBarActivity implements TaskManager
         pager.setAdapter(createPagerAdapter());
 
         taskManager.addSnapshotListener(this);
+        loadConfigList(new LoadTaskConfigCallback() {
+            @Override
+            public void completed(List<TestTaskConfig> configs, Error error) {
+                if (configs != null) {
+                    createTasksFragment.setConfigList(configs);
+                }
+            }
+        });
     }
 
     @Override
@@ -118,21 +127,23 @@ public class PlaygroundActivity extends ActionBarActivity implements TaskManager
     }
 
     private void storeConfigList(List<TestTaskConfig> configList) {
-        taskManager.put(new FileKeepTask(CONFIGS_FILE_NAME, new ObjectWriter(configList), this));
+        List<TestTaskConfig> listCopy = new ArrayList<TestTaskConfig>(configList);
+        taskManager.put(new FileKeepTask(CONFIGS_FILE_NAME, new ObjectWriter(listCopy), this));
     }
 
-    private void loadConfigList(LoadTaskConfigCallback callback) {
-        FileLoadTask fileLoadTask = new FileLoadTask(CONFIGS_FILE_NAME, new ObjectReader(new ObjectHandler() {
-            @Override
-            public Error handleObject(Object obj) {
-                return null;
-            }
-        }), this);
-
+    private void loadConfigList(final LoadTaskConfigCallback callback) {
+        final FileLoadTask fileLoadTask = new FileLoadTask(CONFIGS_FILE_NAME, new ObjectReader(null), this);
         fileLoadTask.setTaskCallback(new Task.Callback() {
             @Override
             public void finished(boolean cancelled) {
+                List<TestTaskConfig> configs = null;
+                if (fileLoadTask.getHandledData() != null) {
+                    configs = (List<TestTaskConfig>)fileLoadTask.getHandledData();
+                }
 
+                if (callback != null) {
+                    callback.completed(configs, fileLoadTask.getTaskError());
+                }
             }
         });
 

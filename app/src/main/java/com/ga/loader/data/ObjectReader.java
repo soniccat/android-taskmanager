@@ -22,21 +22,34 @@ public class ObjectReader implements InputStreamReader {
     public Object readStream(InputStream stream) {
         try {
             Object object = this.readStreamToObject(stream);
-            return objectHandler.handleObject(object);
+            Object result;
+            if (objectHandler != null) {
+                result = objectHandler.handleObject(object);
+            } else {
+                result = object;
+            }
+
+            return result;
 
         } catch (Exception e) {
             e.printStackTrace();
-            return new Error("InputStreamToByteArrayBufferHandler:readStream exception: " + e.getMessage());
+            return new Error("ObjectReader:readStream exception: " + e.getMessage());
         }
     }
 
-    public Object readStreamToObject(InputStream stream) throws IOException {
+    public Object readStreamToObject(InputStream stream) throws Exception {
         Object result = null;
+        ObjectInputStream objectStream = null;
         try {
-            ObjectInputStream is = new ObjectInputStream(stream);
-            result = is.readObject();
-        } catch (Exception e) {
-            e.printStackTrace();
+            objectStream = new ObjectInputStream(stream);
+            result = objectStream.readObject();
+
+        } finally {
+            try {
+                objectStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         return result;

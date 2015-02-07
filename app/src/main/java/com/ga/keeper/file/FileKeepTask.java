@@ -23,7 +23,6 @@ public class FileKeepTask extends AsyncTask {
 
     @Override
     protected Void doInBackground(Void... params) {
-
         if (context == null) {
             return null;
         }
@@ -31,19 +30,21 @@ public class FileKeepTask extends AsyncTask {
         String name = this.fileName;
         FileOutputStream fos = null;
 
+        BufferedOutputStream bufferedStream = null;
+
         try {
             fos = this.context.openFileOutput(name, Context.MODE_PRIVATE);
-            BufferedOutputStream bufferedStream = new BufferedOutputStream(fos);
+            bufferedStream = new BufferedOutputStream(fos);
             setTaskError(writer.writeToStream(bufferedStream));
 
         } catch (Exception e) {
             e.printStackTrace();
+            setTaskError(new Error("FileKeepTask exception: " + e.getMessage()));
 
-            setTaskError(new Error("Keep exception " + e.getMessage()));
         } finally {
             try {
-                if (fos != null) {
-                    fos.close();
+                if (bufferedStream != null) {
+                    bufferedStream.close();
                 }
             } catch (Exception e) {
                 e.printStackTrace();

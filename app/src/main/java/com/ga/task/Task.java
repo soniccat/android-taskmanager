@@ -132,6 +132,7 @@ public interface Task extends TaskContainer {
     }
 
     public interface Callback {
+        //Here I put the cancelled as the argument to emphasise that it must be handled (also it can be got from status)
         void finished(boolean cancelled);
     }
 

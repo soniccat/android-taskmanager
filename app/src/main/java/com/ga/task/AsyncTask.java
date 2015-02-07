@@ -30,19 +30,21 @@ public abstract class AsyncTask extends android.os.AsyncTask<Void, Void, Void> i
     protected int type;
     protected Date startDate;
 
-    protected ArrayList<WeakReference<StatusListener>> statusListeners;
+    //weak reference here isn't great due to the case when we want to run a task and do something
+    //when it finishes (like bindOnTaskCompletion)
+    protected ArrayList<StatusListener> statusListeners;
     protected ArrayList<WeakReference<ProgressListener>> progressListeners;
 
     public AsyncTask() {
         super();
 
-        statusListeners = new ArrayList<WeakReference<StatusListener>>();
+        statusListeners = new ArrayList<StatusListener>();
         progressListeners = new ArrayList<WeakReference<ProgressListener>>();
     }
 
     @Override
     public void startTask() {
-        this.execute();
+        this.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     @Override
@@ -164,7 +166,7 @@ public abstract class AsyncTask extends android.os.AsyncTask<Void, Void, Void> i
     @Override
     public void addTaskStatusListener(StatusListener listener) {
         synchronized(statusListeners) {
-            statusListeners.add(new WeakReference<StatusListener>(listener));
+            statusListeners.add(listener);
         }
     }
 
@@ -172,8 +174,8 @@ public abstract class AsyncTask extends android.os.AsyncTask<Void, Void, Void> i
     public void removeTaskStatusListener(StatusListener listener) {
         synchronized (statusListeners) {
             int i = 0;
-            for (WeakReference<StatusListener> l : statusListeners) {
-                if (l.get() == listener) {
+            for (StatusListener l : statusListeners) {
+                if (l == listener) {
                     statusListeners.remove(i);
                     break;
                 }
@@ -252,17 +254,11 @@ public abstract class AsyncTask extends android.os.AsyncTask<Void, Void, Void> i
     public void triggerStatusListeners(Task.Status oldStatus, Task.Status newStatus) {
         if (oldStatus != newStatus) {
             synchronized (statusListeners) {
-                ArrayList<WeakReference<StatusListener>> emptyReferences = new ArrayList<WeakReference<StatusListener>>();
-
-                for (WeakReference<StatusListener> l : statusListeners) {
-                    if (l.get() != null) {
-                        l.get().onTaskStatusChanged(this, oldStatus, newStatus);
-                    } else {
-                        emptyReferences.add(l);
+                for (StatusListener l : statusListeners) {
+                    if (l != null) {
+                        l.onTaskStatusChanged(this, oldStatus, newStatus);
                     }
                 }
-
-                statusListeners.removeAll(emptyReferences);
             }
         }
     }

@@ -19,9 +19,10 @@ public class CreateTasksFragment extends Fragment {
 
     final String CREATE_CONFIG_FRAGMENT_TAG = "CREATE_TAG";
 
+    ArrayList<TestTaskConfig> taskConfigs;
+
     ListView list;
     TaskConfigAdapter configAdapter;
-
     CreateTaskFragmentListener listener;
 
     public CreateTasksFragment() {
@@ -37,7 +38,8 @@ public class CreateTasksFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        configAdapter = new TaskConfigAdapter(getActivity(), R.layout.create_task_layout_row, new ArrayList<TestTaskConfig>());
+        taskConfigs = new ArrayList<TestTaskConfig>();
+        configAdapter = new TaskConfigAdapter(getActivity(), R.layout.create_task_layout_row, taskConfigs);
 
         list = (ListView)view.findViewById(R.id.list);
         list.setAdapter(configAdapter);
@@ -97,21 +99,21 @@ public class CreateTasksFragment extends Fragment {
     }
 
     public List<TestTaskConfig> getConfigList() {
-        List<TestTaskConfig> list = new ArrayList<TestTaskConfig>();
-        for (int i=0; i<configAdapter.getCount(); ++i) {
-            Object obj = configAdapter.getItem(i);
-            if (obj instanceof TestTaskConfig) {
-                list.add((TestTaskConfig) configAdapter.getItem(i));
-            }
-        }
-
-        return list;
+        return taskConfigs.subList(0, taskConfigs.size()-1);
     }
 
     public void setConfigList(List<TestTaskConfig> list) {
-        for (TestTaskConfig config : list) {
-            configAdapter.add(config);
+        if (taskConfigs.size() > 1) {
+            taskConfigs.subList(0, taskConfigs.size()-1).clear();
         }
+
+        int i = 0;
+        for (TestTaskConfig config : list) {
+            taskConfigs.add(i,config);
+            ++i;
+        }
+
+        configAdapter.notifyDataSetChanged();
     }
 
     public interface CreateTaskFragmentListener {

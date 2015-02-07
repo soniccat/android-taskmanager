@@ -30,19 +30,25 @@ public class StringReader implements InputStreamReader {
         }
     }
 
-    public String readStreamToString(InputStream stream) throws IOException {
+    public String readStreamToString(InputStream stream) throws Exception {
         StringBuffer builder = null;
+        BufferedReader buffreader = null;
         try {
             java.io.InputStreamReader isr = new java.io.InputStreamReader(stream);
-            BufferedReader buffreader = new BufferedReader(isr);
+            buffreader = new BufferedReader(isr);
 
             String readString = buffreader.readLine();
             while (readString != null) {
                 builder.append(readString);
                 readString = buffreader.readLine();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        } finally {
+            try {
+                buffreader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         String result = null;
