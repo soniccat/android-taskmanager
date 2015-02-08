@@ -25,6 +25,7 @@ public class TestTask extends AsyncTask {
             }
         }
 
+        handleTaskCompletion();
         return null;
     }
 }

@@ -41,10 +41,17 @@ public class CreateTasksFragment extends Fragment {
 
         taskConfigs = new ArrayList<TestTaskConfig>();
         configAdapter = new TaskConfigAdapter(getActivity(), R.layout.create_task_layout_row, taskConfigs);
+        configAdapter.setListener(new TaskConfigAdapter.TaskConfigAdapterListener() {
+            @Override
+            public void onTaskCreatePressed(TestTaskConfig config) {
+                if (getListener() != null) {
+                    getListener().onTaskCreatePressed(config);
+                }
+            }
+        });
 
         list = (ListView)view.findViewById(R.id.list);
         list.setAdapter(configAdapter);
-
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -141,5 +148,6 @@ public class CreateTasksFragment extends Fragment {
     public interface CreateTaskFragmentListener {
         void onConfigCreated(TestTaskConfig config);
         void onConfigChanged(TestTaskConfig config);
+        void onTaskCreatePressed(TestTaskConfig config);
     }
 }

@@ -24,7 +24,8 @@ import com.rssclient.controllers.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlaygroundActivity extends ActionBarActivity implements TaskManager.OnSnapshotChangedListener {
+public class PlaygroundActivity extends ActionBarActivity implements TaskManager.OnSnapshotChangedListener,
+        CreateTasksFragment.CreateTaskFragmentListener {
 
     final String CONFIGS_FILE_NAME = "TextTaskConfig";
 
@@ -45,23 +46,14 @@ public class PlaygroundActivity extends ActionBarActivity implements TaskManager
 
         taskManagerView = (TaskManagerView)findViewById(R.id.task_manager_view);
         createTasksFragment = new CreateTasksFragment();
-        createTasksFragment.setListener(new CreateTasksFragment.CreateTaskFragmentListener() {
-            @Override
-            public void onConfigCreated(TestTaskConfig config) {
-                storeConfigList(createTasksFragment.getConfigList());
-            }
-
-            @Override
-            public void onConfigChanged(TestTaskConfig config) {
-                storeConfigList(createTasksFragment.getConfigList());
-            }
-        });
+        createTasksFragment.setListener(this);
 
         changeTasksFragment = new ChangeTasksFragment();
 
         ViewPager pager = (ViewPager)findViewById(R.id.view_pager);
         pager.setAdapter(createPagerAdapter());
 
+        taskManager.startSnapshotRecording();
         taskManager.addSnapshotListener(this);
         loadConfigList(new LoadTaskConfigCallback() {
             @Override
@@ -74,6 +66,51 @@ public class PlaygroundActivity extends ActionBarActivity implements TaskManager
     }
 
 
+    @Override
+    public void onConfigCreated(TestTaskConfig config) {
+        storeConfigList(createTasksFragment.getConfigList());
+    }
+
+    @Override
+    public void onConfigChanged(TestTaskConfig config) {
+        storeConfigList(createTasksFragment.getConfigList());
+    }
+
+    @Override
+    public void onTaskCreatePressed(TestTaskConfig config) {
+        runTestTasks(config);
+    }
+
+    private List<TestTask> createTestTasks(TestTaskConfig config) {
+        List<TestTask> tasks = new ArrayList<TestTask>();
+        int startId = config.startId;
+
+        for (int i=0; i<config.count; ++i) {
+            TestTask task = createTestTask(config);
+            task.setTaskId(Integer.toString(startId));
+            tasks.add(task);
+
+            ++startId;
+        }
+
+        return tasks;
+    }
+
+    private void runTestTasks(TestTaskConfig config) {
+        List<TestTask> tasks = createTestTasks(config);
+        for (TestTask task : tasks) {
+            taskManager.put(task);
+        }
+    }
+
+    private TestTask createTestTask(TestTaskConfig config) {
+        TestTask testTask = new TestTask(config.duration);
+        testTask.setTaskPriority(config.priority);
+        testTask.setTaskType(config.type);
+        testTask.setLoadPolicy(config.loadPolicy);
+
+        return testTask;
+    }
 
     @Override
     public void onSnapshotChanged(TaskManager.TaskManagerSnapshot snapshot) {
