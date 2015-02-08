@@ -5,9 +5,9 @@ import java.io.FileOutputStream;
 
 import android.content.Context;
 
-import com.ga.task.AsyncTask;
+import com.ga.task.SimpleTask;
 
-public class FileKeepTask extends AsyncTask {
+public class FileKeepTask extends SimpleTask {
     Context context;
 
     //TODO: think about path
@@ -22,9 +22,9 @@ public class FileKeepTask extends AsyncTask {
     }
 
     @Override
-    protected Void doInBackground(Void... params) {
+    public void startTask() {
         if (context == null) {
-            return null;
+            return;
         }
 
         String name = this.fileName;
@@ -52,6 +52,6 @@ public class FileKeepTask extends AsyncTask {
         }
 
         handleTaskCompletion();
-        return null;
+        return;
     }
 }

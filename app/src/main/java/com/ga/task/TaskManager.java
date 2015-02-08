@@ -25,6 +25,8 @@ public interface TaskManager {
     void startSnapshotRecording();
     void stopSnapshotRecording();
 
+    void setTaskExecutor(TaskExecutor executor);
+
     TaskManagerSnapshot getSnapshot();
     void addSnapshotListener(OnSnapshotChangedListener listener);
     void removeSnapshotListener(OnSnapshotChangedListener listener);

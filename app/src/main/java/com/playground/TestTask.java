@@ -1,11 +1,11 @@
 package com.playground;
 
-import com.ga.task.AsyncTask;
+import com.ga.task.SimpleTask;
 
 /**
  * Created by alexeyglushkov on 18.01.15.
  */
-public class TestTask extends AsyncTask {
+public class TestTask extends SimpleTask {
 
     int workTime = 1000;
     int chunkTimeSize = 10;
@@ -15,8 +15,7 @@ public class TestTask extends AsyncTask {
     }
 
     @Override
-    protected Void doInBackground(Void... params) {
-
+    public void startTask() {
         int chunkCount = (int)((float)workTime / (float)chunkTimeSize);
         for (int i=0; i<chunkCount; ++i) {
             try {
@@ -26,6 +25,6 @@ public class TestTask extends AsyncTask {
         }
 
         handleTaskCompletion();
-        return null;
+        return;
     }
 }

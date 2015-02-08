@@ -23,6 +23,7 @@ public class SimpleTaskManager implements TaskManager, TaskProvider.TaskProvider
     HandlerThread handlerThread;
     Handler handler;
     Handler callbackHandler;
+    TaskExecutor taskExecutor;
 
     TaskPool loadingTasks;
     TaskProvider waitingTasks;
@@ -38,6 +39,7 @@ public class SimpleTaskManager implements TaskManager, TaskProvider.TaskProvider
     List<WeakReference<OnSnapshotChangedListener>> snapshotChangedListeners;
 
     public SimpleTaskManager(int maxLoadingTasks) {
+        this.taskExecutor = new SimpleTaskExecutor();
         this.maxLoadingTasks = maxLoadingTasks;
 
         handlerThread = new HandlerThread("SimpleLoader Thread");
@@ -113,6 +115,11 @@ public class SimpleTaskManager implements TaskManager, TaskProvider.TaskProvider
         provider.addListener(this);
         provider.getTaskPool().addListener(this); //for snapshots
         taskProviders.add(new WeakReference<TaskProvider>(provider));
+    }
+
+    @Override
+    public void setTaskExecutor(TaskExecutor executor) {
+        this.taskExecutor = executor;
     }
 
     // == TaskProvider.TaskProviderListener
@@ -402,7 +409,7 @@ public class SimpleTaskManager implements TaskManager, TaskProvider.TaskProvider
             }
         };
         task.setTaskCallback(callback);
-        task.startTask();
+        taskExecutor.executeTask(task);
     }
 
     private void logTask(Task task, String prefix) {

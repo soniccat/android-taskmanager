@@ -8,13 +8,13 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 
 import com.ga.loader.data.InputStreamReader;
-import com.ga.task.AsyncTask;
+import com.ga.task.SimpleTask;
 
 // Reader - object which converts a stream to an object of another data type and then delegates it to its handler or just return it if handler is empty
 // Handler - object which converts a stream or other input type to an object of another data type and return it, after that it is stored in handledData
 // Reader is an extended Handler
 
-public class HttpLoadTask extends AsyncTask {
+public class HttpLoadTask extends SimpleTask {
     protected HttpURLConnection connection;
     protected int contentLength;
     protected InputStreamReader handler;
@@ -44,7 +44,7 @@ public class HttpLoadTask extends AsyncTask {
     }
 
     @Override
-    public Void doInBackground(Void... params) {
+    public void startTask() {
         InputStream stream = null;
 
         try {
@@ -83,7 +83,7 @@ public class HttpLoadTask extends AsyncTask {
         }
 
         handleTaskCompletion();
-        return null;
+        return;
     }
 
     protected Object handleStream(InputStream stream) {

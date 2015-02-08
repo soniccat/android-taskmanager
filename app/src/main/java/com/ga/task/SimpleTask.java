@@ -13,7 +13,7 @@ import java.util.Date;
  */
 
 //TODO: detach from AcyncTask to a separate TaskLauncher class/interface
-public abstract class AsyncTask extends android.os.AsyncTask<Void, Void, Void> implements Task {
+public abstract class SimpleTask implements Task {
 
     protected Task.Callback startCallback;
     protected Object cancellationInfo;
@@ -35,16 +35,11 @@ public abstract class AsyncTask extends android.os.AsyncTask<Void, Void, Void> i
     protected ArrayList<StatusListener> statusListeners;
     protected ArrayList<WeakReference<ProgressListener>> progressListeners;
 
-    public AsyncTask() {
+    public SimpleTask() {
         super();
 
         statusListeners = new ArrayList<StatusListener>();
         progressListeners = new ArrayList<WeakReference<ProgressListener>>();
-    }
-
-    @Override
-    public void startTask() {
-        this.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     @Override
@@ -272,7 +267,7 @@ public abstract class AsyncTask extends android.os.AsyncTask<Void, Void, Void> i
 
                     for (WeakReference<ProgressListener> l : progressListeners) {
                         if (l.get() != null) {
-                            l.get().onTaskProgressChanged(AsyncTask.this, progressInfo);
+                            l.get().onTaskProgressChanged(SimpleTask.this, progressInfo);
                         } else {
                             emptyReferences.add(l);
                         }

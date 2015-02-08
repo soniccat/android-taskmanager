@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import android.content.Context;
 import com.ga.loader.data.InputStreamReader;
-import com.ga.task.AsyncTask;
+import com.ga.task.SimpleTask;
 
-public class FileLoadTask extends AsyncTask {
+public class FileLoadTask extends SimpleTask {
     protected String fileName;
     protected InputStreamReader handler;
     protected Context context;
@@ -26,9 +26,9 @@ public class FileLoadTask extends AsyncTask {
     }
 
     @Override
-    protected Void doInBackground(Void... params) {
+    public void startTask() {
         if (context == null) {
-            return null;
+            return;
         }
 
         String name = this.fileName;
@@ -60,7 +60,7 @@ public class FileLoadTask extends AsyncTask {
         }
 
         handleTaskCompletion();
-        return null;
+        return;
     }
 
     public Object getHandledData() {
