@@ -26,6 +26,13 @@
             app:default_value="1"
             app:input_type="number"/>
         <com.playground.ui.SettingsField
+            android:id="@+id/type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:text="@string/task_config_field_type"
+            app:default_value="0"
+            app:input_type="number"/>
+        <com.playground.ui.SettingsField
             android:id="@+id/start_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

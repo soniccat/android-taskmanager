@@ -20,6 +20,7 @@
 
     <string name="task_confing_done">Done</string>
     <string name="task_config_field_name">Name</string>
+    <string name="task_config_field_type">Type</string>
     <string name="task_config_field_count">Count</string>
     <string name="task_config_field_start_id">Start Id</string>
     <string name="task_config_field_duration">Duration</string>

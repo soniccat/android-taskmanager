@@ -23,6 +23,7 @@ public class TaskConfigFragment extends Fragment {
     TaskConfigFragmentListener listener;
 
     SettingsField name;
+    SettingsField type;
     SettingsField count;
     SettingsField startId;
     SettingsField duration;
@@ -78,6 +79,7 @@ public class TaskConfigFragment extends Fragment {
     private void bindViews() {
         name = (SettingsField)getView().findViewById(R.id.name);
         count = (SettingsField)getView().findViewById(R.id.count);
+        type = (SettingsField)getView().findViewById(R.id.type);
         startId = (SettingsField)getView().findViewById(R.id.start_id);
         duration = (SettingsField)getView().findViewById(R.id.duration);
         priority = (SettingsField)getView().findViewById(R.id.priority);
@@ -87,6 +89,7 @@ public class TaskConfigFragment extends Fragment {
     private void applyConfig() {
         if (config != null) {
             name.setString(config.name);
+            type.setInt(config.type);
             count.setInt(config.count);
             startId.setInt(config.startId);
             duration.setInt(config.duration);
@@ -97,6 +100,7 @@ public class TaskConfigFragment extends Fragment {
 
     private void save(TestTaskConfig config) {
         config.name = name.getString();
+        config.type = type.getInt();
         config.count = count.getInt();
         config.startId = startId.getInt();
         config.duration = duration.getInt();
