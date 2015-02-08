@@ -18,6 +18,7 @@ import java.util.List;
 public class CreateTasksFragment extends Fragment {
 
     final String CREATE_CONFIG_FRAGMENT_TAG = "CREATE_TAG";
+    final String CHANGE_CONFIG_FRAGMENT_TAG = "CHANGE_TAG";
 
     ArrayList<TestTaskConfig> taskConfigs;
 
@@ -50,7 +51,7 @@ public class CreateTasksFragment extends Fragment {
                 if (position == configAdapter.getCount()-1) {
                     showAddConfigFragment();
                 } else {
-
+                    showEditConfigFragment(position);
                 }
             }
         });
@@ -76,12 +77,33 @@ public class CreateTasksFragment extends Fragment {
                 if (getListener() != null) {
                     getListener().onConfigCreated(config);
                 }
-
             }
         });
 
         getFragmentManager().beginTransaction()
                 .add(R.id.container, changeFragment, CREATE_CONFIG_FRAGMENT_TAG)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    private void showEditConfigFragment(final int i) {
+        final TestTaskConfig config = taskConfigs.get(i);
+        final TaskConfigFragment changeFragment = new TaskConfigFragment();
+        changeFragment.setConfig(config);
+        changeFragment.setDoneListener(new TaskConfigFragment.TaskConfigFragmentListener() {
+            @Override
+            public void onDonePressed() {
+                configAdapter.notifyDataSetChanged();
+                getFragmentManager().popBackStack();
+
+                if (getListener() != null) {
+                    getListener().onConfigChanged(config);
+                }
+            }
+        });
+
+        getFragmentManager().beginTransaction()
+                .add(R.id.container, changeFragment, CHANGE_CONFIG_FRAGMENT_TAG)
                 .addToBackStack(null)
                 .commit();
     }
@@ -118,5 +140,6 @@ public class CreateTasksFragment extends Fragment {
 
     public interface CreateTaskFragmentListener {
         void onConfigCreated(TestTaskConfig config);
+        void onConfigChanged(TestTaskConfig config);
     }
 }

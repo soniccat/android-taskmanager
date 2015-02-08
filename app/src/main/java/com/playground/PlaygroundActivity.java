@@ -6,6 +6,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -49,6 +50,11 @@ public class PlaygroundActivity extends ActionBarActivity implements TaskManager
             public void onConfigCreated(TestTaskConfig config) {
                 storeConfigList(createTasksFragment.getConfigList());
             }
+
+            @Override
+            public void onConfigChanged(TestTaskConfig config) {
+                storeConfigList(createTasksFragment.getConfigList());
+            }
         });
 
         changeTasksFragment = new ChangeTasksFragment();
@@ -66,6 +72,8 @@ public class PlaygroundActivity extends ActionBarActivity implements TaskManager
             }
         });
     }
+
+
 
     @Override
     public void onSnapshotChanged(TaskManager.TaskManagerSnapshot snapshot) {

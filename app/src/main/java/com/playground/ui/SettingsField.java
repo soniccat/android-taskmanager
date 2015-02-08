@@ -56,6 +56,7 @@ public class SettingsField extends FrameLayout {
         int inputType = 0;
         if (inputTypeCode == 0) {
             inputType = InputType.TYPE_CLASS_TEXT;
+
         } else if (inputTypeCode == 1) {
             inputType = InputType.TYPE_CLASS_NUMBER;
         }
@@ -104,11 +105,27 @@ public class SettingsField extends FrameLayout {
     public int getInt() {
         if (valueTextView != null) {
             return Integer.parseInt(valueTextView.getText().toString());
+
         } else if (valueSpinner != null) {
             return valueSpinner.getSelectedItemPosition();
         }
 
         return 0;
+    }
+
+    public void setString(String value) {
+        if (valueTextView != null) {
+            valueTextView.setText(value);
+        }
+    }
+
+    public void setInt(int value) {
+        if (valueTextView != null) {
+            valueTextView.setText(Integer.toString(value));
+
+        } else if (valueSpinner != null) {
+            valueSpinner.setSelection(value);
+        }
     }
 
     private SpinnerAdapter createSpinnerAdapter(int arrayRes) {

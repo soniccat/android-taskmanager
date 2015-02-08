@@ -22,6 +22,13 @@ public class TaskConfigFragment extends Fragment {
     TestTaskConfig config;
     TaskConfigFragmentListener listener;
 
+    SettingsField name;
+    SettingsField count;
+    SettingsField startId;
+    SettingsField duration;
+    SettingsField priority;
+    SettingsField loadPolicy;
+
     public TaskConfigFragment() {
     }
 
@@ -60,14 +67,35 @@ public class TaskConfigFragment extends Fragment {
         return view;
     }
 
-    private void save(TestTaskConfig config) {
-        SettingsField name = (SettingsField)getView().findViewById(R.id.name);
-        SettingsField count = (SettingsField)getView().findViewById(R.id.count);
-        SettingsField startId = (SettingsField)getView().findViewById(R.id.start_id);
-        SettingsField duration = (SettingsField)getView().findViewById(R.id.duration);
-        SettingsField priority = (SettingsField)getView().findViewById(R.id.priority);
-        SettingsField loadPolicy = (SettingsField)getView().findViewById(R.id.load_policy);
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
+        bindViews();
+        applyConfig();
+    }
+
+    private void bindViews() {
+        name = (SettingsField)getView().findViewById(R.id.name);
+        count = (SettingsField)getView().findViewById(R.id.count);
+        startId = (SettingsField)getView().findViewById(R.id.start_id);
+        duration = (SettingsField)getView().findViewById(R.id.duration);
+        priority = (SettingsField)getView().findViewById(R.id.priority);
+        loadPolicy = (SettingsField)getView().findViewById(R.id.load_policy);
+    }
+
+    private void applyConfig() {
+        if (config != null) {
+            name.setString(config.name);
+            count.setInt(config.count);
+            startId.setInt(config.startId);
+            duration.setInt(config.duration);
+            loadPolicy.setInt(config.loadPolicy.ordinal());
+            priority.setInt(config.priority);
+        }
+    }
+
+    private void save(TestTaskConfig config) {
         config.name = name.getString();
         config.count = count.getInt();
         config.startId = startId.getInt();
