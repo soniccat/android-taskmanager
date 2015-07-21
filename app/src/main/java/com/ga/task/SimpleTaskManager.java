@@ -75,7 +75,7 @@ public class SimpleTaskManager implements TaskManager, TaskProvider.TaskProvider
             return;
         }
 
-        task.setTaskStatus(Task.Status.Waiting);
+        task.setTaskStatus(Task.Status.Starting);
 
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
@@ -448,7 +448,7 @@ public class SimpleTaskManager implements TaskManager, TaskProvider.TaskProvider
             Task.Status st = task.getTaskStatus();
             task.cancelTask(info);
 
-            if (st == Task.Status.Waiting) {
+            if (st == Task.Status.Starting) {
                 waitingTasks.getTaskPool().removeTask(task);
                 handleTaskCompletionOnThread(task, task.getTaskCallback(), Task.Status.Cancelled);
 

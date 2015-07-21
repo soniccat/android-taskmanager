@@ -9,7 +9,8 @@ import com.ga.task.Task;
 import com.ga.task.TaskManager;
 import com.ga.task.Tasks;
 
-//Because Image doesn't store loaded data we should use ImageLoader to get the data from callback
+// Because Image doesn't store loaded data we should use ImageLoader to get the data from callback
+
 public class ImageLoader {
 
     //TODO: write argument descriptions

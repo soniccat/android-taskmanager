@@ -45,8 +45,8 @@ public class SimpleTaskPool implements TaskPool, Task.StatusListener {
             return;
         }
 
-        //Task Manager must set Waiting status on the current thread
-        task.setTaskStatus(Task.Status.Waiting);
+        //TaskManager must set Starting status on the current thread
+        task.setTaskStatus(Task.Status.Starting);
 
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override

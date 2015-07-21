@@ -8,51 +8,46 @@ import java.util.Date;
  * Created by alexeyglushkov on 20.09.14.
  */
 
-// A task represents an action that takes time to finish. It can be downloading data, processing information and other.
+// A task represents an action that takes time to finish. It can be downloading data, processing
+// information, work with a database and other.
 // The task can be started only once. If you want to repeat it you should create new one.
-// The task mustn't work with model data stored outside the task, model data should be changed on main thread after task completion.
+//
+// If you work with a model on main thread the task shouldn't work with the model data stored
+// outside the task. The model data should be changed on main thread after task completion and
+// notify UI.
+//
+// All setters mustn't be called after starting the task
 
 public interface Task extends TaskContainer {
 
-    // Start the task
+    // Set the callback to handle the result.
+    // TaskManager uses this callback but calls the original
     //
-    // Caller: TaskManager
-    // Thread: TaskManager's thread
+    // Caller: Client, TaskManager
+    // Thread: Client's thread, TaskManager's thread
     //
-    // Callback caller: TaskManager
-    // Callback Thread: Main thread
-    // If you would like to have an additional action on the task thread you should extend your class
-    // and do all what you need in the start method
-    void startTask();
     void setTaskCallback(Callback callback);
     Callback getTaskCallback();
 
     //TODO: add custom thread callback support through set/get
 
-    // Marks the task that it should be cancelled
-    // it will have Cancelled state if the task was started and successfully cancelled
-    // if it wasn't possible to cancel the task the state will be set to Finished
-    // otherwise NotStarted state will be set
-    //
-    // Caller: TaskManager
-    // Thread: TaskManager's thread
-    void cancelTask(Object info);
-    boolean getNeedCancelTask();
-
     // Return info passed in the cancel method
+    //
+    // Caller: Client
+    //
     Object getCancellationInfo();
 
-    // Set/Get current state of the task
+    // Get the current Status
     //
-    // Caller: TaskManager
-    // Thread: TaskManager's thread
-    void setTaskStatus(Status status);
+    // Caller: Client, TaskManager
+    //
     Status getTaskStatus();
 
     // Set/Get current type of the task
+    // The type is used in TaskManager to be able to set load limits on a particular type
     //
-    // Caller: Client, TaskManager
-    // Thread: Main thread, TaskManager's thread
+    // Caller: Client, TaskManager (getter only)
+    //
     void setTaskType(int type);
     int getTaskType();
 
@@ -62,43 +57,47 @@ public interface Task extends TaskContainer {
     // nil means that the task doesn't have the id
     //
     // Caller: Client
-    // Thread: Main thread
+    //
     void setTaskId(String id);
     String getTaskId();
 
-    // For tasks with the same id TaskManager uses a load policy to handle them
+    // For tasks with the same id TaskManager uses a load policy to handle the situation when they
+    // want to load data simultaneously
     //
-    // Caller: Client, TaskManager, TaskPool
-    // Thread: caller thread
+    // Caller: Client, TaskManager (getter only), TaskPool (getter only)
+    //
     void setLoadPolicy(LoadPolicy loadPolicy);
     LoadPolicy getLoadPolicy();
 
     // Return the error of the task happened during the execution
-    // Basically it should be called in the start callback
+    // Basically it should be called from the start callback
     //
     // Caller: Client
-    // Thread: Main thread
+    //
     Error getTaskError();
 
     // Set/Get the priority of the task
     //
     // Caller: Client
-    // Thread: Main thread
+    //
     void setTaskPriority(int value);
     int getTaskPriority();
 
-    // Set/Get the priority of the task
+    // Set minimal progress change to trigger the ProgressListener
     //
-    // Caller: Client, Task
-    // Thread: Main thread
+    // Caller: Client
+    //
     float getTaskProgress();
     void setTaskProgressMinChange(float value);
 
-    void setTaskStartDate(Date date);
+    // TODO: now it works differently
+    // Get time passed between Started and Finished/Cancelled states
+    //
+    // Caller: Client's code, TaskManager
+    //
     long getTaskDuration();
 
     //TODO: finish comments
-
     void setTaskUserData(Object data);
     Object getTaskUserData();
 
@@ -119,28 +118,29 @@ public interface Task extends TaskContainer {
 
     public enum Status {
         NotStarted, //not started
-        Waiting, //in queue, must be set in the caller thread
+        Starting, //in queue, must be set in the caller thread
         Blocked, //is waiting until all dependencies finish
         Started, //started
         Finished, //successfully loaded
         Cancelled //has cancelled but still is loading or cancelled while waiting in a queue
     }
 
-    public enum LoadPolicy {
-        SkipIfAdded, // don't load if Task's state isn't equal to Waiting
+    enum LoadPolicy {
+        SkipIfAdded, // don't loadi if Task's state isn't equal to Starting
         CancelAdded // cancel already added task, in this case you shouldn't do anything with cancelled task
     }
 
-    public interface Callback {
+    // TODO: pass Error to get to know that the task was cancelled or an error happened
+    interface Callback {
         //Here I put the cancelled as the argument to emphasise that it must be handled (also it can be got from status)
         void finished(boolean cancelled);
     }
 
-    public interface StatusListener {
+    interface StatusListener {
         void onTaskStatusChanged(Task task, Status oldStatus, Status newStatus);
     }
 
-    public interface ProgressListener {
+    interface ProgressListener {
         void onTaskProgressChanged(Task task, ProgressInfo progressInfo);
     }
 }
