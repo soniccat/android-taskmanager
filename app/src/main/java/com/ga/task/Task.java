@@ -24,7 +24,6 @@ public interface Task extends TaskContainer {
     // TaskManager uses this callback but calls the original
     //
     // Caller: Client, TaskManager
-    // Thread: Client's thread, TaskManager's thread
     //
     void setTaskCallback(Callback callback);
     Callback getTaskCallback();
@@ -39,14 +38,14 @@ public interface Task extends TaskContainer {
 
     // Get the current Status
     //
-    // Caller: Client, TaskManager
+    // Caller: Client, TaskManager, TaskPool
     //
     Status getTaskStatus();
 
     // Set/Get current type of the task
     // The type is used in TaskManager to be able to set load limits on a particular type
     //
-    // Caller: Client, TaskManager (getter only)
+    // Caller: Client, TaskManager (getter only), TaskProvider (getter only)
     //
     void setTaskType(int type);
     int getTaskType();
@@ -56,7 +55,7 @@ public interface Task extends TaskContainer {
     // The right load policy can prevent needless loadings
     // nil means that the task doesn't have the id
     //
-    // Caller: Client
+    // Caller: Client, TaskManager (getter only), TaskPool (getter only)
     //
     void setTaskId(String id);
     String getTaskId();
@@ -78,7 +77,7 @@ public interface Task extends TaskContainer {
 
     // Set/Get the priority of the task
     //
-    // Caller: Client
+    // Caller: Client, TaskProvider (getter only), TaskManager (getter only)
     //
     void setTaskPriority(int value);
     int getTaskPriority();
@@ -90,31 +89,52 @@ public interface Task extends TaskContainer {
     float getTaskProgress();
     void setTaskProgressMinChange(float value);
 
-    // TODO: now it works differently
+    // TODO: now it works wrong
     // Get time passed between Started and Finished/Cancelled states
     //
-    // Caller: Client's code, TaskManager
+    // Caller: Client, TaskManager
     //
     long getTaskDuration();
 
     //TODO: finish comments
+    // Set/Get additional information to the task
+    //
+    // Caller: Client
+    //
     void setTaskUserData(Object data);
     Object getTaskUserData();
 
-    // Caller:
-    // Thread:
+    // add/remove dependency
+    //
+    // Caller: Client
+    //
     void addTaskDependency(Task task);
     void removeTaskDependency(Task task);
 
-    // Caller:
-    // Thread:
+    // TODO: add auto clear listeners
+    // Add/Remove a listener to get status changes
+    // after setting Finished or Cancelled states all listeners are cleared by TaskManager
+    //
+    // Caller: Client, TaskPool
+    //
     void addTaskStatusListener(StatusListener listener);
     void removeTaskStatusListener(StatusListener listener);
 
-    // Caller:
-    // Thread:
+    // TODO: add auto clear listeners
+    // Add/Remove a Progress listener
+    // after setting Finished or Cancelled states all listeners are cleared by TaskManager
+    //
+    // Caller: Client
+    //
     void addTaskProgressListener(ProgressListener listener);
     void removeTaskProgressListener(ProgressListener listener);
+
+    // Handy way to access private methods
+    // should be called only in TaskManager, TaskPool
+    //
+    // Caller: TaskManager
+    //
+    TaskPrivate getPrivate();
 
     public enum Status {
         NotStarted, //not started
@@ -126,7 +146,7 @@ public interface Task extends TaskContainer {
     }
 
     enum LoadPolicy {
-        SkipIfAdded, // don't loadi if Task's state isn't equal to Starting
+        SkipIfAdded, // don't load if the state isn't equal to Starting
         CancelAdded // cancel already added task, in this case you shouldn't do anything with cancelled task
     }
 

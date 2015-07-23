@@ -2,26 +2,36 @@ package com.ga.task;
 
 import com.ga.loader.ProgressInfo;
 import com.ga.loader.ProgressUpdater;
-import com.rssclient.controllers.Tools;
+import com.rssclient.controllers.*;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * Created by alexeyglushkov on 20.09.14.
+ * Created by alexeyglushkov on 23.07.15.
  */
-
-//TODO: detach from AcyncTask to a separate TaskLauncher class/interface
-public abstract class SimpleTask implements Task {
-
-    TaskImpl impl;
+public class TaskImpl implements Task, TaskPrivate {
+    protected Task.Callback startCallback;
+    protected Object cancellationInfo;
+    protected Task.Status taskStatus = Task.Status.NotStarted;
+    protected Object taskUserData;
+    protected boolean needCancelTask;
+    protected boolean isCancelled;
+    protected float progress;
+    protected float progressMinChange;
+    protected Error error;
+    protected String taskId;
+    protected LoadPolicy loadPolicy = LoadPolicy.SkipIfAdded;
+    protected int priority;
+    protected int type;
+    protected Date startDate;
+    protected Date finishDate;
 
     // listeners are cleared in a TaskManager after task finishing or cancelling
     protected ArrayList<StatusListener> statusListeners;
     protected ArrayList<ProgressListener> progressListeners;
 
-    public SimpleTask() {
+    public TaskImpl() {
         super();
 
         statusListeners = new ArrayList<StatusListener>();
@@ -30,66 +40,79 @@ public abstract class SimpleTask implements Task {
 
     @Override
     public Callback getTaskCallback() {
-        return impl.getTaskCallback()
+        return this.startCallback;
     }
 
     @Override
     public void setTaskCallback(Callback callback) {
-        impl.setTaskCallback(callback);
+        this.startCallback = callback;
+    }
+
+    @Override
+    public void cancelTask(Object info) {
+        needCancelTask = true;
+        this.cancellationInfo = info;
+    }
+
+    @Override
+    public void setTaskStatus(Task.Status status) {
+        Task.Status oldStatus = this.taskStatus;
+        this.taskStatus = status;
+        triggerStatusListeners(oldStatus, this.taskStatus);
     }
 
     @Override
     public Task.Status getTaskStatus() {
-        return impl.getTaskStatus()
+        return this.taskStatus;
     }
 
     public void setTaskError(Error error) {
-        impl.setTaskError(error);
+        this.error = error;
     }
 
     @Override
     public Error getTaskError() {
-        return impl.getTaskError();
+        return error;
     }
 
     @Override
     public Object getTaskUserData() {
-        return impl.getTaskUserData();
+        return taskUserData;
     }
 
     @Override
     public void setTaskUserData(Object object) {
-        impl.setTaskUserData(object);
+        this.taskUserData = object;
     }
 
     @Override
     public void setTaskPriority(int value) {
-        impl.setTaskPriority(value);
+        priority = value;
     }
 
     @Override
     public int getTaskPriority() {
-        return impl.getTaskPriority();
+        return priority;
     }
 
     @Override
     public void setTaskId(String id) {
-        impl.setTaskId(id);
+        this.taskId = id;
     }
 
     @Override
     public String getTaskId() {
-        return impl.getTaskId();
+        return this.taskId;
     }
 
     @Override
     public void setLoadPolicy(LoadPolicy loadPolicy) {
-        impl.setLoadPolicy(loadPolicy);
+        this.loadPolicy = loadPolicy;
     }
 
     @Override
     public LoadPolicy getLoadPolicy() {
-        return impl.getLoadPolicy();
+        return this.loadPolicy;
     }
 
     @Override
@@ -99,7 +122,7 @@ public abstract class SimpleTask implements Task {
 
     @Override
     public float getTaskProgress() {
-        return impl.getTaskProgress();
+        return progress;
     }
 
     @Override
@@ -210,55 +233,5 @@ public abstract class SimpleTask implements Task {
     @Override
     public TaskPrivate getPrivate() {
         return this;
-    }
-
-    // useful methods
-
-    protected ProgressUpdater createProgressUpdater(float contentSize) {
-        ProgressUpdater updater = new ProgressUpdater(contentSize, progressMinChange, new ProgressUpdater.ProgressUpdaterListener() {
-            @Override
-            public void onProgressUpdated(ProgressUpdater updater) {
-                triggerProgressListeners(updater);
-            }
-        });
-        return updater;
-    }
-
-    public void callStartCallback() {
-        if (startCallback != null) {
-            startCallback.finished(isCancelled);
-            startCallback = null;
-        }
-    }
-
-    public void handleTaskCompletion() {
-        callStartCallback();
-    }
-
-    public void triggerStatusListeners(Task.Status oldStatus, Task.Status newStatus) {
-        if (oldStatus != newStatus) {
-            synchronized (statusListeners) {
-                for (StatusListener l : statusListeners) {
-                    if (l != null) {
-                        l.onTaskStatusChanged(this, oldStatus, newStatus);
-                    }
-                }
-            }
-        }
-    }
-
-    public void triggerProgressListeners(final ProgressInfo progressInfo) {
-        if (progressListeners.size() > 0) {
-            Tools.postOnMainLoop(new Runnable() {
-                @Override
-                public void run() {
-                    for (ProgressListener l : progressListeners) {
-                        if (l != null) {
-                            l.onTaskProgressChanged(SimpleTask.this, progressInfo);
-                        }
-                    }
-                }
-            });
-        }
     }
 }

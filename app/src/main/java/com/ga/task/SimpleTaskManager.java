@@ -75,7 +75,7 @@ public class SimpleTaskManager implements TaskManager, TaskProvider.TaskProvider
             return;
         }
 
-        task.setTaskStatus(Task.Status.Starting);
+        ((TaskPrivate)task).setTaskStatus(Task.Status.Starting);
 
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
