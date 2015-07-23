@@ -1,20 +1,16 @@
 package com.ga.task;
 
+import com.ga.loader.ProgressUpdater;
+
 import java.util.Date;
 
 /**
  * Created by alexeyglushkov on 21.07.15.
  */
 
-// Contains methods being used only by TaskManager and TaskPool
+// Contains methods being used only by TaskManager, TaskPool or in a Task
 
 public interface TaskPrivate extends Task{
-
-    // Start the task
-    //
-    // Caller: TaskManager
-    //
-    void startTask();
 
     // Marks the task that it should be cancelled
     // it will have Cancelled state if the task is started and successfully cancelled
@@ -49,4 +45,17 @@ public interface TaskPrivate extends Task{
     // Caller: TaskManager
     //
     void clearAllListeners();
+
+    // Create a ProgressUpdater which trigger progress listeners on changes
+    // Generally used to pass in a reader object
+    //
+    // Caller: Task
+    //
+    ProgressUpdater createProgressUpdater(float contentSize);
+
+    // Call the start callback
+    //
+    // Caller: Task
+    //
+    void handleTaskCompletion();
 }

@@ -21,7 +21,6 @@ public class FileKeepTask extends SimpleTask {
         this.writer = writer;
     }
 
-    @Override
     public void startTask() {
         if (context == null) {
             return;
@@ -51,7 +50,7 @@ public class FileKeepTask extends SimpleTask {
             }
         }
 
-        handleTaskCompletion();
+        getPrivate().handleTaskCompletion();
         return;
     }
 }

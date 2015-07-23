@@ -43,7 +43,6 @@ public class HttpLoadTask extends SimpleTask {
         this.contentLength = contentLength;
     }
 
-    @Override
     public void startTask() {
         InputStream stream = null;
 
@@ -57,7 +56,7 @@ public class HttpLoadTask extends SimpleTask {
             int response = connection.getResponseCode();
             Log.d("HttpLoadTask","HttpLoadingContext: The response is: " + response + "\n");
 
-            handler.setProgressUpdater(createProgressUpdater(contentLength));
+            handler.setProgressUpdater(getPrivate().createProgressUpdater(contentLength));
 
             stream = new BufferedInputStream(connection.getInputStream());
             Object data = handleStream(stream);
@@ -82,7 +81,7 @@ public class HttpLoadTask extends SimpleTask {
             connection.disconnect();
         }
 
-        handleTaskCompletion();
+        getPrivate().handleTaskCompletion();
         return;
     }
 

@@ -3,6 +3,7 @@ package com.ga.task;
 import com.ga.loader.ProgressInfo;
 import com.ga.loader.ProgressUpdater;
 import com.rssclient.controllers.*;
+import com.rssclient.controllers.Tools;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,13 +18,13 @@ public class TaskImpl implements Task, TaskPrivate {
     protected Object taskUserData;
     protected boolean needCancelTask;
     protected boolean isCancelled;
-    protected float progress;
     protected float progressMinChange;
     protected Error error;
     protected String taskId;
     protected LoadPolicy loadPolicy = LoadPolicy.SkipIfAdded;
     protected int priority;
     protected int type;
+
     protected Date startDate;
     protected Date finishDate;
 
@@ -36,6 +37,11 @@ public class TaskImpl implements Task, TaskPrivate {
 
         statusListeners = new ArrayList<StatusListener>();
         progressListeners = new ArrayList<ProgressListener>();
+    }
+
+    @Override
+    public void startTask() {
+        // Doesn't implement
     }
 
     @Override
@@ -121,17 +127,13 @@ public class TaskImpl implements Task, TaskPrivate {
     }
 
     @Override
-    public float getTaskProgress() {
-        return progress;
-    }
-
-    @Override
     public void setTaskProgressMinChange(float value) {
         progressMinChange = value;
     }
 
-    public void setTaskProgress(float value) {
-        this.progress = value;
+    @Override
+    public float getTaskProgressMinChange() {
+        return progressMinChange;
     }
 
     @Override
@@ -203,7 +205,8 @@ public class TaskImpl implements Task, TaskPrivate {
     @Override
     public long getTaskDuration() {
         if (startDate != null) {
-            return new Date().getTime() - startDate.getTime();
+            long finishTime = finishDate == null ? new Date().getTime() : finishDate.getTime();
+            return finishTime - startDate.getTime();
         }
         return -1;
     }
@@ -233,5 +236,55 @@ public class TaskImpl implements Task, TaskPrivate {
     @Override
     public TaskPrivate getPrivate() {
         return this;
+    }
+
+    @Override
+    public ProgressUpdater createProgressUpdater(float contentSize) {
+        ProgressUpdater updater = new ProgressUpdater(contentSize, getTaskProgressMinChange(), new ProgressUpdater.ProgressUpdaterListener() {
+            @Override
+            public void onProgressUpdated(ProgressUpdater updater) {
+                triggerProgressListeners(updater);
+            }
+        });
+        return updater;
+    }
+
+    private void triggerStatusListeners(Task.Status oldStatus, Task.Status newStatus) {
+        if (oldStatus != newStatus) {
+            synchronized (statusListeners) {
+                for (StatusListener l : statusListeners) {
+                    if (l != null) {
+                        l.onTaskStatusChanged(this, oldStatus, newStatus);
+                    }
+                }
+            }
+        }
+    }
+
+    private void triggerProgressListeners(final ProgressInfo progressInfo) {
+        if (progressListeners.size() > 0) {
+            Tools.postOnMainLoop(new Runnable() {
+                @Override
+                public void run() {
+                    for (ProgressListener l : progressListeners) {
+                        if (l != null) {
+                            l.onTaskProgressChanged(TaskImpl.this, progressInfo);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public void handleTaskCompletion() {
+        callStartCallback();
+    }
+
+    private void callStartCallback() {
+        if (startCallback != null) {
+            startCallback.finished(isCancelled);
+            startCallback = null;
+        }
     }
 }

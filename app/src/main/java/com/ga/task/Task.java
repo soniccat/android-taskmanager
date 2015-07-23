@@ -86,8 +86,8 @@ public interface Task extends TaskContainer {
     //
     // Caller: Client
     //
-    float getTaskProgress();
     void setTaskProgressMinChange(float value);
+    float getTaskProgressMinChange();
 
     // TODO: now it works wrong
     // Get time passed between Started and Finished/Cancelled states
@@ -136,7 +136,14 @@ public interface Task extends TaskContainer {
     //
     TaskPrivate getPrivate();
 
-    public enum Status {
+    // Start the task
+    // It's from private part but must be implemented on this level
+    //
+    // Caller: TaskManager
+    //
+    void startTask();
+
+    enum Status {
         NotStarted, //not started
         Starting, //in queue, must be set in the caller thread
         Blocked, //is waiting until all dependencies finish

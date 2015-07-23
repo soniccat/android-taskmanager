@@ -25,7 +25,6 @@ public class FileLoadTask extends SimpleTask {
         this.handler = handler;
     }
 
-    @Override
     public void startTask() {
         if (context == null) {
             return;
@@ -35,7 +34,7 @@ public class FileLoadTask extends SimpleTask {
         InputStream fis = null;
 
         try {
-            handler.setProgressUpdater(createProgressUpdater(getFileSize()));
+            handler.setProgressUpdater(getPrivate().createProgressUpdater(getFileSize()));
 
             fis = new BufferedInputStream(this.context.openFileInput(name));
             Object data = handleStream(fis);
@@ -59,7 +58,7 @@ public class FileLoadTask extends SimpleTask {
             }
         }
 
-        handleTaskCompletion();
+        getPrivate().handleTaskCompletion();
         return;
     }
 

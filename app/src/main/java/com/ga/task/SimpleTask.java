@@ -15,22 +15,15 @@ import java.util.Date;
 //TODO: detach from AcyncTask to a separate TaskLauncher class/interface
 public abstract class SimpleTask implements Task {
 
-    TaskImpl impl;
-
-    // listeners are cleared in a TaskManager after task finishing or cancelling
-    protected ArrayList<StatusListener> statusListeners;
-    protected ArrayList<ProgressListener> progressListeners;
+    final TaskImpl impl = new TaskImpl();
 
     public SimpleTask() {
         super();
-
-        statusListeners = new ArrayList<StatusListener>();
-        progressListeners = new ArrayList<ProgressListener>();
     }
 
     @Override
     public Callback getTaskCallback() {
-        return impl.getTaskCallback()
+        return impl.getTaskCallback();
     }
 
     @Override
@@ -40,7 +33,7 @@ public abstract class SimpleTask implements Task {
 
     @Override
     public Task.Status getTaskStatus() {
-        return impl.getTaskStatus()
+        return impl.getTaskStatus();
     }
 
     public void setTaskError(Error error) {
@@ -98,167 +91,67 @@ public abstract class SimpleTask implements Task {
     }
 
     @Override
-    public float getTaskProgress() {
-        return impl.getTaskProgress();
+    public void setTaskProgressMinChange(float value) {
+        impl.setTaskProgressMinChange(value);
     }
 
     @Override
-    public void setTaskProgressMinChange(float value) {
-        progressMinChange = value;
-    }
-
-    public void setTaskProgress(float value) {
-        this.progress = value;
+    public float getTaskProgressMinChange() {
+        return impl.getTaskProgressMinChange();
     }
 
     @Override
     public Object getCancellationInfo() {
-        return cancellationInfo;
+        return impl.getCancellationInfo();
     }
 
     @Override
     public void setTaskType(int type) {
-        this.type = type;
+        impl.setTaskType(type);
     }
 
     @Override
     public int getTaskType() {
-        return type;
-    }
-
-    @Override
-    public boolean getNeedCancelTask() {
-        return needCancelTask;
+        return impl.getTaskType();
     }
 
     @Override
     public void addTaskStatusListener(StatusListener listener) {
-        synchronized(statusListeners) {
-            statusListeners.add(listener);
-        }
+        impl.addTaskStatusListener(listener);
     }
 
     @Override
     public void removeTaskStatusListener(StatusListener listener) {
-        synchronized (statusListeners) {
-            int i = 0;
-            for (StatusListener l : statusListeners) {
-                if (l == listener) {
-                    statusListeners.remove(i);
-                    break;
-                }
-
-                ++i;
-            }
-        }
+        impl.removeTaskStatusListener(listener);
     }
 
     @Override
     public void addTaskProgressListener(ProgressListener listener) {
-        progressListeners.add(listener);
+        impl.addTaskProgressListener(listener);
     }
 
     @Override
     public void removeTaskProgressListener(ProgressListener listener) {
-        int i=0;
-        for (ProgressListener l : progressListeners) {
-            if (l == listener) {
-                progressListeners.remove(i);
-                break;
-            }
-
-            ++i;
-        }
-    }
-
-    @Override
-    public void clearAllListeners() {
-        statusListeners.clear();
-        progressListeners.clear();
+        impl.removeTaskProgressListener(listener);
     }
 
     @Override
     public long getTaskDuration() {
-        if (startDate != null) {
-            return new Date().getTime() - startDate.getTime();
-        }
-        return -1;
+        return impl.getTaskDuration();
     }
-
-    @Override
-    public void setTaskStartDate(Date date) {
-        this.startDate = date;
-    }
-
-    @Override
-    public void setTaskFinishDate(Date date) {
-        this.finishDate = date;
-    }
-
-    //TODO: add dependencies support
 
     @Override
     public void addTaskDependency(Task task) {
-
+        impl.addTaskDependency(task);
     }
 
     @Override
     public void removeTaskDependency(Task task) {
-
+        impl.removeTaskDependency(task);
     }
 
     @Override
     public TaskPrivate getPrivate() {
-        return this;
-    }
-
-    // useful methods
-
-    protected ProgressUpdater createProgressUpdater(float contentSize) {
-        ProgressUpdater updater = new ProgressUpdater(contentSize, progressMinChange, new ProgressUpdater.ProgressUpdaterListener() {
-            @Override
-            public void onProgressUpdated(ProgressUpdater updater) {
-                triggerProgressListeners(updater);
-            }
-        });
-        return updater;
-    }
-
-    public void callStartCallback() {
-        if (startCallback != null) {
-            startCallback.finished(isCancelled);
-            startCallback = null;
-        }
-    }
-
-    public void handleTaskCompletion() {
-        callStartCallback();
-    }
-
-    public void triggerStatusListeners(Task.Status oldStatus, Task.Status newStatus) {
-        if (oldStatus != newStatus) {
-            synchronized (statusListeners) {
-                for (StatusListener l : statusListeners) {
-                    if (l != null) {
-                        l.onTaskStatusChanged(this, oldStatus, newStatus);
-                    }
-                }
-            }
-        }
-    }
-
-    public void triggerProgressListeners(final ProgressInfo progressInfo) {
-        if (progressListeners.size() > 0) {
-            Tools.postOnMainLoop(new Runnable() {
-                @Override
-                public void run() {
-                    for (ProgressListener l : progressListeners) {
-                        if (l != null) {
-                            l.onTaskProgressChanged(SimpleTask.this, progressInfo);
-                        }
-                    }
-                }
-            });
-        }
+        return impl;
     }
 }

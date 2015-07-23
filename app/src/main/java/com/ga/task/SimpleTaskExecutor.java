@@ -35,7 +35,7 @@ public class SimpleTaskExecutor implements TaskExecutor {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                ((TaskPrivate)task).startTask();
+                task.startTask();
             }
         });
     }

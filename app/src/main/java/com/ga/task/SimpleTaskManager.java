@@ -75,7 +75,7 @@ public class SimpleTaskManager implements TaskManager, TaskProvider.TaskProvider
             return;
         }
 
-        ((TaskPrivate)task).setTaskStatus(Task.Status.Starting);
+        task.getPrivate().setTaskStatus(Task.Status.Starting);
 
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
@@ -389,8 +389,8 @@ public class SimpleTaskManager implements TaskManager, TaskProvider.TaskProvider
         Assert.assertTrue(Tasks.isTaskReadyToStart(task));
 
         logTask(task, "Task started");
-        task.setTaskStatus(Task.Status.Started);
-        task.setTaskStartDate(new Date());
+        task.getPrivate().setTaskStatus(Task.Status.Started);
+        task.getPrivate().setTaskStartDate(new Date());
 
         final Task.Callback originalCallback = task.getTaskCallback();
         Task.Callback callback = new Task.Callback() {
@@ -422,7 +422,8 @@ public class SimpleTaskManager implements TaskManager, TaskProvider.TaskProvider
 
     public void handleTaskCompletionOnThread(final Task task, final Task.Callback callback, final Task.Status status) {
         checkHandlerThread();
-        task.setTaskStatus(status);
+        task.getPrivate().setTaskStatus(status);
+        task.getPrivate().clearAllListeners();
 
         Tools.runOnHandlerThread(callbackHandler, new Runnable() {
             @Override
@@ -444,9 +445,9 @@ public class SimpleTaskManager implements TaskManager, TaskProvider.TaskProvider
     void cancelTaskOnThread(Task task, final Object info) {
         checkHandlerThread();
 
-        if (!task.getNeedCancelTask()) {
+        if (!task.getPrivate().getNeedCancelTask()) {
             Task.Status st = task.getTaskStatus();
-            task.cancelTask(info);
+            task.getPrivate().cancelTask(info);
 
             if (st == Task.Status.Starting) {
                 waitingTasks.getTaskPool().removeTask(task);
