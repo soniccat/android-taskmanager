@@ -12,24 +12,7 @@ import java.util.List;
 // A provider defines in which order tasks should be executed
 // A provider must remove a task from the pool in the takeTopTask method
 
-public interface TaskProvider {
+public interface TaskProvider extends TaskPool {
     Task getTopTask(List<Integer> typesToFilter);
     Task takeTopTask(List<Integer> typesToFilter);
-
-    void setTaskPool(TaskPool pool);
-    TaskPool getTaskPool();
-
-    void setHandler(Handler handler);
-    Handler getHandler();
-
-    void setUserData(Object data);
-    Object getUserData();
-
-    void addListener(TaskProviderListener listener);
-    void removeListener(TaskProviderListener listener);
-
-    public interface TaskProviderListener {
-        void onTaskAdded(TaskProvider provider, Task task);
-        void onTaskRemoved(TaskProvider provider, Task task);
-    }
 }

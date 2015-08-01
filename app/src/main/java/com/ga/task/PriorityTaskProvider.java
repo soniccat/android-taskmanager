@@ -9,6 +9,7 @@ import junit.framework.Assert;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -18,23 +19,21 @@ import java.util.PriorityQueue;
 
 // A task source for TaskManager
 
-public class PriorityTaskProvider implements TaskProvider, TaskPool.TaskPoolListener {
-    TaskPool taskPool;
-    Handler handler;
+public class PriorityTaskProvider implements TaskProvider, TaskPool {
+    private Handler handler;
+    private Object userData;
 
     //TODO: think about weakref
-    List<TaskProviderListener> listeners;
-    Object userData;
+    private List<TaskPoolListener> listeners;
 
     // Task type -> priority queue
-    SparseArray<PriorityQueue<Task>> taskQueues;
+    private SparseArray<PriorityQueue<Task>> taskQueues;
 
     public PriorityTaskProvider(Handler handler, TaskPool taskPool) {
         taskQueues = new SparseArray<PriorityQueue<Task>>();
 
-        listeners = new ArrayList<TaskProviderListener>();
+        listeners = new ArrayList<TaskPoolListener>();
         setHandler(handler);
-        setTaskPool(taskPool);
     }
 
     private PriorityQueue<Task> createPriorityQueue() {
@@ -74,7 +73,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool.TaskPoolList
         Task task = getTopTask(typesToFilter);
         if (task != null) {
             taskQueues.get(task.getTaskType()).poll();
-            getTaskPool().removeTask(task);
+            triggerOnTaskRemoved(task);
         }
 
         return task;
@@ -94,44 +93,29 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool.TaskPoolList
 
                     taskQueues.put(taskQueues.keyAt(i), queue);
                 }
-                Log.d("prioirtyprovider","queue replaced");
+                Log.d("prioirtyprovider", "queue replaced");
             }
         });
     }
 
     @Override
-    public void setTaskPool(TaskPool pool) {
-        if (taskPool != null) {
-            taskPool.removeListener(this);
-        }
+    public void addTask(final Task task) {
+        // TODO: think about the same codebase here in pool and in TaskManager, it would be better
+        // to have it only in the TaskManager
+        // TaskManager must set Starting status on the current thread
+        task.getPrivate().setTaskStatus(Task.Status.Starting);
 
-        taskPool = pool;
-        taskPool.addListener(this);
+        Tools.runOnHandlerThread(handler, new Runnable() {
+            @Override
+            public void run() {
+                addTaskOnThread(task);
+            }
+        });
     }
 
     @Override
-    public TaskPool getTaskPool() {
-        return taskPool;
-    }
-
-    @Override
-    public void onTaskAdded(TaskPool pool, Task task) {
-        addOnThread(task);
-    }
-
-    @Override
-    public void onTaskRemoved(TaskPool pool, Task task) {
-        removeOnThread(task);
-    }
-
-    @Override
-    public void setUserData(Object data) {
-        this.userData = data;
-    }
-
-    @Override
-    public Object getUserData() {
-        return userData;
+    public void removeTask(Task task) {
+        removeTaskOnThread(task);
     }
 
     @Override
@@ -144,33 +128,41 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool.TaskPoolList
         return handler;
     }
 
-    private void addOnThread(final Task task) {
+    private void addTaskOnThread(final Task task) {
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
                 addTaskToQueue(task);
 
-                for (TaskProviderListener listener : listeners) {
-                    listener.onTaskAdded(PriorityTaskProvider.this,task);
+                for (TaskPoolListener listener : listeners) {
+                    listener.onTaskAdded(PriorityTaskProvider.this, task);
                 }
             }
         });
     }
 
-    private void removeOnThread(final Task task) {
+    private void removeTaskOnThread(final Task task) {
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
                 if (removeTaskFromQueue(task)) {
-                    for (TaskProviderListener listener : listeners) {
-                        listener.onTaskRemoved(PriorityTaskProvider.this,task);
-                    }
+                    triggerOnTaskRemoved(task);
                 }
             }
         });
     }
 
+    private void triggerOnTaskRemoved(Task task) {
+        checkHandlerThread();
+
+        for (TaskPoolListener listener : listeners) {
+            listener.onTaskRemoved(PriorityTaskProvider.this, task);
+        }
+    }
+
     private void addTaskToQueue(Task task) {
+        checkHandlerThread();
+
         PriorityQueue<Task> queue = taskQueues.get(task.getTaskType());
         if (queue == null) {
             queue = createPriorityQueue();
@@ -181,6 +173,8 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool.TaskPoolList
     }
 
     private boolean removeTaskFromQueue(Task task) {
+        checkHandlerThread();
+
         PriorityQueue<Task> queue = taskQueues.get(task.getTaskType());
         if (queue != null) {
             return queue.remove(task);
@@ -189,21 +183,79 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool.TaskPoolList
         return false;
     }
 
-    private void checkHandlerThread() {
-        Assert.assertEquals(Looper.myLooper(), handler.getLooper());
-    }
-
     public interface PriorityProvider {
         int getPriority(Task task);
     }
 
     @Override
-    public void addListener(TaskProviderListener listener) {
+    public Task getTask(String taskId) {
+        checkHandlerThread();
+
+        Task resultTask = null;
+        for (int i=0; i<taskQueues.size() && resultTask == null; ++i) {
+            PriorityQueue<Task> queue = taskQueues.get(taskQueues.keyAt(i));
+            Iterator<Task> iterator = queue.iterator();
+
+            while (iterator.hasNext()) {
+                Task task = iterator.next();
+                if (task.getTaskId() != null && task.getTaskId().equals(taskId)) {
+                    resultTask = task;
+                    break;
+                }
+            }
+        }
+
+        return resultTask;
+    }
+
+    @Override
+    public int getTaskCount() {
+        checkHandlerThread();
+
+        int resultCount = 0;
+        for (int i=0; i<taskQueues.size(); ++i) {
+            PriorityQueue<Task> queue = taskQueues.get(taskQueues.keyAt(i));
+            resultCount += queue.size();
+        }
+
+        return resultCount;
+    }
+
+    @Override
+    public List<Task> getTasks() {
+        checkHandlerThread();
+
+        ArrayList<Task> tasks = new ArrayList<Task>();
+
+        for (int i=0; i<taskQueues.size(); ++i) {
+            PriorityQueue<Task> queue = taskQueues.get(taskQueues.keyAt(i));
+            tasks.addAll(queue);
+        }
+
+        return tasks;
+    }
+
+    @Override
+    public void setUserData(Object data) {
+        userData = data;
+    }
+
+    @Override
+    public Object getUserData() {
+        return userData;
+    }
+
+    @Override
+    public void addListener(TaskPoolListener listener) {
         listeners.add(listener);
     }
 
     @Override
-    public void removeListener(TaskProviderListener listener) {
+    public void removeListener(TaskPoolListener listener) {
         listeners.remove(listener);
+    }
+
+    private void checkHandlerThread() {
+        Assert.assertEquals(Looper.myLooper(), handler.getLooper());
     }
 }

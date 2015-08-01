@@ -15,7 +15,7 @@ import java.util.Date;
 //TODO: detach from AcyncTask to a separate TaskLauncher class/interface
 public abstract class SimpleTask implements Task {
 
-    final TaskImpl impl = new TaskImpl();
+    final TaskImpl impl = new TaskImpl(this);
 
     public SimpleTask() {
         super();

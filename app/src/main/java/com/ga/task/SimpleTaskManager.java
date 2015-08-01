@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Created by alexeyglushkov on 20.09.14.
  */
-public class SimpleTaskManager implements TaskManager, TaskProvider.TaskProviderListener, TaskPool.TaskPoolListener {
+public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener {
 
     static final String TAG = "SimpleTaskManager";
 
@@ -51,7 +51,7 @@ public class SimpleTaskManager implements TaskManager, TaskProvider.TaskProvider
         loadingTasks.addListener(this);
 
         waitingTasks = new PriorityTaskProvider(handler, new SimpleTaskPool(handler));
-        waitingTasks.getTaskPool().addListener(this);
+        waitingTasks.addListener(this);
 
         taskProviders = new ArrayList<WeakReference<TaskProvider>>();
 
@@ -80,7 +80,7 @@ public class SimpleTaskManager implements TaskManager, TaskProvider.TaskProvider
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
-                waitingTasks.getTaskPool().addTask(task);
+                waitingTasks.addTask(task);
                 putOnThread(task);
             }
         });
@@ -110,10 +110,9 @@ public class SimpleTaskManager implements TaskManager, TaskProvider.TaskProvider
 
     @Override
     public void addTaskProvider(TaskProvider provider) {
-        Assert.assertEquals(provider.getHandler(),handler);
+        Assert.assertEquals(provider.getHandler(), handler);
 
-        provider.addListener(this);
-        provider.getTaskPool().addListener(this); //for snapshots
+        provider.addListener(this); //for snapshots
         taskProviders.add(new WeakReference<TaskProvider>(provider));
     }
 
@@ -122,27 +121,11 @@ public class SimpleTaskManager implements TaskManager, TaskProvider.TaskProvider
         this.taskExecutor = executor;
     }
 
-    // == TaskProvider.TaskProviderListener
-    @Override
-    public void onTaskAdded(TaskProvider provider, final Task task) {
-        //run on the next iteration to give ability to handle added event for other listeners before moving the task to the loading queue
-        //otherwise removed event will be sent before added for TaskPool.TaskPoolListener (see functions below)
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                checkTasksToRunOnThread();
-            }
-        });
-    }
-
-    @Override
-    public void onTaskRemoved(TaskProvider provider, final Task task) {
-        cancelTaskOnThread(task, null);
-    }
-
     // == TaskPool.TaskPoolListener
     @Override
     public void onTaskAdded(TaskPool pool, final Task task) {
+        checkHandlerThread();
+
         if (snapshot != null) {
             final boolean isLoadingPool = pool == loadingTasks;
 
@@ -157,12 +140,22 @@ public class SimpleTaskManager implements TaskManager, TaskProvider.TaskProvider
                 }
             });
         }
+
+        //run on the next iteration to give ability to handle added event for other listeners before moving the task to the loading queue
+        //otherwise removed event will be sent before added for TaskPool.TaskPoolListener (see functions below)
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                checkTasksToRunOnThread();
+            }
+        });
     }
 
     @Override
     public void onTaskRemoved(TaskPool pool, final Task task) {
-        if (snapshot != null) {
+        checkHandlerThread();
 
+        if (snapshot != null) {
             final boolean isLoadingPool = pool == loadingTasks;
 
             Tools.runOnHandlerThread(callbackHandler, new Runnable() {
@@ -176,6 +169,8 @@ public class SimpleTaskManager implements TaskManager, TaskProvider.TaskProvider
                 }
             });
         }
+
+        cancelTaskOnThread(task, null);
     }
 
     // ==
@@ -218,7 +213,6 @@ public class SimpleTaskManager implements TaskManager, TaskProvider.TaskProvider
     }
 
     public void setWaitingTaskProvider(TaskProvider provider) {
-        Assert.assertEquals(provider.getTaskPool().getHandler(), handler);
         Assert.assertEquals(provider.getHandler(), handler);
 
         this.waitingTasks = provider;
@@ -450,12 +444,12 @@ public class SimpleTaskManager implements TaskManager, TaskProvider.TaskProvider
             task.getPrivate().cancelTask(info);
 
             if (st == Task.Status.Starting) {
-                waitingTasks.getTaskPool().removeTask(task);
+                waitingTasks.removeTask(task);
                 handleTaskCompletionOnThread(task, task.getTaskCallback(), Task.Status.Cancelled);
 
                 for (WeakReference<TaskProvider> taskProvider : taskProviders) {
                     if (taskProvider.get() != null) {
-                        taskProvider.get().getTaskPool().removeTask(task);
+                        taskProvider.get().removeTask(task);
                     }
                 }
 
@@ -519,9 +513,9 @@ public class SimpleTaskManager implements TaskManager, TaskProvider.TaskProvider
             waitingTaskInfo = new SparseArray<Integer>();
             for (WeakReference<TaskProvider> taskProvider : taskProviders) {
                 if (taskProvider.get() != null) {
-                    waitingTaskCount += taskProvider.get().getTaskPool().getTaskCount();
+                    waitingTaskCount += taskProvider.get().getTaskCount();
 
-                    for (Task task : taskProvider.get().getTaskPool().getTasks()) {
+                    for (Task task : taskProvider.get().getTasks()) {
                         int count = waitingTaskInfo.get(task.getTaskType(), 0);
                         ++count;
                         waitingTaskInfo.put(task.getTaskType(), count);

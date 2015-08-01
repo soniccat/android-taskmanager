@@ -16,11 +16,13 @@ public class SimpleTaskPool implements TaskPool, Task.StatusListener {
     static final String TAG = "SimpleTaskPool";
 
     //TODO: think about weakref
-    List<TaskPoolListener> listeners;
-    Handler handler;
+    private List<TaskPoolListener> listeners;
+    private Handler handler;
 
     //TODO: think about a map
-    List<Task> tasks;
+    private List<Task> tasks;
+
+    private Object userData;
 
     public SimpleTaskPool(Handler handler) {
         tasks = new ArrayList<Task>();
@@ -57,7 +59,7 @@ public class SimpleTaskPool implements TaskPool, Task.StatusListener {
     }
 
     private void addTaskOnThread(Task task) {
-        handlerThreadCheck();
+        checkHandlerThread();
 
         task.addTaskStatusListener(this);
 
@@ -105,7 +107,7 @@ public class SimpleTaskPool implements TaskPool, Task.StatusListener {
 
     @Override
     public Task getTask(String taskId) {
-        handlerThreadCheck();
+        checkHandlerThread();
 
         for (Task task : tasks) {
             if(task.getTaskId() != null && task.getTaskId().equals(taskId)) {
@@ -118,16 +120,26 @@ public class SimpleTaskPool implements TaskPool, Task.StatusListener {
 
     @Override
     public int getTaskCount() {
-        handlerThreadCheck();
+        checkHandlerThread();
 
         return tasks.size();
     }
 
     @Override
     public List<Task> getTasks() {
-        handlerThreadCheck();
+        checkHandlerThread();
 
         return tasks;
+    }
+
+    @Override
+    public void setUserData(Object data) {
+        this.userData = data;
+    }
+
+    @Override
+    public Object getUserData() {
+        return userData;
     }
 
     @Override
@@ -140,7 +152,7 @@ public class SimpleTaskPool implements TaskPool, Task.StatusListener {
         listeners.remove(listener);
     }
 
-    private void handlerThreadCheck() {
+    private void checkHandlerThread() {
         Assert.assertEquals(Looper.myLooper(),handler.getLooper());
     }
 }

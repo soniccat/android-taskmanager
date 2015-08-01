@@ -12,6 +12,8 @@ import java.util.Date;
  * Created by alexeyglushkov on 23.07.15.
  */
 public class TaskImpl implements Task, TaskPrivate {
+    private Task outerTask;
+
     protected Task.Callback startCallback;
     protected Object cancellationInfo;
     protected Task.Status taskStatus = Task.Status.NotStarted;
@@ -32,9 +34,10 @@ public class TaskImpl implements Task, TaskPrivate {
     protected ArrayList<StatusListener> statusListeners;
     protected ArrayList<ProgressListener> progressListeners;
 
-    public TaskImpl() {
+    public TaskImpl(Task outerTask) {
         super();
 
+        this.outerTask = outerTask;
         statusListeners = new ArrayList<StatusListener>();
         progressListeners = new ArrayList<ProgressListener>();
     }
@@ -254,7 +257,7 @@ public class TaskImpl implements Task, TaskPrivate {
             synchronized (statusListeners) {
                 for (StatusListener l : statusListeners) {
                     if (l != null) {
-                        l.onTaskStatusChanged(this, oldStatus, newStatus);
+                        l.onTaskStatusChanged(outerTask, oldStatus, newStatus);
                     }
                 }
             }
@@ -268,7 +271,7 @@ public class TaskImpl implements Task, TaskPrivate {
                 public void run() {
                     for (ProgressListener l : progressListeners) {
                         if (l != null) {
-                            l.onTaskProgressChanged(TaskImpl.this, progressInfo);
+                            l.onTaskProgressChanged(outerTask, progressInfo);
                         }
                     }
                 }

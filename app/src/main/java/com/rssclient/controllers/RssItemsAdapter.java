@@ -142,7 +142,7 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
         task.addTaskProgressListener(this);
         task.setTaskProgressMinChange(0.2f);
 
-        taskProvider.getTaskPool().addTask(task);
+        taskProvider.addTask(task);
     }
 
     public void onTaskProgressChanged(Task task, ProgressInfo info) {
@@ -170,11 +170,12 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
             }
         }
 
-        com.ga.task.Tools.runOnHandlerThread(taskProvider.getTaskPool().getHandler(), new Runnable() {
+        //TODO: it should be done via api without direct access to getHandler
+        com.ga.task.Tools.runOnHandlerThread(taskProvider.getHandler(), new Runnable() {
             @Override
             public void run() {
                 List<Task> tasks = new ArrayList<Task>();
-                tasks.addAll(taskProvider.getTaskPool().getTasks());
+                tasks.addAll(taskProvider.getTasks());
 
                 for (Task t : tasks) {
                     Pair<Integer, Image> taskData = (Pair<Integer, Image>)t.getTaskUserData();

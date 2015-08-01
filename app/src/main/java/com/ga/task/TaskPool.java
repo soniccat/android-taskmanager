@@ -18,14 +18,18 @@ public interface TaskPool {
 
     void addTask(Task task);
     void removeTask(Task task);
+
     Task getTask(String taskId);
     int getTaskCount();
     List<Task> getTasks();
 
+    void setUserData(Object data);
+    Object getUserData();
+
     void addListener(TaskPoolListener listener);
     void removeListener(TaskPoolListener listener);
 
-    public interface TaskPoolListener {
+    interface TaskPoolListener {
         void onTaskAdded(TaskPool pool, Task task);
         void onTaskRemoved(TaskPool pool, Task task);
     }
