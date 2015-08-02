@@ -16,10 +16,11 @@ import android.os.Parcelable;
 import android.util.Xml;
 import com.ga.image.Image;
 import com.ga.loader.data.ByteArrayHandler;
+import com.ga.loader.http.HttpURLConnectionProvider;
 import com.ga.task.Task;
 import com.ga.task.Tasks;
 
-public class RssFeed implements Parcelable, Serializable, Tasks.TaskListener {
+public class RssFeed implements Parcelable, Serializable, Tasks.TaskListener, HttpURLConnectionProvider {
     String name;
     URL url;
     Task.Status loadStatus = Task.Status.NotStarted;
@@ -93,6 +94,11 @@ public class RssFeed implements Parcelable, Serializable, Tasks.TaskListener {
         }
 
         return connection;
+    }
+
+    @Override
+    public URL getURL() {
+        return this.url;
     }
 
     public ByteArrayHandler getDataHandler() {

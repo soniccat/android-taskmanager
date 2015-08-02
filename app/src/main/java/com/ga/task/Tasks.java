@@ -36,7 +36,6 @@ public class Tasks {
                     Tools.postOnMainLoop(new Runnable() {
                         @Override
                         public void run() {
-                            task.removeTaskStatusListener(thisListener);
                             listener.setTaskCompleted(task);
                         }
                 });

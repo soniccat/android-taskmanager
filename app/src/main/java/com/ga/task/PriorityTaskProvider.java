@@ -19,7 +19,7 @@ import java.util.PriorityQueue;
 
 // A task source for TaskManager
 
-public class PriorityTaskProvider implements TaskProvider, TaskPool {
+public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.StatusListener {
     private Handler handler;
     private Object userData;
 
@@ -84,7 +84,6 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool {
             @Override
             public void run() {
                 for (int i = 0; i < taskQueues.size(); i++) {
-
                     PriorityQueue<Task> queue = createPriorityQueue();
                     for (Task t : taskQueues.get(taskQueues.keyAt(i))) {
                         t.setTaskPriority(provider.getPriority(t));
@@ -100,6 +99,8 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool {
 
     @Override
     public void addTask(final Task task) {
+        task.addTaskStatusListener(this);
+
         // TODO: think about the same codebase here in pool and in TaskManager, it would be better
         // to have it only in the TaskManager
         // TaskManager must set Starting status on the current thread
@@ -116,6 +117,12 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool {
     @Override
     public void removeTask(Task task) {
         removeTaskOnThread(task);
+    }
+
+    public void onTaskStatusChanged(Task task, Task.Status oldStatus, Task.Status newStatus) {
+        if (Tasks.isTaskCompleted(task)) {
+            removeTask(task);
+        }
     }
 
     @Override

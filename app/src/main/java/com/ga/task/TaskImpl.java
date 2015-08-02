@@ -1,9 +1,12 @@
 package com.ga.task;
 
+import android.os.Looper;
+
 import com.ga.loader.ProgressInfo;
 import com.ga.loader.ProgressUpdater;
-import com.rssclient.controllers.*;
 import com.rssclient.controllers.Tools;
+
+import junit.framework.Assert;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -161,33 +164,30 @@ public class TaskImpl implements Task, TaskPrivate {
 
     @Override
     public void addTaskStatusListener(StatusListener listener) {
-        synchronized(statusListeners) {
-            statusListeners.add(listener);
-        }
+        statusListeners.add(listener);
     }
 
     @Override
     public void removeTaskStatusListener(StatusListener listener) {
-        synchronized (statusListeners) {
-            int i = 0;
-            for (StatusListener l : statusListeners) {
-                if (l == listener) {
-                    statusListeners.remove(i);
-                    break;
-                }
-
-                ++i;
+        for (int i=0; i<statusListeners.size(); ++i) {
+            if (statusListeners.get(i) == listener) {
+                statusListeners.remove(i);
+                break;
             }
         }
     }
 
     @Override
     public void addTaskProgressListener(ProgressListener listener) {
+        checkMainThread();
+
         progressListeners.add(listener);
     }
 
     @Override
     public void removeTaskProgressListener(ProgressListener listener) {
+        checkMainThread();
+
         int i=0;
         for (ProgressListener l : progressListeners) {
             if (l == listener) {
@@ -202,7 +202,15 @@ public class TaskImpl implements Task, TaskPrivate {
     @Override
     public void clearAllListeners() {
         statusListeners.clear();
-        progressListeners.clear();
+
+        if (progressListeners.size() > 0) {
+            Tools.postOnMainLoop(new Runnable() {
+                @Override
+                public void run() {
+                    progressListeners.clear();
+                }
+            });
+        }
     }
 
     @Override
@@ -254,11 +262,9 @@ public class TaskImpl implements Task, TaskPrivate {
 
     private void triggerStatusListeners(Task.Status oldStatus, Task.Status newStatus) {
         if (oldStatus != newStatus) {
-            synchronized (statusListeners) {
-                for (StatusListener l : statusListeners) {
-                    if (l != null) {
-                        l.onTaskStatusChanged(outerTask, oldStatus, newStatus);
-                    }
+            for (StatusListener l : statusListeners) {
+                if (l != null) {
+                    l.onTaskStatusChanged(outerTask, oldStatus, newStatus);
                 }
             }
         }
@@ -289,5 +295,9 @@ public class TaskImpl implements Task, TaskPrivate {
             startCallback.finished(isCancelled);
             startCallback = null;
         }
+    }
+
+    private void checkMainThread() {
+        Assert.assertEquals(Looper.getMainLooper().getThread(), Thread.currentThread());
     }
 }

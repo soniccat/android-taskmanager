@@ -95,8 +95,6 @@ public class SimpleTaskPool implements TaskPool, Task.StatusListener {
             @Override
             public void run() {
                 if (tasks.remove(task)) {
-                    task.removeTaskStatusListener(SimpleTaskPool.this);
-
                     for (TaskPoolListener listener : listeners) {
                         listener.onTaskRemoved(SimpleTaskPool.this, task);
                     }

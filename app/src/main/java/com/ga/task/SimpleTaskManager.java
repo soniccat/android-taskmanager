@@ -100,7 +100,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
     @Override
     public void cancel(final Task task, final Object info) {
-        Tools.runOnHandlerThread(handler,new Runnable() {
+        Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
                 cancelTaskOnThread(task, info);
@@ -170,7 +170,9 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
             });
         }
 
-        cancelTaskOnThread(task, null);
+        if (task.getTaskStatus() == Task.Status.Cancelled) {
+            cancelTaskOnThread(task, null);
+        }
     }
 
     // ==
@@ -312,7 +314,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         return true;
     }
 
-    void checkTasksToRunOnThread() {
+    private void checkTasksToRunOnThread() {
         checkHandlerThread();
 
         if (this.loadingTasks.getTaskCount() < this.maxLoadingTasks) {
@@ -326,7 +328,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         }
     }
 
-    Task takeTaskToRunOnThread() {
+    private Task takeTaskToRunOnThread() {
         checkHandlerThread();
 
         List<Integer> taskTypesToFilter = new ArrayList<Integer>();
@@ -380,6 +382,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
     private void startTaskOnThread(final Task task) {
         checkHandlerThread();
+        logTask(task, "Task assert check");
         Assert.assertTrue(Tasks.isTaskReadyToStart(task));
 
         logTask(task, "Task started");
@@ -407,7 +410,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
     }
 
     private void logTask(Task task, String prefix) {
-        Log.d(TAG, prefix + " " + task.getClass().toString() + " id= " + task.getTaskId() + " priority= " + task.getTaskPriority() + " time " + task.getTaskDuration());
+        Log.d(TAG, prefix + " " + task.getClass().toString() + "(" + task.getTaskStatus() + ")" + " id= " + task.getTaskId() + " priority= " + task.getTaskPriority() + " time " + task.getTaskDuration());
     }
 
     private void checkHandlerThread() {
@@ -444,7 +447,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
             task.getPrivate().cancelTask(info);
 
             if (st == Task.Status.Starting) {
-                waitingTasks.removeTask(task);
+                //waitingTasks.removeTask(task);
                 handleTaskCompletionOnThread(task, task.getTaskCallback(), Task.Status.Cancelled);
 
                 for (WeakReference<TaskProvider> taskProvider : taskProviders) {

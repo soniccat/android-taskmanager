@@ -103,7 +103,7 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
 
     public void loadFeed(TaskManager taskManager, Context context, final RssFeed feed, final RssFeedCallback callback) {
 
-        final HttpLoadTask loatTask = new HttpLoadTask(feed.getUrlConnection(), new ByteArrayReader(feed.getDataHandler()));
+        final HttpLoadTask loatTask = new HttpLoadTask(feed, new ByteArrayReader(feed.getDataHandler()));
         loatTask.setTaskCallback(new Task.Callback() {
             @Override
             public void finished(boolean cancelled) {

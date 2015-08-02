@@ -15,16 +15,16 @@ import com.ga.task.SimpleTask;
 // Reader is an extended Handler
 
 public class HttpLoadTask extends SimpleTask {
-    protected HttpURLConnection connection;
+    protected HttpURLConnectionProvider provider;
     protected int contentLength;
     protected InputStreamReader handler;
     protected Object handledData;
 
-    public HttpLoadTask(HttpURLConnection connection, InputStreamReader handler) {
+    public HttpLoadTask(HttpURLConnectionProvider provider, InputStreamReader handler) {
         super();
-        this.connection = connection;
+        this.provider = provider;
         this.handler = handler;
-        setTaskId(connection.getURL().toString());
+        setTaskId(provider.getURL().toString());
     }
 
     public void setHandler(InputStreamReader handler) {
@@ -45,9 +45,11 @@ public class HttpLoadTask extends SimpleTask {
 
     public void startTask() {
         InputStream stream = null;
+        HttpURLConnection connection = provider.getUrlConnection();
 
         try {
             connection.connect();
+
             int length = connection.getContentLength();
             if (length != -1) {
                 setContentLength(length);

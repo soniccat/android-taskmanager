@@ -14,11 +14,12 @@ import android.util.Log;
 //import android.media.Image;
 
 import com.ga.loader.data.ByteArrayHandler;
+import com.ga.loader.http.HttpURLConnectionProvider;
 import com.ga.task.Task;
 import com.ga.task.Tasks;
 
 //TODO: think about implementing task container and moving check of setTaskCompleted to taskmanager
-public class Image implements Serializable, Tasks.TaskListener {
+public class Image implements Serializable, Tasks.TaskListener, HttpURLConnectionProvider {
     protected URL url;
     protected int width;
     protected int height;
@@ -128,6 +129,11 @@ public class Image implements Serializable, Tasks.TaskListener {
         }
 
         return connection;
+    }
+
+    @Override
+    public URL getURL() {
+        return this.url;
     }
 
     public static Bitmap bitmapFromByteArray(ByteArrayBuffer data) {
