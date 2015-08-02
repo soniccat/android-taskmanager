@@ -104,7 +104,7 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
 
     void loadImage(final Image image, final ViewHolder holder) {
 
-        holder.imageView.setImageBitmap(null);
+        holder.imageView.setImageDrawable(null);
         holder.loadingImage = image;
         if (image == null) {
             return;
