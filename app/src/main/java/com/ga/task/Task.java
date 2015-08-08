@@ -145,7 +145,7 @@ public interface Task extends TaskContainer {
 
     enum Status {
         NotStarted, //not started
-        Starting, //in queue, must be set in the caller thread
+        Waiting, //in queue, must be set in the caller thread
         Blocked, //is waiting until all dependencies finish
         Started, //started
         Finished, //successfully loaded
@@ -153,7 +153,7 @@ public interface Task extends TaskContainer {
     }
 
     enum LoadPolicy {
-        SkipIfAdded, // don't load if the state isn't equal to Starting
+        SkipIfAdded, // don't load if the state isn't equal to Waiting
         CancelAdded // cancel already added task, in this case you shouldn't do anything with cancelled task
     }
 

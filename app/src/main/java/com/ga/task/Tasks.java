@@ -27,8 +27,8 @@ public class Tasks {
 
                 Log.d("Image--", "start " + task + " " + task.getTaskStatus());
 
-                //Starting status is set in the main thread
-                if (newStatus == Task.Status.Starting) {
+                //Waiting status is set in the main thread
+                if (newStatus == Task.Status.Waiting) {
                     Assert.assertEquals(Looper.myLooper(), Looper.getMainLooper());
                     listener.setTaskInProgress(task);
 

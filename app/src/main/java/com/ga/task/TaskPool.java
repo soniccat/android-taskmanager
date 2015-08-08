@@ -2,7 +2,6 @@ package com.ga.task;
 
 import android.os.Handler;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,7 +11,7 @@ import java.util.List;
 // A storage for tasks you use in a fragment or in an activity
 // A pool must remove task when it finishes
 
-public interface TaskPool {
+public interface TaskPool extends Task.StatusListener {
     void setHandler(Handler handler);
     Handler getHandler();
 

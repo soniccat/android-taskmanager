@@ -75,7 +75,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
             return;
         }
 
-        task.getPrivate().setTaskStatus(Task.Status.Starting);
+        task.getPrivate().setTaskStatus(Task.Status.Waiting);
 
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
@@ -170,9 +170,9 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
             });
         }
 
-        if (task.getTaskStatus() == Task.Status.Cancelled) {
+        /*if (task.getTaskStatus() == Task.Status.Cancelled) {
             cancelTaskOnThread(task, null);
-        }
+        }*/
     }
 
     // ==
@@ -446,7 +446,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
             Task.Status st = task.getTaskStatus();
             task.getPrivate().cancelTask(info);
 
-            if (st == Task.Status.Starting) {
+            if (st == Task.Status.Waiting) {
                 //waitingTasks.removeTask(task);
                 handleTaskCompletionOnThread(task, task.getTaskCallback(), Task.Status.Cancelled);
 

@@ -103,8 +103,8 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
 
         // TODO: think about the same codebase here in pool and in TaskManager, it would be better
         // to have it only in the TaskManager
-        // TaskManager must set Starting status on the current thread
-        task.getPrivate().setTaskStatus(Task.Status.Starting);
+        // TaskManager must set Waiting status on the current thread
+        task.getPrivate().setTaskStatus(Task.Status.Waiting);
 
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override

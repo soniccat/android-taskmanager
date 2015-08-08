@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by alexeyglushkov on 30.12.14.
  */
-public class SimpleTaskPool implements TaskPool, Task.StatusListener {
+public class SimpleTaskPool implements TaskPool {
     static final String TAG = "SimpleTaskPool";
 
     //TODO: think about weakref
@@ -47,21 +47,22 @@ public class SimpleTaskPool implements TaskPool, Task.StatusListener {
             return;
         }
 
-        //TaskManager must set Starting status on the current thread
-        task.getPrivate().setTaskStatus(Task.Status.Starting);
+        Log.d(TAG, "addTask");
+
+        //TaskManager must set Waiting status on the current thread
+        task.getPrivate().setTaskStatus(Task.Status.Waiting);
 
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
                 addTaskOnThread(task);
+                Log.d(TAG, "addTask on thread");
             }
         });
     }
 
     private void addTaskOnThread(Task task) {
         checkHandlerThread();
-
-        task.addTaskStatusListener(this);
 
         //search for the task with the same id
         if (task.getTaskId() != null) {
@@ -76,6 +77,7 @@ public class SimpleTaskPool implements TaskPool, Task.StatusListener {
             }
         }
 
+        task.addTaskStatusListener(this);
         tasks.add(task);
 
         for (TaskPoolListener listener : listeners) {
