@@ -9,8 +9,10 @@ import junit.framework.Assert;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 
 /**
@@ -29,16 +31,17 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
     private List<TaskPoolListener> listeners;
 
     // Task type -> priority queue
-    private SparseArray<PriorityQueue<Task>> taskQueues;
+    // map is used because SparseArray can't be tested via junit
+    private Map<Integer,PriorityQueue<Task>> taskQueues;
 
-    public PriorityTaskProvider(Handler handler, TaskPool taskPool) {
-        taskQueues = new SparseArray<PriorityQueue<Task>>();
+    public PriorityTaskProvider(Handler handler) {
+        taskQueues = new HashMap<Integer, PriorityQueue<Task>>();
 
         listeners = new ArrayList<TaskPoolListener>();
         setHandler(handler);
     }
 
-    private PriorityQueue<Task> createPriorityQueue() {
+    protected PriorityQueue<Task> createPriorityQueue() {
         return new PriorityQueue<Task>(11, new Comparator<Task>() {
             @Override
             public int compare(Task lhs, Task rhs) {
@@ -54,9 +57,9 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
         Task topTask = null;
         int topPriority = -1;
 
-        for (int i = 0; i < taskQueues.size(); i++) {
-            if (!typesToFilter.contains(taskQueues.keyAt(i))) {
-                PriorityQueue<Task> queue = taskQueues.get(taskQueues.keyAt(i));
+        for (Map.Entry<Integer, PriorityQueue<Task>> entry : taskQueues.entrySet()) {
+            if (!typesToFilter.contains(entry.getKey())) {
+                PriorityQueue<Task> queue = entry.getValue();
                 Task queueTask = queue.peek();
                 if (queueTask != null && queueTask.getTaskPriority() > topPriority) {
                     topTask = queueTask;
@@ -85,14 +88,14 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
-                for (int i = 0; i < taskQueues.size(); i++) {
+                for (Map.Entry<Integer, PriorityQueue<Task>> entry : taskQueues.entrySet()) {
                     PriorityQueue<Task> queue = createPriorityQueue();
-                    for (Task t : taskQueues.get(taskQueues.keyAt(i))) {
+                    for (Task t : entry.getValue()) {
                         t.setTaskPriority(provider.getPriority(t));
                         queue.add(t);
                     }
 
-                    taskQueues.put(taskQueues.keyAt(i), queue);
+                    taskQueues.put(entry.getKey(), queue);
                 }
                 Log.d("prioirtyprovider", "queue replaced");
             }
@@ -102,7 +105,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
     @Override
     public void addTask(final Task task) {
         if (!Tasks.isTaskReadyToStart(task)) {
-            Log.d(TAG, "Can't put task " + task.getClass().toString() + " because it's already started " + task.getTaskStatus().toString());
+            Log.d(TAG, "Can't put task " + task.getClass().toString() + " because it has been added " + task.getTaskStatus().toString());
             return;
         }
 
@@ -141,17 +144,12 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
     }
 
     private void addTaskOnThread(final Task task) {
-        Tools.runOnHandlerThread(handler, new Runnable() {
-            @Override
-            public void run() {
-                task.addTaskStatusListener(PriorityTaskProvider.this);
-                addTaskToQueue(task);
+        task.addTaskStatusListener(PriorityTaskProvider.this);
+        addTaskToQueue(task);
 
-                for (TaskPoolListener listener : listeners) {
-                    listener.onTaskAdded(PriorityTaskProvider.this, task);
-                }
-            }
-        });
+        for (TaskPoolListener listener : listeners) {
+            listener.onTaskAdded(PriorityTaskProvider.this, task);
+        }
     }
 
     private void removeTaskOnThread(final Task task) {
@@ -205,8 +203,8 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
         checkHandlerThread();
 
         Task resultTask = null;
-        for (int i=0; i<taskQueues.size() && resultTask == null; ++i) {
-            PriorityQueue<Task> queue = taskQueues.get(taskQueues.keyAt(i));
+        for (Map.Entry<Integer, PriorityQueue<Task>> entry : taskQueues.entrySet()) {
+            PriorityQueue<Task> queue = entry.getValue();
             Iterator<Task> iterator = queue.iterator();
 
             while (iterator.hasNext()) {
@@ -215,6 +213,10 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
                     resultTask = task;
                     break;
                 }
+            }
+
+            if (resultTask != null) {
+                break;
             }
         }
 
@@ -226,8 +228,8 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
         checkHandlerThread();
 
         int resultCount = 0;
-        for (int i=0; i<taskQueues.size(); ++i) {
-            PriorityQueue<Task> queue = taskQueues.get(taskQueues.keyAt(i));
+        for (Map.Entry<Integer, PriorityQueue<Task>> entry : taskQueues.entrySet()) {
+            PriorityQueue<Task> queue = entry.getValue();
             resultCount += queue.size();
         }
 
@@ -240,8 +242,8 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
 
         ArrayList<Task> tasks = new ArrayList<Task>();
 
-        for (int i=0; i<taskQueues.size(); ++i) {
-            PriorityQueue<Task> queue = taskQueues.get(taskQueues.keyAt(i));
+        for (Map.Entry<Integer, PriorityQueue<Task>> entry : taskQueues.entrySet()) {
+            PriorityQueue<Task> queue = entry.getValue();
             tasks.addAll(queue);
         }
 

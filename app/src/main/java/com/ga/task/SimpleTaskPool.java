@@ -43,7 +43,7 @@ public class SimpleTaskPool implements TaskPool {
     @Override
     public void addTask(final Task task) {
         if (!Tasks.isTaskReadyToStart(task)) {
-            Log.d(TAG, "Can't put task " + task.getClass().toString() + " because it's already started " + task.getTaskStatus().toString());
+            Log.d(TAG, "Can't put task " + task.getClass().toString() + " because it has been added " + task.getTaskStatus().toString());
             return;
         }
 

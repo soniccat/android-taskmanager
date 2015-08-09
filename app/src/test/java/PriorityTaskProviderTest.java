@@ -1,21 +1,19 @@
 import android.os.Handler;
 import android.os.Looper;
 
-import com.ga.task.SimpleTaskPool;
+import com.ga.task.PriorityTaskProvider;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
-
 /**
- * Created by alexeyglushkov on 08.08.15.
+ * Created by alexeyglushkov on 09.08.15.
  */
-public class SimpleTaskPoolTest extends TaskPoolTest {
+public class PriorityTaskProviderTest extends TaskPoolTest {
 
     @Before
     public void prepare() {
-        super.before(new SimpleTaskPool(new Handler(Looper.myLooper())));
+        super.before(new PriorityTaskProvider(new Handler(Looper.myLooper())));
     }
 
     @Test

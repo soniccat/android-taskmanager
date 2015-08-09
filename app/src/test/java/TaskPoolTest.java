@@ -6,6 +6,7 @@ import com.ga.task.TaskPool;
 import com.ga.task.TaskPrivate;
 
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -22,7 +23,7 @@ public abstract class TaskPoolTest {
         this.taskPool = taskPool;
     }
 
-    public void testSetGetHandler() {
+    public void setGetHandler() {
         // Arrange
         HandlerThread handlerThread = new HandlerThread("HandlerThread");
         handlerThread.start();
@@ -36,12 +37,14 @@ public abstract class TaskPoolTest {
         assertEquals(handler, taskPool.getHandler());
     }
 
-    public void testAddTask(){
+    public void addTask(){
         // Arrange
         Task task = Mockito.mock(Task.class);
         TaskPrivate taskPrivate = Mockito.mock(TaskPrivate.class);
         TaskPool.TaskPoolListener listener = Mockito.mock(TaskPool.TaskPoolListener.class);
 
+        Mockito.when(task.getTaskStatus()).thenReturn(Task.Status.NotStarted);
+        Mockito.when(task.getTaskType()).thenReturn(0);
         Mockito.when(task.getPrivate()).thenReturn(taskPrivate);
 
         // Act
@@ -55,6 +58,27 @@ public abstract class TaskPoolTest {
 
         assertEquals(taskPool.getTaskCount(), 1);
         assertTrue(taskPool.getTasks().contains(task));
+    }
+
+    public void addStartedTask() {
+        // Arrange
+        Task task = Mockito.mock(Task.class);
+        TaskPrivate taskPrivate = Mockito.mock(TaskPrivate.class);
+        TaskPool.TaskPoolListener listener = Mockito.mock(TaskPool.TaskPoolListener.class);
+
+        Mockito.when(task.getTaskStatus()).thenReturn(Task.Status.Started);
+        Mockito.when(task.getPrivate()).thenReturn(taskPrivate);
+
+        // Act
+        taskPool.addTask(task);
+
+        // Verify
+        Mockito.verify(taskPrivate, Mockito.never()).setTaskStatus(Task.Status.Waiting);
+        Mockito.verify(task, Mockito.never()).addTaskStatusListener(taskPool);
+        Mockito.verify(listener, Mockito.never()).onTaskAdded(taskPool, task);
+
+        assertEquals(taskPool.getTaskCount(), 0);
+        assertFalse(taskPool.getTasks().contains(task));
     }
 
     /*
@@ -133,11 +157,65 @@ public abstract class TaskPoolTest {
     }
     */
 
-    public void testGetTask() {
+    public void removeTask() {
+        // Arrange
+        Task task = Mockito.mock(Task.class);
+        TaskPrivate taskPrivate = Mockito.mock(TaskPrivate.class);
+        TaskPool.TaskPoolListener listener = Mockito.mock(TaskPool.TaskPoolListener.class);
+
+        Mockito.when(task.getTaskStatus()).thenReturn(Task.Status.NotStarted);
+        Mockito.when(task.getTaskId()).thenReturn("taskId");
+        Mockito.when(task.getPrivate()).thenReturn(taskPrivate);
+
+        // Act
+        taskPool.addListener(listener);
+        taskPool.addTask(task);
+        taskPool.removeTask(task);
+
+        // Verify
+        Mockito.verify(listener).onTaskAdded(taskPool, task);
+        Mockito.verify(listener).onTaskRemoved(taskPool, task);
+
+        assertEquals(0, taskPool.getTaskCount());
+    }
+
+    public void removeUnknownTask() {
+        // Arrange
+        Task task1 = Mockito.mock(Task.class);
+        TaskPrivate taskPrivate1 = Mockito.mock(TaskPrivate.class);
+        TaskPool.TaskPoolListener listener = Mockito.mock(TaskPool.TaskPoolListener.class);
+
+        Mockito.when(task1.getTaskStatus()).thenReturn(Task.Status.NotStarted);
+        Mockito.when(task1.getTaskId()).thenReturn("taskId");
+        Mockito.when(task1.getPrivate()).thenReturn(taskPrivate1);
+
+        Task task2 = Mockito.mock(Task.class);
+        TaskPrivate taskPrivate2 = Mockito.mock(TaskPrivate.class);
+
+        Mockito.when(task2.getTaskStatus()).thenReturn(Task.Status.NotStarted);
+        Mockito.when(task2.getTaskId()).thenReturn("taskId");
+        Mockito.when(task2.getPrivate()).thenReturn(taskPrivate2);
+
+        // Act
+        taskPool.addListener(listener);
+        taskPool.addTask(task1);
+        taskPool.removeTask(task2);
+
+        // Verify
+        Mockito.verify(listener).onTaskAdded(taskPool, task1);
+        Mockito.verify(listener, Mockito.never()).onTaskRemoved(taskPool, task1);
+        Mockito.verify(listener, Mockito.never()).onTaskAdded(taskPool, task2);
+        Mockito.verify(listener, Mockito.never()).onTaskRemoved(taskPool, task2);
+
+        assertEquals(1, taskPool.getTaskCount());
+    }
+
+    public void getTask() {
         // Arrange
         Task task = Mockito.mock(Task.class);
         TaskPrivate taskPrivate = Mockito.mock(TaskPrivate.class);
 
+        Mockito.when(task.getTaskStatus()).thenReturn(Task.Status.NotStarted);
         Mockito.when(task.getTaskId()).thenReturn("taskId");
         Mockito.when(task.getPrivate()).thenReturn(taskPrivate);
 
@@ -149,17 +227,37 @@ public abstract class TaskPoolTest {
         assertEquals(task, returnedTask);
     }
 
-    public void testGetTaskCount() {
+    public void getUnknownTask() {
+        // Arrange
+        Task task = Mockito.mock(Task.class);
+        TaskPrivate taskPrivate = Mockito.mock(TaskPrivate.class);
+
+        Mockito.when(task.getTaskStatus()).thenReturn(Task.Status.NotStarted);
+        Mockito.when(task.getTaskId()).thenReturn("taskId");
+        Mockito.when(task.getPrivate()).thenReturn(taskPrivate);
+
+        // Act
+        taskPool.addTask(task);
+        Task returnedTask = taskPool.getTask("taskId2");
+
+        // Verify
+        assertEquals(null, returnedTask);
+
+    }
+
+    public void getTaskCount() {
         // Arrange
         Task task1 = Mockito.mock(Task.class);
         TaskPrivate taskPrivate1 = Mockito.mock(TaskPrivate.class);
 
+        Mockito.when(task1.getTaskStatus()).thenReturn(Task.Status.NotStarted);
         Mockito.when(task1.getTaskId()).thenReturn("taskId");
         Mockito.when(task1.getPrivate()).thenReturn(taskPrivate1);
 
         Task task2 = Mockito.mock(Task.class);
         TaskPrivate taskPrivate2 = Mockito.mock(TaskPrivate.class);
 
+        Mockito.when(task2.getTaskStatus()).thenReturn(Task.Status.NotStarted);
         Mockito.when(task2.getTaskId()).thenReturn("taskId2");
         Mockito.when(task2.getPrivate()).thenReturn(taskPrivate2);
 
@@ -171,7 +269,7 @@ public abstract class TaskPoolTest {
         assertEquals(2, taskPool.getTaskCount());
     }
 
-    public void testSetGetUserData() {
+    public void setGetUserData() {
         // Arrange
         String data = "data";
 
@@ -182,13 +280,14 @@ public abstract class TaskPoolTest {
         assertEquals(data, taskPool.getUserData());
     }
 
-    public void testAddStateListener() {
+    public void addStateListener() {
         // Arrange
-        Task task1 = Mockito.mock(Task.class);
+        Task task = Mockito.mock(Task.class);
         TaskPrivate taskPrivate1 = Mockito.mock(TaskPrivate.class);
 
-        Mockito.when(task1.getTaskId()).thenReturn("taskId");
-        Mockito.when(task1.getPrivate()).thenReturn(taskPrivate1);
+        Mockito.when(task.getTaskStatus()).thenReturn(Task.Status.NotStarted);
+        Mockito.when(task.getTaskId()).thenReturn("taskId");
+        Mockito.when(task.getPrivate()).thenReturn(taskPrivate1);
 
         TaskPool.TaskPoolListener listener1 = Mockito.mock(TaskPool.TaskPoolListener.class);
         TaskPool.TaskPoolListener listener2 = Mockito.mock(TaskPool.TaskPoolListener.class);
@@ -196,20 +295,21 @@ public abstract class TaskPoolTest {
         // Act
         taskPool.addListener(listener1);
         taskPool.addListener(listener2);
-        taskPool.addTask(task1);
+        taskPool.addTask(task);
 
         // Verify
-        Mockito.verify(listener1).onTaskAdded(taskPool,task1);
-        Mockito.verify(listener2).onTaskAdded(taskPool, task1);
+        Mockito.verify(listener1).onTaskAdded(taskPool,task);
+        Mockito.verify(listener2).onTaskAdded(taskPool, task);
     }
 
-    public void testRemoveStateListener() {
+    public void removeStateListener() {
         // Arrange
-        Task task1 = Mockito.mock(Task.class);
+        Task task = Mockito.mock(Task.class);
         TaskPrivate taskPrivate1 = Mockito.mock(TaskPrivate.class);
 
-        Mockito.when(task1.getTaskId()).thenReturn("taskId");
-        Mockito.when(task1.getPrivate()).thenReturn(taskPrivate1);
+        Mockito.when(task.getTaskStatus()).thenReturn(Task.Status.NotStarted);
+        Mockito.when(task.getTaskId()).thenReturn("taskId");
+        Mockito.when(task.getPrivate()).thenReturn(taskPrivate1);
 
         TaskPool.TaskPoolListener listener1 = Mockito.mock(TaskPool.TaskPoolListener.class);
         TaskPool.TaskPoolListener listener2 = Mockito.mock(TaskPool.TaskPoolListener.class);
@@ -219,10 +319,42 @@ public abstract class TaskPoolTest {
         taskPool.addListener(listener2);
         taskPool.removeListener(listener1);
         taskPool.removeListener(listener2);
-        taskPool.addTask(task1);
+        taskPool.addTask(task);
 
         // Verify
-        Mockito.verify(listener1, Mockito.never()).onTaskAdded(taskPool,task1);
-        Mockito.verify(listener2, Mockito.never()).onTaskAdded(taskPool,task1);
+        Mockito.verify(listener1, Mockito.never()).onTaskAdded(taskPool,task);
+        Mockito.verify(listener2, Mockito.never()).onTaskAdded(taskPool,task);
+    }
+
+    public void changeTaskStatus() {
+        // Arrange
+        TestTask testTask = new TestTask();
+
+        TaskPool taskPoolMock = Mockito.spy(taskPool);
+
+        // Act
+        taskPoolMock.addTask(testTask);
+        testTask.getPrivate().setTaskStatus(Task.Status.Started);
+
+        // Verify
+        Mockito.verify(taskPoolMock).onTaskStatusChanged(testTask, Task.Status.Waiting, Task.Status.Started);
+
+        assertEquals(1, taskPool.getTaskCount());
+    }
+
+    public void checkTaskRemovingAfterFinishing() {
+        // Arrange
+        TestTask testTask = new TestTask();
+
+        TaskPool taskPoolMock = Mockito.spy(taskPool);
+
+        // Act
+        taskPoolMock.addTask(testTask);
+        testTask.getPrivate().setTaskStatus(Task.Status.Finished);
+
+        // Verify
+        Mockito.verify(taskPoolMock).onTaskStatusChanged(testTask, Task.Status.Waiting, Task.Status.Finished);
+
+        assertEquals(0, taskPool.getTaskCount());
     }
 }

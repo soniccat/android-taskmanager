@@ -50,7 +50,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         loadingTasks = new SimpleTaskPool(handler);
         loadingTasks.addListener(this);
 
-        waitingTasks = new PriorityTaskProvider(handler, new SimpleTaskPool(handler));
+        waitingTasks = new PriorityTaskProvider(handler);
         waitingTasks.addListener(this);
 
         taskProviders = new ArrayList<WeakReference<TaskProvider>>();
@@ -71,7 +71,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         Assert.assertEquals(task.getTaskStatus(), Task.Status.NotStarted);
 
         if (!Tasks.isTaskReadyToStart(task)) {
-            Log.d(TAG, "Can't put task " + task.getClass().toString() + " because it's already started " + task.getTaskStatus().toString());
+            Log.d(TAG, "Can't put task " + task.getClass().toString() + " because it has been added " + task.getTaskStatus().toString());
             return;
         }
 
