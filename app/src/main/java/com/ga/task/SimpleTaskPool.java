@@ -47,8 +47,6 @@ public class SimpleTaskPool implements TaskPool {
             return;
         }
 
-        Log.d(TAG, "addTask");
-
         //TaskManager must set Waiting status on the current thread
         task.getPrivate().setTaskStatus(Task.Status.Waiting);
 
@@ -56,7 +54,6 @@ public class SimpleTaskPool implements TaskPool {
             @Override
             public void run() {
                 addTaskOnThread(task);
-                Log.d(TAG, "addTask on thread");
             }
         });
     }
@@ -64,7 +61,9 @@ public class SimpleTaskPool implements TaskPool {
     private void addTaskOnThread(Task task) {
         checkHandlerThread();
 
+        /*
         //search for the task with the same id
+        //TODO: think about doing that on added callback in a taskmanager or after attaching the pool
         if (task.getTaskId() != null) {
             Task addedTask = getTask(task.getTaskId());
             if (addedTask != null) {
@@ -76,6 +75,7 @@ public class SimpleTaskPool implements TaskPool {
                 }
             }
         }
+        */
 
         task.addTaskStatusListener(this);
         tasks.add(task);

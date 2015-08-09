@@ -49,7 +49,6 @@ public abstract class TaskPoolTest {
         taskPool.addTask(task);
 
         // Verify
-        Mockito.verify(task, Mockito.atLeastOnce()).getTaskId();
         Mockito.verify(taskPrivate).setTaskStatus(Task.Status.Waiting);
         Mockito.verify(task).addTaskStatusListener(taskPool);
         Mockito.verify(listener).onTaskAdded(taskPool, task);
@@ -58,6 +57,7 @@ public abstract class TaskPoolTest {
         assertTrue(taskPool.getTasks().contains(task));
     }
 
+    /*
     public void addTheSameTaskWithSkipPolicy() {
         // Arrange
         Task task1 = Mockito.mock(Task.class);
@@ -131,6 +131,7 @@ public abstract class TaskPoolTest {
         assertEquals(taskPool.getTaskCount(), 1);
         assertTrue(taskPool.getTasks().contains(task2));
     }
+    */
 
     public void testGetTask() {
         // Arrange

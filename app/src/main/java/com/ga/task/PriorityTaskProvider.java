@@ -20,6 +20,8 @@ import java.util.PriorityQueue;
 // A task source for TaskManager
 
 public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.StatusListener {
+    static final String TAG = "PriorityTaskProvider";
+
     private Handler handler;
     private Object userData;
 
@@ -99,7 +101,10 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
 
     @Override
     public void addTask(final Task task) {
-        task.addTaskStatusListener(this);
+        if (!Tasks.isTaskReadyToStart(task)) {
+            Log.d(TAG, "Can't put task " + task.getClass().toString() + " because it's already started " + task.getTaskStatus().toString());
+            return;
+        }
 
         // TODO: think about the same codebase here in pool and in TaskManager, it would be better
         // to have it only in the TaskManager
@@ -139,6 +144,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
+                task.addTaskStatusListener(PriorityTaskProvider.this);
                 addTaskToQueue(task);
 
                 for (TaskPoolListener listener : listeners) {

@@ -30,16 +30,6 @@ public class SimpleTaskPoolTest extends TaskPoolTest {
     }
 
     @Test
-    public void addTheSameTaskWithSkipPolicy() {
-        super.addTheSameTaskWithSkipPolicy();
-    }
-
-    @Test
-    public void addTheSameTaskWithCancelPolicy() {
-        super.addTheSameTaskWithCancelPolicy();
-    }
-
-    @Test
     public void testGetTask() {
         super.testGetTask();
     }

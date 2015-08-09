@@ -122,13 +122,29 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
     }
 
     // == TaskPool.TaskPoolListener
+
+    /*
     @Override
-    public void onTaskAdded(TaskPool pool, final Task task) {
+    public boolean canAddTask(TaskPool pool, Task task) {
+        final boolean isLoadingPool = pool == loadingTasks;
+
+        boolean result = true;
+        if (isLoadingPool)  {
+            result = true;
+        } else {
+            // TODO: take from taskProvider
+        }
+
+        return result;
+    }
+    */
+
+    @Override
+    public void onTaskAdded(final TaskPool pool, final Task task) {
         checkHandlerThread();
 
+        final boolean isLoadingPool = pool == loadingTasks;
         if (snapshot != null) {
-            final boolean isLoadingPool = pool == loadingTasks;
-
             Tools.runOnHandlerThread(callbackHandler, new Runnable() {
                 @Override
                 public void run() {
@@ -146,7 +162,12 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         handler.post(new Runnable() {
             @Override
             public void run() {
-                checkTasksToRunOnThread();
+                if (handleTaskLoadPolicy(task)) {
+                    checkTasksToRunOnThread();
+
+                } else if (!isLoadingPool) {
+                    cancelTaskOnThread(task, null);
+                }
             }
         });
     }
