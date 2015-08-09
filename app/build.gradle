@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'de.mobilej.unmock'
 
 android {
     compileSdkVersion 19
@@ -20,6 +21,16 @@ android {
     testOptions {
         unitTests.returnDefaultValues = true
     }
+}
+
+unMock {
+    downloadFrom 'https://oss.sonatype.org/content/groups/public/org/robolectric/android-all/4.3_r2-robolectric-0/android-all-4.3_r2-robolectric-0.jar'
+
+    keepStartingWith "dalvik.system."
+    keepStartingWith "android.util."
+    keepStartingWith "org."
+    keepStartingWith "libcore."
+    keepStartingWith "com.android.internal.util."
 }
 
 repositories{
