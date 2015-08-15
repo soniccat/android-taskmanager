@@ -24,8 +24,6 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
 
     private Handler handler;
     private Object userData;
-
-    //TODO: think about weakref
     private List<TaskPoolListener> listeners;
 
     // Task type -> priority queue
@@ -33,7 +31,6 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
 
     public PriorityTaskProvider(Handler handler) {
         taskQueues = new SparseArray<PriorityQueue<Task>>();
-
         listeners = new ArrayList<TaskPoolListener>();
         setHandler(handler);
     }
@@ -55,7 +52,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
         int topPriority = -1;
 
         for (int i = 0; i < taskQueues.size(); i++) {
-            if (!typesToFilter.contains(taskQueues.keyAt(i))) {
+            if (typesToFilter == null || !typesToFilter.contains(taskQueues.keyAt(i))) {
                 PriorityQueue<Task> queue = taskQueues.get(taskQueues.keyAt(i));
                 Task queueTask = queue.peek();
                 if (queueTask != null && queueTask.getTaskPriority() > topPriority) {
@@ -81,6 +78,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
         return task;
     }
 
+    // TODO: rewrite using getFilteredTasks
     public void updatePriorities(final PriorityProvider provider) {
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
@@ -106,9 +104,6 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
             return;
         }
 
-        // TODO: think about the same codebase here in pool and in TaskManager, it would be better
-        // to have it only in the TaskManager
-        // TaskManager must set Waiting status on the current thread
         task.getPrivate().setTaskStatus(Task.Status.Waiting);
 
         Tools.runOnHandlerThread(handler, new Runnable() {
@@ -120,8 +115,13 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
     }
 
     @Override
-    public void removeTask(Task task) {
-        removeTaskOnThread(task);
+    public void removeTask(final Task task) {
+        Tools.runOnHandlerThread(handler, new Runnable() {
+            @Override
+            public void run() {
+                removeTaskOnThread(task);
+            }
+        });
     }
 
     public void onTaskStatusChanged(Task task, Task.Status oldStatus, Task.Status newStatus) {
@@ -141,28 +141,20 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
     }
 
     private void addTaskOnThread(final Task task) {
-        Tools.runOnHandlerThread(handler, new Runnable() {
-            @Override
-            public void run() {
-                task.addTaskStatusListener(PriorityTaskProvider.this);
-                addTaskToQueue(task);
+        task.addTaskStatusListener(PriorityTaskProvider.this);
+        addTaskToQueue(task);
 
-                for (TaskPoolListener listener : listeners) {
-                    listener.onTaskAdded(PriorityTaskProvider.this, task);
-                }
-            }
-        });
+        for (TaskPoolListener listener : listeners) {
+            listener.onTaskAdded(PriorityTaskProvider.this, task);
+        }
     }
 
     private void removeTaskOnThread(final Task task) {
-        Tools.runOnHandlerThread(handler, new Runnable() {
-            @Override
-            public void run() {
-                if (removeTaskFromQueue(task)) {
-                    triggerOnTaskRemoved(task);
-                }
-            }
-        });
+        checkHandlerThread();
+
+        if (removeTaskFromQueue(task)) {
+            triggerOnTaskRemoved(task);
+        }
     }
 
     private void triggerOnTaskRemoved(Task task) {

@@ -2,6 +2,8 @@ import android.os.Handler;
 import android.os.Looper;
 
 import com.ga.task.PriorityTaskProvider;
+import com.ga.task.TaskPool;
+import com.ga.task.TaskProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -9,75 +11,119 @@ import org.junit.Test;
 /**
  * Created by alexeyglushkov on 09.08.15.
  */
-public class PriorityTaskProviderTest extends TaskPoolTest {
+public class PriorityTaskProviderTest {
+
+    private TaskPoolTest poolTest;
+    private TaskProviderTest providerTest;
 
     @Before
-    public void prepare() {
-        super.before(new PriorityTaskProvider(new Handler(Looper.myLooper())));
+    public void before() {
+        PriorityTaskProvider provider = new PriorityTaskProvider(new Handler(Looper.myLooper()));
+
+        poolTest = new TaskPoolTest();
+        providerTest = new TaskProviderTest();
+
+        poolTest.before(provider);
+        providerTest.before(provider);
+    }
+
+
+    // ProviderTests
+
+    @Test
+    public void getTopTaskWithoutFilter() {
+        providerTest.getTopTaskWithoutFilter();
     }
 
     @Test
+    public void getTopTaskWithPriorityWithoutFilter() {
+        providerTest.getTopTaskWithPriorityWithoutFilter();
+    }
+
+    @Test
+    public void getTopTask() {
+        providerTest.getTopTask();
+    }
+
+    @Test
+    public void getTopTaskWithPriority() {
+        providerTest.getTopTaskWithPriority();
+    }
+
+    @Test
+    public void takeTopTask() {
+        providerTest.takeTopTask();
+    }
+
+    @Test
+    public void removeTaskWithUnknownType() {
+        providerTest.removeTaskWithUnknownType();
+    }
+
+    // PoolTests
+
+    @Test
     public void setGetHandler() {
-        super.setGetHandler();
+        poolTest.setGetHandler();
     }
 
     @Test
     public void addTask() {
-        super.addTask();
+        poolTest.addTask();
     }
 
     @Test
     public void addStartedTask() {
-        super.addStartedTask();
+        poolTest.addStartedTask();
     }
 
     @Test
     public void removeTask() {
-        super.removeTask();
+        poolTest.removeTask();
     }
 
     @Test
     public void removeUnknownTask() {
-        super.removeUnknownTask();
+        poolTest.removeUnknownTask();
     }
 
     @Test
     public void getTask() {
-        super.getTask();
+        poolTest.getTask();
     }
 
     @Test
     public void getUnknownTask() {
-        super.getUnknownTask();
+        poolTest.getUnknownTask();
     }
 
     @Test
     public void getTaskCount() {
-        super.getTaskCount();
+        poolTest.getTaskCount();
     }
 
     @Test
     public void setGetUserData() {
-        super.setGetUserData();
+        poolTest.setGetUserData();
     }
 
     @Test
     public void addStateListener() {
-        super.addStateListener();
+        poolTest.addStateListener();
     }
 
     @Test
     public void removeStateListener() {
-        super.removeStateListener();
+        poolTest.removeStateListener();
     }
 
     @Test
     public void changeTaskStatus() {
-        super.changeTaskStatus();
+        poolTest.changeTaskStatus();
     }
 
     @Test
     public void checkTaskRemovingAfterFinishing() {
-        super.checkTaskRemovingAfterFinishing();
+        poolTest.checkTaskRemovingAfterFinishing();
     }
 }

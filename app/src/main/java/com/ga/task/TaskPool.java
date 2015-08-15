@@ -22,6 +22,10 @@ public interface TaskPool extends Task.StatusListener {
     int getTaskCount();
     List<Task> getTasks();
 
+    // TODO: write implementation
+    //List<Task> getFilteredTasks(TaskFilter filter);
+    //void getFilteredTaskAsync(TaskFilter filter, resultBlock)
+
     void setUserData(Object data);
     Object getUserData();
 
@@ -31,5 +35,9 @@ public interface TaskPool extends Task.StatusListener {
     interface TaskPoolListener {
         void onTaskAdded(TaskPool pool, Task task);
         void onTaskRemoved(TaskPool pool, Task task);
+    }
+
+    interface TaskFilter {
+        boolean keepTask(Task task);
     }
 }

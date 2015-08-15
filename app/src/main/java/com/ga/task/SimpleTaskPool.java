@@ -61,21 +61,6 @@ public class SimpleTaskPool implements TaskPool {
     private void addTaskOnThread(Task task) {
         checkHandlerThread();
 
-        /*
-        //search for the task with the same id
-        //TODO: think about doing that on added callback in a taskmanager or after attaching the pool
-        if (task.getTaskId() != null) {
-            Task addedTask = getTask(task.getTaskId());
-            if (addedTask != null) {
-                if (task.getLoadPolicy() == Task.LoadPolicy.CancelAdded) {
-                    removeTask(addedTask);
-                } else {
-                    Log.d(TAG, "The task was skipped due to the Load Policy " + task.getLoadPolicy().toString() + task.getClass().toString() + " " + task.getTaskId() + " " + task.getTaskStatus().toString());
-                    return;
-                }
-            }
-        }
-        */
 
         task.addTaskStatusListener(this);
         tasks.add(task);
