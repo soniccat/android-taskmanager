@@ -11,6 +11,7 @@ import java.util.List;
 public class TaskPools {
 
     // TODO: I am not sure that these methods are necessary
+    // maybe it's better to move them in Tools file
     public static void getFilteredTasks(final TaskPool taskPool, final TaskFilter filter, final FilterCompletion completion) {
         Tools.runOnHandlerThread(taskPool.getHandler(), new Runnable() {
             @Override

@@ -47,7 +47,7 @@ public class SimpleTaskPool implements TaskPool {
             return;
         }
 
-        //TaskManager must set Waiting status on the current thread
+        // TaskPool must set Waiting status on the current thread
         task.getPrivate().setTaskStatus(Task.Status.Waiting);
 
         Tools.runOnHandlerThread(handler, new Runnable() {

@@ -53,7 +53,7 @@ public class PriorityTaskProviderTest {
             @Override
             public int getPriority(Task task) {
                 if (task.getTaskType() == 2) {
-                    return 2*task.getTaskPriority();
+                    return 2 * task.getTaskPriority();
                 }
                 return task.getTaskPriority();
             }
@@ -66,6 +66,16 @@ public class PriorityTaskProviderTest {
     }
 
     // ProviderTests
+
+    @Test
+    public void setProviderId() {
+        providerTest.setProviderId();
+    }
+
+    @Test
+    public void setPriority() {
+        providerTest.setPriority();
+    }
 
     @Test
     public void getTopTaskWithoutFilter() {

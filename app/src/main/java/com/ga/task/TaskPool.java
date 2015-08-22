@@ -22,7 +22,6 @@ public interface TaskPool extends Task.StatusListener {
     int getTaskCount();
     List<Task> getTasks();
 
-
     void setUserData(Object data);
     Object getUserData();
 

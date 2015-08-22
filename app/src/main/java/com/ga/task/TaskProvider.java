@@ -13,6 +13,16 @@ import java.util.List;
 // A provider must remove a task from the pool in the takeTopTask method
 
 public interface TaskProvider extends TaskPool {
+    void setTaskProviderId(String id);
+    String getTaskProviderId();
+
+    // TODO: implement it
+    // priority is used to determine the order of accessing to the providers int a TaskManager
+    // it affects tasks order if the tasks have the same priority
+    void setPriority(int priority);
+    int getPriority();
+
+    // TODO: replace to TaskFilter
     Task getTopTask(List<Integer> typesToFilter);
     Task takeTopTask(List<Integer> typesToFilter);
 }

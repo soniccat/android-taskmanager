@@ -22,14 +22,17 @@ import java.util.PriorityQueue;
 public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.StatusListener {
     static final String TAG = "PriorityTaskProvider";
 
+    private String providerId;
     private Handler handler;
     private Object userData;
     private List<TaskPoolListener> listeners;
+    private int priority;
 
     // Task type -> priority queue
     private SparseArray<PriorityQueue<Task>> taskQueues;
 
-    public PriorityTaskProvider(Handler handler) {
+    public PriorityTaskProvider(Handler handler, String id) {
+        providerId = id;
         taskQueues = new SparseArray<PriorityQueue<Task>>();
         listeners = new ArrayList<TaskPoolListener>();
         setHandler(handler);
@@ -95,6 +98,24 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
         });
     }
 
+    public void setTaskProviderId(String id) {
+        providerId = id;
+    }
+
+    public String getTaskProviderId() {
+        return providerId;
+    }
+
+    @Override
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    @Override
+    public int getPriority() {
+        return priority;
+    }
+
     @Override
     public void addTask(final Task task) {
         if (!Tasks.isTaskReadyToStart(task)) {
@@ -102,6 +123,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
             return;
         }
 
+        // TaskProvider must set Waiting status on the current thread
         task.getPrivate().setTaskStatus(Task.Status.Waiting);
 
         Tools.runOnHandlerThread(handler, new Runnable() {
@@ -140,6 +162,9 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
 
     private void addTaskOnThread(final Task task) {
         task.addTaskStatusListener(PriorityTaskProvider.this);
+        if (task.getTaskId() != null) {
+            task.setTaskId(getTaskProviderId() + task.getTaskId());
+        }
         addTaskToQueue(task);
 
         for (TaskPoolListener listener : listeners) {

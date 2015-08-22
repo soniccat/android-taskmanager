@@ -23,6 +23,22 @@ public class TaskProviderTest {
         this.taskProvider = taskProvider;
     }
 
+    public void setProviderId() {
+        // Act
+        taskProvider.setTaskProviderId("testId");
+
+        // Verify
+        assertEquals("testId", taskProvider.getTaskProviderId());
+    }
+
+    public void setPriority() {
+        // Act
+        taskProvider.setPriority(12);
+
+        // Verify
+        assertEquals(12, taskProvider.getPriority());
+    }
+
     public void getTopTaskWithoutFilter() {
 
         // Arrange

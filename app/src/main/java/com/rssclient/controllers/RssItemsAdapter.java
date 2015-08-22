@@ -53,7 +53,7 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
 
         Handler taskManagerHandler = this.taskManager.getHandler();
         Handler mainThreadHandler = new Handler(Looper.myLooper());
-        this.taskProvider = new PriorityTaskProvider(taskManagerHandler);
+        this.taskProvider = new PriorityTaskProvider(taskManagerHandler, "RssItemAdapter");
         this.taskManager.addTaskProvider(this.taskProvider);
     }
 

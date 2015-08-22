@@ -17,22 +17,25 @@ public interface TaskManager {
     void put(Task task);
     void startImmediately(Task task);
     void cancel(Task task, Object info);
+
     void addTaskProvider(TaskProvider provider);
     void removeTaskProvider(TaskProvider provider);
+    TaskProvider getTaskProvider(String id);
+    void setTaskProviderPriority(TaskProvider provider, int priority);
+
     void setLimit(int taskType, float availableQueuePart);
+    void setTaskExecutor(TaskExecutor executor);
 
     // Work with snapshots
     void startSnapshotRecording();
     void stopSnapshotRecording();
-
-    void setTaskExecutor(TaskExecutor executor);
 
     TaskManagerSnapshot getSnapshot();
     void addSnapshotListener(OnSnapshotChangedListener listener);
     void removeSnapshotListener(OnSnapshotChangedListener listener);
 
     //Store information to show it outside for debugging purpose on the main thread
-    public interface TaskManagerSnapshot {
+    interface TaskManagerSnapshot {
         int getLoadingTasksCount();
         int getWaitingTasksCount();
         int getMaxQueueSize();
@@ -41,7 +44,7 @@ public interface TaskManager {
         SparseArray<Integer> getWaitingTaskInfo();
     }
 
-    public interface OnSnapshotChangedListener {
+    interface OnSnapshotChangedListener {
         void onSnapshotChanged(TaskManagerSnapshot snapshot);
     }
 }

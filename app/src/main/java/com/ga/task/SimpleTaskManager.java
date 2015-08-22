@@ -10,8 +10,13 @@ import junit.framework.Assert;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.PriorityQueue;
 
 /**
  * Created by alexeyglushkov on 20.09.14.
@@ -27,7 +32,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
     TaskPool loadingTasks;
     TaskProvider waitingTasks;
-    List<WeakReference<TaskProvider>> taskProviders; //TODO: make wrapper for List<WeakReference>
+    List<TaskProvider> taskProviders; //sorted array by priority
 
     SparseArray<Float> limits;
     SparseArray<Integer> usedSpace; //type -> task count from loadingTasks
@@ -50,10 +55,10 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         loadingTasks = new SimpleTaskPool(handler);
         loadingTasks.addListener(this);
 
-        waitingTasks = new PriorityTaskProvider(handler);
+        waitingTasks = new PriorityTaskProvider(handler, "TaskManagerProviderId");
         waitingTasks.addListener(this);
 
-        taskProviders = new ArrayList<WeakReference<TaskProvider>>();
+        taskProviders = new ArrayList<TaskProvider>();
 
         limits = new SparseArray<Float>();
         usedSpace = new SparseArray<Integer>();
@@ -69,12 +74,13 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
     @Override
     public void put(final Task task) {
         Assert.assertEquals(task.getTaskStatus(), Task.Status.NotStarted);
-
         if (!Tasks.isTaskReadyToStart(task)) {
             Log.d(TAG, "Can't put task " + task.getClass().toString() + " because it has been added " + task.getTaskStatus().toString());
             return;
         }
 
+        // TODO: actually I think that problem of adding the same task is not important
+        // TaskManager must set Waiting status on the current thread
         task.getPrivate().setTaskStatus(Task.Status.Waiting);
 
         Tools.runOnHandlerThread(handler, new Runnable() {
@@ -109,11 +115,73 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
     }
 
     @Override
-    public void addTaskProvider(TaskProvider provider) {
+    public void addTaskProvider(final TaskProvider provider) {
         Assert.assertEquals(provider.getHandler(), handler);
+        Assert.assertNotNull(provider.getTaskProviderId());
+
+        Tools.runOnHandlerThread(handler, new Runnable() {
+            @Override
+            public void run() {
+                addTaskProviderOnThread(provider);
+            }
+        });
+    }
+
+    private void addTaskProviderOnThread(TaskProvider provider) {
+        checkHandlerThread();
+
+        TaskProvider oldTaskProvider = getTaskProvider(provider.getTaskProviderId());
+
+        if (oldTaskProvider != null) {
+            taskProviders.remove(oldTaskProvider);
+        }
 
         provider.addListener(this); //for snapshots
-        taskProviders.add(new WeakReference<TaskProvider>(provider));
+
+        // add in sorted array
+        int insertIndex = 0;
+        for (int i=0; i<taskProviders.size(); ++i) {
+            TaskProvider p = taskProviders.get(i);
+            if (provider.getPriority() > p.getPriority()) {
+                insertIndex = i;
+                break;
+            }
+        }
+
+        taskProviders.add(insertIndex, provider);
+    }
+
+    public void setTaskProviderPriority(final TaskProvider provider, final int priority) {
+        Tools.runOnHandlerThread(handler, new Runnable() {
+            @Override
+            public void run() {
+                setTaskProviderPriorityOnThread(provider, priority);
+            }
+        });
+    }
+
+    private void setTaskProviderPriorityOnThread(TaskProvider provider, int priority) {
+        checkHandlerThread();
+
+        provider.setPriority(priority);
+        Collections.sort(taskProviders, new Comparator<TaskProvider>() {
+            @Override
+            public int compare(TaskProvider lhs, TaskProvider rhs) {
+                return Tools.reverseIntCompare(lhs.getPriority(), rhs.getPriority());
+            }
+        });
+    }
+
+    public TaskProvider getTaskProvider(String id) {
+        checkHandlerThread();
+
+        for (TaskProvider taskProvider : taskProviders) {
+            if (taskProvider.getTaskProviderId().equals(id)) {
+                return taskProvider;
+            }
+        }
+
+        return null;
     }
 
     @Override
@@ -199,17 +267,19 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
     // ==
 
     @Override
-    public void removeTaskProvider(TaskProvider provider) {
-        int i = 0;
-        for (WeakReference<TaskProvider> providerRef : taskProviders) {
-            if (providerRef.get() != null) {
-                providerRef.get().removeListener(this);
-                taskProviders.remove(i);
-                break;
+    public void removeTaskProvider(final TaskProvider provider) {
+        Tools.runOnHandlerThread(handler, new Runnable() {
+            @Override
+            public void run() {
+                removeTaskProviderOnThread(provider);
             }
+        });
+    }
 
-            ++i;
-        }
+    private void removeTaskProviderOnThread(TaskProvider provider) {
+        checkHandlerThread();
+
+        taskProviders.remove(provider);
     }
 
     @Override
@@ -352,15 +422,8 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
     private Task takeTaskToRunOnThread() {
         checkHandlerThread();
 
-        List<Integer> taskTypesToFilter = new ArrayList<Integer>();
-        for (int i = 0; i < limits.size(); i++) {
-            if (reachedLimit(limits.keyAt(i))) {
-                taskTypesToFilter.add(limits.keyAt(i));
-            }
-        }
-
+        List<Integer> taskTypesToFilter = getTaskTypeFilter();
         Task topWaitingTask = this.waitingTasks.getTopTask(taskTypesToFilter);
-        ArrayList<WeakReference<TaskProvider>> emptyReferences = new ArrayList<WeakReference<TaskProvider>>();
 
         int topPriorityTaskIndex = -1;
         Task topPriorityTask = null;
@@ -372,15 +435,13 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         }
 
         int i = 0;
-        for (WeakReference<TaskProvider> provider : taskProviders) {
-            if (provider.get() != null) {
-                Task t = provider.get().getTopTask(taskTypesToFilter);
+        for (TaskProvider provider : taskProviders) {
+            if (provider != null) {
+                Task t = provider.getTopTask(taskTypesToFilter);
                 if ( t != null && t.getTaskPriority() > topPriority) {
                     topPriorityTask = t;
                     topPriorityTaskIndex = i;
                 }
-            } else {
-                emptyReferences.add(provider);
             }
 
             ++i;
@@ -391,14 +452,23 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
                 topPriorityTask = waitingTasks.takeTopTask(taskTypesToFilter);
 
             } else if (topPriorityTaskIndex != -1) {
-                topPriorityTask = taskProviders.get(topPriorityTaskIndex).get().takeTopTask(taskTypesToFilter);
+                topPriorityTask = taskProviders.get(topPriorityTaskIndex).takeTopTask(taskTypesToFilter);
             }
         } else {
             topPriorityTask = null;
         }
 
-        taskProviders.removeAll(emptyReferences);
         return topPriorityTask;
+    }
+
+    private List<Integer> getTaskTypeFilter() {
+        List<Integer> taskTypesToFilter = new ArrayList<Integer>();
+        for (int i = 0; i < limits.size(); i++) {
+            if (reachedLimit(limits.keyAt(i))) {
+                taskTypesToFilter.add(limits.keyAt(i));
+            }
+        }
+        return taskTypesToFilter;
     }
 
     private void startTaskOnThread(final Task task) {
@@ -471,10 +541,8 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
                 //waitingTasks.removeTask(task);
                 handleTaskCompletionOnThread(task, task.getTaskCallback(), Task.Status.Cancelled);
 
-                for (WeakReference<TaskProvider> taskProvider : taskProviders) {
-                    if (taskProvider.get() != null) {
-                        taskProvider.get().removeTask(task);
-                    }
+                for (TaskProvider taskProvider : taskProviders) {
+                    taskProvider.removeTask(task);
                 }
 
                 logTask(task, "Cancelled");
@@ -535,15 +603,13 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
             loadingTaskCount = loadingTasks.getTaskCount();
 
             waitingTaskInfo = new SparseArray<Integer>();
-            for (WeakReference<TaskProvider> taskProvider : taskProviders) {
-                if (taskProvider.get() != null) {
-                    waitingTaskCount += taskProvider.get().getTaskCount();
+            for (TaskProvider taskProvider : taskProviders) {
+                waitingTaskCount += taskProvider.getTaskCount();
 
-                    for (Task task : taskProvider.get().getTasks()) {
-                        int count = waitingTaskInfo.get(task.getTaskType(), 0);
-                        ++count;
-                        waitingTaskInfo.put(task.getTaskType(), count);
-                    }
+                for (Task task : taskProvider.getTasks()) {
+                    int count = waitingTaskInfo.get(task.getTaskType(), 0);
+                    ++count;
+                    waitingTaskInfo.put(task.getTaskType(), count);
                 }
             }
 
