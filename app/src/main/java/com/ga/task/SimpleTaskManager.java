@@ -131,12 +131,9 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         checkHandlerThread();
 
         TaskProvider oldTaskProvider = getTaskProvider(provider.getTaskProviderId());
-
         if (oldTaskProvider != null) {
             taskProviders.remove(oldTaskProvider);
         }
-
-        provider.addListener(this); //for snapshots
 
         // add in sorted array
         int insertIndex = 0;
@@ -148,6 +145,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
             }
         }
 
+        provider.addListener(this); //for snapshots
         taskProviders.add(insertIndex, provider);
     }
 
@@ -191,22 +189,6 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
     // == TaskPool.TaskPoolListener
 
-    /*
-    @Override
-    public boolean canAddTask(TaskPool pool, Task task) {
-        final boolean isLoadingPool = pool == loadingTasks;
-
-        boolean result = true;
-        if (isLoadingPool)  {
-            result = true;
-        } else {
-            // TODO: take from taskProvider
-        }
-
-        return result;
-    }
-    */
-
     @Override
     public void onTaskAdded(final TaskPool pool, final Task task) {
         checkHandlerThread();
@@ -225,8 +207,9 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
             });
         }
 
-        //run on the next iteration to give ability to handle added event for other listeners before moving the task to the loading queue
-        //otherwise removed event will be sent before added for TaskPool.TaskPoolListener (see functions below)
+        // run on the next cycle to give a chance to handle added event for other listeners
+        // before moving the task to the loading queue
+        // otherwise removed event will be sent before added for TaskPool.TaskPoolListener (see functions below)
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -473,7 +456,6 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
     private void startTaskOnThread(final Task task) {
         checkHandlerThread();
-        logTask(task, "Task assert check");
         Assert.assertTrue(Tasks.isTaskReadyToStart(task));
 
         logTask(task, "Task started");
@@ -538,12 +520,8 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
             task.getPrivate().cancelTask(info);
 
             if (st == Task.Status.Waiting) {
-                //waitingTasks.removeTask(task);
+                // the task will be removed from providers automatically
                 handleTaskCompletionOnThread(task, task.getTaskCallback(), Task.Status.Cancelled);
-
-                for (TaskProvider taskProvider : taskProviders) {
-                    taskProvider.removeTask(task);
-                }
 
                 logTask(task, "Cancelled");
             }

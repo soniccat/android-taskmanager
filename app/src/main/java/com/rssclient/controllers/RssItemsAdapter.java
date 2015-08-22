@@ -138,7 +138,6 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
         task.setTaskPriority(getTaskPriority(position, range.lowerEndpoint(), range.upperEndpoint() - range.lowerEndpoint() + 1));
         task.setTaskUserData(new Pair<Integer, Image>(position, image));
 
-        //due to progresslisteners are stored through weakreference we can't create anonymous object
         task.addTaskProgressListener(this);
         task.setTaskProgressMinChange(0.2f);
 
