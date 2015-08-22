@@ -24,7 +24,7 @@ public class PriorityTaskProviderTest {
 
     @Before
     public void before() {
-        taskProvider = new PriorityTaskProvider(new Handler(Looper.myLooper()));
+        taskProvider = new PriorityTaskProvider(new Handler(Looper.myLooper()), "TestId");
 
         poolTest = new TaskPoolTest();
         providerTest = new TaskProviderTest();

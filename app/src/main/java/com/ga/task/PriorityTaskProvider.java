@@ -162,9 +162,6 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
 
     private void addTaskOnThread(final Task task) {
         task.addTaskStatusListener(PriorityTaskProvider.this);
-        if (task.getTaskId() != null) {
-            task.setTaskId(getTaskProviderId() + task.getTaskId());
-        }
         addTaskToQueue(task);
 
         for (TaskPoolListener listener : listeners) {

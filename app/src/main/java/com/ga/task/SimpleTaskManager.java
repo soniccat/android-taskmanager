@@ -32,7 +32,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
     TaskPool loadingTasks;
     TaskProvider waitingTasks;
-    List<TaskProvider> taskProviders; //sorted array by priority
+    List<TaskProvider> taskProviders; //always sorted by priority
 
     SparseArray<Float> limits;
     SparseArray<Integer> usedSpace; //type -> task count from loadingTasks
