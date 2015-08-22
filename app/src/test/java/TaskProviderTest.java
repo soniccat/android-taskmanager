@@ -119,15 +119,11 @@ public class TaskProviderTest {
     }
 
     public Task createTaskWithType(int type, String id, int priority) {
-        Task task = Mockito.mock(Task.class);
-        TaskPrivate taskPrivate = Mockito.mock(TaskPrivate.class);
-
-        Mockito.when(task.getTaskType()).thenReturn(type);
-        Mockito.when(task.getTaskId()).thenReturn(id);
-        Mockito.when(task.getTaskPriority()).thenReturn(priority);
-        Mockito.when(task.getTaskStatus()).thenReturn(Task.Status.NotStarted);
-        Mockito.when(task.getPrivate()).thenReturn(taskPrivate);
-
+        //Create a real object because some values can be changed during the testing (priority for example)
+        Task task = Mockito.spy(new TestTask());
+        task.setTaskPriority(priority);
+        task.setTaskType(type);
+        task.setTaskId(id);
         return task;
     }
 

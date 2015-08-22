@@ -78,7 +78,6 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
         return task;
     }
 
-    // TODO: rewrite using getFilteredTasks
     public void updatePriorities(final PriorityProvider provider) {
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
@@ -92,7 +91,6 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
 
                     taskQueues.put(taskQueues.keyAt(i), queue);
                 }
-                Log.d("prioirtyprovider", "queue replaced");
             }
         });
     }
