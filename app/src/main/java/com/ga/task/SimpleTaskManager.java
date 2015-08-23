@@ -241,10 +241,6 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
                 }
             });
         }
-
-        /*if (task.getTaskStatus() == Task.Status.Cancelled) {
-            cancelTaskOnThread(task, null);
-        }*/
     }
 
     // ==
