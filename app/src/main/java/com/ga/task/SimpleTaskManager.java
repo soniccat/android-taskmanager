@@ -25,29 +25,31 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
     static final String TAG = "SimpleTaskManager";
 
-    HandlerThread handlerThread;
-    Handler handler;
-    Handler callbackHandler;
-    TaskExecutor taskExecutor;
+    private HandlerThread handlerThread;
+    private Handler handler;
+    private Handler callbackHandler;
+    private TaskExecutor taskExecutor;
+    private Object userData;
+    private WeakRefList<TaskPool.TaskPoolListener> listeners;
 
-    TaskPool loadingTasks;
-    TaskProvider waitingTasks;
-    List<TaskProvider> taskProviders; //always sorted by priority
+    private TaskPool loadingTasks;
+    private TaskProvider waitingTasks;
+    private List<TaskProvider> taskProviders; //always sorted by priority
 
-    SparseArray<Float> limits;
-    SparseArray<Integer> usedSpace; //type -> task count from loadingTasks
+    private SparseArray<Float> limits;
+    private SparseArray<Integer> usedSpace; //type -> task count from loadingTasks
 
-    public int maxLoadingTasks;
+    private int maxLoadingTasks;
 
-    boolean needUpdateSnapshot;
-    SimpleTaskManagerSnapshot snapshot;
-    List<WeakReference<OnSnapshotChangedListener>> snapshotChangedListeners;
+    private boolean needUpdateSnapshot;
+    private SimpleTaskManagerSnapshot snapshot;
+    private List<WeakReference<OnSnapshotChangedListener>> snapshotChangedListeners;
 
     public SimpleTaskManager(int maxLoadingTasks) {
         this.taskExecutor = new SimpleTaskExecutor();
         this.maxLoadingTasks = maxLoadingTasks;
 
-        handlerThread = new HandlerThread("SimpleLoader Thread");
+        handlerThread = new HandlerThread("SimpleTaskManager Thread");
         handlerThread.start();
         handler = new Handler(handlerThread.getLooper());
         callbackHandler = new Handler(Looper.myLooper());
@@ -55,9 +57,11 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         loadingTasks = new SimpleTaskPool(handler);
         loadingTasks.addListener(this);
 
+        // TODO: consider putting it to taskProiders list
         waitingTasks = new PriorityTaskProvider(handler, "TaskManagerProviderId");
         waitingTasks.addListener(this);
 
+        listeners = new WeakRefList<TaskPoolListener>();
         taskProviders = new ArrayList<TaskProvider>();
 
         limits = new SparseArray<Float>();
@@ -67,12 +71,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
     }
 
     @Override
-    public Handler getHandler() {
-        return handler;
-    }
-
-    @Override
-    public void put(final Task task) {
+    public void addTask(final Task task) {
         Assert.assertEquals(task.getTaskStatus(), Task.Status.NotStarted);
         if (!Tasks.isTaskReadyToStart(task)) {
             Log.d(TAG, "Can't put task " + task.getClass().toString() + " because it has been added " + task.getTaskStatus().toString());
@@ -86,8 +85,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
-                waitingTasks.addTask(task);
-                putOnThread(task);
+                addTaskOnThread(task);
             }
         });
     }
@@ -243,6 +241,105 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         }
     }
 
+    // == TaskPool interface
+
+    @Override
+    public Handler getHandler() {
+        return handler;
+    }
+
+    @Override
+    public void setHandler(Handler handler) {
+        /*if (this.handler != null) {
+            checkHandlerThread();
+        }*/
+
+        this.handler = handler;
+
+        loadingTasks.setHandler(handler);
+        waitingTasks.setHandler(handler);
+        for (TaskProvider provider : taskProviders) {
+            provider.setHandler(handler);
+        }
+    }
+
+    @Override
+    public void removeTask(Task task) {
+        cancel(task, null);
+    }
+
+    @Override
+    public Task getTask(String taskId) {
+        checkHandlerThread();
+
+        Task task = loadingTasks.getTask(taskId);
+
+        if (task == null) {
+            task = waitingTasks.getTask(taskId);
+        }
+
+        if (task == null) {
+            for (TaskProvider provider : taskProviders) {
+                task = provider.getTask(taskId);
+                if (task != null) {
+                    break;
+                }
+            }
+        }
+
+        return task;
+    }
+
+    @Override
+    public int getTaskCount() {
+        checkHandlerThread();
+
+        int taskCount = loadingTasks.getTaskCount() + waitingTasks.getTaskCount();
+        for (TaskProvider provider : taskProviders) {
+            taskCount += provider.getTaskCount();
+        }
+
+        return taskCount;
+    }
+
+    @Override
+    public List<Task> getTasks() {
+        List<Task> tasks = new ArrayList<Task>();
+
+        tasks.addAll(loadingTasks.getTasks());
+        tasks.addAll(waitingTasks.getTasks());
+        for (TaskProvider provider : taskProviders) {
+            tasks.addAll(provider.getTasks());
+        }
+
+        return tasks;
+    }
+
+    @Override
+    public void setUserData(Object data) {
+        this.userData = data;
+    }
+
+    @Override
+    public Object getUserData() {
+        return userData;
+    }
+
+    @Override
+    public void addListener(TaskPoolListener listener) {
+        listeners.add(new WeakReference<TaskPoolListener>(listener));
+    }
+
+    @Override
+    public void removeListener(TaskPoolListener listener) {
+        listeners.remove(listener);
+    }
+
+    @Override
+    public void onTaskStatusChanged(Task task, Task.Status oldStatus, Task.Status newStatus) {
+        //unnecessary
+    }
+
     // ==
 
     @Override
@@ -354,14 +451,15 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         }
     }
 
+
+
     // Private
 
-    // functions called on a handler's thread
-
-    private void putOnThread(Task task) {
+    private void addTaskOnThread(Task task) {
         checkHandlerThread();
 
         if (handleTaskLoadPolicy(task)) {
+            waitingTasks.addTask(task);
             checkTasksToRunOnThread();
         }
     }
@@ -404,7 +502,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         List<Integer> taskTypesToFilter = getTaskTypeFilter();
         Task topWaitingTask = this.waitingTasks.getTopTask(taskTypesToFilter);
 
-        int topPriorityTaskIndex = -1;
+        int taskProviderIndex = -1;
         Task topPriorityTask = null;
         int topPriority = -1;
 
@@ -419,7 +517,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
                 Task t = provider.getTopTask(taskTypesToFilter);
                 if ( t != null && t.getTaskPriority() > topPriority) {
                     topPriorityTask = t;
-                    topPriorityTaskIndex = i;
+                    taskProviderIndex = i;
                 }
             }
 
@@ -427,11 +525,11 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         }
 
         if (topPriorityTask != null && !reachedLimit(topPriorityTask.getTaskType())) {
-            if (topPriorityTaskIndex == -1 && topPriorityTask != null) {
+            if (taskProviderIndex == -1 && topPriorityTask != null) {
                 topPriorityTask = waitingTasks.takeTopTask(taskTypesToFilter);
 
-            } else if (topPriorityTaskIndex != -1) {
-                topPriorityTask = taskProviders.get(topPriorityTaskIndex).takeTopTask(taskTypesToFilter);
+            } else if (taskProviderIndex != -1) {
+                topPriorityTask = taskProviders.get(taskProviderIndex).takeTopTask(taskTypesToFilter);
             }
         } else {
             topPriorityTask = null;
@@ -483,7 +581,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
     }
 
     private void checkHandlerThread() {
-        Assert.assertEquals(Thread.currentThread(), handlerThread);
+        Assert.assertEquals(Looper.myLooper(),handler.getLooper());
     }
 
     public void handleTaskCompletionOnThread(final Task task, final Task.Callback callback, final Task.Status status) {

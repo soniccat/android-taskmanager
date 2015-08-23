@@ -32,6 +32,10 @@ public class SimpleTaskPool implements TaskPool {
 
     @Override
     public void setHandler(Handler handler) {
+        if (this.handler != null) {
+            checkHandlerThread();
+        }
+
         this.handler = handler;
     }
 

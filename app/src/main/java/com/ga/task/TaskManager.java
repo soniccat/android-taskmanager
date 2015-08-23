@@ -10,11 +10,10 @@ import java.util.List;
  */
 
 // TODO: think about implementing TaskPool
-public interface TaskManager {
+public interface TaskManager extends TaskPool {
     Handler getHandler();
 
     // Put a task, the same task can't be putted twice to the TaskManager
-    void put(Task task);
     void startImmediately(Task task);
     void cancel(Task task, Object info);
 

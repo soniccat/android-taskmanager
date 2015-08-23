@@ -152,6 +152,10 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
 
     @Override
     public void setHandler(Handler handler) {
+        if (this.handler != null) {
+            checkHandlerThread();
+        }
+
         this.handler = handler;
     }
 

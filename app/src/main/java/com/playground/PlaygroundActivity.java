@@ -99,7 +99,7 @@ public class PlaygroundActivity extends ActionBarActivity implements TaskManager
     private void runTestTasks(TestTaskConfig config) {
         List<TestTask> tasks = createTestTasks(config);
         for (TestTask task : tasks) {
-            taskManager.put(task);
+            taskManager.addTask(task);
         }
     }
 
@@ -173,7 +173,7 @@ public class PlaygroundActivity extends ActionBarActivity implements TaskManager
 
     private void storeConfigList(List<TestTaskConfig> configList) {
         List<TestTaskConfig> listCopy = new ArrayList<TestTaskConfig>(configList);
-        taskManager.put(new FileKeepTask(CONFIGS_FILE_NAME, new ObjectWriter(listCopy), this));
+        taskManager.addTask(new FileKeepTask(CONFIGS_FILE_NAME, new ObjectWriter(listCopy), this));
     }
 
     private void loadConfigList(final LoadTaskConfigCallback callback) {
@@ -192,7 +192,7 @@ public class PlaygroundActivity extends ActionBarActivity implements TaskManager
             }
         });
 
-        taskManager.put(fileLoadTask);
+        taskManager.addTask(fileLoadTask);
     }
 
     public interface LoadTaskConfigCallback {

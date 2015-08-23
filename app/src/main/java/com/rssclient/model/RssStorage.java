@@ -61,7 +61,7 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
             }
         });
 
-        taskManager.put(httpLoadTask);
+        taskManager.addTask(httpLoadTask);
     }
 
     public void keep(TaskManager taskManager, Context context, final RssStorageCallback callback) {
@@ -82,7 +82,7 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
             }
         });
 
-        taskManager.put(keepTask);
+        taskManager.addTask(keepTask);
     }
 
     public void addFeed(RssFeed feed) {
@@ -113,7 +113,7 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
             }
         });
 
-        taskManager.put(loatTask);
+        taskManager.addTask(loatTask);
     }
 
     // TextFileLoadable

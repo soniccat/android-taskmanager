@@ -51,7 +51,7 @@ public class ImageLoader {
         });
 
         if (taskManager != null) {
-            taskManager.put(httpLoadTask);
+            taskManager.addTask(httpLoadTask);
         }
 
         return httpLoadTask;
