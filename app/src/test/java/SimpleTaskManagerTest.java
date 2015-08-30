@@ -34,6 +34,11 @@ public class SimpleTaskManagerTest {
     }
 
     @Test
+    public void getLoadingTaskCountTest() {
+        taskManagerTest.getLoadingTaskCountTest();
+    }
+
+    @Test
     public void addTask() {
         taskManagerTest.addTask();
     }
@@ -66,6 +71,16 @@ public class SimpleTaskManagerTest {
     @Test
     public void checkTaskRemovingAfterFinishing() {
         taskManagerTest.checkTaskRemovingAfterFinishing();
+    }
+
+    @Test
+    public void addTaskProviderTest() {
+        taskManagerTest.addTaskProviderTest();
+    }
+
+    @Test
+    public void removeTaskProviderTest() {
+        taskManagerTest.removeTaskProviderTest();
     }
 
     // PoolTests

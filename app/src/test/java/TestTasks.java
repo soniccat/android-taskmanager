@@ -11,6 +11,10 @@ public class TestTasks {
         return createTaskMock(null, Task.Status.NotStarted);
     }
 
+    public static Task createTaskMock(String id) {
+        return createTaskMock(id, Task.Status.NotStarted);
+    }
+
     public static Task createTaskMock(String id, Task.Status status) {
         Task task = Mockito.mock(Task.class);
         TaskPrivate taskPrivate = Mockito.mock(TaskPrivate.class);

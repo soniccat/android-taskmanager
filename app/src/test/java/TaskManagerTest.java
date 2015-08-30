@@ -1,12 +1,17 @@
+import android.os.Handler;
+
 import com.ga.task.Task;
 import com.ga.task.TaskManager;
 import com.ga.task.TaskPool;
 import com.ga.task.TaskPrivate;
+import com.ga.task.TaskProvider;
 
 import org.mockito.Mockito;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -29,15 +34,51 @@ public class TaskManagerTest {
 
     public void getLoadingTaskCountTest() {
         // Arrange
+        Task task1 = TestTasks.createTaskMock("taskId1");
+        Task task2 = TestTasks.createTaskMock("taskId2");
+        Task task3 = TestTasks.createTaskMock("taskId3");
 
         // Act
-
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
+        taskManager.addTask(task3);
 
         // Verify
-
+        assertEquals(3, taskManager.getLoadingTaskCount());
     }
 
-    public void addTask(){
+    public void addTaskProviderTest() {
+        // Arrange
+        TaskProvider taskProvider1 = createTaskProviderMock("provider1", taskManager);
+        TaskProvider taskProvider2 = createTaskProviderMock("provider2", taskManager);
+
+        // Act
+        taskManager.addTaskProvider(taskProvider1);
+        taskManager.addTaskProvider(taskProvider2);
+
+        // Verify
+        assertEquals(2, taskManager.getTaskProviders().size());
+        assertNotNull(taskManager.getTaskProvider("provider1"));
+        assertNotNull(taskManager.getTaskProvider("provider2"));
+    }
+
+    public void removeTaskProviderTest() {
+        // Arrange
+        TaskProvider taskProvider1 = createTaskProviderMock("provider1", taskManager);
+        TaskProvider taskProvider2 = createTaskProviderMock("provider2", taskManager);
+
+        // Act
+        taskManager.addTaskProvider(taskProvider1);
+        taskManager.addTaskProvider(taskProvider2);
+        taskManager.removeTaskProvider(taskProvider1);
+
+        // Verify
+        assertEquals(1, taskManager.getTaskProviders().size());
+        assertNull(taskManager.getTaskProvider("provider1"));
+        assertNotNull(taskManager.getTaskProvider("provider2"));
+    }
+
+    public void addTask() {
         // Arrange
         Task task = TestTasks.createTaskMock();
         TaskManager.TaskManagerListener listener = Mockito.mock(TaskManager.TaskManagerListener.class);
@@ -169,5 +210,14 @@ public class TaskManagerTest {
 
         // Verify
         assertEquals(0, taskManager.getTaskCount());
+    }
+
+    // Tools
+
+    private TaskProvider createTaskProviderMock(String id, TaskManager taskManager) {
+        TaskProvider provider = Mockito.mock(TaskProvider.class);
+        Mockito.when(provider.getTaskProviderId()).thenReturn(id);
+        Mockito.when(provider.getHandler()).thenReturn(taskManager.getHandler());
+        return provider;
     }
 }
