@@ -39,7 +39,7 @@ public class TaskManagerTest {
 
     public void addTask(){
         // Arrange
-        Task task = createTaskMock();
+        Task task = TestTasks.createTaskMock();
         TaskManager.TaskManagerListener listener = Mockito.mock(TaskManager.TaskManagerListener.class);
         TaskPrivate taskPrivate = task.getPrivate();
 
@@ -58,7 +58,7 @@ public class TaskManagerTest {
 
     public void addStartedTask() {
         // Arrange
-        Task task = createTaskMock(null, Task.Status.Started);
+        Task task = TestTasks.createTaskMock(null, Task.Status.Started);
         TaskManager.TaskManagerListener listener = Mockito.mock(TaskManager.TaskManagerListener.class);
         TaskPrivate taskPrivate = task.getPrivate();
 
@@ -78,7 +78,7 @@ public class TaskManagerTest {
 
     public void addStateListener() {
         // Arrange
-        Task task = createTaskMock("taskId", Task.Status.NotStarted);
+        Task task = TestTasks.createTaskMock("taskId", Task.Status.NotStarted);
         TaskManager.TaskManagerListener listener1 = Mockito.mock(TaskManager.TaskManagerListener.class);
         TaskManager.TaskManagerListener listener2 = Mockito.mock(TaskManager.TaskManagerListener.class);
 
@@ -96,13 +96,7 @@ public class TaskManagerTest {
 
     public void removeStateListener() {
         // Arrange
-        Task task = Mockito.mock(Task.class);
-        TaskPrivate taskPrivate1 = Mockito.mock(TaskPrivate.class);
-
-        Mockito.when(task.getTaskStatus()).thenReturn(Task.Status.NotStarted);
-        Mockito.when(task.getTaskId()).thenReturn("taskId");
-        Mockito.when(task.getPrivate()).thenReturn(taskPrivate1);
-
+        Task task = TestTasks.createTaskMock("taskId", Task.Status.NotStarted);
         TaskManager.TaskManagerListener listener1 = Mockito.mock(TaskManager.TaskManagerListener.class);
         TaskManager.TaskManagerListener listener2 = Mockito.mock(TaskManager.TaskManagerListener.class);
 
@@ -115,20 +109,16 @@ public class TaskManagerTest {
 
         // Verify
         Mockito.verify(listener1, Mockito.never()).onTaskAdded(taskManager,task,false);
-        Mockito.verify(listener1, Mockito.never()).onTaskAdded(taskManager,task,true);
-        Mockito.verify(listener2, Mockito.never()).onTaskAdded(taskManager,task,false);
-        Mockito.verify(listener2, Mockito.never()).onTaskAdded(taskManager,task,true);
+        Mockito.verify(listener1, Mockito.never()).onTaskAdded(taskManager, task, true);
+        Mockito.verify(listener2, Mockito.never()).onTaskAdded(taskManager, task, false);
+        Mockito.verify(listener2, Mockito.never()).onTaskAdded(taskManager, task, true);
     }
 
     public void removeTask() {
         // Arrange
-        Task task = Mockito.mock(Task.class);
-        TaskPrivate taskPrivate = Mockito.mock(TaskPrivate.class);
+        Task task = TestTasks.createTaskMock("taskId", Task.Status.NotStarted);
         TaskManager.TaskManagerListener listener = Mockito.mock(TaskManager.TaskManagerListener.class);
-
-        Mockito.when(task.getTaskStatus()).thenReturn(Task.Status.NotStarted);
-        Mockito.when(task.getTaskId()).thenReturn("taskId");
-        Mockito.when(task.getPrivate()).thenReturn(taskPrivate);
+        TaskPrivate taskPrivate = task.getPrivate();
 
         // Act
         taskManager.addListener(listener);
@@ -146,20 +136,9 @@ public class TaskManagerTest {
 
     public void removeUnknownTask() {
         // Arrange
-        Task task1 = Mockito.mock(Task.class);
-        TaskPrivate taskPrivate1 = Mockito.mock(TaskPrivate.class);
+        Task task1 = TestTasks.createTaskMock("taskId", Task.Status.NotStarted);
+        Task task2 = TestTasks.createTaskMock("taskId", Task.Status.NotStarted);
         TaskManager.TaskManagerListener listener = Mockito.mock(TaskManager.TaskManagerListener.class);
-
-        Mockito.when(task1.getTaskStatus()).thenReturn(Task.Status.NotStarted);
-        Mockito.when(task1.getTaskId()).thenReturn("taskId");
-        Mockito.when(task1.getPrivate()).thenReturn(taskPrivate1);
-
-        Task task2 = Mockito.mock(Task.class);
-        TaskPrivate taskPrivate2 = Mockito.mock(TaskPrivate.class);
-
-        Mockito.when(task2.getTaskStatus()).thenReturn(Task.Status.NotStarted);
-        Mockito.when(task2.getTaskId()).thenReturn("taskId");
-        Mockito.when(task2.getPrivate()).thenReturn(taskPrivate2);
 
         // Act
         taskManager.addListener(listener);
@@ -182,7 +161,6 @@ public class TaskManagerTest {
     public void checkTaskRemovingAfterFinishing() {
         // Arrange
         TestTask testTask = new TestTask();
-
         TaskPool taskPoolMock = Mockito.spy(taskManager);
 
         // Act
@@ -191,26 +169,5 @@ public class TaskManagerTest {
 
         // Verify
         assertEquals(0, taskManager.getTaskCount());
-    }
-
-    // Tools
-
-    private Task createTaskMock() {
-        return createTaskMock(null, Task.Status.NotStarted);
-    }
-
-    private Task createTaskMock(String id, Task.Status status) {
-        Task task = Mockito.mock(Task.class);
-        TaskPrivate taskPrivate = Mockito.mock(TaskPrivate.class);
-
-        Mockito.when(task.getTaskStatus()).thenReturn(status);
-        Mockito.when(task.getTaskType()).thenReturn(0);
-        Mockito.when(task.getPrivate()).thenReturn(taskPrivate);
-
-        if (id != null) {
-            Mockito.when(task.getTaskId()).thenReturn(id);
-        }
-
-        return task;
     }
 }
