@@ -404,16 +404,6 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
                 for (WeakReference<TaskManagerListener> listener : listeners) {
                     listener.get().onLimitsChanged(SimpleTaskManager.this, taskType, availableQueuePart);
                 }
-
-                /*
-                if (snapshot != null) {
-                    Tools.runOnHandlerThread(callbackHandler, new Runnable() {
-                        @Override
-                        public void run() {
-                            snapshot.setLoadingLimit(taskType, availableQueuePart);
-                        }
-                    });
-                }*/
             }
         });
     }
