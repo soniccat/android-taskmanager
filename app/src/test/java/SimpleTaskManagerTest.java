@@ -83,6 +83,11 @@ public class SimpleTaskManagerTest {
         taskManagerTest.startImmediately();
     }
 
+    @Test
+    public void setTaskProviderPriority() {
+        taskManagerTest.setTaskProviderPriority();
+    }
+
     // PoolTests
 
     @Test

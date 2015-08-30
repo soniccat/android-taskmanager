@@ -34,7 +34,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
     private TaskPool loadingTasks;
     private TaskProvider waitingTasks;
-    private List<TaskProvider> taskProviders; //always sorted by priority
+    private List<TaskProvider> taskProviders; //always sorted by priority (100 -> 0)
 
     private SparseArray<Float> limits;
     private SparseArray<Integer> usedSpace; //type -> task count from loadingTasks
@@ -169,7 +169,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         }
 
         // add in sorted array
-        int insertIndex = 0;
+        int insertIndex = taskProviders.size();
         for (int i=0; i<taskProviders.size(); ++i) {
             TaskProvider p = taskProviders.get(i);
             if (provider.getPriority() > p.getPriority()) {
