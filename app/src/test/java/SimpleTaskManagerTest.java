@@ -1,8 +1,3 @@
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-
-import com.ga.task.PriorityTaskProvider;
 import com.ga.task.SimpleTaskManager;
 import com.ga.task.TaskManager;
 
@@ -29,13 +24,13 @@ public class SimpleTaskManagerTest {
     }
 
     @Test
-    public void setMaxLoadingTasksTest() {
-        taskManagerTest.setMaxLoadingTasksTest();
+    public void setMaxLoadingTasks() {
+        taskManagerTest.setMaxLoadingTasks();
     }
 
     @Test
-    public void getLoadingTaskCountTest() {
-        taskManagerTest.getLoadingTaskCountTest();
+    public void getLoadingTaskCount() {
+        taskManagerTest.getLoadingTaskCount();
     }
 
     @Test
@@ -74,13 +69,18 @@ public class SimpleTaskManagerTest {
     }
 
     @Test
-    public void addTaskProviderTest() {
-        taskManagerTest.addTaskProviderTest();
+    public void addTaskProvider() {
+        taskManagerTest.addTaskProvider();
     }
 
     @Test
-    public void removeTaskProviderTest() {
-        taskManagerTest.removeTaskProviderTest();
+    public void removeTaskProvider() {
+        taskManagerTest.removeTaskProvider();
+    }
+
+    @Test
+    public void startImmediately() {
+        taskManagerTest.startImmediately();
     }
 
     // PoolTests

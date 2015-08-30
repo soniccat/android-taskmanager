@@ -24,7 +24,7 @@ public class TaskManagerTest {
         this.taskManager = taskManager;
     }
 
-    public void setMaxLoadingTasksTest() {
+    public void setMaxLoadingTasks() {
         // Act
         taskManager.setMaxLoadingTasks(100);
 
@@ -32,7 +32,7 @@ public class TaskManagerTest {
         assertEquals(100, taskManager.getMaxLoadingTasks());
     }
 
-    public void getLoadingTaskCountTest() {
+    public void getLoadingTaskCount() {
         // Arrange
         Task task1 = TestTasks.createTaskMock("taskId1");
         Task task2 = TestTasks.createTaskMock("taskId2");
@@ -47,7 +47,7 @@ public class TaskManagerTest {
         assertEquals(3, taskManager.getLoadingTaskCount());
     }
 
-    public void addTaskProviderTest() {
+    public void addTaskProvider() {
         // Arrange
         TaskProvider taskProvider1 = createTaskProviderMock("provider1", taskManager);
         TaskProvider taskProvider2 = createTaskProviderMock("provider2", taskManager);
@@ -62,7 +62,7 @@ public class TaskManagerTest {
         assertNotNull(taskManager.getTaskProvider("provider2"));
     }
 
-    public void removeTaskProviderTest() {
+    public void removeTaskProvider() {
         // Arrange
         TaskProvider taskProvider1 = createTaskProviderMock("provider1", taskManager);
         TaskProvider taskProvider2 = createTaskProviderMock("provider2", taskManager);
@@ -76,6 +76,22 @@ public class TaskManagerTest {
         assertEquals(1, taskManager.getTaskProviders().size());
         assertNull(taskManager.getTaskProvider("provider1"));
         assertNotNull(taskManager.getTaskProvider("provider2"));
+    }
+
+    public void startImmediately() {
+        // Arrange
+        Task task = TestTasks.createTaskMock();
+        TaskPrivate taskPrivate = task.getPrivate();
+        TaskManager.TaskManagerListener listener = Mockito.mock(TaskManager.TaskManagerListener.class);
+
+        // Act
+        taskManager.addListener(listener);
+        taskManager.startImmediately(task);
+
+        // Verify
+        Mockito.verify(taskPrivate).setTaskStatus(Task.Status.Started);
+        Mockito.verify(listener, Mockito.never()).onTaskAdded(taskManager, task, false);
+        Mockito.verify(listener).onTaskAdded(taskManager, task, true);
     }
 
     public void addTask() {
