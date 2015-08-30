@@ -76,7 +76,8 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
     @Override
     public void addTask(final Task task) {
-        Assert.assertEquals(task.getTaskStatus(), Task.Status.NotStarted);
+        //TODO: think how to handle adding two same task
+        //Assert.assertEquals(task.getTaskStatus(), Task.Status.NotStarted);
         if (!Tasks.isTaskReadyToStart(task)) {
             Log.d(TAG, "Can't put task " + task.getClass().toString() + " because it has been added " + task.getTaskStatus().toString());
             return;
@@ -343,12 +344,16 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
     @Override
     public void addListener(TaskPoolListener listener) {
-        addListener((TaskManagerListener) listener);
+        if (listener instanceof TaskManagerListener) {
+            addListener((TaskManagerListener) listener);
+        }
     }
 
     @Override
     public void removeListener(TaskPoolListener listener) {
-        removeListener((TaskManagerListener) listener);
+        if (listener instanceof TaskManagerListener) {
+            removeListener((TaskManagerListener) listener);
+        }
     }
 
     @Override

@@ -21,9 +21,6 @@ public class SimpleTaskManagerTest {
     @Before
     public void before() {
         taskManager = new SimpleTaskManager(10);
-        //taskManager.setHandler(new Handler(Looper.myLooper()));
-
-
         poolTest = new TaskPoolTest();
         taskManagerTest = new TaskManagerTest();
 
@@ -31,31 +28,46 @@ public class SimpleTaskManagerTest {
         taskManagerTest.before(taskManager);
     }
 
+    @Test
+    public void addTask() {
+        taskManagerTest.addTask();
+    }
+
+    @Test
+    public void addStartedTask() {
+        taskManagerTest.addStartedTask();
+    }
+
+    @Test
+    public void addStateListener() {
+        taskManagerTest.addStateListener();
+    }
+
+    @Test
+    public void removeStateListener() {
+        taskManagerTest.removeStateListener();
+    }
+
+    @Test
+    public void removeTask() {
+        taskManagerTest.removeTask();
+    }
+
+    @Test
+    public void removeUnknownTask() {
+        taskManagerTest.removeUnknownTask();
+    }
+
+    @Test
+    public void checkTaskRemovingAfterFinishing() {
+        taskManagerTest.checkTaskRemovingAfterFinishing();
+    }
+
     // PoolTests
 
     @Test
     public void setGetHandler() {
         poolTest.setGetHandler();
-    }
-
-    @Test
-    public void addTask() {
-        poolTest.addTask();
-    }
-
-    @Test
-    public void addStartedTask() {
-        poolTest.addStartedTask();
-    }
-
-    @Test
-    public void removeTask() {
-        poolTest.removeTask();
-    }
-
-    @Test
-    public void removeUnknownTask() {
-        poolTest.removeUnknownTask();
     }
 
     @Test
@@ -76,25 +88,5 @@ public class SimpleTaskManagerTest {
     @Test
     public void setGetUserData() {
         poolTest.setGetUserData();
-    }
-
-    @Test
-    public void addStateListener() {
-        poolTest.addStateListener();
-    }
-
-    @Test
-    public void removeStateListener() {
-        poolTest.removeStateListener();
-    }
-
-    @Test
-    public void changeTaskStatus() {
-        poolTest.changeTaskStatus();
-    }
-
-    @Test
-    public void checkTaskRemovingAfterFinishing() {
-        poolTest.checkTaskRemovingAfterFinishing();
     }
 }
