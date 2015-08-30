@@ -7,6 +7,7 @@ import android.util.SparseArray;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.ga.task.TaskManagerSnapshot;
 import com.rssclient.controllers.R;
 import com.ga.task.TaskManager;
 
@@ -21,7 +22,7 @@ import java.util.Set;
  */
 public class TaskManagerView extends LinearLayout {
 
-    TaskManager.TaskManagerSnapshot snapshot;
+    TaskManagerSnapshot snapshot;
     TaskBarView barView;
     TextView loadingTasks;
     TextView waitingTasks;
@@ -53,7 +54,7 @@ public class TaskManagerView extends LinearLayout {
         waitingTasks = (TextView) findViewById(R.id.waiting);
     }
 
-    public void showSnapshot(TaskManager.TaskManagerSnapshot snapshot) {
+    public void showSnapshot(TaskManagerSnapshot snapshot) {
         this.snapshot = snapshot;
 
         updateAllTypesArray();

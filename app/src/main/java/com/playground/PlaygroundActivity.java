@@ -15,8 +15,10 @@ import com.ga.keeper.file.ObjectWriter;
 import com.ga.loader.data.ObjectHandler;
 import com.ga.loader.data.ObjectReader;
 import com.ga.loader.file.FileLoadTask;
+import com.ga.task.SimpleTaskManagerSnapshot;
 import com.ga.task.Task;
 import com.ga.task.TaskManager;
+import com.ga.task.TaskManagerSnapshot;
 import com.ga.ui.TaskManagerView;
 import com.main.MainApplication;
 import com.rssclient.controllers.R;
@@ -24,7 +26,7 @@ import com.rssclient.controllers.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlaygroundActivity extends ActionBarActivity implements TaskManager.OnSnapshotChangedListener,
+public class PlaygroundActivity extends ActionBarActivity implements TaskManagerSnapshot.OnSnapshotChangedListener,
         CreateTasksFragment.CreateTaskFragmentListener {
 
     final String CONFIGS_FILE_NAME = "TextTaskConfig";
@@ -32,6 +34,7 @@ public class PlaygroundActivity extends ActionBarActivity implements TaskManager
     protected CreateTasksFragment createTasksFragment;
     protected ChangeTasksFragment changeTasksFragment;
 
+    TaskManagerSnapshot snapshot;
     TaskManager taskManager;
     TaskManagerView taskManagerView;
 
@@ -53,8 +56,10 @@ public class PlaygroundActivity extends ActionBarActivity implements TaskManager
         ViewPager pager = (ViewPager)findViewById(R.id.view_pager);
         pager.setAdapter(createPagerAdapter());
 
-        taskManager.startSnapshotRecording();
-        taskManager.addSnapshotListener(this);
+        snapshot = new SimpleTaskManagerSnapshot();
+        snapshot.startSnapshotRecording(taskManager);
+        snapshot.addSnapshotListener(this);
+
         loadConfigList(new LoadTaskConfigCallback() {
             @Override
             public void completed(List<TestTaskConfig> configs, Error error) {
@@ -113,7 +118,7 @@ public class PlaygroundActivity extends ActionBarActivity implements TaskManager
     }
 
     @Override
-    public void onSnapshotChanged(TaskManager.TaskManagerSnapshot snapshot) {
+    public void onSnapshotChanged(TaskManagerSnapshot snapshot) {
         taskManagerView.showSnapshot(snapshot);
     }
 

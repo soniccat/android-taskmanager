@@ -21,7 +21,7 @@ public class Tools {
         }
     }
 
-    public static void postOnMainLoop(Runnable runnable) {
+    public static void runOnMainThread(Runnable runnable) {
         Looper mainLooper = Looper.getMainLooper();
         Handler hd = new Handler(mainLooper);
         hd.post(runnable);

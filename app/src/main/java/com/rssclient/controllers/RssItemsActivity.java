@@ -2,6 +2,8 @@ package com.rssclient.controllers;
 
 import java.util.ArrayList;
 
+import com.ga.task.SimpleTaskManagerSnapshot;
+import com.ga.task.TaskManagerSnapshot;
 import com.main.MainApplication;
 import com.rssclient.model.RssFeed;
 import com.rssclient.model.RssStorage;
@@ -20,13 +22,14 @@ import android.widget.AbsListView;
 import android.widget.ListView;
 
 
-public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapter.RssItemsAdapterListener, TaskManager.OnSnapshotChangedListener {
+public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapter.RssItemsAdapterListener, TaskManagerSnapshot.OnSnapshotChangedListener {
 
     TaskManager taskManager;
     ListView listView;
     RssStorage rssStorage;
     TaskManagerView taskManagerView;
 
+    TaskManagerSnapshot snapshot;
     RssFeed feed;
 
     @Override
@@ -43,8 +46,10 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
         rssStorage = application.getRssStorage();
         
         taskManagerView = (TaskManagerView) findViewById(R.id.task_manager_view);
-        taskManager.startSnapshotRecording();
-        taskManager.addSnapshotListener(this);
+
+        snapshot = new SimpleTaskManagerSnapshot();
+        snapshot.startSnapshotRecording(taskManager);
+        snapshot.addSnapshotListener(this);
 
         listView = (ListView) this.findViewById(R.id.listview);
 
@@ -88,7 +93,7 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
         });
     }
 
-    public void onSnapshotChanged(TaskManager.TaskManagerSnapshot snapshot) {
+    public void onSnapshotChanged(TaskManagerSnapshot snapshot) {
         taskManagerView.showSnapshot(snapshot);
     }
 

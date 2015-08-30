@@ -30,7 +30,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
     private Handler callbackHandler;
     private TaskExecutor taskExecutor;
     private Object userData;
-    private WeakRefList<TaskPool.TaskPoolListener> listeners;
+    private WeakRefList<TaskManagerListener> listeners;
 
     private TaskPool loadingTasks;
     private TaskProvider waitingTasks;
@@ -40,10 +40,6 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
     private SparseArray<Integer> usedSpace; //type -> task count from loadingTasks
 
     private int maxLoadingTasks;
-
-    private boolean needUpdateSnapshot;
-    private SimpleTaskManagerSnapshot snapshot;
-    private List<WeakReference<OnSnapshotChangedListener>> snapshotChangedListeners;
 
     public SimpleTaskManager(int maxLoadingTasks) {
         this.taskExecutor = new SimpleTaskExecutor();
@@ -61,13 +57,21 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         waitingTasks = new PriorityTaskProvider(handler, "TaskManagerProviderId");
         waitingTasks.addListener(this);
 
-        listeners = new WeakRefList<TaskPoolListener>();
+        listeners = new WeakRefList<TaskManagerListener>();
         taskProviders = new ArrayList<TaskProvider>();
 
         limits = new SparseArray<Float>();
         usedSpace = new SparseArray<Integer>();
+    }
 
-        snapshotChangedListeners = new ArrayList<WeakReference<OnSnapshotChangedListener>>();
+    @Override
+    public void setMaxLoadingTasks(int maxLoadingTasks) {
+        this.maxLoadingTasks = maxLoadingTasks;
+    }
+
+    @Override
+    public int getMaxLoadingTasks() {
+        return maxLoadingTasks;
     }
 
     @Override
@@ -91,11 +95,31 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
     }
 
     @Override
+    public int getLoadingTaskCount() {
+        return loadingTasks.getTaskCount();
+    }
+
+    @Override
     public void startImmediately(final Task task) {
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
                 if (handleTaskLoadPolicy(task)) {
+
+                    // TODO: write tests for that logic
+                    final Task.Callback oldCallBack = task.getTaskCallback();
+                    task.setTaskCallback(new Task.Callback() {
+                        @Override
+                        public void finished(boolean cancelled) {
+                            triggerOnTaskRemoved(task, true);
+
+                            if (oldCallBack != null) {
+                                oldCallBack.finished(cancelled);
+                            }
+                        }
+                    });
+
+                    triggerOnTaskAdded(task, true);
                     startTaskOnThread(task);
                 }
             }
@@ -123,6 +147,12 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
                 addTaskProviderOnThread(provider);
             }
         });
+    }
+
+    public List<TaskProvider> getTaskProviders() {
+        checkHandlerThread();
+
+        return taskProviders;
     }
 
     private void addTaskProviderOnThread(TaskProvider provider) {
@@ -192,18 +222,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         checkHandlerThread();
 
         final boolean isLoadingPool = pool == loadingTasks;
-        if (snapshot != null) {
-            Tools.runOnHandlerThread(callbackHandler, new Runnable() {
-                @Override
-                public void run() {
-                    if (isLoadingPool) {
-                        snapshot.updateUsedLoadingSpace(task.getTaskType(), true);
-                    } else {
-                        snapshot.updateWaitingTaskInfo(task.getTaskType(), true);
-                    }
-                }
-            });
-        }
+        triggerOnTaskAdded(task, isLoadingPool);
 
         // run on the next cycle to give a chance to handle added event for other listeners
         // before moving the task to the loading queue
@@ -225,20 +244,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
     public void onTaskRemoved(TaskPool pool, final Task task) {
         checkHandlerThread();
 
-        if (snapshot != null) {
-            final boolean isLoadingPool = pool == loadingTasks;
-
-            Tools.runOnHandlerThread(callbackHandler, new Runnable() {
-                @Override
-                public void run() {
-                    if (isLoadingPool) {
-                        snapshot.updateUsedLoadingSpace(task.getTaskType(), false);
-                    } else {
-                        snapshot.updateWaitingTaskInfo(task.getTaskType(), false);
-                    }
-                }
-            });
-        }
+        triggerOnTaskRemoved(task, pool == loadingTasks);
     }
 
     // == TaskPool interface
@@ -326,18 +332,44 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
     }
 
     @Override
+    public void removeListener(TaskManagerListener listener) {
+        listeners.remove(listener);
+    }
+
+    @Override
+    public void addListener(TaskManagerListener listener) {
+        listeners.add(new WeakReference<TaskManagerListener>(listener));
+    }
+
+    @Override
     public void addListener(TaskPoolListener listener) {
-        listeners.add(new WeakReference<TaskPoolListener>(listener));
+        addListener((TaskManagerListener) listener);
     }
 
     @Override
     public void removeListener(TaskPoolListener listener) {
-        listeners.remove(listener);
+        removeListener((TaskManagerListener) listener);
     }
 
     @Override
     public void onTaskStatusChanged(Task task, Task.Status oldStatus, Task.Status newStatus) {
         //unnecessary
+    }
+
+    private void triggerOnTaskAdded(Task task, boolean isLoadingQueue) {
+        checkHandlerThread();
+
+        for (WeakReference<TaskManagerListener> listener : listeners) {
+            listener.get().onTaskAdded(this, task, isLoadingQueue);
+        }
+    }
+
+    private void triggerOnTaskRemoved(Task task, boolean isLoadingQueue) {
+        checkHandlerThread();
+
+        for (WeakReference<TaskManagerListener> listener : listeners) {
+            listener.get().onTaskRemoved(this, task, isLoadingQueue);
+        }
     }
 
     // ==
@@ -369,6 +401,11 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
                     limits.put(taskType, availableQueuePart);
                 }
 
+                for (WeakReference<TaskManagerListener> listener : listeners) {
+                    listener.get().onLimitsChanged(SimpleTaskManager.this, taskType, availableQueuePart);
+                }
+
+                /*
                 if (snapshot != null) {
                     Tools.runOnHandlerThread(callbackHandler, new Runnable() {
                         @Override
@@ -376,9 +413,20 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
                             snapshot.setLoadingLimit(taskType, availableQueuePart);
                         }
                     });
-                }
+                }*/
             }
         });
+    }
+
+    public SparseArray<Float> getLimits() {
+        checkHandlerThread();
+
+        return limits.clone();
+    }
+
+    @Override
+    public SparseArray<Integer> getUsedSpace() {
+        return usedSpace.clone();
     }
 
     public void setWaitingTaskProvider(TaskProvider provider) {
@@ -386,72 +434,6 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
         this.waitingTasks = provider;
     }
-
-    @Override
-    public void startSnapshotRecording() {
-        if (needUpdateSnapshot) {
-            return;
-        }
-
-        needUpdateSnapshot = true;
-
-        Tools.runOnHandlerThread(handler, new Runnable() {
-            @Override
-            public void run() {
-                final SimpleTaskManagerSnapshot newSnapshot = new SimpleTaskManagerSnapshot();
-
-                Tools.runOnHandlerThread(callbackHandler, new Runnable() {
-                    @Override
-                    public void run() {
-                        snapshot = newSnapshot;
-                        snapshot.setMaxQueueSize(maxLoadingTasks);
-                    }
-                });
-            }
-        });
-    }
-
-    @Override
-    public void stopSnapshotRecording() {
-        if (!needUpdateSnapshot) {
-            return;
-        }
-
-        Tools.runOnHandlerThread(callbackHandler, new Runnable() {
-            @Override
-            public void run() {
-                needUpdateSnapshot = false;
-                snapshot = null;
-            }
-        });
-    }
-
-    @Override
-    public TaskManagerSnapshot getSnapshot() {
-        Assert.assertEquals(Thread.currentThread(), callbackHandler);
-
-        return snapshot;
-    }
-
-    @Override
-    public void addSnapshotListener(OnSnapshotChangedListener listener) {
-        snapshotChangedListeners.add(new WeakReference<OnSnapshotChangedListener>(listener));
-    }
-
-    @Override
-    public void removeSnapshotListener(OnSnapshotChangedListener listener) {
-        int i = 0;
-        for (WeakReference<OnSnapshotChangedListener> listenerRef : snapshotChangedListeners) {
-            if (listenerRef.get() != null) {
-                snapshotChangedListeners.remove(i);
-                break;
-            }
-
-            ++i;
-        }
-    }
-
-
 
     // Private
 
@@ -581,7 +563,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
     }
 
     private void checkHandlerThread() {
-        Assert.assertEquals(Looper.myLooper(),handler.getLooper());
+        Assert.assertEquals(Looper.myLooper(), handler.getLooper());
     }
 
     public void handleTaskCompletionOnThread(final Task task, final Task.Callback callback, final Task.Status status) {
@@ -649,138 +631,5 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
         this.loadingTasks.addTask(task);
         Log.d(TAG, "loading task count " + loadingTasks.getTaskCount());
-    }
-
-    void triggerOnSnapshotListeners() {
-        List<WeakReference<OnSnapshotChangedListener>> oldListeners = new ArrayList<WeakReference<OnSnapshotChangedListener>>();
-
-        for (WeakReference<OnSnapshotChangedListener> listenerRef : snapshotChangedListeners) {
-            if (listenerRef.get() != null) {
-                listenerRef.get().onSnapshotChanged(this.snapshot);
-            } else {
-                oldListeners.add(listenerRef);
-            }
-        }
-    }
-
-    private class SimpleTaskManagerSnapshot implements TaskManagerSnapshot {
-        int loadingTaskCount;
-        int waitingTaskCount;
-        int maxQueueSize;
-        SparseArray<Float> loadingLimits;
-        SparseArray<Integer> usedLoadingSpace;
-        SparseArray<Integer> waitingTaskInfo;
-
-        public SimpleTaskManagerSnapshot() {
-            loadingTaskCount = loadingTasks.getTaskCount();
-
-            waitingTaskInfo = new SparseArray<Integer>();
-            for (TaskProvider taskProvider : taskProviders) {
-                waitingTaskCount += taskProvider.getTaskCount();
-
-                for (Task task : taskProvider.getTasks()) {
-                    int count = waitingTaskInfo.get(task.getTaskType(), 0);
-                    ++count;
-                    waitingTaskInfo.put(task.getTaskType(), count);
-                }
-            }
-
-            maxQueueSize = maxLoadingTasks;
-
-            loadingLimits = limits.clone();
-            usedLoadingSpace = usedSpace.clone();
-        }
-
-        public void setMaxQueueSize(int count) {
-            maxQueueSize = count;
-            triggerOnSnapshotListeners();
-        }
-
-        public void setLoadingLimit(int taskType, float availableQueuePart) {
-            if (availableQueuePart == -1.0f) {
-                loadingLimits.remove(taskType);
-            } else {
-                loadingLimits.put(taskType, availableQueuePart);
-            }
-
-            triggerOnSnapshotListeners();
-        }
-
-        private void updateUsedLoadingSpace(int taskType, boolean add) {
-            Integer count = usedLoadingSpace.get(taskType, 0);
-            if (add) {
-                ++count;
-                ++loadingTaskCount;
-            } else {
-                --count;
-                --loadingTaskCount;
-
-                if (count < 0) {
-                    count = 0;
-                }
-
-                if (loadingTaskCount < 0) {
-                    loadingTaskCount = 0;
-                }
-            }
-
-            usedLoadingSpace.put(taskType, count);
-            triggerOnSnapshotListeners();
-        }
-
-        private void updateWaitingTaskInfo(int taskType, boolean add) {
-            int count = waitingTaskInfo.get(taskType, 0);
-            if (add) {
-                ++waitingTaskCount;
-                ++count;
-            } else {
-                --waitingTaskCount;
-                --count;
-
-                if (count < 0) {
-                    count = 0;
-                }
-
-                if (waitingTaskCount < 0) {
-                    waitingTaskCount = 0;
-                }
-            }
-
-            waitingTaskInfo.put(taskType, count);
-            triggerOnSnapshotListeners();
-        }
-
-
-        //public
-
-        @Override
-        public int getLoadingTasksCount() {
-            return loadingTaskCount;
-        }
-
-        @Override
-        public int getWaitingTasksCount() {
-            return waitingTaskCount;
-        }
-
-        @Override
-        public int getMaxQueueSize() {
-            return maxQueueSize;
-        }
-
-        @Override
-        public SparseArray<Float> getLoadingLimits() {
-            return loadingLimits;
-        }
-
-        @Override
-        public SparseArray<Integer> getUsedLoadingSpace() {
-            return usedLoadingSpace;
-        }
-
-        @Override
-        public SparseArray<Integer> getWaitingTaskInfo() {
-            return waitingTaskInfo;
-        }
     }
 }
