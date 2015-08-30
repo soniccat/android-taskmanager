@@ -10,8 +10,6 @@ import java.util.List;
  */
 
 public interface TaskManager extends TaskPool {
-    Handler getHandler();
-
     void setMaxLoadingTasks(int maxLoadingTasks);
     int getMaxLoadingTasks();
 

@@ -66,11 +66,15 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
     @Override
     public void setMaxLoadingTasks(int maxLoadingTasks) {
+        checkHandlerThread();
+
         this.maxLoadingTasks = maxLoadingTasks;
     }
 
     @Override
     public int getMaxLoadingTasks() {
+        checkHandlerThread();
+
         return maxLoadingTasks;
     }
 

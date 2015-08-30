@@ -69,6 +69,7 @@ public class TaskPoolTest {
         Mockito.when(task.getPrivate()).thenReturn(taskPrivate);
 
         // Act
+        taskPool.addListener(listener);
         taskPool.addTask(task);
 
         // Verify

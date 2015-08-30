@@ -29,6 +29,11 @@ public class SimpleTaskManagerTest {
     }
 
     @Test
+    public void setMaxLoadingTasksTest() {
+        taskManagerTest.setMaxLoadingTasksTest();
+    }
+
+    @Test
     public void addTask() {
         taskManagerTest.addTask();
     }
