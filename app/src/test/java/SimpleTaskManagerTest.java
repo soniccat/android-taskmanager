@@ -84,6 +84,11 @@ public class SimpleTaskManagerTest {
     }
 
     @Test
+    public void startImmediatelyFinish() {
+        taskManagerTest.startImmediatelyFinish();
+    }
+
+    @Test
     public void setTaskProviderPriority() {
         taskManagerTest.setTaskProviderPriority();
     }

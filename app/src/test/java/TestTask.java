@@ -8,4 +8,8 @@ public class TestTask extends SimpleTask {
     public void startTask() {
 
     }
+
+    public void finish() {
+        impl.handleTaskCompletion();
+    }
 }

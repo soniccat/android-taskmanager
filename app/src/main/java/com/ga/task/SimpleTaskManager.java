@@ -117,10 +117,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
                         @Override
                         public void finished(boolean cancelled) {
                             triggerOnTaskRemoved(task, true);
-
-                            if (oldCallBack != null) {
-                                oldCallBack.finished(cancelled);
-                            }
+                            handleTaskCompletionOnThread(task, oldCallBack, cancelled);
                         }
                     });
 
@@ -546,9 +543,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
                     public void run() {
                         logTask(task, "Task finished");
                         updateUsedSpace(task.getTaskType(), false);
-
-                        Task.Status newStatus = cancelled ? Task.Status.Cancelled : Task.Status.Finished;
-                        handleTaskCompletionOnThread(task, originalCallback, newStatus);
+                        handleTaskCompletionOnThread(task, originalCallback, cancelled);
                     }
                 });
             }
@@ -565,8 +560,10 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         Assert.assertEquals(Looper.myLooper(), handler.getLooper());
     }
 
-    public void handleTaskCompletionOnThread(final Task task, final Task.Callback callback, final Task.Status status) {
+    public void handleTaskCompletionOnThread(final Task task, final Task.Callback callback, boolean isCancelled) {
         checkHandlerThread();
+
+        final Task.Status status = isCancelled ? Task.Status.Cancelled : Task.Status.Finished;
         task.getPrivate().setTaskStatus(status);
         task.getPrivate().clearAllListeners();
 
@@ -596,8 +593,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
             if (st == Task.Status.Waiting) {
                 // the task will be removed from providers automatically
-                handleTaskCompletionOnThread(task, task.getTaskCallback(), Task.Status.Cancelled);
-
+                handleTaskCompletionOnThread(task, task.getTaskCallback(), true);
                 logTask(task, "Cancelled");
             }
         }

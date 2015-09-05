@@ -1,5 +1,3 @@
-import android.os.Handler;
-
 import com.ga.task.Task;
 import com.ga.task.TaskManager;
 import com.ga.task.TaskPool;
@@ -116,6 +114,27 @@ public class TaskManagerTest {
         Mockito.verify(taskPrivate).setTaskStatus(Task.Status.Started);
         Mockito.verify(listener, Mockito.never()).onTaskAdded(taskManager, task, false);
         Mockito.verify(listener).onTaskAdded(taskManager, task, true);
+    }
+
+    public void startImmediatelyFinish() {
+        // Arrange
+        TestTask task = new TestTask();
+        TaskPrivate taskPrivate = task.getPrivate();
+        TaskManager.TaskManagerListener listener = Mockito.mock(TaskManager.TaskManagerListener.class);
+
+        // Act
+        taskManager.addListener(listener);
+        taskManager.startImmediately(task);
+        task.finish();
+
+        // Verify
+        Mockito.verify(taskPrivate).setTaskStatus(Task.Status.Started);
+        Mockito.verify(taskPrivate).setTaskStatus(Task.Status.Finished);
+        Mockito.verify(listener, Mockito.never()).onTaskAdded(taskManager, task, false);
+        Mockito.verify(listener, Mockito.never()).onTaskRemoved(taskManager, task, false);
+        Mockito.verify(listener).onTaskAdded(taskManager, task, true);
+        Mockito.verify(listener).onTaskRemoved(taskManager, task, true);
+        assertEquals(0, taskManager.getTaskCount());
     }
 
     public void addTask() {

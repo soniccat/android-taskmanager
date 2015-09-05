@@ -12,10 +12,9 @@ import java.util.Date;
  * Created by alexeyglushkov on 20.09.14.
  */
 
-//TODO: detach from AcyncTask to a separate TaskLauncher class/interface
 public abstract class SimpleTask implements Task {
 
-    final TaskImpl impl = new TaskImpl(this);
+    final protected TaskImpl impl = new TaskImpl(this);
 
     public SimpleTask() {
         super();
