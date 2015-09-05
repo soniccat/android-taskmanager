@@ -34,11 +34,11 @@ public class FileKeepTask extends SimpleTask {
         try {
             fos = this.context.openFileOutput(name, Context.MODE_PRIVATE);
             bufferedStream = new BufferedOutputStream(fos);
-            setTaskError(writer.writeToStream(bufferedStream));
+            getPrivate().setTaskError(writer.writeToStream(bufferedStream));
 
         } catch (Exception e) {
             e.printStackTrace();
-            setTaskError(new Error("FileKeepTask exception: " + e.getMessage()));
+            getPrivate().setTaskError(new Error("FileKeepTask exception: " + e.getMessage()));
 
         } finally {
             try {

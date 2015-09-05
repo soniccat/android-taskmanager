@@ -29,4 +29,14 @@ public class TestTasks {
 
         return task;
     }
+
+    public static TestTask createTestTaskSpy(String id) {
+        TestTask testTask = Mockito.spy(new TestTask());
+        testTask.setTaskId(id);
+
+        TaskPrivate taskPrivate = Mockito.spy(testTask.getPrivate());
+        Mockito.when(testTask.getPrivate()).thenReturn(taskPrivate);
+
+        return testTask;
+    }
 }

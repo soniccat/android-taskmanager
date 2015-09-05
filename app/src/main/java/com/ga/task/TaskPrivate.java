@@ -34,6 +34,11 @@ public interface TaskPrivate extends Task{
     //
     void setTaskStartDate(Date date);
 
+    // Set error
+    //
+    // Caller: Task
+    void setTaskError(Error error);
+
     // Set Date after changing the state to Started
     //
     // Caller: TaskManager

@@ -63,14 +63,14 @@ public class HttpLoadTask extends SimpleTask {
             stream = new BufferedInputStream(connection.getInputStream());
             Object data = handleStream(stream);
             if (data instanceof Error) {
-                setTaskError((Error) data);
+                getPrivate().setTaskError((Error) data);
             } else {
                 setHandledData(data);
             }
 
         } catch (IOException e) {
             e.printStackTrace();
-            setTaskError(new Error("Load error"));
+            getPrivate().setTaskError(new Error("Load error"));
 
         } finally {
             try {

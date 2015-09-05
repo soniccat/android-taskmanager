@@ -174,6 +174,55 @@ public class TaskManagerTest {
         assertFalse(taskManager.getTasks().contains(task));
     }
 
+    public void addTheSameTaskWithSkipPolicy() {
+        // Arrange
+        TaskManager.TaskManagerListener listener = Mockito.mock(TaskManager.TaskManagerListener.class);
+
+        Task task1 = TestTasks.createTestTaskSpy("taskId");
+        Task task2 = TestTasks.createTestTaskSpy("taskId");
+
+        // Act
+        taskManager.addListener(listener);
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
+
+        // Verify
+        assertEquals(Task.Status.Started, task1.getTaskStatus());
+        Mockito.verify(task1, Mockito.atLeastOnce()).getTaskId();
+        Mockito.verify(listener).onTaskAdded(taskManager, task1, true);
+        Mockito.verify(listener).onTaskAdded(taskManager, task1, false);
+
+        assertEquals(Task.Status.Cancelled, task2.getTaskStatus());
+        Mockito.verify(task2, Mockito.atLeastOnce()).getTaskId();
+        Mockito.verify(listener, Mockito.never()).onTaskAdded(taskManager, task2, true);
+        Mockito.verify(listener, Mockito.never()).onTaskAdded(taskManager, task2, false);
+
+        assertEquals(taskManager.getTaskCount(), 1);
+        assertTrue(taskManager.getTasks().contains(task1));
+    }
+
+    public void addTheSameTaskWithCancelPolicy() {
+        // Arrange
+        Task task1 = TestTasks.createTestTaskSpy("taskId");
+        Task task2 = TestTasks.createTestTaskSpy("taskId");
+        task2.setLoadPolicy(Task.LoadPolicy.CancelAdded);
+
+        // Act
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
+
+        // Verify
+        assertEquals(Task.Status.Started, task1.getTaskStatus());
+        assertTrue(task1.getPrivate().getNeedCancelTask());
+
+        assertEquals(Task.Status.Started, task2.getTaskStatus());
+        assertFalse(task2.getPrivate().getNeedCancelTask());
+
+        assertEquals(taskManager.getTaskCount(), 2);
+        assertTrue(taskManager.getTasks().contains(task1));
+        assertTrue(taskManager.getTasks().contains(task2));
+    }
+
     public void addStateListener() {
         // Arrange
         Task task = TestTasks.createTaskMock("taskId", Task.Status.NotStarted);

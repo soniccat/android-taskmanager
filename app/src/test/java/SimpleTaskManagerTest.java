@@ -44,6 +44,16 @@ public class SimpleTaskManagerTest {
     }
 
     @Test
+    public void addTheSameTaskWithSkipPolicy() {
+        taskManagerTest.addTheSameTaskWithSkipPolicy();
+    }
+
+    @Test
+    public void addTheSameTaskWithCancelPolicy() {
+        taskManagerTest.addTheSameTaskWithCancelPolicy();
+    }
+
+    @Test
     public void addStateListener() {
         taskManagerTest.addStateListener();
     }

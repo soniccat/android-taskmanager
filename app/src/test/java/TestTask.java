@@ -1,4 +1,5 @@
 import com.ga.task.SimpleTask;
+import com.ga.task.Task;
 
 /**
  * Created by alexeyglushkov on 09.08.15.
@@ -10,6 +11,6 @@ public class TestTask extends SimpleTask {
     }
 
     public void finish() {
-        impl.handleTaskCompletion();
+        getPrivate().handleTaskCompletion();
     }
 }

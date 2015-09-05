@@ -22,66 +22,62 @@ public abstract class SimpleTask implements Task {
 
     @Override
     public Callback getTaskCallback() {
-        return impl.getTaskCallback();
+        return getPrivate().getTaskCallback();
     }
 
     @Override
     public void setTaskCallback(Callback callback) {
-        impl.setTaskCallback(callback);
+        getPrivate().setTaskCallback(callback);
     }
 
     @Override
     public Task.Status getTaskStatus() {
-        return impl.getTaskStatus();
-    }
-
-    public void setTaskError(Error error) {
-        impl.setTaskError(error);
+        return getPrivate().getTaskStatus();
     }
 
     @Override
     public Error getTaskError() {
-        return impl.getTaskError();
+        return getPrivate().getTaskError();
     }
 
     @Override
     public Object getTaskUserData() {
-        return impl.getTaskUserData();
+        return getPrivate().getTaskUserData();
     }
 
     @Override
     public void setTaskUserData(Object object) {
-        impl.setTaskUserData(object);
+        getPrivate().setTaskUserData(object);
     }
 
     @Override
     public void setTaskPriority(int value) {
-        impl.setTaskPriority(value);
+        getPrivate().setTaskPriority(value);
     }
 
     @Override
     public int getTaskPriority() {
-        return impl.getTaskPriority();
+        return getPrivate().getTaskPriority();
     }
 
     @Override
     public void setTaskId(String id) {
-        impl.setTaskId(id);
+        getPrivate().setTaskId(id);
     }
 
     @Override
     public String getTaskId() {
-        return impl.getTaskId();
+        return getPrivate().getTaskId();
     }
 
     @Override
     public void setLoadPolicy(LoadPolicy loadPolicy) {
-        impl.setLoadPolicy(loadPolicy);
+        getPrivate().setLoadPolicy(loadPolicy);
     }
 
     @Override
     public LoadPolicy getLoadPolicy() {
-        return impl.getLoadPolicy();
+        return getPrivate().getLoadPolicy();
     }
 
     @Override
@@ -91,62 +87,62 @@ public abstract class SimpleTask implements Task {
 
     @Override
     public void setTaskProgressMinChange(float value) {
-        impl.setTaskProgressMinChange(value);
+        getPrivate().setTaskProgressMinChange(value);
     }
 
     @Override
     public float getTaskProgressMinChange() {
-        return impl.getTaskProgressMinChange();
+        return getPrivate().getTaskProgressMinChange();
     }
 
     @Override
     public Object getCancellationInfo() {
-        return impl.getCancellationInfo();
+        return getPrivate().getCancellationInfo();
     }
 
     @Override
     public void setTaskType(int type) {
-        impl.setTaskType(type);
+        getPrivate().setTaskType(type);
     }
 
     @Override
     public int getTaskType() {
-        return impl.getTaskType();
+        return getPrivate().getTaskType();
     }
 
     @Override
     public void addTaskStatusListener(StatusListener listener) {
-        impl.addTaskStatusListener(listener);
+        getPrivate().addTaskStatusListener(listener);
     }
 
     @Override
     public void removeTaskStatusListener(StatusListener listener) {
-        impl.removeTaskStatusListener(listener);
+        getPrivate().removeTaskStatusListener(listener);
     }
 
     @Override
     public void addTaskProgressListener(ProgressListener listener) {
-        impl.addTaskProgressListener(listener);
+        getPrivate().addTaskProgressListener(listener);
     }
 
     @Override
     public void removeTaskProgressListener(ProgressListener listener) {
-        impl.removeTaskProgressListener(listener);
+        getPrivate().removeTaskProgressListener(listener);
     }
 
     @Override
     public long getTaskDuration() {
-        return impl.getTaskDuration();
+        return getPrivate().getTaskDuration();
     }
 
     @Override
     public void addTaskDependency(Task task) {
-        impl.addTaskDependency(task);
+        getPrivate().addTaskDependency(task);
     }
 
     @Override
     public void removeTaskDependency(Task task) {
-        impl.removeTaskDependency(task);
+        getPrivate().removeTaskDependency(task);
     }
 
     @Override

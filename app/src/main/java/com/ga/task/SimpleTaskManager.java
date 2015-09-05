@@ -18,6 +18,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+
 /**
  * Created by alexeyglushkov on 20.09.14.
  */
@@ -110,8 +113,6 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
             @Override
             public void run() {
                 if (handleTaskLoadPolicy(task)) {
-
-                    // TODO: write tests for that logic
                     final Task.Callback oldCallBack = task.getTaskCallback();
                     task.setTaskCallback(new Task.Callback() {
                         @Override
@@ -123,6 +124,8 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
                     triggerOnTaskAdded(task, true);
                     startTaskOnThread(task);
+                } else {
+                    cancelTaskOnThread(task, null);
                 }
             }
         });
@@ -233,17 +236,19 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         // run on the next cycle to give a chance to handle added event for other listeners
         // before moving the task to the loading queue
         // otherwise removed event will be sent before added for TaskPool.TaskPoolListener (see functions below)
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (handleTaskLoadPolicy(task)) {
-                    checkTasksToRunOnThread();
+        if (!isLoadingPool) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (handleTaskLoadPolicy(task)) {
+                        checkTasksToRunOnThread();
 
-                } else if (!isLoadingPool) {
-                    cancelTaskOnThread(task, null);
+                    } else {
+                        cancelTaskOnThread(task, null);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     @Override
@@ -448,6 +453,8 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         if (handleTaskLoadPolicy(task)) {
             waitingTasks.addTask(task);
             checkTasksToRunOnThread();
+        } else {
+            cancelTaskOnThread(task, null);
         }
     }
 
@@ -457,6 +464,8 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         //search for the task with the same id
         if (task.getTaskId() != null) {
             Task addedTask = loadingTasks.getTask(task.getTaskId());
+
+            assertTrue(addedTask != task);
             if (addedTask != null) {
                 if (task.getLoadPolicy() == Task.LoadPolicy.CancelAdded) {
                     cancelTaskOnThread(addedTask, null);
@@ -536,7 +545,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
     private void startTaskOnThread(final Task task) {
         checkHandlerThread();
-        Assert.assertTrue(Tasks.isTaskReadyToStart(task));
+        assertTrue(Tasks.isTaskReadyToStart(task));
 
         logTask(task, "Task started");
         task.getPrivate().setTaskStatus(Task.Status.Started);
@@ -619,7 +628,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         if (add) {
             ++count;
         } else {
-            Assert.assertTrue(count > 0);
+            assertTrue(count > 0);
             --count;
         }
 

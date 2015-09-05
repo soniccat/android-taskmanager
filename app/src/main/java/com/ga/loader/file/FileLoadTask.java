@@ -39,13 +39,13 @@ public class FileLoadTask extends SimpleTask {
             fis = new BufferedInputStream(this.context.openFileInput(name));
             Object data = handleStream(fis);
             if (data instanceof Error) {
-                setTaskError((Error)data);
+                getPrivate().setTaskError((Error)data);
             } else {
                 setHandledData(data);
             }
 
         } catch (Exception e) {
-            setTaskError(new Error("Load exception"));
+            getPrivate().setTaskError(new Error("Load exception"));
 
         } finally {
             if (fis != null) {
