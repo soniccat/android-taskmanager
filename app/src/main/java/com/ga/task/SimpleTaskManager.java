@@ -224,6 +224,10 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         checkHandlerThread();
 
         final boolean isLoadingPool = pool == loadingTasks;
+        if (isLoadingPool) {
+            updateUsedSpace(task.getTaskType(), true);
+        }
+
         triggerOnTaskAdded(task, isLoadingPool);
 
         // run on the next cycle to give a chance to handle added event for other listeners
@@ -246,7 +250,12 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
     public void onTaskRemoved(TaskPool pool, final Task task) {
         checkHandlerThread();
 
-        triggerOnTaskRemoved(task, pool == loadingTasks);
+        final boolean isLoadingPool = pool == loadingTasks;
+        if (isLoadingPool) {
+            updateUsedSpace(task.getTaskType(), false);
+        }
+
+        triggerOnTaskRemoved(task, isLoadingPool);
     }
 
     // == TaskPool interface
@@ -468,7 +477,6 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
             if (task != null) {
                 addLoadingTaskOnThread(task);
-                updateUsedSpace(task.getTaskType(), true);
                 startTaskOnThread(task);
             }
         }
@@ -542,7 +550,6 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
                     @Override
                     public void run() {
                         logTask(task, "Task finished");
-                        updateUsedSpace(task.getTaskType(), false);
                         handleTaskCompletionOnThread(task, originalCallback, cancelled);
                     }
                 });

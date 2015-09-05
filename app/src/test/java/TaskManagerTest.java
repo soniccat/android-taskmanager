@@ -119,7 +119,6 @@ public class TaskManagerTest {
     public void startImmediatelyFinish() {
         // Arrange
         TestTask task = new TestTask();
-        TaskPrivate taskPrivate = task.getPrivate();
         TaskManager.TaskManagerListener listener = Mockito.mock(TaskManager.TaskManagerListener.class);
 
         // Act
@@ -128,8 +127,7 @@ public class TaskManagerTest {
         task.finish();
 
         // Verify
-        Mockito.verify(taskPrivate).setTaskStatus(Task.Status.Started);
-        Mockito.verify(taskPrivate).setTaskStatus(Task.Status.Finished);
+        assertEquals(Task.Status.Finished, task.getTaskStatus());
         Mockito.verify(listener, Mockito.never()).onTaskAdded(taskManager, task, false);
         Mockito.verify(listener, Mockito.never()).onTaskRemoved(taskManager, task, false);
         Mockito.verify(listener).onTaskAdded(taskManager, task, true);
