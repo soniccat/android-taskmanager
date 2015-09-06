@@ -1,4 +1,5 @@
 import com.ga.task.Task;
+import com.ga.task.TaskImpl;
 import com.ga.task.TaskPrivate;
 
 import org.mockito.Mockito;
@@ -34,8 +35,9 @@ public class TestTasks {
         TestTask testTask = Mockito.spy(new TestTask());
         testTask.setTaskId(id);
 
-        TaskPrivate taskPrivate = Mockito.spy(testTask.getPrivate());
+        TaskImpl taskPrivate = (TaskImpl)Mockito.spy(testTask.getPrivate());
         Mockito.when(testTask.getPrivate()).thenReturn(taskPrivate);
+        Mockito.when(taskPrivate.getOuterTask()).thenReturn(testTask);
 
         return testTask;
     }

@@ -97,7 +97,8 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
-                addTaskOnThread(task);
+                // task will be launched in onTaskAdded method
+                waitingTasks.addTask(task);
             }
         });
     }
@@ -178,7 +179,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
             }
         }
 
-        provider.addListener(this); //for snapshots
+        provider.addListener(this);
         taskProviders.add(insertIndex, provider);
     }
 
@@ -233,21 +234,13 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
         triggerOnTaskAdded(task, isLoadingPool);
 
-        // run on the next cycle to give a chance to handle added event for other listeners
-        // before moving the task to the loading queue
-        // otherwise removed event will be sent before added for TaskPool.TaskPoolListener (see functions below)
         if (!isLoadingPool) {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (handleTaskLoadPolicy(task)) {
-                        checkTasksToRunOnThread();
+            if (handleTaskLoadPolicy(task)) {
+                checkTasksToRunOnThread();
 
-                    } else {
-                        cancelTaskOnThread(task, null);
-                    }
-                }
-            });
+            } else {
+                cancelTaskOnThread(task, null);
+            }
         }
     }
 
@@ -447,17 +440,6 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
     // Private
 
-    private void addTaskOnThread(Task task) {
-        checkHandlerThread();
-
-        if (handleTaskLoadPolicy(task)) {
-            waitingTasks.addTask(task);
-            checkTasksToRunOnThread();
-        } else {
-            cancelTaskOnThread(task, null);
-        }
-    }
-
     private boolean handleTaskLoadPolicy(Task task) {
         checkHandlerThread();
 
@@ -593,7 +575,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         });
 
         //TODO: for the another status like cancelled new task won't be started
-        //but we cant't just call checkTasksToRunOnThread due to Task.LoadPolicy.CancelAdded
+        //but we cant't just call checkTasksToRunOnThread because of Task.LoadPolicy.CancelAdded
         //because we want to have new task already in waiting queue but now it isn't
         if (status == Task.Status.Finished) {
             checkTasksToRunOnThread();

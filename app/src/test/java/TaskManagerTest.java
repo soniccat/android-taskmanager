@@ -180,6 +180,7 @@ public class TaskManagerTest {
 
         Task task1 = TestTasks.createTestTaskSpy("taskId");
         Task task2 = TestTasks.createTestTaskSpy("taskId");
+        task2.setLoadPolicy(Task.LoadPolicy.SkipIfAdded);
 
         // Act
         taskManager.addListener(listener);
@@ -195,7 +196,7 @@ public class TaskManagerTest {
         assertEquals(Task.Status.Cancelled, task2.getTaskStatus());
         Mockito.verify(task2, Mockito.atLeastOnce()).getTaskId();
         Mockito.verify(listener, Mockito.never()).onTaskAdded(taskManager, task2, true);
-        Mockito.verify(listener, Mockito.never()).onTaskAdded(taskManager, task2, false);
+        Mockito.verify(listener).onTaskRemoved(taskManager, task2, false);
 
         assertEquals(taskManager.getTaskCount(), 1);
         assertTrue(taskManager.getTasks().contains(task1));

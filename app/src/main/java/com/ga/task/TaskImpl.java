@@ -47,7 +47,7 @@ public class TaskImpl implements Task, TaskPrivate {
 
     @Override
     public void startTask() {
-        // Doesn't implement
+        // it should be implemented in the outerTask
     }
 
     @Override
@@ -264,7 +264,7 @@ public class TaskImpl implements Task, TaskPrivate {
         if (oldStatus != newStatus) {
             for (StatusListener l : statusListeners) {
                 if (l != null) {
-                    l.onTaskStatusChanged(outerTask, oldStatus, newStatus);
+                    l.onTaskStatusChanged(getOuterTask(), oldStatus, newStatus);
                 }
             }
         }
@@ -277,7 +277,7 @@ public class TaskImpl implements Task, TaskPrivate {
                 public void run() {
                     for (ProgressListener l : progressListeners) {
                         if (l != null) {
-                            l.onTaskProgressChanged(outerTask, progressInfo);
+                            l.onTaskProgressChanged(getOuterTask(), progressInfo);
                         }
                     }
                 }
@@ -299,5 +299,10 @@ public class TaskImpl implements Task, TaskPrivate {
 
     private void checkMainThread() {
         Assert.assertEquals(Looper.getMainLooper().getThread(), Thread.currentThread());
+    }
+
+    // for mocking
+    public Task getOuterTask() {
+        return outerTask;
     }
 }
