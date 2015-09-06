@@ -113,7 +113,30 @@ public class TaskManagerTest {
         // Verify
         Mockito.verify(taskPrivate).setTaskStatus(Task.Status.Started);
         Mockito.verify(listener, Mockito.never()).onTaskAdded(taskManager, task, false);
+        Mockito.verify(listener, Mockito.never()).onTaskRemoved(taskManager, task, false);
         Mockito.verify(listener).onTaskAdded(taskManager, task, true);
+    }
+
+    public void startImmediatelySkipPolicy() {
+        // Arrange
+        Task task1 = TestTasks.createTestTaskSpy("taskId");
+        Task task2 = TestTasks.createTestTaskSpy("taskId");
+        TaskManager.TaskManagerListener listener = Mockito.mock(TaskManager.TaskManagerListener.class);
+
+        // Act
+        taskManager.addListener(listener);
+        taskManager.addTask(task1);
+        taskManager.startImmediately(task2);
+
+        // Verify
+        assertEquals(Task.Status.Started, task1.getTaskStatus());
+        Mockito.verify(listener).onTaskAdded(taskManager, task1, true);
+
+        assertEquals(Task.Status.Cancelled, task2.getTaskStatus());
+        Mockito.verify(listener, Mockito.never()).onTaskAdded(taskManager, task2, false);
+        Mockito.verify(listener, Mockito.never()).onTaskRemoved(taskManager, task2, false);
+        Mockito.verify(listener, Mockito.never()).onTaskAdded(taskManager, task2, true);
+        Mockito.verify(listener, Mockito.never()).onTaskRemoved(taskManager, task2, true);
     }
 
     public void startImmediatelyFinish() {
@@ -191,10 +214,12 @@ public class TaskManagerTest {
         assertEquals(Task.Status.Started, task1.getTaskStatus());
         Mockito.verify(task1, Mockito.atLeastOnce()).getTaskId();
         Mockito.verify(listener).onTaskAdded(taskManager, task1, true);
+        Mockito.verify(listener).onTaskRemoved(taskManager, task1, false);
         Mockito.verify(listener).onTaskAdded(taskManager, task1, false);
 
         assertEquals(Task.Status.Cancelled, task2.getTaskStatus());
         Mockito.verify(task2, Mockito.atLeastOnce()).getTaskId();
+        Mockito.verify(listener).onTaskAdded(taskManager, task2, false);
         Mockito.verify(listener, Mockito.never()).onTaskAdded(taskManager, task2, true);
         Mockito.verify(listener).onTaskRemoved(taskManager, task2, false);
 

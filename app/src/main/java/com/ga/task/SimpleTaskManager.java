@@ -562,6 +562,8 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         checkHandlerThread();
 
         final Task.Status status = isCancelled ? Task.Status.Cancelled : Task.Status.Finished;
+
+        // the task will be removed from the provider automatically
         task.getPrivate().setTaskStatus(status);
         task.getPrivate().clearAllListeners();
 
@@ -589,8 +591,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
             Task.Status st = task.getTaskStatus();
             task.getPrivate().cancelTask(info);
 
-            if (st == Task.Status.Waiting) {
-                // the task will be removed from providers automatically
+            if (st == Task.Status.Waiting || st == Task.Status.NotStarted || st == Task.Status.Blocked) {
                 handleTaskCompletionOnThread(task, task.getTaskCallback(), true);
                 logTask(task, "Cancelled");
             }

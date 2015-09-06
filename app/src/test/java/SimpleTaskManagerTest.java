@@ -94,6 +94,11 @@ public class SimpleTaskManagerTest {
     }
 
     @Test
+    public void startImmediatelySkipPolicy() {
+        taskManagerTest.startImmediatelySkipPolicy();
+    }
+
+    @Test
     public void startImmediatelyFinish() {
         taskManagerTest.startImmediatelyFinish();
     }
