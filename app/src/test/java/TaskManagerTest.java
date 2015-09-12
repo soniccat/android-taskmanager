@@ -1,3 +1,6 @@
+import android.os.Handler;
+import android.os.HandlerThread;
+
 import com.ga.task.PriorityTaskProvider;
 import com.ga.task.Task;
 import com.ga.task.TaskExecutor;
@@ -30,6 +33,47 @@ public class TaskManagerTest {
 
         // Verify
         assertEquals(100, taskManager.getMaxLoadingTasks());
+    }
+
+    public void getTasks() {
+        // Arrange
+        Task task1 = TestTasks.createTaskMock("taskId1", Task.Status.NotStarted);
+        Task task2 = TestTasks.createTaskMock("taskId2", Task.Status.NotStarted);
+        Task task3 = TestTasks.createTaskMock("taskId3", Task.Status.NotStarted);
+
+        TaskProvider taskProvider = createTaskProviderSpy("0", taskManager);
+
+        // Act
+        taskManager.setMaxLoadingTasks(0);
+        taskManager.addTaskProvider(taskProvider);
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
+        taskProvider.addTask(task3);
+
+        // Verify
+        assertEquals(3, taskManager.getTasks().size());
+        assertTrue(taskManager.getTasks().contains(task1));
+        assertTrue(taskManager.getTasks().contains(task2));
+        assertTrue(taskManager.getTasks().contains(task3));
+    }
+
+    public void getTaskCount() {
+        // Arrange
+        Task task1 = TestTasks.createTaskMock("taskId1", Task.Status.NotStarted);
+        Task task2 = TestTasks.createTaskMock("taskId2", Task.Status.NotStarted);
+        Task task3 = TestTasks.createTaskMock("taskId3", Task.Status.NotStarted);
+
+        TaskProvider taskProvider = createTaskProviderSpy("0", taskManager);
+
+        // Act
+        taskManager.setMaxLoadingTasks(0);
+        taskManager.addTaskProvider(taskProvider);
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
+        taskProvider.addTask(task3);
+
+        // Verify
+        assertEquals(3, taskManager.getTaskCount());
     }
 
     public void getLoadingTaskCount() {
@@ -405,6 +449,22 @@ public class TaskManagerTest {
 
         // Verify
         assertEquals(0, taskManager.getTaskCount());
+    }
+
+    public void setGetHandler() {
+        // Arrange
+        HandlerThread handlerThread = new HandlerThread("HandlerThread");
+        handlerThread.start();
+        Handler handler = new Handler(handlerThread.getLooper());
+        TaskProvider taskProvider = createTaskProviderMock("0", taskManager);
+
+        // Act
+        taskManager.addTaskProvider(taskProvider);
+        taskManager.setHandler(handler);
+
+        // Verify
+        Mockito.verify(taskProvider).setHandler(handler);
+        assertEquals(handler, taskManager.getHandler());
     }
 
     // Tools

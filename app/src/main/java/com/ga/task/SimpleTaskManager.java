@@ -356,16 +356,12 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
     @Override
     public void addListener(TaskPoolListener listener) {
-        if (listener instanceof TaskManagerListener) {
-            addListener((TaskManagerListener) listener);
-        }
+        //unnecessary
     }
 
     @Override
     public void removeListener(TaskPoolListener listener) {
-        if (listener instanceof TaskManagerListener) {
-            removeListener((TaskManagerListener) listener);
-        }
+        //unnecessary
     }
 
     @Override

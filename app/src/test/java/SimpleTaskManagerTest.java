@@ -128,12 +128,22 @@ public class SimpleTaskManagerTest {
         taskManagerTest.setTaskProviderPriority();
     }
 
-    // PoolTests
-
     @Test
     public void setGetHandler() {
-        poolTest.setGetHandler();
+        taskManagerTest.setGetHandler();
     }
+
+    @Test
+    public void getTaskCount() {
+        taskManagerTest.getTaskCount();
+    }
+
+    @Test
+    public void getTasks() {
+        taskManagerTest.getTasks();
+    }
+
+    // PoolTests
 
     @Test
     public void getTask() {
@@ -143,11 +153,6 @@ public class SimpleTaskManagerTest {
     @Test
     public void getUnknownTask() {
         poolTest.getUnknownTask();
-    }
-
-    @Test
-    public void getTaskCount() {
-        poolTest.getTaskCount();
     }
 
     @Test
