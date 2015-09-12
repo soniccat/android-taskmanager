@@ -79,13 +79,33 @@ public class SimpleTaskManagerTest {
     }
 
     @Test
+    public void getTaskFromProvider() {
+        taskManagerTest.getTaskFromProvider();
+    }
+
+    @Test
     public void addTaskProvider() {
         taskManagerTest.addTaskProvider();
     }
 
     @Test
+    public void addTaskProvider2() {
+        taskManagerTest.addTaskProvider2();
+    }
+
+    @Test
+    public void addTaskProviderWithTheSameId() {
+        taskManagerTest.addTaskProviderWithTheSameId();
+    }
+
+    @Test
     public void removeTaskProvider() {
         taskManagerTest.removeTaskProvider();
+    }
+
+    @Test
+    public void setTaskExecutor() {
+        taskManagerTest.setTaskExecutor();
     }
 
     @Test

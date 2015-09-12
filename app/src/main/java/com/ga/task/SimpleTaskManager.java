@@ -221,6 +221,10 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         this.taskExecutor = executor;
     }
 
+    public TaskExecutor getTaskExecutor() {
+        return this.taskExecutor;
+    }
+
     // == TaskPool.TaskPoolListener
 
     @Override

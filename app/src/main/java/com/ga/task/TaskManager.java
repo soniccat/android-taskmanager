@@ -30,6 +30,7 @@ public interface TaskManager extends TaskPool {
     SparseArray<Integer> getUsedSpace(); //type -> task count from loadingTasks
 
     void setTaskExecutor(TaskExecutor executor);
+    TaskExecutor getTaskExecutor();
 
     void removeListener(TaskManagerListener listener);
     void addListener(TaskManagerListener listener);

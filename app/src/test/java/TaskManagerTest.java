@@ -1,4 +1,6 @@
+import com.ga.task.PriorityTaskProvider;
 import com.ga.task.Task;
+import com.ga.task.TaskExecutor;
 import com.ga.task.TaskManager;
 import com.ga.task.TaskPool;
 import com.ga.task.TaskPrivate;
@@ -45,13 +47,27 @@ public class TaskManagerTest {
         assertEquals(3, taskManager.getLoadingTaskCount());
     }
 
+    public void getTaskFromProvider() {
+        // Arrange
+        TaskProvider taskProvider1 = createTaskProviderSpy("provider1", taskManager, 20);
+        TaskProvider taskProvider2 = createTaskProviderSpy("provider2", taskManager, 10);
+        Task task = TestTasks.createTaskMock("task1");
+
+        // Act
+        taskManager.setMaxLoadingTasks(0);
+        taskManager.addTaskProvider(taskProvider1);
+        taskManager.addTaskProvider(taskProvider2);
+        taskProvider1.addTask(task);
+
+        // Verify
+        assertEquals(task, taskProvider1.getTask("task1"));
+        assertEquals(task, taskManager.getTask("task1"));
+    }
+
     public void addTaskProvider() {
         // Arrange
-        TaskProvider taskProvider1 = createTaskProviderMock("provider1", taskManager);
-        taskProvider1.setPriority(20);
-
-        TaskProvider taskProvider2 = createTaskProviderMock("provider2", taskManager);
-        taskProvider2.setPriority(10);
+        TaskProvider taskProvider1 = createTaskProviderMock("provider1", taskManager, 20);
+        TaskProvider taskProvider2 = createTaskProviderMock("provider2", taskManager, 10);
 
         // Act
         taskManager.addTaskProvider(taskProvider1);
@@ -64,6 +80,42 @@ public class TaskManagerTest {
 
         assertTrue(taskManager.getTaskProviders().indexOf(taskProvider1) == 0);
         assertTrue(taskManager.getTaskProviders().indexOf(taskProvider2) == 1);
+    }
+
+    public void addTaskProvider2() {
+        // Arrange
+        TaskProvider taskProvider1 = createTaskProviderMock("provider1", taskManager, 20);
+        TaskProvider taskProvider2 = createTaskProviderMock("provider2", taskManager, 10);
+        TaskProvider taskProvider3 = createTaskProviderMock("provider3", taskManager, 15);
+
+        // Act
+        taskManager.addTaskProvider(taskProvider1);
+        taskManager.addTaskProvider(taskProvider2);
+        taskManager.addTaskProvider(taskProvider3);
+
+        // Verify
+        assertEquals(3, taskManager.getTaskProviders().size());
+        assertNotNull(taskManager.getTaskProvider("provider1"));
+        assertNotNull(taskManager.getTaskProvider("provider2"));
+        assertNotNull(taskManager.getTaskProvider("provider3"));
+
+        assertTrue(taskManager.getTaskProviders().indexOf(taskProvider1) == 0);
+        assertTrue(taskManager.getTaskProviders().indexOf(taskProvider2) == 2);
+        assertTrue(taskManager.getTaskProviders().indexOf(taskProvider3) == 1);
+    }
+
+    public void addTaskProviderWithTheSameId() {
+        // Arrange
+        TaskProvider taskProvider1 = createTaskProviderMock("provider1", taskManager);
+        TaskProvider taskProvider2 = createTaskProviderMock("provider1", taskManager);
+
+        // Act
+        taskManager.addTaskProvider(taskProvider1);
+        taskManager.addTaskProvider(taskProvider2);
+
+        // Verify
+        assertEquals(1, taskManager.getTaskProviders().size());
+        assertEquals(taskProvider2, taskManager.getTaskProvider("provider1"));
     }
 
     public void removeTaskProvider() {
@@ -98,6 +150,17 @@ public class TaskManagerTest {
         // Verify 2
         assertTrue(taskManager.getTaskProviders().indexOf(taskProvider1) == 1);
         assertTrue(taskManager.getTaskProviders().indexOf(taskProvider2) == 0);
+    }
+
+    public void setTaskExecutor() {
+        // Arrange
+        TaskExecutor executor = Mockito.mock(TaskExecutor.class);
+
+        // Act
+        taskManager.setTaskExecutor(executor);
+
+        // Verify
+        assertEquals(executor, taskManager.getTaskExecutor());
     }
 
     public void startImmediately() {
@@ -352,9 +415,20 @@ public class TaskManagerTest {
     }
 
     private TaskProvider createTaskProviderMock(String id, TaskManager taskManager) {
+        return createTaskProviderMock(id, taskManager, 0);
+    }
+
+    private TaskProvider createTaskProviderMock(String id, TaskManager taskManager, int priority) {
         TaskProvider provider = Mockito.mock(TaskProvider.class);
         Mockito.when(provider.getTaskProviderId()).thenReturn(id);
         Mockito.when(provider.getHandler()).thenReturn(taskManager.getHandler());
+        Mockito.when(provider.getPriority()).thenReturn(priority);
+        return provider;
+    }
+
+    private TaskProvider createTaskProviderSpy(String id, TaskManager taskManager, int priority) {
+        TaskProvider provider = new PriorityTaskProvider(taskManager.getHandler(), id);
+        provider.setPriority(priority);
         return provider;
     }
 }
