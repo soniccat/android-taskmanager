@@ -146,6 +146,11 @@ public abstract class SimpleTask implements Task {
     }
 
     @Override
+    public boolean isBlocked() {
+        return getPrivate().isBlocked();
+    }
+
+    @Override
     public TaskPrivate getPrivate() {
         return impl;
     }

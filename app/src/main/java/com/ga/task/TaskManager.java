@@ -10,14 +10,25 @@ import java.util.List;
  */
 
 public interface TaskManager extends TaskPool {
+    // Task Limits
     void setMaxLoadingTasks(int maxLoadingTasks);
     int getMaxLoadingTasks();
 
+    void setLimit(int taskType, float availableQueuePart);
+    SparseArray<Float> getLimits();
+    SparseArray<Integer> getUsedSpace(); //type -> task count from loadingTasks
+
+
+
+    // Task Running
+
     // Put a task, the same task can't be putted twice to the TaskManager
+    // TODO: handle this situation well
     void startImmediately(Task task);
     void cancel(Task task, Object info);
     int getLoadingTaskCount();
 
+    // Task Providers
     void addTaskProvider(TaskProvider provider);
     void removeTaskProvider(TaskProvider provider);
     List<TaskProvider> getTaskProviders(); //always sorted by priority
@@ -25,13 +36,11 @@ public interface TaskManager extends TaskPool {
     TaskProvider getTaskProvider(String id);
     void setTaskProviderPriority(TaskProvider provider, int priority);
 
-    void setLimit(int taskType, float availableQueuePart);
-    SparseArray<Float> getLimits();
-    SparseArray<Integer> getUsedSpace(); //type -> task count from loadingTasks
-
+    // Executor
     void setTaskExecutor(TaskExecutor executor);
     TaskExecutor getTaskExecutor();
 
+    // Listeners
     void removeListener(TaskManagerListener listener);
     void addListener(TaskManagerListener listener);
 

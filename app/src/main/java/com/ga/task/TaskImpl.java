@@ -8,6 +8,7 @@ import com.rssclient.controllers.Tools;
 
 import junit.framework.Assert;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -15,7 +16,7 @@ import java.util.Date;
  * Created by alexeyglushkov on 23.07.15.
  */
 public class TaskImpl implements Task, TaskPrivate {
-    private Task outerTask;
+    private WeakReference<Task> outerTask;
 
     protected Task.Callback startCallback;
     protected Object cancellationInfo;
@@ -33,6 +34,8 @@ public class TaskImpl implements Task, TaskPrivate {
     protected Date startDate;
     protected Date finishDate;
 
+    protected WeakRefList<Task> blockedByTasks;
+
     // listeners are cleared in a TaskManager after task finishing or cancelling
     protected ArrayList<StatusListener> statusListeners;
     protected ArrayList<ProgressListener> progressListeners;
@@ -40,14 +43,15 @@ public class TaskImpl implements Task, TaskPrivate {
     public TaskImpl(Task outerTask) {
         super();
 
-        this.outerTask = outerTask;
+        this.outerTask = new WeakReference<Task>(outerTask);
+        blockedByTasks = new WeakRefList<Task>();
         statusListeners = new ArrayList<StatusListener>();
         progressListeners = new ArrayList<ProgressListener>();
     }
 
     @Override
     public void startTask() {
-        // it should be implemented in the outerTask
+        // it must be implemented in the outerTask
     }
 
     @Override
@@ -236,12 +240,28 @@ public class TaskImpl implements Task, TaskPrivate {
 
     @Override
     public void addTaskDependency(Task task) {
-
+        blockedByTasks.add(new WeakReference<Task>(task));
     }
 
     @Override
     public void removeTaskDependency(Task task) {
+        blockedByTasks.remove(task);
+    }
 
+    public WeakRefList<Task> getDependencies() {
+        return blockedByTasks;
+    }
+
+    public boolean isBlocked() {
+        boolean isBlocked = false;
+        for (WeakReference<Task> task : blockedByTasks) {
+            isBlocked = !Tasks.isTaskCompleted(task.get());
+            if (isBlocked) {
+                break;
+            }
+        }
+
+        return isBlocked;
     }
 
     @Override
@@ -301,8 +321,7 @@ public class TaskImpl implements Task, TaskPrivate {
         Assert.assertEquals(Looper.getMainLooper().getThread(), Thread.currentThread());
     }
 
-    // for mocking
     public Task getOuterTask() {
-        return outerTask;
+        return outerTask.get();
     }
 }

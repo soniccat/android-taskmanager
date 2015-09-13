@@ -39,11 +39,18 @@ public interface TaskPrivate extends Task{
     // Caller: Task
     void setTaskError(Error error);
 
+    // TODO: need to call
     // Set Date after changing the state to Started
     //
     // Caller: TaskManager
     //
     void setTaskFinishDate(Date date);
+
+    // Get dependencies
+    //
+    // Caller: TaskManager
+    //
+    WeakRefList<Task> getDependencies();
 
     // Clear all progress and status listeners
     //

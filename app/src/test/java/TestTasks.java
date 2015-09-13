@@ -32,8 +32,18 @@ public class TestTasks {
     }
 
     public static TestTask createTestTaskSpy(String id) {
+        return TestTasks.createTestTaskSpy(id, 0, 0);
+    }
+
+    public static TestTask createTestTaskSpy(String id, int priority) {
+        return TestTasks.createTestTaskSpy(id, priority, 0);
+    }
+
+    public static TestTask createTestTaskSpy(String id, int type, int priority) {
         TestTask testTask = Mockito.spy(new TestTask());
         testTask.setTaskId(id);
+        testTask.setTaskPriority(priority);
+        testTask.setTaskType(type);
 
         TaskImpl taskPrivate = (TaskImpl)Mockito.spy(testTask.getPrivate());
         Mockito.when(testTask.getPrivate()).thenReturn(taskPrivate);

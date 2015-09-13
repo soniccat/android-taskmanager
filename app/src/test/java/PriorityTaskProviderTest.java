@@ -41,12 +41,12 @@ public class PriorityTaskProviderTest {
         TaskProvider.TaskPoolListener listener = Mockito.mock(TaskProvider.TaskPoolListener.class);
 
         taskProvider.addListener(listener);
-        taskProvider.addTask(providerTest.createTaskWithType(1, "a", 1));
-        taskProvider.addTask(providerTest.createTaskWithType(2, "b", 2));
-        taskProvider.addTask(providerTest.createTaskWithType(3, "c", 3));
-        taskProvider.addTask(providerTest.createTaskWithType(2, "d", 4));
-        taskProvider.addTask(providerTest.createTaskWithType(1, "e", 5));
-        taskProvider.addTask(providerTest.createTaskWithType(3, "f", 6));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("a", 1, 1));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("b", 2, 2));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("c", 3, 3));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("d", 2, 4));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("e", 1, 5));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("f", 3, 6));
 
         // Act
         taskProvider.updatePriorities(new PriorityTaskProvider.PriorityProvider() {

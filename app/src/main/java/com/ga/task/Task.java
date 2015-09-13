@@ -110,6 +110,7 @@ public interface Task extends TaskContainer {
     //
     void addTaskDependency(Task task);
     void removeTaskDependency(Task task);
+    boolean isBlocked();
 
     // TODO: add auto clear listeners
     // Add/Remove a listener to get status changes

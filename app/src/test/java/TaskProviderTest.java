@@ -42,12 +42,12 @@ public class TaskProviderTest {
     public void getTopTaskWithoutFilter() {
 
         // Arrange
-        taskProvider.addTask(createTaskWithType(1, "a"));
-        taskProvider.addTask(createTaskWithType(2, "b"));
-        taskProvider.addTask(createTaskWithType(1, "c"));
-        taskProvider.addTask(createTaskWithType(2, "d"));
-        taskProvider.addTask(createTaskWithType(1, "e"));
-        taskProvider.addTask(createTaskWithType(2, "f"));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("a", 1));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("b", 2));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("c", 1));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("d", 2));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("e", 1));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("f", 2));
 
         // Act
         Task task = taskProvider.getTopTask(null);
@@ -59,12 +59,12 @@ public class TaskProviderTest {
     public void getTopTaskWithPriorityWithoutFilter() {
 
         // Arrange
-        taskProvider.addTask(createTaskWithType(1, "a", 1));
-        taskProvider.addTask(createTaskWithType(2, "b", 2));
-        taskProvider.addTask(createTaskWithType(1, "c", 3));
-        taskProvider.addTask(createTaskWithType(2, "d", 4));
-        taskProvider.addTask(createTaskWithType(1, "e", 5));
-        taskProvider.addTask(createTaskWithType(2, "f", 6));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("a", 1, 1));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("b", 2, 2));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("c", 1, 3));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("d", 2, 4));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("e", 1, 5));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("f", 2, 6));
 
         // Act
         Task task = taskProvider.getTopTask(null);
@@ -76,12 +76,12 @@ public class TaskProviderTest {
     public void getTopTask() {
 
         // Arrange
-        taskProvider.addTask(createTaskWithType(1, "a"));
-        taskProvider.addTask(createTaskWithType(2, "b"));
-        taskProvider.addTask(createTaskWithType(3, "c"));
-        taskProvider.addTask(createTaskWithType(2, "d"));
-        taskProvider.addTask(createTaskWithType(1, "e"));
-        taskProvider.addTask(createTaskWithType(3, "f"));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("a", 1));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("b", 2));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("c", 3));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("d", 2));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("e", 1));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("f", 3));
 
         // Act
         Task task = taskProvider.getTopTask(Arrays.asList(new Integer[]{1}));
@@ -93,12 +93,12 @@ public class TaskProviderTest {
     public void getTopTaskWithPriority() {
 
         // Arrange
-        taskProvider.addTask(createTaskWithType(1, "a", 1));
-        taskProvider.addTask(createTaskWithType(2, "b", 2));
-        taskProvider.addTask(createTaskWithType(3, "c", 3));
-        taskProvider.addTask(createTaskWithType(2, "d", 4));
-        taskProvider.addTask(createTaskWithType(1, "e", 5));
-        taskProvider.addTask(createTaskWithType(3, "f", 6));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("a", 1, 1));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("b", 2, 2));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("c", 3, 3));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("d", 2, 4));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("e", 1, 5));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("f", 3, 6));
 
         // Act
         Task task = taskProvider.getTopTask(Arrays.asList(new Integer[]{3}));
@@ -112,12 +112,12 @@ public class TaskProviderTest {
         TaskProvider.TaskPoolListener listener = Mockito.mock(TaskProvider.TaskPoolListener.class);
 
         taskProvider.addListener(listener);
-        taskProvider.addTask(createTaskWithType(1, "a", 1));
-        taskProvider.addTask(createTaskWithType(2, "b", 2));
-        taskProvider.addTask(createTaskWithType(3, "c", 3));
-        taskProvider.addTask(createTaskWithType(2, "d", 4));
-        taskProvider.addTask(createTaskWithType(1, "e", 5));
-        taskProvider.addTask(createTaskWithType(3, "f", 6));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("a", 1, 1));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("b", 2, 2));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("c", 3, 3));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("d", 2, 4));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("e", 1, 5));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("f", 3, 6));
 
         // Act
         Task task = taskProvider.takeTopTask(Arrays.asList(new Integer[]{3}));
@@ -128,19 +128,6 @@ public class TaskProviderTest {
         assertEquals("e", task.getTaskId());
         assertEquals(5, taskProvider.getTaskCount());
         assertEquals(null, taskProvider.getTask("e"));
-    }
-
-    public Task createTaskWithType(int type, String id) {
-        return createTaskWithType(type, id, 0);
-    }
-
-    public Task createTaskWithType(int type, String id, int priority) {
-        //Create a real object because some values can be changed during the testing (priority for example)
-        Task task = Mockito.spy(new TestTask());
-        task.setTaskPriority(priority);
-        task.setTaskType(type);
-        task.setTaskId(id);
-        return task;
     }
 
     public void removeTaskWithUnknownType() {

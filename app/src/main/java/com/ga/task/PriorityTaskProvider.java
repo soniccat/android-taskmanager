@@ -58,7 +58,9 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
             if (typesToFilter == null || !typesToFilter.contains(taskQueues.keyAt(i))) {
                 PriorityQueue<Task> queue = taskQueues.get(taskQueues.keyAt(i));
                 Task queueTask = queue.peek();
-                if (queueTask != null && queueTask.getTaskPriority() > topPriority) {
+
+                boolean canBeUsed = queueTask != null && queueTask.getTaskPriority() > topPriority && !queueTask.isBlocked();
+                if (canBeUsed) {
                     topTask = queueTask;
                     topPriority = topTask.getTaskPriority();
                 }

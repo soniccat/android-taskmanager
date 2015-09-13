@@ -67,6 +67,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         usedSpace = new SparseArray<Integer>();
     }
 
+    // TODO: we need run tasks when increase the size
     @Override
     public void setMaxLoadingTasks(int maxLoadingTasks) {
         checkHandlerThread();

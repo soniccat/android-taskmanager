@@ -60,6 +60,7 @@ public class HttpLoadTask extends SimpleTask {
 
             handler.setProgressUpdater(getPrivate().createProgressUpdater(contentLength));
 
+            //TODO: handle cancellation well
             stream = new BufferedInputStream(connection.getInputStream());
             Object data = handleStream(stream);
             if (data instanceof Error) {
