@@ -9,19 +9,24 @@ import org.mockito.Mockito;
  */
 public class TestTasks {
     public static Task createTaskMock() {
-        return createTaskMock(null, Task.Status.NotStarted);
+        return createTaskMock(null, Task.Status.NotStarted, 0, 0);
     }
 
     public static Task createTaskMock(String id) {
-        return createTaskMock(id, Task.Status.NotStarted);
+        return createTaskMock(id, Task.Status.NotStarted, 0, 0);
     }
 
     public static Task createTaskMock(String id, Task.Status status) {
+        return createTaskMock(id, status, 0, 0);
+    }
+
+    public static Task createTaskMock(String id, Task.Status status, int type, int priority) {
         Task task = Mockito.mock(Task.class);
         TaskPrivate taskPrivate = Mockito.mock(TaskPrivate.class);
 
         Mockito.when(task.getTaskStatus()).thenReturn(status);
-        Mockito.when(task.getTaskType()).thenReturn(0);
+        Mockito.when(task.getTaskType()).thenReturn(type);
+        Mockito.when(task.getTaskPriority()).thenReturn(priority);
         Mockito.when(task.getPrivate()).thenReturn(taskPrivate);
 
         if (id != null) {
@@ -35,8 +40,8 @@ public class TestTasks {
         return TestTasks.createTestTaskSpy(id, 0, 0);
     }
 
-    public static TestTask createTestTaskSpy(String id, int priority) {
-        return TestTasks.createTestTaskSpy(id, priority, 0);
+    public static TestTask createTestTaskSpy(String id, int type) {
+        return TestTasks.createTestTaskSpy(id, type, 0);
     }
 
     public static TestTask createTestTaskSpy(String id, int type, int priority) {

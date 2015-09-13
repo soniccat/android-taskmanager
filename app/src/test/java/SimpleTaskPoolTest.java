@@ -59,6 +59,11 @@ public class SimpleTaskPoolTest extends TaskPoolTest {
     }
 
     @Test
+    public void getTaskCount2() {
+        super.getTaskCount2();
+    }
+
+    @Test
     public void setGetUserData() {
         super.setGetUserData();
     }

@@ -65,6 +65,11 @@ public class PriorityTaskProviderTest {
         assertEquals("d", task.getTaskId());
     }
 
+    @Test
+    public void getTopTaskWithBlockedTask() {
+        providerTest.getTopTaskWithBlockedTask();
+    }
+
     // ProviderTests
 
     @Test
@@ -147,6 +152,11 @@ public class PriorityTaskProviderTest {
     @Test
     public void getTaskCount() {
         poolTest.getTaskCount();
+    }
+
+    @Test
+    public void getTaskCount2() {
+        poolTest.getTaskCount2();
     }
 
     @Test

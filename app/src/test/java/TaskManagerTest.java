@@ -122,8 +122,8 @@ public class TaskManagerTest {
         assertNotNull(taskManager.getTaskProvider("provider1"));
         assertNotNull(taskManager.getTaskProvider("provider2"));
 
-        assertTrue(taskManager.getTaskProviders().indexOf(taskProvider1) == 0);
-        assertTrue(taskManager.getTaskProviders().indexOf(taskProvider2) == 1);
+        assertTrue(taskProviderIndex(taskProvider1) == 0);
+        assertTrue(taskProviderIndex(taskProvider2) == 1);
     }
 
     public void addTaskProvider2() {
@@ -143,9 +143,9 @@ public class TaskManagerTest {
         assertNotNull(taskManager.getTaskProvider("provider2"));
         assertNotNull(taskManager.getTaskProvider("provider3"));
 
-        assertTrue(taskManager.getTaskProviders().indexOf(taskProvider1) == 0);
-        assertTrue(taskManager.getTaskProviders().indexOf(taskProvider2) == 2);
-        assertTrue(taskManager.getTaskProviders().indexOf(taskProvider3) == 1);
+        assertTrue(taskProviderIndex(taskProvider1) == 0);
+        assertTrue(taskProviderIndex(taskProvider2) == 2);
+        assertTrue(taskProviderIndex(taskProvider3) == 1);
     }
 
     public void addTaskProviderWithTheSameId() {
@@ -192,8 +192,8 @@ public class TaskManagerTest {
         taskManager.setTaskProviderPriority(taskProvider2, 30);
 
         // Verify 2
-        assertTrue(taskManager.getTaskProviders().indexOf(taskProvider1) == 1);
-        assertTrue(taskManager.getTaskProviders().indexOf(taskProvider2) == 0);
+        assertTrue(taskProviderIndex(taskProvider1) == 1);
+        assertTrue(taskProviderIndex(taskProvider2) == 0);
     }
 
     public void setTaskExecutor() {
@@ -512,5 +512,18 @@ public class TaskManagerTest {
         TaskProvider provider = new PriorityTaskProvider(taskManager.getHandler(), id);
         provider.setPriority(priority);
         return provider;
+    }
+
+    private int taskProviderIndex(TaskProvider taskProvider) {
+        int i = 0;
+        for (TaskProvider p : taskManager.getTaskProviders()) {
+            if (p == taskProvider) {
+                break;
+            }
+
+            ++i;
+        }
+
+        return i;
     }
 }

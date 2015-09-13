@@ -10,13 +10,11 @@ import junit.framework.Assert;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.PriorityQueue;
+import java.util.TreeSet;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
@@ -37,7 +35,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
     private TaskPool loadingTasks;
     private TaskProvider waitingTasks;
-    private List<TaskProvider> taskProviders; //always sorted by priority (100 -> 0)
+    private TreeSet<TaskProvider> taskProviders; //always sorted by priority (100 -> 0)
 
     private SparseArray<Float> limits;
     private SparseArray<Integer> usedSpace; //type -> task count from loadingTasks
@@ -61,10 +59,31 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         waitingTasks.addListener(this);
 
         listeners = new WeakRefList<TaskManagerListener>();
-        taskProviders = new ArrayList<TaskProvider>();
+        taskProviders = createTaskProvidersTreeSet();
 
         limits = new SparseArray<Float>();
         usedSpace = new SparseArray<Integer>();
+    }
+
+    private TreeSet<TaskProvider> createTaskProvidersTreeSet() {
+        return new TreeSet<TaskProvider>(new Comparator<TaskProvider>() {
+            @Override
+            public int compare(TaskProvider lhs, TaskProvider rhs) {
+                if (lhs == rhs) {
+                    return 0;
+                }
+
+                if (lhs.getPriority() > rhs.getPriority()) {
+                    return -1;
+                }
+
+                if (lhs.getPriority() == rhs.getPriority()) {
+                    return Integer.compare(lhs.hashCode(), rhs.hashCode());
+                }
+
+                return 1;
+            }
+        });
     }
 
     // TODO: we need run tasks when increase the size
@@ -156,7 +175,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         });
     }
 
-    public List<TaskProvider> getTaskProviders() {
+    public TreeSet<TaskProvider> getTaskProviders() {
         checkHandlerThread();
 
         return taskProviders;
@@ -170,18 +189,8 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
             taskProviders.remove(oldTaskProvider);
         }
 
-        // add in sorted array
-        int insertIndex = taskProviders.size();
-        for (int i=0; i<taskProviders.size(); ++i) {
-            TaskProvider p = taskProviders.get(i);
-            if (provider.getPriority() > p.getPriority()) {
-                insertIndex = i;
-                break;
-            }
-        }
-
         provider.addListener(this);
-        taskProviders.add(insertIndex, provider);
+        taskProviders.add(provider);
     }
 
     public void setTaskProviderPriority(final TaskProvider provider, final int priority) {
@@ -196,13 +205,9 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
     private void setTaskProviderPriorityOnThread(TaskProvider provider, int priority) {
         checkHandlerThread();
 
+        taskProviders.remove(provider);
         provider.setPriority(priority);
-        Collections.sort(taskProviders, new Comparator<TaskProvider>() {
-            @Override
-            public int compare(TaskProvider lhs, TaskProvider rhs) {
-                return Tools.reverseIntCompare(lhs.getPriority(), rhs.getPriority());
-            }
-        });
+        taskProviders.add(provider);
     }
 
     public TaskProvider getTaskProvider(String id) {
@@ -237,6 +242,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
             updateUsedSpace(task.getTaskType(), true);
         }
 
+        Log.d("add","onTaskAdded " + isLoadingPool + " " + task.getTaskId());
         triggerOnTaskAdded(task, isLoadingPool);
 
         if (!isLoadingPool) {
@@ -258,6 +264,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
             updateUsedSpace(task.getTaskType(), false);
         }
 
+        Log.d("add","onTaskRemoved " + isLoadingPool + " " + task.getTaskId());
         triggerOnTaskRemoved(task, isLoadingPool);
     }
 
@@ -469,6 +476,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
             final Task task = takeTaskToRunOnThread();
 
             if (task != null) {
+                assertTrue(Tasks.isTaskReadyToStart(task));
                 addLoadingTaskOnThread(task);
                 startTaskOnThread(task);
             }
@@ -481,7 +489,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         List<Integer> taskTypesToFilter = getTaskTypeFilter();
         Task topWaitingTask = this.waitingTasks.getTopTask(taskTypesToFilter);
 
-        int taskProviderIndex = -1;
+        TaskProvider topTaskProvider = null;
         Task topPriorityTask = null;
         int topPriority = -1;
 
@@ -490,13 +498,14 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
             topPriority = topWaitingTask.getTaskPriority();
         }
 
+
         int i = 0;
         for (TaskProvider provider : taskProviders) {
             if (provider != null) {
                 Task t = provider.getTopTask(taskTypesToFilter);
                 if ( t != null && t.getTaskPriority() > topPriority) {
                     topPriorityTask = t;
-                    taskProviderIndex = i;
+                    topTaskProvider = provider;
                 }
             }
 
@@ -504,11 +513,11 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         }
 
         if (topPriorityTask != null && !reachedLimit(topPriorityTask.getTaskType())) {
-            if (taskProviderIndex == -1 && topPriorityTask != null) {
+            if (topTaskProvider == null && topPriorityTask != null) {
                 topPriorityTask = waitingTasks.takeTopTask(taskTypesToFilter);
 
-            } else if (taskProviderIndex != -1) {
-                topPriorityTask = taskProviders.get(taskProviderIndex).takeTopTask(taskTypesToFilter);
+            } else if (topTaskProvider != null) {
+                topPriorityTask = topTaskProvider.takeTopTask(taskTypesToFilter);
             }
         } else {
             topPriorityTask = null;
@@ -566,8 +575,11 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         final Task.Status status = isCancelled ? Task.Status.Cancelled : Task.Status.Finished;
 
         // the task will be removed from the provider automatically
+        Log.d("tag", "task status " + task.getTaskStatus().toString());
         task.getPrivate().setTaskStatus(status);
+        //task.getPrivate().setTaskStatus(status);
         task.getPrivate().clearAllListeners();
+
 
         Tools.runOnHandlerThread(callbackHandler, new Runnable() {
             @Override

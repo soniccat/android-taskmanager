@@ -150,6 +150,21 @@ public class TaskPoolTest {
         assertEquals(2, taskPool.getTaskCount());
     }
 
+    public void getTaskCount2() {
+        // Arrange
+        Task task1 = TestTasks.createTaskMock("taskId1", Task.Status.NotStarted, 0, 30);
+        Task task2 = TestTasks.createTaskMock("taskId2", Task.Status.NotStarted, 0, 10);
+        Task task3 = TestTasks.createTaskMock("taskId3", Task.Status.NotStarted, 0, 15);
+
+        // Act
+        taskPool.addTask(task1);
+        taskPool.addTask(task2);
+        taskPool.addTask(task3);
+
+        // Verify
+        assertEquals(3, taskPool.getTaskCount());
+    }
+
     public void setGetUserData() {
         // Arrange
         String data = "data";
