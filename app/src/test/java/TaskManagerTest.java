@@ -467,6 +467,28 @@ public class TaskManagerTest {
         assertEquals(handler, taskManager.getHandler());
     }
 
+    public void setLimit() {
+        TaskManager.TaskManagerListener listener = Mockito.mock(TaskManager.TaskManagerListener.class);
+
+        // Act
+        taskManager.addListener(listener);
+        taskManager.setLimit(1, 0.5f);
+
+        // Verify
+        Mockito.verify(listener).onLimitsChanged(taskManager, 1, 0.5f);
+        assertEquals(0.5f, (float) taskManager.getLimits().get(1), 0.001f);
+
+    }
+
+    public void setLimitRemove() {
+        // Act
+        taskManager.setLimit(1, 0.5f);
+        taskManager.setLimit(1, 0.0f);
+
+        // Verify
+        assertNull(taskManager.getLimits().get(1));
+    }
+
     // Tools
 
     private TaskProvider createTaskProviderSpy(String id, TaskManager taskManager) {

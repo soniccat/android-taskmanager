@@ -408,7 +408,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         Tools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
-                if (availableQueuePart == -1.0f) {
+                if (availableQueuePart <= 0.0f) {
                     limits.remove(taskType);
                 } else {
                     limits.put(taskType, availableQueuePart);
@@ -432,6 +432,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         return usedSpace.clone();
     }
 
+    // TODO: add getter and setter in the interface
     public void setWaitingTaskProvider(TaskProvider provider) {
         Assert.assertEquals(provider.getHandler(), handler);
 

@@ -143,6 +143,16 @@ public class SimpleTaskManagerTest {
         taskManagerTest.getTasks();
     }
 
+    @Test
+    public void setLimit() {
+        taskManagerTest.setLimit();
+    }
+
+    @Test
+    public void setLimitRemove() {
+        taskManagerTest.setLimitRemove();
+    }
+
     // PoolTests
 
     @Test
