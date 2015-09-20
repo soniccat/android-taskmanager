@@ -78,7 +78,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
                 }
 
                 if (lhs.getPriority() == rhs.getPriority()) {
-                    return Integer.compare(lhs.hashCode(), rhs.hashCode());
+                    return lhs.equals(rhs)? 0 : 1;
                 }
 
                 return 1;

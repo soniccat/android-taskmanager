@@ -70,6 +70,11 @@ public class PriorityTaskProviderTest {
         providerTest.getTopTaskWithBlockedTask();
     }
 
+    @Test
+    public void takeTopTaskWithBlockedTask() {
+        providerTest.takeTopTaskWithBlockedTask();
+    }
+
     // ProviderTests
 
     @Test
