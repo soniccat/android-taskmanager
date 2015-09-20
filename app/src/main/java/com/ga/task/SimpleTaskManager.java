@@ -38,7 +38,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
     private TaskPool loadingTasks;
     private TaskProvider waitingTasks;
-    private TreeMultiset<TaskProvider> taskProviders;
+    private TreeSet<TaskProvider> taskProviders;
 
     private SparseArray<Float> limits;
     private SparseArray<Integer> usedSpace; //type -> task count from loadingTasks
@@ -68,8 +68,8 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         usedSpace = new SparseArray<Integer>();
     }
 
-    private TreeMultiset<TaskProvider> createTaskProvidersTreeSet() {
-        return TreeMultiset.create(new Comparator<TaskProvider>() {
+    private TreeSet<TaskProvider> createTaskProvidersTreeSet() {
+        return new TreeSet<TaskProvider>(new Comparator<TaskProvider>() {
             @Override
             public int compare(TaskProvider lhs, TaskProvider rhs) {
                 if (lhs == rhs) {
@@ -178,7 +178,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         });
     }
 
-    public TreeMultiset<TaskProvider> getTaskProviders() {
+    public TreeSet<TaskProvider> getTaskProviders() {
         checkHandlerThread();
 
         return taskProviders;
@@ -583,11 +583,6 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
         // the task will be removed from the provider automatically
         Log.d("tag", "task status " + task.getTaskStatus().toString());
-        //int taskCount = getTaskCount();
-        task.getPrivate().setTaskStatus(status);
-
-        //boolean isRight = getTaskCount() == taskCount - 1;
-        //assertTrue(isRight);
         task.getPrivate().setTaskStatus(status);
         task.getPrivate().clearAllListeners();
 

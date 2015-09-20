@@ -231,9 +231,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
             taskQueues.put(task.getTaskType(), treeSet);
         }
 
-        int count = treeSet.size();
         treeSet.add(task);
-        assertTrue(treeSet.size() == count + 1);
     }
 
     private boolean removeTaskFromQueue(Task task) {
@@ -241,9 +239,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
 
         TreeSet<Task> treeSet = taskQueues.get(task.getTaskType());
         if (treeSet != null) {
-            boolean result = treeSet.remove(task);
-            //assertTrue(result);
-            return result;
+            return treeSet.remove(task);
         }
 
         return false;

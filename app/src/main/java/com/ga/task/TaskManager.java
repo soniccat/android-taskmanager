@@ -34,7 +34,7 @@ public interface TaskManager extends TaskPool {
     // Task Providers
     void addTaskProvider(TaskProvider provider);
     void removeTaskProvider(TaskProvider provider);
-    TreeMultiset<TaskProvider> getTaskProviders(); //always sorted by priority
+    TreeSet<TaskProvider> getTaskProviders(); //always sorted by priority
 
     TaskProvider getTaskProvider(String id);
     void setTaskProviderPriority(TaskProvider provider, int priority);
