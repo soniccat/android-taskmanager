@@ -3,6 +3,8 @@ package com.ga.task;
 import android.os.Handler;
 import android.util.SparseArray;
 
+import com.google.common.collect.TreeMultiset;
+
 import java.util.List;
 import java.util.TreeSet;
 
@@ -32,7 +34,7 @@ public interface TaskManager extends TaskPool {
     // Task Providers
     void addTaskProvider(TaskProvider provider);
     void removeTaskProvider(TaskProvider provider);
-    TreeSet<TaskProvider> getTaskProviders(); //always sorted by priority
+    TreeMultiset<TaskProvider> getTaskProviders(); //always sorted by priority
 
     TaskProvider getTaskProvider(String id);
     void setTaskProviderPriority(TaskProvider provider, int priority);

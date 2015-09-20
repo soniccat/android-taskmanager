@@ -5,6 +5,8 @@ import android.os.Looper;
 import android.util.Log;
 import android.util.SparseArray;
 
+import com.google.common.collect.TreeMultiset;
+
 import junit.framework.Assert;
 
 import java.util.ArrayList;
@@ -32,29 +34,29 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
     private int priority;
 
     // Task type -> priority queue
-    private SparseArray<TreeSet<Task>> taskQueues;
+    private SparseArray<TreeMultiset<Task>> taskQueues;
 
     public PriorityTaskProvider(Handler handler, String id) {
         providerId = id;
-        taskQueues = new SparseArray<TreeSet<Task>>();
+        taskQueues = new SparseArray<TreeMultiset<Task>>();
         listeners = new ArrayList<TaskPoolListener>();
         setHandler(handler);
     }
 
-    private TreeSet<Task> createTreeSet() {
-        return new TreeSet<Task>(new Comparator<Task>() {
+    private TreeMultiset<Task> createTreeSet() {
+        return TreeMultiset.create(new Comparator<Task>() {
             @Override
             public int compare(Task lhs, Task rhs) {
                 if (lhs == rhs) {
                     return 0;
                 }
 
-                if (lhs.getTaskPriority() > rhs.getTaskPriority()) {
-                    return -1;
+                if (lhs.getTaskPriority() == rhs.getTaskPriority()) {
+                    return lhs.hashCode() - rhs.hashCode();
                 }
 
-                if (lhs.getTaskPriority() == rhs.getTaskPriority()) {
-                    return Integer.compare(lhs.hashCode(), rhs.hashCode());
+                if (lhs.getTaskPriority() > rhs.getTaskPriority()) {
+                    return -1;
                 }
 
                 return 1;
@@ -71,7 +73,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
 
         for (int i = 0; i < taskQueues.size(); i++) {
             if (typesToFilter == null || !typesToFilter.contains(taskQueues.keyAt(i))) {
-                TreeSet<Task> treeSet = taskQueues.get(taskQueues.keyAt(i));
+                TreeMultiset<Task> treeSet = taskQueues.get(taskQueues.keyAt(i));
                 Task queueTask = getTopTask(treeSet);
 
                 if (queueTask != null && queueTask.getTaskPriority() > topPriority) {
@@ -84,7 +86,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
         return topTask;
     }
 
-    private Task getTopTask(TreeSet<Task> treeSet) {
+    private Task getTopTask(TreeMultiset<Task> treeSet) {
         Task topTask = null;
 
         for (Task task : treeSet) {
@@ -103,7 +105,9 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
 
         Task task = getTopTask(typesToFilter);
         if (task != null) {
-            taskQueues.get(task.getTaskType()).pollFirst();
+            TreeMultiset<Task> tree = taskQueues.get(task.getTaskType());
+            boolean result = tree.remove(task);
+            assertTrue(result);
             triggerOnTaskRemoved(task);
         }
 
@@ -115,7 +119,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
             @Override
             public void run() {
                 for (int i = 0; i < taskQueues.size(); i++) {
-                    TreeSet<Task> treeSet = createTreeSet();
+                    TreeMultiset<Task> treeSet = createTreeSet();
                     for (Task t : taskQueues.get(taskQueues.keyAt(i))) {
                         t.setTaskPriority(provider.getPriority(t));
                         treeSet.add(t);
@@ -221,21 +225,25 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
     private void addTaskToQueue(Task task) {
         checkHandlerThread();
 
-        TreeSet<Task> treeSet = taskQueues.get(task.getTaskType());
+        TreeMultiset<Task> treeSet = taskQueues.get(task.getTaskType());
         if (treeSet == null) {
             treeSet = createTreeSet();
             taskQueues.put(task.getTaskType(), treeSet);
         }
 
+        int count = treeSet.size();
         treeSet.add(task);
+        assertTrue(treeSet.size() == count + 1);
     }
 
     private boolean removeTaskFromQueue(Task task) {
         checkHandlerThread();
 
-        TreeSet<Task> treeSet = taskQueues.get(task.getTaskType());
+        TreeMultiset<Task> treeSet = taskQueues.get(task.getTaskType());
         if (treeSet != null) {
-            return treeSet.remove(task);
+            boolean result = treeSet.remove(task);
+            //assertTrue(result);
+            return result;
         }
 
         return false;
@@ -251,7 +259,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
 
         Task resultTask = null;
         for (int i=0; i<taskQueues.size() && resultTask == null; ++i) {
-            TreeSet<Task> treeSet = taskQueues.get(taskQueues.keyAt(i));
+            TreeMultiset<Task> treeSet = taskQueues.get(taskQueues.keyAt(i));
             Iterator<Task> iterator = treeSet.iterator();
 
             while (iterator.hasNext()) {
@@ -272,7 +280,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
 
         int resultCount = 0;
         for (int i=0; i<taskQueues.size(); ++i) {
-            TreeSet<Task> treeSet = taskQueues.get(taskQueues.keyAt(i));
+            TreeMultiset<Task> treeSet = taskQueues.get(taskQueues.keyAt(i));
             resultCount += treeSet.size();
         }
 
@@ -286,7 +294,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
         ArrayList<Task> tasks = new ArrayList<Task>();
 
         for (int i=0; i<taskQueues.size(); ++i) {
-            TreeSet<Task> treeSet = taskQueues.get(taskQueues.keyAt(i));
+            TreeMultiset<Task> treeSet = taskQueues.get(taskQueues.keyAt(i));
             tasks.addAll(treeSet);
         }
 

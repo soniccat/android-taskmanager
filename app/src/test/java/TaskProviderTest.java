@@ -53,7 +53,7 @@ public class TaskProviderTest {
         Task task = taskProvider.getTopTask(null);
 
         // Verify
-        assertTrue(task.getTaskId().equals("a"));
+        assertEquals("a", task.getTaskId());
     }
 
     public void getTopTaskWithPriorityWithoutFilter() {
@@ -70,7 +70,7 @@ public class TaskProviderTest {
         Task task = taskProvider.getTopTask(null);
 
         // Verify
-        assertTrue(task.getTaskId().equals("f"));
+        assertEquals("f", task.getTaskId());
     }
 
     public void getTopTask() {
@@ -87,7 +87,7 @@ public class TaskProviderTest {
         Task task = taskProvider.getTopTask(Arrays.asList(new Integer[]{1}));
 
         // Verify
-        assertTrue(task.getTaskId().equals("b"));
+        assertEquals("b", task.getTaskId());
     }
 
     public void getTopTaskWithPriority() {
@@ -104,7 +104,7 @@ public class TaskProviderTest {
         Task task = taskProvider.getTopTask(Arrays.asList(new Integer[]{3}));
 
         // Verify
-        assertTrue(task.getTaskId().equals("e"));
+        assertEquals("e", task.getTaskId());
     }
 
     public void getTopTaskWithBlockedTask() {
@@ -149,6 +149,28 @@ public class TaskProviderTest {
         assertEquals(5, taskProvider.getTaskCount());
         assertEquals(null, taskProvider.getTask("e"));
     }
+
+    public void takeTopTaskWithBlockedTask() {
+
+        // Arrange
+        Task dTask = TestTasks.createTestTaskSpy("d", 0, 4);
+        Task blockedTask = TestTasks.createTestTaskSpy("e", 0, 5);
+        blockedTask.addTaskDependency(dTask);
+
+        // Act
+        taskProvider.addTask(TestTasks.createTestTaskSpy("a", 0, 1));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("b", 0, 2));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("c", 0, 3));
+        taskProvider.addTask(dTask);
+        taskProvider.addTask(blockedTask);
+
+        Task task = taskProvider.takeTopTask(Arrays.asList(new Integer[]{1}));
+
+        // Verify
+        assertEquals("d", task.getTaskId());
+        assertNull(taskProvider.getTask("d"));
+    }
+
 
     public void removeTaskWithUnknownType() {
         // Arrange

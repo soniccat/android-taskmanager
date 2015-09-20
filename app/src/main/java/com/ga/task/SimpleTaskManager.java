@@ -6,6 +6,8 @@ import android.os.Looper;
 import android.util.Log;
 import android.util.SparseArray;
 
+import com.google.common.collect.TreeMultiset;
+
 import junit.framework.Assert;
 
 import java.lang.ref.WeakReference;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 /**
@@ -35,7 +38,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
     private TaskPool loadingTasks;
     private TaskProvider waitingTasks;
-    private TreeSet<TaskProvider> taskProviders; //always sorted by priority (100 -> 0)
+    private TreeMultiset<TaskProvider> taskProviders;
 
     private SparseArray<Float> limits;
     private SparseArray<Integer> usedSpace; //type -> task count from loadingTasks
@@ -65,20 +68,20 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         usedSpace = new SparseArray<Integer>();
     }
 
-    private TreeSet<TaskProvider> createTaskProvidersTreeSet() {
-        return new TreeSet<TaskProvider>(new Comparator<TaskProvider>() {
+    private TreeMultiset<TaskProvider> createTaskProvidersTreeSet() {
+        return TreeMultiset.create(new Comparator<TaskProvider>() {
             @Override
             public int compare(TaskProvider lhs, TaskProvider rhs) {
                 if (lhs == rhs) {
                     return 0;
                 }
 
-                if (lhs.getPriority() > rhs.getPriority()) {
-                    return -1;
+                if (lhs.getPriority() == rhs.getPriority()) {
+                    return lhs.hashCode() - rhs.hashCode();
                 }
 
-                if (lhs.getPriority() == rhs.getPriority()) {
-                    return Integer.compare(lhs.hashCode(), rhs.hashCode());
+                if (lhs.getPriority() > rhs.getPriority()) {
+                    return -1;
                 }
 
                 return 1;
@@ -175,7 +178,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         });
     }
 
-    public TreeSet<TaskProvider> getTaskProviders() {
+    public TreeMultiset<TaskProvider> getTaskProviders() {
         checkHandlerThread();
 
         return taskProviders;
@@ -476,6 +479,10 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
             final Task task = takeTaskToRunOnThread();
 
             if (task != null) {
+                /*if (!Tasks.isTaskReadyToStart(task)) {
+                    Task testTask = takeTaskToRunOnThread();
+                }*/
+
                 assertTrue(Tasks.isTaskReadyToStart(task));
                 addLoadingTaskOnThread(task);
                 startTaskOnThread(task);
@@ -576,8 +583,12 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
         // the task will be removed from the provider automatically
         Log.d("tag", "task status " + task.getTaskStatus().toString());
+        //int taskCount = getTaskCount();
         task.getPrivate().setTaskStatus(status);
-        //task.getPrivate().setTaskStatus(status);
+
+        //boolean isRight = getTaskCount() == taskCount - 1;
+        //assertTrue(isRight);
+        task.getPrivate().setTaskStatus(status);
         task.getPrivate().clearAllListeners();
 
 
