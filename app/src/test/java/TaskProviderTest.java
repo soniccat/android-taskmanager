@@ -53,7 +53,7 @@ public class TaskProviderTest {
         Task task = taskProvider.getTopTask(null);
 
         // Verify
-        assertTrue(task.getTaskId().equals("a"));
+        assertEquals("a", task.getTaskId());
     }
 
     public void getTopTaskWithPriorityWithoutFilter() {
@@ -70,7 +70,7 @@ public class TaskProviderTest {
         Task task = taskProvider.getTopTask(null);
 
         // Verify
-        assertTrue(task.getTaskId().equals("f"));
+        assertEquals("f", task.getTaskId());
     }
 
     public void getTopTask() {
@@ -87,7 +87,7 @@ public class TaskProviderTest {
         Task task = taskProvider.getTopTask(Arrays.asList(new Integer[]{1}));
 
         // Verify
-        assertTrue(task.getTaskId().equals("b"));
+        assertEquals("b", task.getTaskId());
     }
 
     public void getTopTaskWithPriority() {
@@ -104,7 +104,7 @@ public class TaskProviderTest {
         Task task = taskProvider.getTopTask(Arrays.asList(new Integer[]{3}));
 
         // Verify
-        assertTrue(task.getTaskId().equals("e"));
+        assertEquals("e", task.getTaskId());
     }
 
     public void getTopTaskWithBlockedTask() {
@@ -168,6 +168,7 @@ public class TaskProviderTest {
 
         // Verify
         assertEquals("d", task.getTaskId());
+        assertNull(taskProvider.getTask("d"));
     }
 
     public void removeTaskWithUnknownType() {

@@ -11,9 +11,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.PriorityQueue;
-
-import static junit.framework.Assert.assertTrue;
 
 /**
  * Created by alexeyglushkov on 30.12.14.
@@ -31,29 +28,25 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
     private int priority;
 
     // Task type -> priority queue
-    private SparseArray<PriorityQueue<Task>> taskQueues;
+    private SparseArray<SortedList<Task>> taskQueues;
 
     public PriorityTaskProvider(Handler handler, String id) {
         providerId = id;
-        taskQueues = new SparseArray<PriorityQueue<Task>>();
+        taskQueues = new SparseArray<SortedList<Task>>();
         listeners = new ArrayList<TaskPoolListener>();
         setHandler(handler);
     }
 
-    private PriorityQueue<Task> createQueueSet() {
-        return new PriorityQueue<Task>(11, new Comparator<Task>() {
+    private SortedList<Task> createQueueSet() {
+        return new SortedList<Task>(new Comparator<Task>() {
             @Override
             public int compare(Task lhs, Task rhs) {
-                if (lhs == rhs) {
+                if (lhs.getTaskPriority() == rhs.getTaskPriority()) {
                     return 0;
                 }
 
                 if (lhs.getTaskPriority() > rhs.getTaskPriority()) {
                     return -1;
-                }
-
-                if (lhs.getTaskPriority() == rhs.getTaskPriority()) {
-                    return 0;
                 }
 
                 return 1;
@@ -70,7 +63,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
 
         for (int i = 0; i < taskQueues.size(); i++) {
             if (typesToFilter == null || !typesToFilter.contains(taskQueues.keyAt(i))) {
-                PriorityQueue<Task> queue = taskQueues.get(taskQueues.keyAt(i));
+                SortedList<Task> queue = taskQueues.get(taskQueues.keyAt(i));
                 Task queueTask = getTopTask(queue, false);
 
                 if (queueTask != null && queueTask.getTaskPriority() > topPriority) {
@@ -89,7 +82,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
 
         Task task = getTopTask(typesToFilter);
         if (task != null) {
-            PriorityQueue<Task> queue = taskQueues.get(task.getTaskType());
+            SortedList<Task> queue = taskQueues.get(task.getTaskType());
             Task polledTask = getTopTask(queue, true);
             triggerOnTaskRemoved(polledTask);
         }
@@ -97,24 +90,18 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
         return task;
     }
 
-    // TODO: find a better solution, TreeSet isn't great because it requires unique objects and
-    // it's hard to achieve it with tasks using comparator, we just don't have enough information.
-    // Also deletion in TreeSet happens via comparator and it must return 0 only for equal objects.
-    private Task getTopTask(PriorityQueue<Task> queue, boolean needPoll) {
+    private Task getTopTask(SortedList<Task> queue, boolean needPoll) {
         Task topTask = null;
 
-        ArrayList<Task> polledTasks = new ArrayList<Task>();
-        while (!queue.isEmpty()) {
-            if (!queue.peek().isBlocked()) {
-                topTask = needPoll ? queue.poll() : queue.peek();
+        Iterator<Task> iterator = queue.iterator();
+        while(iterator.hasNext()) {
+            topTask = iterator.next();
+            if (!topTask.isBlocked()) {
+                if(needPoll) {
+                    iterator.remove();
+                }
                 break;
-            } else {
-                polledTasks.add(queue.poll());
             }
-        }
-
-        for (Task task : polledTasks) {
-            queue.add(task);
         }
 
         return topTask;
@@ -125,13 +112,12 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
             @Override
             public void run() {
                 for (int i = 0; i < taskQueues.size(); i++) {
-                    PriorityQueue<Task> queue = createQueueSet();
+                    SortedList<Task> queue = taskQueues.valueAt(i);
                     for (Task t : taskQueues.get(taskQueues.keyAt(i))) {
                         t.setTaskPriority(provider.getPriority(t));
-                        queue.add(t);
                     }
 
-                    taskQueues.put(taskQueues.keyAt(i), queue);
+                    queue.updateSortedOrder();
                 }
             }
         });
@@ -231,19 +217,19 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
     private void addTaskToQueue(Task task) {
         checkHandlerThread();
 
-        PriorityQueue<Task> queue = taskQueues.get(task.getTaskType());
+        SortedList<Task> queue = taskQueues.get(task.getTaskType());
         if (queue == null) {
             queue = createQueueSet();
             taskQueues.put(task.getTaskType(), queue);
         }
 
-        queue.add(task);
+        queue.addInSortedOrder(task);
     }
 
     private boolean removeTaskFromQueue(Task task) {
         checkHandlerThread();
 
-        PriorityQueue<Task> queue = taskQueues.get(task.getTaskType());
+        SortedList<Task> queue = taskQueues.get(task.getTaskType());
         if (queue != null) {
             return queue.remove(task);
         }
@@ -261,7 +247,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
 
         Task resultTask = null;
         for (int i=0; i<taskQueues.size() && resultTask == null; ++i) {
-            PriorityQueue<Task> queue = taskQueues.get(taskQueues.keyAt(i));
+            SortedList<Task> queue = taskQueues.get(taskQueues.keyAt(i));
             Iterator<Task> iterator = queue.iterator();
 
             while (iterator.hasNext()) {
@@ -282,7 +268,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
 
         int resultCount = 0;
         for (int i=0; i<taskQueues.size(); ++i) {
-            PriorityQueue<Task> queue = taskQueues.get(taskQueues.keyAt(i));
+            SortedList<Task> queue = taskQueues.get(taskQueues.keyAt(i));
             resultCount += queue.size();
         }
 
@@ -296,7 +282,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
         ArrayList<Task> tasks = new ArrayList<Task>();
 
         for (int i=0; i<taskQueues.size(); ++i) {
-            PriorityQueue<Task> queue = taskQueues.get(taskQueues.keyAt(i));
+            SortedList<Task> queue = taskQueues.get(taskQueues.keyAt(i));
             tasks.addAll(queue);
         }
 
