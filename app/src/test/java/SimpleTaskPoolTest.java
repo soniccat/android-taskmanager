@@ -1,7 +1,7 @@
 import android.os.Handler;
 import android.os.Looper;
 
-import com.ga.task.SimpleTaskPool;
+import com.taskmanager.task.SimpleTaskPool;
 
 import org.junit.Before;
 import org.junit.Test;

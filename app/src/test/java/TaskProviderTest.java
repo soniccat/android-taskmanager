@@ -1,15 +1,12 @@
-import android.os.Handler;
-import android.os.HandlerThread;
-
-import com.ga.task.Task;
-import com.ga.task.TaskPool;
-import com.ga.task.TaskPrivate;
-import com.ga.task.TaskProvider;
+import com.taskmanager.task.Task;
+import com.taskmanager.task.TaskPool;
+import com.taskmanager.task.TaskPrivate;
+import com.taskmanager.task.TaskProvider;
 
 import org.mockito.Mockito;
 
 import java.util.Arrays;
-import java.util.List;
+
 import static org.junit.Assert.*;
 
 /**

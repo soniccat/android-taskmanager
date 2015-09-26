@@ -1,15 +1,11 @@
 import android.os.Handler;
 import android.os.HandlerThread;
 
-import com.ga.task.Task;
-import com.ga.task.TaskManager;
-import com.ga.task.TaskPool;
-import com.ga.task.TaskPrivate;
+import com.taskmanager.task.Task;
+import com.taskmanager.task.TaskPool;
+import com.taskmanager.task.TaskPrivate;
 
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

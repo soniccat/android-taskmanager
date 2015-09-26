@@ -2,11 +2,11 @@ package com.rssclient.controllers;
 
 import java.util.ArrayList;
 
-import com.ga.image.Image;
-import com.ga.image.ImageLoader;
+import com.taskmanager.image.Image;
+import com.taskmanager.image.ImageLoader;
 import com.rssclient.model.RssFeed;
-import com.ga.task.Task;
-import com.ga.task.TaskManager;
+import com.taskmanager.task.Task;
+import com.taskmanager.task.TaskManager;
 
 import android.content.Context;
 import android.graphics.Bitmap;

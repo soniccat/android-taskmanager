@@ -1,6 +1,6 @@
 package com.playground;
 
-import com.ga.task.SimpleTask;
+import com.taskmanager.task.SimpleTask;
 
 /**
  * Created by alexeyglushkov on 18.01.15.

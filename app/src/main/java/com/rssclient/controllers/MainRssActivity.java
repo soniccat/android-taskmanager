@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import com.main.MainApplication;
 import com.rssclient.model.RssFeed;
 import com.rssclient.model.RssStorage;
-import com.ga.task.TaskManager;
+import com.taskmanager.task.TaskManager;
 
 import android.support.v7.app.ActionBarActivity;
 import android.annotation.SuppressLint;

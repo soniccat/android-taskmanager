@@ -1,5 +1,4 @@
-import com.ga.task.SimpleTask;
-import com.ga.task.Task;
+import com.taskmanager.task.SimpleTask;
 
 /**
  * Created by alexeyglushkov on 09.08.15.

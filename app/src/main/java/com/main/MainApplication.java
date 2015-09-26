@@ -1,8 +1,8 @@
 package com.main;
 
 import com.rssclient.model.RssStorage;
-import com.ga.task.SimpleTaskManager;
-import com.ga.task.TaskManager;
+import com.taskmanager.task.SimpleTaskManager;
+import com.taskmanager.task.TaskManager;
 
 import android.app.Application;
 

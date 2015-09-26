@@ -14,11 +14,11 @@ import org.xmlpull.v1.XmlPullParserException;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Xml;
-import com.ga.image.Image;
-import com.ga.loader.data.ByteArrayHandler;
-import com.ga.loader.http.HttpURLConnectionProvider;
-import com.ga.task.Task;
-import com.ga.task.Tasks;
+import com.taskmanager.image.Image;
+import com.taskmanager.loader.data.ByteArrayHandler;
+import com.taskmanager.loader.http.HttpURLConnectionProvider;
+import com.taskmanager.task.Task;
+import com.taskmanager.task.Tasks;
 
 public class RssFeed implements Parcelable, Serializable, Tasks.TaskListener, HttpURLConnectionProvider {
     String name;

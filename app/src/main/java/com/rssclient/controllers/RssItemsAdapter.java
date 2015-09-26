@@ -3,11 +3,11 @@ package com.rssclient.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ga.image.Image;
-import com.ga.image.ImageLoader;
-import com.ga.loader.ProgressInfo;
+import com.taskmanager.image.Image;
+import com.taskmanager.image.ImageLoader;
+import com.taskmanager.loader.ProgressInfo;
 import com.rssclient.model.RssItem;
-import com.ga.task.*;
+import com.taskmanager.task.*;
 import com.google.common.collect.Range;
 
 import android.content.Context;
@@ -170,7 +170,7 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
         }
 
         //TODO: it should be done via api without direct access to getHandler
-        com.ga.task.Tools.runOnHandlerThread(taskProvider.getHandler(), new Runnable() {
+        com.taskmanager.task.Tools.runOnHandlerThread(taskProvider.getHandler(), new Runnable() {
             @Override
             public void run() {
                 List<Task> tasks = new ArrayList<Task>();

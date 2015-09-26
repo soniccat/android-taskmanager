@@ -1,15 +1,13 @@
 import android.os.Handler;
 import android.os.Looper;
 
-import com.ga.task.PriorityTaskProvider;
-import com.ga.task.Task;
-import com.ga.task.TaskProvider;
+import com.taskmanager.task.PriorityTaskProvider;
+import com.taskmanager.task.Task;
+import com.taskmanager.task.TaskProvider;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 

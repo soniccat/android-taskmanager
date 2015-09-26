@@ -11,16 +11,16 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.ga.keeper.file.ByteArrayProvider;
-import com.ga.keeper.file.ByteArrayWriter;
-import com.ga.keeper.file.FileKeepTask;
-import com.ga.loader.data.ByteArrayHandler;
-import com.ga.loader.data.ByteArrayReader;
-import com.ga.loader.file.FileLoadTask;
-import com.ga.loader.http.HttpLoadTask;
-import com.ga.task.Task;
-import com.ga.task.TaskManager;
-import com.ga.task.Tasks;
+import com.taskmanager.keeper.file.ByteArrayProvider;
+import com.taskmanager.keeper.file.ByteArrayWriter;
+import com.taskmanager.keeper.file.FileKeepTask;
+import com.taskmanager.loader.data.ByteArrayHandler;
+import com.taskmanager.loader.data.ByteArrayReader;
+import com.taskmanager.loader.file.FileLoadTask;
+import com.taskmanager.loader.http.HttpLoadTask;
+import com.taskmanager.task.Task;
+import com.taskmanager.task.TaskManager;
+import com.taskmanager.task.Tasks;
 
 public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener {
 

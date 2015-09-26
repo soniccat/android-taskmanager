@@ -1,6 +1,6 @@
-import com.ga.task.Task;
-import com.ga.task.TaskImpl;
-import com.ga.task.TaskPrivate;
+import com.taskmanager.task.Task;
+import com.taskmanager.task.TaskImpl;
+import com.taskmanager.task.TaskPrivate;
 
 import org.mockito.Mockito;
 

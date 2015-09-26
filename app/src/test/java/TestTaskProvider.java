@@ -1,11 +1,6 @@
 import android.os.Handler;
 
-import com.ga.task.PriorityTaskProvider;
-import com.ga.task.Task;
-import com.ga.task.TaskPool;
-import com.ga.task.TaskProvider;
-
-import java.util.List;
+import com.taskmanager.task.PriorityTaskProvider;
 
 /**
  * Created by alexeyglushkov on 30.08.15.
