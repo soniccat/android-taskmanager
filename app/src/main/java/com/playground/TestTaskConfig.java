@@ -1,6 +1,6 @@
 package com.playground;
 
-import com.taskmanager.task.Task;
+import com.example.alexeyglushkov.taskmanager.task.Task;
 
 import java.io.Serializable;
 

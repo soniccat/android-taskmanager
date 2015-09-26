@@ -9,15 +9,15 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.taskmanager.keeper.file.FileKeepTask;
-import com.taskmanager.keeper.file.ObjectWriter;
-import com.taskmanager.loader.data.ObjectReader;
-import com.taskmanager.loader.file.FileLoadTask;
-import com.taskmanager.task.SimpleTaskManagerSnapshot;
-import com.taskmanager.task.Task;
-import com.taskmanager.task.TaskManager;
-import com.taskmanager.task.TaskManagerSnapshot;
-import com.taskmanager.ui.TaskManagerView;
+import com.example.alexeyglushkov.taskmanager.file.FileKeepTask;
+import com.example.alexeyglushkov.taskmanager.file.ObjectWriter;
+import com.example.alexeyglushkov.taskmanager.loader.data.ObjectReader;
+import com.example.alexeyglushkov.taskmanager.loader.file.FileLoadTask;
+import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManagerSnapshot;
+import com.example.alexeyglushkov.taskmanager.task.Task;
+import com.example.alexeyglushkov.taskmanager.task.TaskManager;
+import com.example.alexeyglushkov.taskmanager.task.TaskManagerSnapshot;
+import com.example.alexeyglushkov.taskmanager.ui.TaskManagerView;
 import com.main.MainApplication;
 import com.rssclient.controllers.R;
 

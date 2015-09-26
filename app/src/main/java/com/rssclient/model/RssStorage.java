@@ -11,16 +11,16 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.taskmanager.keeper.file.ByteArrayProvider;
-import com.taskmanager.keeper.file.ByteArrayWriter;
-import com.taskmanager.keeper.file.FileKeepTask;
-import com.taskmanager.loader.data.ByteArrayHandler;
-import com.taskmanager.loader.data.ByteArrayReader;
-import com.taskmanager.loader.file.FileLoadTask;
-import com.taskmanager.loader.http.HttpLoadTask;
-import com.taskmanager.task.Task;
-import com.taskmanager.task.TaskManager;
-import com.taskmanager.task.Tasks;
+import com.example.alexeyglushkov.taskmanager.file.ByteArrayProvider;
+import com.example.alexeyglushkov.taskmanager.file.ByteArrayWriter;
+import com.example.alexeyglushkov.taskmanager.file.FileKeepTask;
+import com.example.alexeyglushkov.taskmanager.loader.data.ByteArrayHandler;
+import com.example.alexeyglushkov.taskmanager.loader.data.ByteArrayReader;
+import com.example.alexeyglushkov.taskmanager.loader.file.FileLoadTask;
+import com.example.alexeyglushkov.taskmanager.loader.http.HttpLoadTask;
+import com.example.alexeyglushkov.taskmanager.task.Task;
+import com.example.alexeyglushkov.taskmanager.task.TaskManager;
+import com.example.alexeyglushkov.taskmanager.task.Tasks;
 
 public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener {
 

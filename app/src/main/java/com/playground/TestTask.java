@@ -1,6 +1,6 @@
 package com.playground;
 
-import com.taskmanager.task.SimpleTask;
+import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 
 /**
  * Created by alexeyglushkov on 18.01.15.

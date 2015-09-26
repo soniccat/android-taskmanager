@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.taskmanager.task.Task;
+import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.playground.ui.SettingsField;
 import com.rssclient.controllers.R;
 

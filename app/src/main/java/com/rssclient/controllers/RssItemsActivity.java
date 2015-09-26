@@ -2,14 +2,14 @@ package com.rssclient.controllers;
 
 import java.util.ArrayList;
 
-import com.taskmanager.task.SimpleTaskManagerSnapshot;
-import com.taskmanager.task.TaskManagerSnapshot;
+import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManagerSnapshot;
+import com.example.alexeyglushkov.taskmanager.task.TaskManagerSnapshot;
 import com.main.MainApplication;
 import com.rssclient.model.RssFeed;
 import com.rssclient.model.RssStorage;
 import com.rssclient.model.RssItem;
-import com.taskmanager.task.TaskManager;
-import com.taskmanager.ui.TaskManagerView;
+import com.example.alexeyglushkov.taskmanager.task.TaskManager;
+import com.example.alexeyglushkov.taskmanager.ui.TaskManagerView;
 import com.google.common.collect.Range;
 
 import android.support.v7.app.ActionBarActivity;
