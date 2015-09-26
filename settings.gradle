@@ -1,1 +1,1 @@
-include ':app', ':android-cache-manager', ':taskmanager'
+include ':app', ':android-cache-manager', ':taskmanager', ':cachemanager'
