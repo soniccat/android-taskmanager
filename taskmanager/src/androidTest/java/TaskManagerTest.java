@@ -8,14 +8,15 @@ import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 import com.example.alexeyglushkov.taskmanager.task.TaskPool;
 import com.example.alexeyglushkov.taskmanager.task.TaskPrivate;
 import com.example.alexeyglushkov.taskmanager.task.TaskProvider;
+import com.example.alexeyglushkov.taskmanager.task.Tools;
 
 import org.mockito.Mockito;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Created by alexeyglushkov on 23.08.15.
@@ -286,7 +287,7 @@ public class TaskManagerTest {
 
     public void addStartedTask() {
         // Arrange
-        Task task = TestTasks.createTaskMock(null, Task.Status.Started);
+        final Task task = TestTasks.createTaskMock(null, Task.Status.Started);
         TaskManager.TaskManagerListener listener = Mockito.mock(TaskManager.TaskManagerListener.class);
         TaskPrivate taskPrivate = task.getPrivate();
 

@@ -42,12 +42,24 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
     private int maxLoadingTasks;
 
     public SimpleTaskManager(int maxLoadingTasks) {
+        init(maxLoadingTasks, null);
+    }
+
+    public SimpleTaskManager(int maxLoadingTasks, Handler inHandler) {
+        init(maxLoadingTasks, inHandler);
+    }
+
+    private void init(int maxLoadingTasks, Handler inHandler) {
         this.taskExecutor = new SimpleTaskExecutor();
         this.maxLoadingTasks = maxLoadingTasks;
 
-        handlerThread = new HandlerThread("SimpleTaskManager Thread");
-        handlerThread.start();
-        handler = new Handler(handlerThread.getLooper());
+        if (inHandler != null) {
+            handler = inHandler;
+        } else {
+            handlerThread = new HandlerThread("SimpleTaskManager Thread");
+            handlerThread.start();
+            handler = new Handler(handlerThread.getLooper());
+        }
         callbackHandler = new Handler(Looper.myLooper());
 
         loadingTasks = new SimpleTaskPool(handler);

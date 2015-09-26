@@ -3,88 +3,69 @@ import android.os.Looper;
 
 import com.example.alexeyglushkov.taskmanager.task.SimpleTaskPool;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertTrue;
-
 /**
  * Created by alexeyglushkov on 08.08.15.
  */
 public class SimpleTaskPoolTest extends TaskPoolTest {
 
-    @Before
-    public void prepare() {
+    @Override
+    protected void setUp() throws Exception{
         super.before(new SimpleTaskPool(new Handler(Looper.myLooper())));
     }
 
-    @Test
-    public void setGetHandler() {
+    public void testSetGetHandler() {
         super.setGetHandler();
     }
 
-    @Test
-    public void addTask() {
+    public void testAddTask() {
         super.addTask();
     }
 
-    @Test
-    public void addStartedTask() {
+    public void testAddStartedTask() {
         super.addStartedTask();
     }
 
-    @Test
-    public void removeTask() {
+    public void testRemoveTask() {
         super.removeTask();
     }
 
-    @Test
-    public void removeUnknownTask() {
+    public void testRemoveUnknownTask() {
         super.removeUnknownTask();
     }
 
-    @Test
-    public void getTask() {
+    public void testGetTask() {
         super.getTask();
     }
 
-    @Test
-    public void getUnknownTask() {
+    public void testGetUnknownTask() {
         super.getUnknownTask();
     }
 
-    @Test
-    public void getTaskCount() {
+    public void testGetTaskCount() {
         super.getTaskCount();
     }
 
-    @Test
-    public void getTaskCount2() {
+    public void testGetTaskCount2() {
         super.getTaskCount2();
     }
 
-    @Test
-    public void setGetUserData() {
+    public void testSetGetUserData() {
         super.setGetUserData();
     }
 
-    @Test
-    public void addStateListener() {
+    public void testAddStateListener() {
         super.addStateListener();
     }
 
-    @Test
-    public void removeStateListener() {
+    public void testRemoveStateListener() {
         super.removeStateListener();
     }
 
-    @Test
-    public void changeTaskStatus() {
+    public void testChangeTaskStatus() {
         super.changeTaskStatus();
     }
 
-    @Test
-    public void checkTaskRemovingAfterFinishing() {
+    public void testCheckTaskRemovingAfterFinishing() {
         super.checkTaskRemovingAfterFinishing();
     }
 }

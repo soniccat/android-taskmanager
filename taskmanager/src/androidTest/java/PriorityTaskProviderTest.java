@@ -1,27 +1,24 @@
 import android.os.Handler;
 import android.os.Looper;
+import android.test.AndroidTestCase;
 
 import com.example.alexeyglushkov.taskmanager.task.PriorityTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskProvider;
 
-import org.junit.Before;
-import org.junit.Test;
 import org.mockito.Mockito;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by alexeyglushkov on 09.08.15.
  */
-public class PriorityTaskProviderTest {
+public class PriorityTaskProviderTest extends AndroidTestCase {
 
     private TaskPoolTest poolTest;
     private TaskProviderTest providerTest;
     private PriorityTaskProvider taskProvider;
 
-    @Before
-    public void before() {
+    @Override
+    protected void setUp() throws Exception {
         taskProvider = new PriorityTaskProvider(new Handler(Looper.myLooper()), "TestId");
 
         poolTest = new TaskPoolTest();
@@ -33,8 +30,7 @@ public class PriorityTaskProviderTest {
 
     // PriorityTaskProviderTests
 
-    @Test
-    public void updatePriorities() {
+    public void testUpdatePriorities() {
         // Arrange
         TaskProvider.TaskPoolListener listener = Mockito.mock(TaskProvider.TaskPoolListener.class);
 
@@ -63,127 +59,103 @@ public class PriorityTaskProviderTest {
         assertEquals("d", task.getTaskId());
     }
 
-    @Test
-    public void getTopTaskWithBlockedTask() {
+    public void testGetTopTaskWithBlockedTask() {
         providerTest.getTopTaskWithBlockedTask();
     }
 
-    @Test
-    public void takeTopTaskWithBlockedTask() {
+    public void testTakeTopTaskWithBlockedTask() {
         providerTest.takeTopTaskWithBlockedTask();
     }
 
     // ProviderTests
 
-    @Test
-    public void setProviderId() {
+    public void testSetProviderId() {
         providerTest.setProviderId();
     }
 
-    @Test
-    public void setPriority() {
+    public void testSetPriority() {
         providerTest.setPriority();
     }
 
-    @Test
-    public void getTopTaskWithoutFilter() {
+    public void testGetTopTaskWithoutFilter() {
         providerTest.getTopTaskWithoutFilter();
     }
 
-    @Test
-    public void getTopTaskWithPriorityWithoutFilter() {
+    public void testGetTopTaskWithPriorityWithoutFilter() {
         providerTest.getTopTaskWithPriorityWithoutFilter();
     }
 
-    @Test
-    public void getTopTask() {
+    public void testGetTopTask() {
         providerTest.getTopTask();
     }
 
-    @Test
-    public void getTopTaskWithPriority() {
+    public void testGetTopTaskWithPriority() {
         providerTest.getTopTaskWithPriority();
     }
 
-    @Test
-    public void takeTopTask() {
+    public void testTakeTopTask() {
         providerTest.takeTopTask();
     }
 
-    @Test
-    public void removeTaskWithUnknownType() {
+    public void testRemoveTaskWithUnknownType() {
         providerTest.removeTaskWithUnknownType();
     }
 
     // PoolTests
 
-    @Test
-    public void setGetHandler() {
+    public void testSetGetHandler() {
         poolTest.setGetHandler();
     }
 
-    @Test
-    public void addTask() {
+    public void testAddTask() {
         poolTest.addTask();
     }
 
-    @Test
-    public void addStartedTask() {
+    public void testAddStartedTask() {
         poolTest.addStartedTask();
     }
 
-    @Test
-    public void removeTask() {
+    public void testRemoveTask() {
         poolTest.removeTask();
     }
 
-    @Test
-    public void removeUnknownTask() {
+    public void testRemoveUnknownTask() {
         poolTest.removeUnknownTask();
     }
 
-    @Test
-    public void getTask() {
+    public void testGetTask() {
         poolTest.getTask();
     }
 
-    @Test
-    public void getUnknownTask() {
+    public void testGetUnknownTask() {
         poolTest.getUnknownTask();
     }
 
-    @Test
-    public void getTaskCount() {
+    public void testGetTaskCount() {
         poolTest.getTaskCount();
     }
 
-    @Test
-    public void getTaskCount2() {
+    public void testGetTaskCount2() {
         poolTest.getTaskCount2();
     }
 
-    @Test
-    public void setGetUserData() {
+    public void testSetGetUserData() {
         poolTest.setGetUserData();
     }
 
-    @Test
-    public void addStateListener() {
+    public void testAddStateListener() {
         poolTest.addStateListener();
     }
 
-    @Test
-    public void removeStateListener() {
+    public void testRemoveStateListener() {
         poolTest.removeStateListener();
     }
 
-    @Test
-    public void changeTaskStatus() {
+    public void testChangeTaskStatus() {
         poolTest.changeTaskStatus();
     }
 
-    @Test
-    public void checkTaskRemovingAfterFinishing() {
+    public void testCheckTaskRemovingAfterFinishing() {
         poolTest.checkTaskRemovingAfterFinishing();
     }
 }

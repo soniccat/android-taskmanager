@@ -1,5 +1,6 @@
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.test.AndroidTestCase;
 
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskPool;
@@ -7,11 +8,11 @@ import com.example.alexeyglushkov.taskmanager.task.TaskPrivate;
 
 import org.mockito.Mockito;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
-public class TaskPoolTest {
+public class TaskPoolTest extends AndroidTestCase {
 
     protected TaskPool taskPool;
 

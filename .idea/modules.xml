@@ -7,6 +7,7 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/cachemanager/cachemanager.iml" filepath="$PROJECT_DIR$/cachemanager/cachemanager.iml" />
       <module fileurl="file://$PROJECT_DIR$/taskmanager/taskmanager.iml" filepath="$PROJECT_DIR$/taskmanager/taskmanager.iml" />
+      <module fileurl="file://$PROJECT_DIR$/testsupport/testsupport.iml" filepath="$PROJECT_DIR$/testsupport/testsupport.iml" />
     </modules>
   </component>
 </project>

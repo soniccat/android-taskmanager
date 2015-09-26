@@ -1,21 +1,22 @@
+import android.os.Handler;
+import android.os.Looper;
+import android.test.AndroidTestCase;
+
 import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManager;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
-
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Created by alexeyglushkov on 23.08.15.
  */
-public class SimpleTaskManagerTest {
+public class SimpleTaskManagerTest extends AndroidTestCase {
 
     private TaskPoolTest poolTest;
     private TaskManagerTest taskManagerTest;
     private TaskManager taskManager;
 
-    @Before
-    public void before() {
-        taskManager = new SimpleTaskManager(10);
+    @Override
+    protected void setUp() throws Exception {
+        taskManager = new SimpleTaskManager(10, new Handler(Looper.myLooper()));
         poolTest = new TaskPoolTest();
         taskManagerTest = new TaskManagerTest();
 
@@ -23,150 +24,121 @@ public class SimpleTaskManagerTest {
         taskManagerTest.before(taskManager);
     }
 
-    @Test
-    public void setMaxLoadingTasks() {
+    public void testSetMaxLoadingTasks() {
         taskManagerTest.setMaxLoadingTasks();
     }
 
-    @Test
-    public void getLoadingTaskCount() {
+    public void testGetLoadingTaskCount() {
         taskManagerTest.getLoadingTaskCount();
     }
 
-    @Test
-    public void addTask() {
+    public void testAddTask() {
         taskManagerTest.addTask();
     }
 
-    @Test
-    public void addStartedTask() {
+    public void testAddStartedTask() {
         taskManagerTest.addStartedTask();
     }
 
-    @Test
-    public void addTheSameTaskWithSkipPolicy() {
+    public void testAddTheSameTaskWithSkipPolicy() {
         taskManagerTest.addTheSameTaskWithSkipPolicy();
     }
 
-    @Test
-    public void addTheSameTaskWithCancelPolicy() {
+    public void testAddTheSameTaskWithCancelPolicy() {
         taskManagerTest.addTheSameTaskWithCancelPolicy();
     }
 
-    @Test
-    public void addStateListener() {
+    public void testAddStateListener() {
         taskManagerTest.addStateListener();
     }
 
-    @Test
-    public void removeStateListener() {
+    public void testRemoveStateListener() {
         taskManagerTest.removeStateListener();
     }
 
-    @Test
-    public void removeTask() {
+    public void testRemoveTask() {
         taskManagerTest.removeTask();
     }
 
-    @Test
-    public void removeUnknownTask() {
+    public void testRemoveUnknownTask() {
         taskManagerTest.removeUnknownTask();
     }
 
-    @Test
-    public void checkTaskRemovingAfterFinishing() {
+    public void testCheckTaskRemovingAfterFinishing() {
         taskManagerTest.checkTaskRemovingAfterFinishing();
     }
 
-    @Test
-    public void getTaskFromProvider() {
+    public void testGetTaskFromProvider() {
         taskManagerTest.getTaskFromProvider();
     }
 
-    @Test
-    public void addTaskProvider() {
+    public void testAddTaskProvider() {
         taskManagerTest.addTaskProvider();
     }
 
-    @Test
-    public void addTaskProvider2() {
+    public void testAddTaskProvider2() {
         taskManagerTest.addTaskProvider2();
     }
 
-    @Test
-    public void addTaskProviderWithTheSameId() {
+    public void testAddTaskProviderWithTheSameId() {
         taskManagerTest.addTaskProviderWithTheSameId();
     }
 
-    @Test
-    public void removeTaskProvider() {
+    public void testRemoveTaskProvider() {
         taskManagerTest.removeTaskProvider();
     }
 
-    @Test
-    public void setTaskExecutor() {
+    public void testSetTaskExecutor() {
         taskManagerTest.setTaskExecutor();
     }
 
-    @Test
-    public void startImmediately() {
+    public void testStartImmediately() {
         taskManagerTest.startImmediately();
     }
 
-    @Test
-    public void startImmediatelySkipPolicy() {
+    public void testStartImmediatelySkipPolicy() {
         taskManagerTest.startImmediatelySkipPolicy();
     }
 
-    @Test
-    public void startImmediatelyFinish() {
+    public void testStartImmediatelyFinish() {
         taskManagerTest.startImmediatelyFinish();
     }
 
-    @Test
-    public void setTaskProviderPriority() {
+    public void testSetTaskProviderPriority() {
         taskManagerTest.setTaskProviderPriority();
     }
 
-    @Test
-    public void setGetHandler() {
+    public void testSetGetHandler() {
         taskManagerTest.setGetHandler();
     }
 
-    @Test
-    public void getTaskCount() {
+    public void testGetTaskCount() {
         taskManagerTest.getTaskCount();
     }
 
-    @Test
-    public void getTasks() {
+    public void testGetTasks() {
         taskManagerTest.getTasks();
     }
 
-    @Test
-    public void setLimit() {
+    public void testSetLimit() {
         taskManagerTest.setLimit();
     }
 
-    @Test
-    public void setLimitRemove() {
+    public void testSetLimitRemove() {
         taskManagerTest.setLimitRemove();
     }
 
     // PoolTests
 
-    @Test
-    public void getTask() {
+    public void testGetTask() {
         poolTest.getTask();
     }
 
-    @Test
-    public void getUnknownTask() {
+    public void testGetUnknownTask() {
         poolTest.getUnknownTask();
     }
 
-    @Test
-    public void setGetUserData() {
+    public void testSetGetUserData() {
         poolTest.setGetUserData();
     }
 }

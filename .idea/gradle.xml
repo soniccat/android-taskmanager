@@ -14,6 +14,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/cachemanager" />
             <option value="$PROJECT_DIR$/taskmanager" />
+            <option value="$PROJECT_DIR$/testsupport" />
           </set>
         </option>
       </GradleProjectSettings>

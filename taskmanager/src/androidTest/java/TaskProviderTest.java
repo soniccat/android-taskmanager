@@ -7,7 +7,8 @@ import org.mockito.Mockito;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 
 /**
  * Created by alexeyglushkov on 15.08.15.
