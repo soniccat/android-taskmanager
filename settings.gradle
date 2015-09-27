@@ -1,1 +1,1 @@
-include ':app', ':android-cache-manager', ':taskmanager', ':cachemanager', ':testsupport'
+include ':app', ':android-cache-manager', ':taskmanager', ':cachemanager', ':testsupport', ':streamlib'

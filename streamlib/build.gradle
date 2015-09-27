@@ -22,8 +22,5 @@ android {
 }
 
 dependencies {
-    compile 'com.google.guava:guava:18.0'
-    compile 'org.mockito:mockito-core:1.9.5'
-
-    compile project(':android-cache-manager')
+    compile fileTree(dir: 'libs', include: ['*.jar'])
 }
