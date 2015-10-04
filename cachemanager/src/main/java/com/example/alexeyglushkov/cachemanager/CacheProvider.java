@@ -7,7 +7,7 @@ import java.util.HashMap;
  * Created by alexeyglushkov on 26.09.15.
  */
 public interface CacheProvider {
-    Error store(String key, Object value, Serializable metadata);
+    Error put(String key, Object value, Serializable metadata);
     Object getValue(String key);
     Serializable getMetadata(String key);
     void remove(String key);

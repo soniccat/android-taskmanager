@@ -5,6 +5,7 @@ import android.test.AndroidTestCase;
 import android.test.InstrumentationTestCase;
 
 import com.example.alexeyglushkov.cachemanager.DiskCacheProvider;
+import com.example.alexeyglushkov.streamlib.ObjectSerializer;
 import com.noveogroup.android.cache.io.StringSerializer;
 
 import java.io.File;
@@ -16,10 +17,13 @@ public class DiskCacheProviderTest extends InstrumentationTestCase {
 
     public void testStoreData() {
         File testDir = getInstrumentation().getContext().getDir("testDir", Context.MODE_PRIVATE);
-        DiskCacheProvider<String, String> cacheProvider = new DiskCacheProvider<String, String>(testDir, new StringSerializer(), new StringSerializer());
+        DiskCacheProvider cacheProvider = new DiskCacheProvider(testDir, new ObjectSerializer());
 
-        cacheProvider.storeData("1", "123");
+        DiskCacheMetadata metadata = new DiskCacheMetadata();
+        metadata.put("mkey", "mvalue");
+        cacheProvider.put("1", "123", metadata);
 
-        assertEquals("123", cacheProvider.readData("1"));
+        assertEquals("123", cacheProvider.getValue("1"));
+        assertEquals("mvalue", ((DiskCacheMetadata)cacheProvider.getMetadata("1")).get("mkey"));
     }
 }

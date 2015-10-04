@@ -24,7 +24,7 @@ public class DiskCacheProvider implements CacheProvider {
     }
 
     @Override
-    public Error store(String key, Object entry, Serializable metadata) {
+    public Error put(String key, Object entry, Serializable metadata) {
         Error error = prepareDirectory();
         if (error == null) {
             error = write(key, entry, (DiskCacheMetadata)metadata);
@@ -105,7 +105,7 @@ public class DiskCacheProvider implements CacheProvider {
         DiskCacheEntry entry = null;
         File file = getKeyFile(key);
 
-        if (file.exists()) {
+        if (!file.exists()) {
             lastError = new Error("DiskCacheProvider getValue: file doesn't exist");
         }
 
@@ -113,7 +113,7 @@ public class DiskCacheProvider implements CacheProvider {
             DiskCacheMetadata metadata = null;
             File metadataFile = getKeyMetadataFile(key);
             if (metadataFile.exists()) {
-                metadata = DiskCacheMetadata.load(file);
+                metadata = DiskCacheMetadata.load(metadataFile);
             }
 
             entry = new DiskCacheEntry(file, null, metadata, serializer);
