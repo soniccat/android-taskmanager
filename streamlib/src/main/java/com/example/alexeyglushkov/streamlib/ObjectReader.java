@@ -1,6 +1,4 @@
-package com.example.alexeyglushkov.taskmanager.loader.data;
-
-import com.example.alexeyglushkov.taskmanager.loader.ProgressUpdater;
+package com.example.alexeyglushkov.streamlib;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,10 +8,11 @@ import java.io.ObjectInputStream;
  * Created by alexeyglushkov on 01.02.15.
  */
 public class ObjectReader implements InputStreamReader {
-    ObjectHandler objectHandler;
+    private Convertor convertor;
+    private Error lastError;
 
-    public ObjectReader(ObjectHandler handler) {
-        objectHandler = handler;
+    public ObjectReader(Convertor handler) {
+        convertor = handler;
     }
 
     @Override
@@ -21,8 +20,8 @@ public class ObjectReader implements InputStreamReader {
         try {
             Object object = this.readStreamToObject(stream);
             Object result;
-            if (objectHandler != null) {
-                result = objectHandler.handleObject(object);
+            if (convertor != null) {
+                result = convertor.convert(object);
             } else {
                 result = object;
             }
@@ -31,7 +30,7 @@ public class ObjectReader implements InputStreamReader {
 
         } catch (Exception e) {
             e.printStackTrace();
-            return new Error("ObjectReader:readStream exception: " + e.getMessage());
+            return lastError = new Error("ObjectReader:readStream exception: " + e.getMessage());
         }
     }
 
@@ -56,5 +55,10 @@ public class ObjectReader implements InputStreamReader {
     @Override
     public void setProgressUpdater(ProgressUpdater progressUpdater) {
 
+    }
+
+    @Override
+    public Error getError() {
+        return lastError;
     }
 }

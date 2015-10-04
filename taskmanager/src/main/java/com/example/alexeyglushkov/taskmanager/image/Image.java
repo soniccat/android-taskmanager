@@ -134,9 +134,4 @@ public class Image implements Serializable, Tasks.TaskListener, HttpURLConnectio
     public URL getURL() {
         return this.url;
     }
-
-    public static Bitmap bitmapFromByteArray(ByteArrayBuffer data) {
-        byte[] imageData = data.toByteArray();
-        return BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
-    }
 }

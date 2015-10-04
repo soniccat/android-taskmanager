@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 
-import com.example.alexeyglushkov.taskmanager.loader.data.InputStreamReader;
+import com.example.alexeyglushkov.streamlib.InputStreamReader;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 
 // Reader - object which converts a stream to an object of another data type and then delegates it to its handler or just return it if handler is empty

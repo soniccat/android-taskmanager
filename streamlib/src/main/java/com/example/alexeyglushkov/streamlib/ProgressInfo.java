@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.taskmanager.loader;
+package com.example.alexeyglushkov.streamlib;
 
 /**
  * Created by alexeyglushkov on 25.01.15.

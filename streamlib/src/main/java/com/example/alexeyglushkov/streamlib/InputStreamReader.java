@@ -1,6 +1,4 @@
-package com.example.alexeyglushkov.taskmanager.loader.data;
-
-import com.example.alexeyglushkov.taskmanager.loader.ProgressUpdater;
+package com.example.alexeyglushkov.streamlib;
 
 import java.io.InputStream;
 
@@ -10,4 +8,5 @@ import java.io.InputStream;
 public interface InputStreamReader {
     Object readStream(InputStream data);
     void setProgressUpdater(ProgressUpdater progressUpdater);
+    Error getError();
 }

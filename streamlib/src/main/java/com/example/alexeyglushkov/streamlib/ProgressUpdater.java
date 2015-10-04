@@ -1,9 +1,9 @@
-package com.example.alexeyglushkov.taskmanager.loader;
+package com.example.alexeyglushkov.streamlib;
 
 /**
  * Created by alexeyglushkov on 25.01.15.
  */
-public class ProgressUpdater implements ProgressInfo{
+public class ProgressUpdater implements ProgressInfo {
     private float contentSize;
     private float progressMinChange; // from 0 to 1
     private float currentValue;
@@ -28,12 +28,19 @@ public class ProgressUpdater implements ProgressInfo{
     public void append(float change) {
         currentValue += change;
 
-        if (progressMinChange == 0 || currentValue == contentSize || (currentValue - lastTriggeredValue) / contentSize > progressMinChange) {
+        boolean isSignificantChange = (currentValue - lastTriggeredValue) / contentSize > progressMinChange;
+        if (progressMinChange == 0 || currentValue == contentSize || isSignificantChange) {
             lastTriggeredValue = currentValue;
 
             if (this.listener != null) {
                 this.listener.onProgressUpdated(this);
             }
+        }
+    }
+
+    public void cancel(Object info) {
+        if (this.listener != null) {
+            this.listener.onProgressCancelled(this, info);
         }
     }
 
@@ -43,5 +50,6 @@ public class ProgressUpdater implements ProgressInfo{
 
     public interface ProgressUpdaterListener {
         void onProgressUpdated(ProgressUpdater updater);
+        void onProgressCancelled(ProgressUpdater updater, Object info);
     }
 }

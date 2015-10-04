@@ -93,6 +93,7 @@
     <orderEntry type="library" exported="" name="hamcrest-core-1.1" level="project" />
     <orderEntry type="library" exported="" name="mockito-core-1.9.5" level="project" />
     <orderEntry type="library" exported="" name="guava-18.0" level="project" />
+    <orderEntry type="module" module-name="streamlib" exported="" />
     <orderEntry type="module" module-name="android-cache-manager" exported="" />
   </component>
 </module>

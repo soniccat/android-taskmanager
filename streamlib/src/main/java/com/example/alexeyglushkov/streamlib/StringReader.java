@@ -1,6 +1,4 @@
-package com.example.alexeyglushkov.taskmanager.loader.data;
-
-import com.example.alexeyglushkov.taskmanager.loader.ProgressUpdater;
+package com.example.alexeyglushkov.streamlib;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,7 +9,8 @@ import java.io.InputStream;
  */
 public class StringReader implements InputStreamReader {
     //TODO: think about cancellation
-    StringHandler stringHandler;
+    private StringHandler stringHandler;
+    private Error error;
 
     public StringReader(StringHandler handler) {
         stringHandler = handler;
@@ -25,7 +24,7 @@ public class StringReader implements InputStreamReader {
 
         } catch (Exception e) {
             e.printStackTrace();
-            return new Error("InputStreamToByteArrayBufferHandler:readStream exception: " + e.getMessage());
+            return error = new Error("InputStreamToByteArrayBufferHandler:readStream exception: " + e.getMessage());
         }
     }
 
@@ -36,6 +35,7 @@ public class StringReader implements InputStreamReader {
             java.io.InputStreamReader isr = new java.io.InputStreamReader(stream);
             buffreader = new BufferedReader(isr);
 
+            //TODO: we need to read bytes
             String readString = buffreader.readLine();
             while (readString != null) {
                 builder.append(readString);
@@ -59,6 +59,10 @@ public class StringReader implements InputStreamReader {
 
     @Override
     public void setProgressUpdater(ProgressUpdater progressUpdater) {
+    }
 
+    @Override
+    public Error getError() {
+        return error;
     }
 }

@@ -1,6 +1,4 @@
-package com.example.alexeyglushkov.taskmanager.loader.data;
-
-import com.example.alexeyglushkov.taskmanager.loader.ProgressUpdater;
+package com.example.alexeyglushkov.streamlib;
 
 import org.apache.http.util.ByteArrayBuffer;
 
@@ -15,6 +13,7 @@ public class ByteArrayReader implements InputStreamReader {
     //TODO: think about cancellation
     ByteArrayHandler byteArrayHandler;
     ProgressUpdater progressUpdater;
+    Error lastError;
 
     public ByteArrayReader(ByteArrayHandler handler) {
         byteArrayHandler = handler;
@@ -40,7 +39,7 @@ public class ByteArrayReader implements InputStreamReader {
 
         } catch (Exception e) {
             e.printStackTrace();
-            return new Error("InputStreamToByteArrayBufferHandler exception: " + e.getMessage());
+            return lastError = new Error("InputStreamToByteArrayBufferHandler exception: " + e.getMessage());
         }
     }
 
@@ -66,5 +65,10 @@ public class ByteArrayReader implements InputStreamReader {
 
     public void setProgressUpdater(ProgressUpdater progressUpdater) {
         this.progressUpdater = progressUpdater;
+    }
+
+    @Override
+    public Error getError() {
+        return lastError;
     }
 }

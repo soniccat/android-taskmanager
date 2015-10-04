@@ -2,8 +2,8 @@ package com.example.alexeyglushkov.taskmanager.image;
 
 import android.graphics.Bitmap;
 
-import com.example.alexeyglushkov.taskmanager.loader.data.BitmapReader;
-import com.example.alexeyglushkov.taskmanager.loader.data.ByteArrayReader;
+import com.example.alexeyglushkov.streamlib.BytesBitmapConvertor;
+import com.example.alexeyglushkov.streamlib.ByteArrayReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpLoadTask;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
@@ -19,7 +19,7 @@ public class ImageLoader {
     }
 
     public static Task loadImage(TaskManager taskManager, final Image image, String destinationId, final ImageLoader.LoadCallback callback) {
-        final HttpLoadTask httpLoadTask = new HttpLoadTask(image, new ByteArrayReader(new BitmapReader(null)));
+        final HttpLoadTask httpLoadTask = new HttpLoadTask(image, new ByteArrayReader(new BytesBitmapConvertor(null)));
 
         httpLoadTask.setLoadPolicy(image.getLoadPolicy());
         httpLoadTask.setContentLength(image.getByteSize());

@@ -2,8 +2,8 @@ package com.example.alexeyglushkov.taskmanager.task;
 
 import android.os.Looper;
 
-import com.example.alexeyglushkov.taskmanager.loader.ProgressInfo;
-import com.example.alexeyglushkov.taskmanager.loader.ProgressUpdater;
+import com.example.alexeyglushkov.streamlib.ProgressInfo;
+import com.example.alexeyglushkov.streamlib.ProgressUpdater;
 
 import junit.framework.Assert;
 
@@ -274,6 +274,11 @@ public class TaskImpl implements Task, TaskPrivate {
             @Override
             public void onProgressUpdated(ProgressUpdater updater) {
                 triggerProgressListeners(updater);
+            }
+
+            @Override
+            public void onProgressCancelled(ProgressUpdater updater, Object info) {
+                cancelTask(info);
             }
         });
         return updater;
