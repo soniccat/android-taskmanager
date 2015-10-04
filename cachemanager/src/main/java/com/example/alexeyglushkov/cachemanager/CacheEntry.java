@@ -1,8 +1,12 @@
 package com.example.alexeyglushkov.cachemanager;
 
+import java.io.Serializable;
+
 /**
- * Created by alexeyglushkov on 26.09.15.
+ * Created by alexeyglushkov on 04.10.15.
  */
 public interface CacheEntry {
     Error load();
+    Error delete();
+    Serializable getMetadata();
 }

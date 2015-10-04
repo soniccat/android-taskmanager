@@ -1,11 +1,17 @@
 package com.example.alexeyglushkov.cachemanager;
 
+import java.io.Serializable;
+import java.util.HashMap;
+
 /**
  * Created by alexeyglushkov on 26.09.15.
  */
 public interface CacheProvider {
-    Error store(String key, CacheEntry value, CacheMetadata metadata);
-    CacheEntry getEntry(String key);
-    CacheMetadata getMetadata(String key);
+    Error store(String key, Object value, Serializable metadata);
+    Object getValue(String key);
+    Serializable getMetadata(String key);
     void remove(String key);
+    Error getError();
+
+    CacheEntry getEntry(String key);
 }

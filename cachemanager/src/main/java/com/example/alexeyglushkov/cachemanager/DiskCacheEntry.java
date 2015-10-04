@@ -2,6 +2,7 @@ package com.example.alexeyglushkov.cachemanager;
 
 import com.example.alexeyglushkov.streamlib.InputStreamReader;
 import com.example.alexeyglushkov.streamlib.OutputStreamWriter;
+import com.example.alexeyglushkov.streamlib.Serializer;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -10,26 +11,30 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 
 /**
  * Created by alexeyglushkov on 27.09.15.
  */
 public class DiskCacheEntry implements CacheEntry {
-    File file;
-    Object object;
+    private File file;
+    private Object object;
+    private Serializer serializer;
+    private DiskCacheMetadata metadata;
 
-    public DiskCacheEntry(File file) {
+    public DiskCacheEntry(File file, DiskCacheMetadata metadata, Serializer serializer) {
         this.file = file;
+        this.metadata = metadata;
+        this.serializer = serializer;
     }
 
-    @Override
     public Error load() {
         Error error = null;
         InputStream fis = null;
 
         try {
             fis = new BufferedInputStream(new FileInputStream(file));
-            object = handleStream(fis);
+            object = serializer.read(fis);
 
         } catch (Exception ex) {
             error = new Error("DiskCacheEntry exception: " + ex.getMessage());
@@ -52,16 +57,16 @@ public class DiskCacheEntry implements CacheEntry {
 
         try {
             os = new BufferedOutputStream(new FileOutputStream(file));
-            error = writer.writeStream(os, object);
+            error = serializer.write(os, object);
 
         } catch (Exception ex) {
-            error = new Error("DiskCacheEntry exception: " + ex.getMessage());
+            error = new Error("DiskCacheEntry write open stream exception: " + ex.getMessage());
         } finally {
             if (os != null) {
                 try {
                     os.close();
                 } catch (Exception ex) {
-                    error = new Error("DiskCacheEntry exception: " + ex.getMessage());
+                    error = new Error("DiskCacheEntry write close stream exception: " + ex.getMessage());
                 }
             }
         }
@@ -69,7 +74,18 @@ public class DiskCacheEntry implements CacheEntry {
         return error;
     }
 
-    protected Object handleStream(InputStream fis) {
-        return reader.readStream(fis);
+    @Override
+    public Error delete() {
+        Error error = null;
+        if (!file.delete()) {
+            error = new Error("DiskCacheEntry delete: can't delete file " + file.getAbsolutePath());
+        }
+
+        return error;
+    }
+
+    @Override
+    public Serializable getMetadata() {
+        return metadata;
     }
 }
