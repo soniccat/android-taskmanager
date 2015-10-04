@@ -41,8 +41,8 @@ public interface Serializer {
     void setOutputStreamWriter(OutputStreamWriter writer);
     void setInputStreamReader(InputStreamReader reader);
 
-    Error write(OutputStream outputSource, Object value);
-    Object read(InputStream inputSource);
+    Error write(OutputStream outputStream, Object value);
+    Object read(InputStream inputStream);
 
     Error getReadError();
     Error getWriteError();

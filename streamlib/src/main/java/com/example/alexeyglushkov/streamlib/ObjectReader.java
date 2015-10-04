@@ -35,21 +35,8 @@ public class ObjectReader implements InputStreamReader {
     }
 
     public Object readStreamToObject(InputStream stream) throws Exception {
-        Object result = null;
-        ObjectInputStream objectStream = null;
-        try {
-            objectStream = new ObjectInputStream(stream);
-            result = objectStream.readObject();
-
-        } finally {
-            try {
-                objectStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return result;
+        ObjectInputStream objectStream = new ObjectInputStream(stream);
+        return objectStream.readObject();
     }
 
     @Override

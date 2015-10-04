@@ -22,10 +22,15 @@ public class DiskCacheEntry implements CacheEntry {
     private Serializer serializer;
     private DiskCacheMetadata metadata;
 
-    public DiskCacheEntry(File file, DiskCacheMetadata metadata, Serializer serializer) {
+    public DiskCacheEntry(File file, Object object, DiskCacheMetadata metadata, Serializer serializer) {
         this.file = file;
+        this.object = object;
         this.metadata = metadata;
         this.serializer = serializer;
+    }
+
+    public Object getObject() {
+        return object;
     }
 
     public Error load() {

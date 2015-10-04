@@ -59,7 +59,11 @@ public class DiskCacheProvider implements CacheProvider {
 
     private Error write(String key, Object object, DiskCacheMetadata metadata) {
         Error error = null;
-        error = writeMetadata(key, metadata);
+
+        if (metadata != null) {
+            metadata.setFile(getKeyMetadataFile(key));
+            error = metadata.write();
+        }
 
         File file = null;
         if (error == null) {
@@ -80,20 +84,25 @@ public class DiskCacheProvider implements CacheProvider {
         }
 
         if (error == null) {
-            DiskCacheEntry entry = new DiskCacheEntry(file, metadata, serializer);
+            DiskCacheEntry entry = new DiskCacheEntry(file, object, metadata, serializer);
             error = entry.write();
         }
 
         return error;
     }
 
-    private Error writeMetadata(String key, DiskCacheMetadata metadata) {
+    @Override
+    public Object getValue(String key) {
+        return ((DiskCacheEntry)getEntry(key)).getObject();
+    }
 
+    public Serializable getMetadata(String key) {
+        return getEntry(key).getMetadata();
     }
 
     @Override
-    public Object getValue(String key) {
-        Object entry = null;
+    public CacheEntry getEntry(String key) {
+        DiskCacheEntry entry = null;
         File file = getKeyFile(key);
 
         if (file.exists()) {
@@ -101,22 +110,17 @@ public class DiskCacheProvider implements CacheProvider {
         }
 
         if (lastError == null) {
-            InputStream inputStream = null;
-            try {
-                inputStream = new BufferedInputStream(new FileInputStream(file));
-                entry = (DiskCacheEntry)serializer.read(inputStream);
-            } catch (Exception ex) {
-                lastError = new Error("DiskCacheProvider getValue exception: " + ex.getMessage());
-            } finally {
-
+            DiskCacheMetadata metadata = null;
+            File metadataFile = getKeyMetadataFile(key);
+            if (metadataFile.exists()) {
+                metadata = DiskCacheMetadata.load(file);
             }
+
+            entry = new DiskCacheEntry(file, null, metadata, serializer);
+            lastError = entry.load();
         }
 
         return entry;
-    }
-
-    public Serializable getMetadata(String key) {
-        return null;
     }
 
     @Override
