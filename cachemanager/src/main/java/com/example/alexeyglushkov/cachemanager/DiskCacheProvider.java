@@ -116,7 +116,10 @@ public class DiskCacheProvider implements CacheProvider {
 
     @Override
     public Object getValue(String key) {
-        return ((DiskCacheEntry)getEntry(key)).getObject();
+
+        DiskCacheEntry entry = (DiskCacheEntry)getEntry(key);
+        entry.load();
+        return entry.getObject();
     }
 
     public Serializable getMetadata(String key) {
@@ -143,7 +146,6 @@ public class DiskCacheProvider implements CacheProvider {
             assert serializer != null;
 
             entry = new DiskCacheEntry(file, null, metadata, serializer);
-            lastError = entry.load();
         }
 
         return entry;

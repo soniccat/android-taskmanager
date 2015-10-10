@@ -33,6 +33,15 @@ public class DiskCacheEntry implements CacheEntry {
 
     public Error load() {
         Error error = null;
+        if (object == null) {
+            error = loadObject();
+        }
+
+        return error;
+    }
+
+    private Error loadObject() {
+        Error error = null;
         InputStream fis = null;
 
         try {
@@ -51,7 +60,6 @@ public class DiskCacheEntry implements CacheEntry {
                 }
             }
         }
-
         return error;
     }
 
