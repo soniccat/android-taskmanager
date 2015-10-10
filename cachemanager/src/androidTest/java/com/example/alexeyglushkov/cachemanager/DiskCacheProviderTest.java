@@ -3,14 +3,9 @@ package com.example.alexeyglushkov.cachemanager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.test.AndroidTestCase;
 import android.test.InstrumentationTestCase;
 
-import com.example.alexeyglushkov.cachemanager.DiskCacheProvider;
-import com.example.alexeyglushkov.streamlib.BitmapSerializer;
-import com.example.alexeyglushkov.streamlib.ObjectSerializer;
-import com.noveogroup.android.cache.io.StringSerializer;
+import com.example.alexeyglushkov.streamlib.serializers.BitmapSerializer;
 
 import java.io.File;
 

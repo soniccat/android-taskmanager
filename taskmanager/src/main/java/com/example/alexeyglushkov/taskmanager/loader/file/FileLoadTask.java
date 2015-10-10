@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import android.content.Context;
 
-import com.example.alexeyglushkov.streamlib.InputStreamReader;
+import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 
 public class FileLoadTask extends SimpleTask {

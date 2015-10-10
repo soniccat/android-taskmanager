@@ -1,18 +1,21 @@
-package com.example.alexeyglushkov.streamlib;
+package com.example.alexeyglushkov.streamlib.serializers;
 
-import android.graphics.Bitmap;
+import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
+import com.example.alexeyglushkov.streamlib.readersandwriters.OutputStreamWriter;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Created by alexeyglushkov on 10.10.15.
+ * Created by alexeyglushkov on 04.10.15.
  */
-public class BitmapSerializer implements Serializer {
-    private OutputStreamWriter writer = new BitmapWriter(Bitmap.CompressFormat.PNG, 100);
-    private InputStreamReader reader = new BitmapReader();
+public class SimpleSerializer implements Serializer {
+    OutputStreamWriter writer;
+    InputStreamReader reader;
 
-    public BitmapSerializer() {
+    public SimpleSerializer(OutputStreamWriter writer, InputStreamReader reader) {
+        this.writer = writer;
+        this.reader = reader;
     }
 
     @Override

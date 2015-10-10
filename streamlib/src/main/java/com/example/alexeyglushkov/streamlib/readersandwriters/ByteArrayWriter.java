@@ -1,4 +1,7 @@
-package com.example.alexeyglushkov.streamlib;
+package com.example.alexeyglushkov.streamlib.readersandwriters;
+
+import com.example.alexeyglushkov.streamlib.convertors.Convertor;
+import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 
 import org.apache.http.util.ByteArrayBuffer;
 

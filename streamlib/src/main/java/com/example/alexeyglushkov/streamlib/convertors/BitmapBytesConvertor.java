@@ -1,6 +1,8 @@
-package com.example.alexeyglushkov.streamlib;
+package com.example.alexeyglushkov.streamlib.convertors;
 
 import android.graphics.Bitmap;
+
+import com.example.alexeyglushkov.streamlib.handlers.BitmapHandler;
 
 import org.apache.http.util.ByteArrayBuffer;
 

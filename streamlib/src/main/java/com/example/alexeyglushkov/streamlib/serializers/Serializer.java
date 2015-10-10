@@ -24,12 +24,11 @@
  * THE SOFTWARE.
  */
 
-package com.example.alexeyglushkov.streamlib;
+package com.example.alexeyglushkov.streamlib.serializers;
 
-import com.example.alexeyglushkov.streamlib.InputStreamReader;
-import com.example.alexeyglushkov.streamlib.OutputStreamWriter;
+import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
+import com.example.alexeyglushkov.streamlib.readersandwriters.OutputStreamWriter;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 

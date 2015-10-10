@@ -1,4 +1,6 @@
-package com.example.alexeyglushkov.streamlib;
+package com.example.alexeyglushkov.streamlib.handlers;
+
+import com.example.alexeyglushkov.streamlib.convertors.Convertor;
 
 /**
  * Created by alexeyglushkov on 28.12.14.

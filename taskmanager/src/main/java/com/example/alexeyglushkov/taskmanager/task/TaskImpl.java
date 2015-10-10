@@ -2,8 +2,8 @@ package com.example.alexeyglushkov.taskmanager.task;
 
 import android.os.Looper;
 
-import com.example.alexeyglushkov.streamlib.ProgressInfo;
-import com.example.alexeyglushkov.streamlib.ProgressUpdater;
+import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
+import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 
 import junit.framework.Assert;
 

@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.example.alexeyglushkov.taskmanager.image.Image;
 import com.example.alexeyglushkov.taskmanager.image.ImageLoader;
-import com.example.alexeyglushkov.streamlib.ProgressInfo;
+import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
 import com.rssclient.model.RssItem;
 import com.example.alexeyglushkov.taskmanager.task.*;
 import com.google.common.collect.Range;

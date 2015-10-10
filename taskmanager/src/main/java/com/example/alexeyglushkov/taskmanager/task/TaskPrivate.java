@@ -1,6 +1,6 @@
 package com.example.alexeyglushkov.taskmanager.task;
 
-import com.example.alexeyglushkov.streamlib.ProgressUpdater;
+import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 
 import java.util.Date;
 

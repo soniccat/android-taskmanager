@@ -2,8 +2,8 @@ package com.example.alexeyglushkov.taskmanager.image;
 
 import android.graphics.Bitmap;
 
-import com.example.alexeyglushkov.streamlib.BytesBitmapConvertor;
-import com.example.alexeyglushkov.streamlib.ByteArrayReader;
+import com.example.alexeyglushkov.streamlib.convertors.BytesBitmapConvertor;
+import com.example.alexeyglushkov.streamlib.readersandwriters.ByteArrayReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpLoadTask;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;

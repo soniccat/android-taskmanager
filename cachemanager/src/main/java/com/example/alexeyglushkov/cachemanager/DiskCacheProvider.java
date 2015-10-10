@@ -1,15 +1,10 @@
 package com.example.alexeyglushkov.cachemanager;
 
-import com.example.alexeyglushkov.streamlib.ObjectSerializer;
-import com.example.alexeyglushkov.streamlib.Serializer;
+import com.example.alexeyglushkov.streamlib.serializers.ObjectSerializer;
+import com.example.alexeyglushkov.streamlib.serializers.Serializer;
 
-import org.mockito.internal.util.collections.ArrayUtils;
-
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;

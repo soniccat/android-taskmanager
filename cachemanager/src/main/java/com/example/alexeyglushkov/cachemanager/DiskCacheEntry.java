@@ -1,8 +1,6 @@
 package com.example.alexeyglushkov.cachemanager;
 
-import com.example.alexeyglushkov.streamlib.InputStreamReader;
-import com.example.alexeyglushkov.streamlib.OutputStreamWriter;
-import com.example.alexeyglushkov.streamlib.Serializer;
+import com.example.alexeyglushkov.streamlib.serializers.Serializer;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

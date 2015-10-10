@@ -1,4 +1,7 @@
-package com.example.alexeyglushkov.streamlib;
+package com.example.alexeyglushkov.streamlib.readersandwriters;
+
+import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
+import com.example.alexeyglushkov.streamlib.handlers.StringHandler;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,6 +1,8 @@
-package com.example.alexeyglushkov.streamlib;
+package com.example.alexeyglushkov.streamlib.readersandwriters;
 
-import java.io.IOException;
+import com.example.alexeyglushkov.streamlib.convertors.Convertor;
+import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
+
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 

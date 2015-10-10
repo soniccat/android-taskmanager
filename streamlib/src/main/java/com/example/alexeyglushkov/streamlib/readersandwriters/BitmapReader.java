@@ -1,6 +1,8 @@
-package com.example.alexeyglushkov.streamlib;
+package com.example.alexeyglushkov.streamlib.readersandwriters;
 
 import android.graphics.BitmapFactory;
+
+import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 
 import java.io.InputStream;
 

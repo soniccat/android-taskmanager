@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.streamlib;
+package com.example.alexeyglushkov.streamlib.progress;
 
 /**
  * Created by alexeyglushkov on 25.01.15.

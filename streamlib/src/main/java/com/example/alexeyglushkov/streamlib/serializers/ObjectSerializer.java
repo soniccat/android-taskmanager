@@ -1,4 +1,9 @@
-package com.example.alexeyglushkov.streamlib;
+package com.example.alexeyglushkov.streamlib.serializers;
+
+import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
+import com.example.alexeyglushkov.streamlib.readersandwriters.ObjectReader;
+import com.example.alexeyglushkov.streamlib.readersandwriters.ObjectWriter;
+import com.example.alexeyglushkov.streamlib.readersandwriters.OutputStreamWriter;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -6,13 +11,11 @@ import java.io.OutputStream;
 /**
  * Created by alexeyglushkov on 04.10.15.
  */
-public class SimpleSerializer implements Serializer {
-    OutputStreamWriter writer;
-    InputStreamReader reader;
+public class ObjectSerializer implements Serializer {
+    private OutputStreamWriter writer = new ObjectWriter(null);
+    private InputStreamReader reader = new ObjectReader(null);
 
-    public SimpleSerializer(OutputStreamWriter writer, InputStreamReader reader) {
-        this.writer = writer;
-        this.reader = reader;
+    public ObjectSerializer() {
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.example.alexeyglushkov.cachemanager;
 
-import com.example.alexeyglushkov.streamlib.ObjectSerializer;
-import com.example.alexeyglushkov.streamlib.Serializer;
+import com.example.alexeyglushkov.streamlib.serializers.ObjectSerializer;
+import com.example.alexeyglushkov.streamlib.serializers.Serializer;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -10,7 +10,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.util.HashMap;
 
 /**

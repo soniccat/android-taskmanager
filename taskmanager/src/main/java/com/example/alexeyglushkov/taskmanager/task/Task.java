@@ -1,6 +1,6 @@
 package com.example.alexeyglushkov.taskmanager.task;
 
-import com.example.alexeyglushkov.streamlib.ProgressInfo;
+import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
 
 /**
  * Created by alexeyglushkov on 20.09.14.
