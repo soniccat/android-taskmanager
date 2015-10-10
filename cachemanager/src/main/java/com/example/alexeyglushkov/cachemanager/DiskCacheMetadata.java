@@ -22,6 +22,7 @@ public class DiskCacheMetadata extends HashMap<String, Object>
     private static final String createTimeKey = "metadataCreateTime";
     private static final String expireTimeKey = "metadataExpireTime";
     private static final String fileSizeKey = "metadataFileSize";
+    private static final String entryClassKey = "metadataEntryClass";
 
     private transient File file;
     private transient Serializer serializer = createSerializer();
@@ -67,6 +68,14 @@ public class DiskCacheMetadata extends HashMap<String, Object>
 
     public void setExpireTime(long expireTime) {
         put(expireTimeKey, expireTime);
+    }
+
+    public void setEntryClass(Class cl) {
+        put(entryClassKey, cl);
+    }
+
+    public Class getEntryClass() {
+        return (Class)get(entryClassKey);
     }
 
     public Error write() {

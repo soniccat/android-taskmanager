@@ -17,9 +17,9 @@ public class ObjectReader implements InputStreamReader {
 
     @Override
     public Object readStream(InputStream stream) {
+        Object result = null;
         try {
             Object object = this.readStreamToObject(stream);
-            Object result;
             if (convertor != null) {
                 result = convertor.convert(object);
             } else {
@@ -30,8 +30,10 @@ public class ObjectReader implements InputStreamReader {
 
         } catch (Exception e) {
             e.printStackTrace();
-            return lastError = new Error("ObjectReader:readStream exception: " + e.getMessage());
+            lastError = new Error("ObjectReader:readStream exception: " + e.getMessage());
         }
+
+        return result;
     }
 
     public Object readStreamToObject(InputStream stream) throws Exception {

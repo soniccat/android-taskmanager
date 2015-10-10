@@ -40,6 +40,7 @@ public class DiskCacheEntry implements CacheEntry {
         try {
             fis = new BufferedInputStream(new FileInputStream(file));
             object = serializer.read(fis);
+            error = serializer.getReadError();
 
         } catch (Exception ex) {
             error = new Error("DiskCacheEntry exception: " + ex.getMessage());

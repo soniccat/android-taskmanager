@@ -1,6 +1,9 @@
 package com.example.alexeyglushkov.cachemanager;
 
+import com.example.alexeyglushkov.streamlib.ObjectSerializer;
 import com.example.alexeyglushkov.streamlib.Serializer;
+
+import org.mockito.internal.util.collections.ArrayUtils;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -8,6 +11,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by alexeyglushkov on 26.09.15.
@@ -15,12 +20,16 @@ import java.io.Serializable;
 public class DiskCacheProvider implements CacheProvider {
 
     private File directory;
-    private Serializer serializer;
+    private Map<Class,Serializer> serializerMap;
     private Error lastError;
 
-    public DiskCacheProvider(File directory, Serializer serializer) {
+    public DiskCacheProvider(File directory) {
         this.directory = directory;
-        this.serializer = serializer;
+        this.serializerMap = new HashMap<>();
+    }
+
+    public void setSerializer(Serializer serializer, Class cl) {
+        serializerMap.put(cl, serializer);
     }
 
     @Override
@@ -60,11 +69,6 @@ public class DiskCacheProvider implements CacheProvider {
     private Error write(String key, Object object, DiskCacheMetadata metadata) {
         Error error = null;
 
-        if (metadata != null) {
-            metadata.setFile(getKeyMetadataFile(key));
-            error = metadata.write();
-        }
-
         File file = null;
         if (error == null) {
             file = getKeyFile(key);
@@ -84,11 +88,35 @@ public class DiskCacheProvider implements CacheProvider {
         }
 
         if (error == null) {
+            Serializer serializer = getSerializer(object.getClass());
+            assert serializer != null;
+
             DiskCacheEntry entry = new DiskCacheEntry(file, object, metadata, serializer);
             error = entry.write();
         }
 
+        if (error == null) {
+            if (metadata == null) {
+                metadata = new DiskCacheMetadata();
+            }
+
+            metadata.setFile(getKeyMetadataFile(key));
+            metadata.setCreateTime(System.currentTimeMillis() / 1000L);
+            metadata.calculateSize(file);
+            metadata.setEntryClass(object.getClass());
+            error = metadata.write();
+        }
+
         return error;
+    }
+
+    private Serializer getSerializer(Class cl) {
+        Serializer serializer = serializerMap.get(cl);
+        if (serializer == null && Serializable.class.isAssignableFrom(cl)) {
+            serializer = new ObjectSerializer();
+        }
+
+        return serializer;
     }
 
     @Override
@@ -115,6 +143,9 @@ public class DiskCacheProvider implements CacheProvider {
             if (metadataFile.exists()) {
                 metadata = DiskCacheMetadata.load(metadataFile);
             }
+
+            Serializer serializer = getSerializer(metadata.getEntryClass());
+            assert serializer != null;
 
             entry = new DiskCacheEntry(file, null, metadata, serializer);
             lastError = entry.load();
