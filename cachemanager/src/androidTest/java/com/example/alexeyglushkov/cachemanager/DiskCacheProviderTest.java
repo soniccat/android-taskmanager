@@ -46,7 +46,8 @@ public class DiskCacheProviderTest extends InstrumentationTestCase {
         assertNotNull(cacheProvider.getEntry("img"));
 
         Bitmap result = (Bitmap)cacheProvider.getValue("img");
+        DiskCacheMetadata readMetadata = (DiskCacheMetadata)cacheProvider.getMetadata("img");
         assertNotNull(result);
-        assertNotNull(cacheProvider.getMetadata("img"));
+        assertNotNull(readMetadata);
     }
 }

@@ -6,13 +6,16 @@ import com.example.alexeyglushkov.streamlib.serializers.Serializer;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Created by alexeyglushkov on 26.09.15.
  */
 public class DiskCacheProvider implements CacheProvider {
+    private static String METADATA_PREFIX = "_metadata";
 
     private File directory;
     private Map<Class,Serializer> serializerMap;
@@ -49,24 +52,32 @@ public class DiskCacheProvider implements CacheProvider {
         return null;
     }
 
-    private File getKeyFile(String key) {
-        String fileName = Integer.toString(key.hashCode());
-        File file = new File(directory.getPath() + File.pathSeparator + fileName);
+    private File getKeyFile(int hash) {
+        String fileName = Integer.toString(hash);
+        File file = new File(directory.getPath() + File.separator + fileName);
         return file;
     }
 
-    private File getKeyMetadataFile(String key) {
-        String fileName = Integer.toString(key.hashCode()) + "_metadata";
-        File file = new File(directory.getPath() + File.pathSeparator + fileName);
+    private File getKeyMetadataFile(int hash) {
+        String fileName = Integer.toString(hash) + METADATA_PREFIX;
+        File file = new File(directory.getPath() + File.separator + fileName);
         return file;
+    }
+
+    private boolean isMetadataFile(File file) {
+        return file.getName().endsWith(METADATA_PREFIX);
     }
 
     private Error write(String key, Object object, DiskCacheMetadata metadata) {
+        return writeByHash(key.hashCode(), object, metadata);
+    }
+
+    private Error writeByHash(int hash, Object object, DiskCacheMetadata metadata) {
         Error error = null;
 
         File file = null;
         if (error == null) {
-            file = getKeyFile(key);
+            file = getKeyFile(hash);
             if (file.exists()) {
                 if (!file.delete()) {
                     error = new Error("DiskCacheProvider write delete: can't delete cache file");
@@ -95,7 +106,7 @@ public class DiskCacheProvider implements CacheProvider {
                 metadata = new DiskCacheMetadata();
             }
 
-            metadata.setFile(getKeyMetadataFile(key));
+            metadata.setFile(getKeyMetadataFile(hash));
             metadata.setCreateTime(System.currentTimeMillis() / 1000L);
             metadata.calculateSize(file);
             metadata.setEntryClass(object.getClass());
@@ -127,8 +138,12 @@ public class DiskCacheProvider implements CacheProvider {
 
     @Override
     public CacheEntry getEntry(String key) {
+        return getEntryByHash(key.hashCode());
+    }
+
+    private CacheEntry getEntryByHash(int hash) {
         DiskCacheEntry entry = null;
-        File file = getKeyFile(key);
+        File file = getKeyFile(hash);
 
         if (!file.exists()) {
             lastError = new Error("DiskCacheProvider getValue: file doesn't exist");
@@ -136,7 +151,7 @@ public class DiskCacheProvider implements CacheProvider {
 
         if (lastError == null) {
             DiskCacheMetadata metadata = null;
-            File metadataFile = getKeyMetadataFile(key);
+            File metadataFile = getKeyMetadataFile(hash);
             if (metadataFile.exists()) {
                 metadata = DiskCacheMetadata.load(metadataFile);
             }
@@ -159,5 +174,24 @@ public class DiskCacheProvider implements CacheProvider {
     @Override
     public Error getError() {
         return lastError;
+    }
+
+    @Override
+    public List<CacheEntry> getEntries() {
+        List<CacheEntry> entries = new ArrayList<>();
+        if (!directory.exists()) {
+            return entries;
+        }
+
+        File[] files = directory.listFiles();
+
+        for (File file : files) {
+            if (!isMetadataFile(file)) {
+                int hash = Integer.parseInt(file.getName());
+                entries.add(getEntryByHash(hash));
+            }
+        }
+
+        return entries;
     }
 }

@@ -109,6 +109,7 @@ public class DiskCacheMetadata extends HashMap<String, Object>
             fis = new BufferedInputStream(new FileInputStream(file));
             ObjectSerializer serializer = createSerializer();
             result = (DiskCacheMetadata)serializer.read(fis);
+            result.setFile(file);
 
         } catch (Exception ex) {
             error = new Error("DiskCacheEntry exception: " + ex.getMessage());
