@@ -124,4 +124,13 @@ public class DiskCacheMetadata extends HashMap<String, Object>
 
         return result;
     }
+
+    public static Error delete(File file) {
+        Error error = null;
+        if (!file.delete()) {
+            error = new Error("DiskCacheMetadata delete: can't delete file " + file.getAbsolutePath());
+        }
+
+        return error;
+    }
 }

@@ -93,6 +93,10 @@ public class DiskCacheEntry implements CacheEntry {
             error = new Error("DiskCacheEntry delete: can't delete file " + file.getAbsolutePath());
         }
 
+        if (error == null) {
+            DiskCacheMetadata.delete(metadata.getFile());
+        }
+
         return error;
     }
 

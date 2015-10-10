@@ -10,7 +10,7 @@ public interface CacheProvider {
     Error put(String key, Object value, Serializable metadata);
     Object getValue(String key);
     Serializable getMetadata(String key);
-    void remove(String key);
+    Error remove(String key);
     Error getError();
 
     CacheEntry getEntry(String key);

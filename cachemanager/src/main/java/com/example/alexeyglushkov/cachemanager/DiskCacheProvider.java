@@ -116,7 +116,6 @@ public class DiskCacheProvider implements CacheProvider {
 
     @Override
     public Object getValue(String key) {
-
         DiskCacheEntry entry = (DiskCacheEntry)getEntry(key);
         entry.load();
         return entry.getObject();
@@ -152,7 +151,9 @@ public class DiskCacheProvider implements CacheProvider {
     }
 
     @Override
-    public void remove(String key) {
+    public Error remove(String key) {
+        lastError = getEntry(key).delete();
+        return lastError;
     }
 
     @Override
