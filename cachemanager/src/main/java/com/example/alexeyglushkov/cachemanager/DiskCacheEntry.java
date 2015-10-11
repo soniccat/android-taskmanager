@@ -94,7 +94,7 @@ public class DiskCacheEntry implements CacheEntry {
         }
 
         if (error == null) {
-            DiskCacheMetadata.delete(metadata.getFile());
+            error = DiskCacheMetadata.delete(metadata.getFile());
         }
 
         return error;

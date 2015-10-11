@@ -45,11 +45,11 @@ public class DiskCacheProvider implements CacheProvider {
             try {
                 directory.createNewFile();
             } catch (IOException ex) {
-                return new Error("DiskCacheProvider prepareDirectory exception:" + ex.getMessage());
+                lastError = new Error("DiskCacheProvider.prepareDirectory() createNewFile exception:" + ex.getMessage());
             }
         }
 
-        return null;
+        return lastError;
     }
 
     private File getKeyFile(int hash) {
@@ -80,7 +80,7 @@ public class DiskCacheProvider implements CacheProvider {
             file = getKeyFile(hash);
             if (file.exists()) {
                 if (!file.delete()) {
-                    error = new Error("DiskCacheProvider write delete: can't delete cache file");
+                    error = new Error("DiskCacheProvider.writeByHash() delete: can't delete cache file");
                 }
             }
         }
@@ -89,7 +89,7 @@ public class DiskCacheProvider implements CacheProvider {
             try {
                 file.createNewFile();
             } catch (IOException ex) {
-                error = new Error("DiskCacheProvider write createNewFile exception:" + ex.getMessage());
+                error = new Error("DiskCacheProvider.write() createNewFile exception:" + ex.getMessage());
             }
         }
 
@@ -144,12 +144,13 @@ public class DiskCacheProvider implements CacheProvider {
     private CacheEntry getEntryByHash(int hash) {
         DiskCacheEntry entry = null;
         File file = getKeyFile(hash);
+        Error error = null;
 
         if (!file.exists()) {
-            lastError = new Error("DiskCacheProvider getValue: file doesn't exist");
+            lastError = error = new Error("DiskCacheProvider.getValue() exists(): file doesn't exist");
         }
 
-        if (lastError == null) {
+        if (error == null) {
             DiskCacheMetadata metadata = null;
             File metadataFile = getKeyMetadataFile(hash);
             if (metadataFile.exists()) {
@@ -167,7 +168,10 @@ public class DiskCacheProvider implements CacheProvider {
 
     @Override
     public Error remove(String key) {
-        lastError = getEntry(key).delete();
+        CacheEntry entry = getEntry(key);
+        if (entry != null) {
+            lastError = entry.delete();
+        }
         return lastError;
     }
 
@@ -188,10 +192,30 @@ public class DiskCacheProvider implements CacheProvider {
         for (File file : files) {
             if (!isMetadataFile(file)) {
                 int hash = Integer.parseInt(file.getName());
-                entries.add(getEntryByHash(hash));
+                CacheEntry entry = getEntryByHash(hash);
+                entries.add(entry);
             }
         }
 
         return entries;
+    }
+
+    public Error removeAll() {
+        Error error = null;
+        List<CacheEntry> entries = getEntries();
+        for (CacheEntry file : entries) {
+            Error deleteError = file.delete();
+            if (deleteError == null) {
+                lastError = error = deleteError;
+            }
+        }
+
+        if (error == null) {
+            if (!directory.delete()) {
+                lastError = error = new Error("DiskCacheProvider.removeAll() delete(): remove directory error");
+            }
+        }
+
+        return error;
     }
 }

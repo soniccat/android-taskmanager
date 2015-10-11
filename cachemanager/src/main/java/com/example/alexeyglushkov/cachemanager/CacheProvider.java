@@ -17,4 +17,5 @@ public interface CacheProvider {
 
     CacheEntry getEntry(String key);
     List<CacheEntry> getEntries();
+    Error removeAll();
 }
