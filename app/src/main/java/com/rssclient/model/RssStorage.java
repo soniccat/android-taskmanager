@@ -11,11 +11,11 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
+import com.example.alexeyglushkov.streamlib.readersandwriters.ByteArrayReader;
 import com.example.alexeyglushkov.taskmanager.file.ByteArrayProvider;
 import com.example.alexeyglushkov.taskmanager.file.ByteArrayWriter;
 import com.example.alexeyglushkov.taskmanager.file.FileKeepTask;
-import com.example.alexeyglushkov.taskmanager.loader.data.ByteArrayHandler;
-import com.example.alexeyglushkov.taskmanager.loader.data.ByteArrayReader;
 import com.example.alexeyglushkov.taskmanager.loader.file.FileLoadTask;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpLoadTask;
 import com.example.alexeyglushkov.taskmanager.task.Task;
@@ -129,8 +129,13 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
     public ByteArrayHandler getByteArrayHandler() {
         return new ByteArrayHandler() {
             @Override
-            public Error handleByteArrayBuffer(ByteArrayBuffer byteArray) {
+            public Object handleByteArrayBuffer(ByteArrayBuffer byteArray) {
                 return loadData(byteArray);
+            }
+
+            @Override
+            public Object convert(Object object) {
+                return handleByteArrayBuffer((ByteArrayBuffer)object);
             }
         };
     }

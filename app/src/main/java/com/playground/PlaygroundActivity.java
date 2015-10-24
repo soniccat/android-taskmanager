@@ -9,9 +9,9 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.alexeyglushkov.streamlib.readersandwriters.ObjectReader;
 import com.example.alexeyglushkov.taskmanager.file.FileKeepTask;
 import com.example.alexeyglushkov.taskmanager.file.ObjectWriter;
-import com.example.alexeyglushkov.taskmanager.loader.data.ObjectReader;
 import com.example.alexeyglushkov.taskmanager.loader.file.FileLoadTask;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManagerSnapshot;
 import com.example.alexeyglushkov.taskmanager.task.Task;

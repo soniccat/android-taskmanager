@@ -14,8 +14,9 @@ import org.xmlpull.v1.XmlPullParserException;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Xml;
+
+import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
 import com.example.alexeyglushkov.taskmanager.image.Image;
-import com.example.alexeyglushkov.taskmanager.loader.data.ByteArrayHandler;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpURLConnectionProvider;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.Tasks;
@@ -104,8 +105,13 @@ public class RssFeed implements Parcelable, Serializable, Tasks.TaskListener, Ht
     public ByteArrayHandler getDataHandler() {
         return new ByteArrayHandler() {
             @Override
-            public Error handleByteArrayBuffer(ByteArrayBuffer byteArray) {
+            public Object handleByteArrayBuffer(ByteArrayBuffer byteArray) {
                 return loadData(byteArray);
+            }
+
+            @Override
+            public Object convert(Object object) {
+                return handleByteArrayBuffer((ByteArrayBuffer)object);
             }
         };
     }
