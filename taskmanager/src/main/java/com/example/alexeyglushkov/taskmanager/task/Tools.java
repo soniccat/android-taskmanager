@@ -26,16 +26,4 @@ public class Tools {
         Handler hd = new Handler(mainLooper);
         hd.post(runnable);
     }
-
-    public static int reverseIntCompare(int lhs, int rhs) {
-        if (lhs > rhs) {
-            return -1;
-        }
-
-        if (lhs == rhs) {
-            return 0;
-        }
-
-        return 1;
-    }
 }

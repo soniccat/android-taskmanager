@@ -57,6 +57,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.main.MainActivity" />
         </activity>
+        <activity
+            android:name="com.authorization.AuthorizationActivity"
+            android:label="@string/title_activity_authorization" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.main.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

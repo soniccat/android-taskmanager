@@ -10,6 +10,7 @@
     <string name="title_activity_rss_items">RssItemsActivity</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_playground">PlaygroundActivity</string>
+    <string name="title_activity_authorization">PlaygroundActivity</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="playground_create_tasks_title">Create</string>

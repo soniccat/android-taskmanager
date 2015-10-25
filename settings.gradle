@@ -1,1 +1,1 @@
-include ':app', ':taskmanager', ':cachemanager', ':testsupport', ':streamlib'
+include ':app', ':taskmanager', ':cachemanager', ':testsupport', ':streamlib', ':authorization'
