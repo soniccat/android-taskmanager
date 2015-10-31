@@ -1,4 +1,7 @@
-package com.example.alexeyglushkov.authorization;
+package com.example.alexeyglushkov.authorization.OAuth;
+
+import com.example.alexeyglushkov.authorization.Authorizer;
+import com.example.alexeyglushkov.authorization.ServiceCommand;
 
 /**
  * The main Scribe object. 
@@ -7,14 +10,14 @@ package com.example.alexeyglushkov.authorization;
  * 
  * @author Pablo Fernandez
  */
-public interface OAuthAuthorizer extends Authorizer
+public interface OAuth10Authorizer extends Authorizer
 {
   /**
    * Retrieve the request token.
    * 
    * @return request token
    */
-  public Token retrieveRequestToken();
+  void retrieveRequestToken(OAuthCompletion completion);
 
   /**
    * Retrieve the access token
@@ -23,7 +26,7 @@ public interface OAuthAuthorizer extends Authorizer
    * @param verifier verifier code
    * @return access token
    */
-  public Token retrieveAccessToken(Token requestToken);
+  void retrieveAccessToken(String code, OAuthCompletion completion);
 
   /**
    * Signs am OAuth request
@@ -31,14 +34,14 @@ public interface OAuthAuthorizer extends Authorizer
    * @param accessToken access token (obtained previously)
    * @param request request to sign
    */
-  public void signCommand(ServiceCommand command);
+  void signCommand(ServiceCommand command);
 
   /**
    * Returns the OAuth version of the service.
    * 
    * @return oauth version as string
    */
-  public String getVersion();
+  String getVersion();
   
   /**
    * Returns the URL where you should redirect your users to authenticate
@@ -47,5 +50,9 @@ public interface OAuthAuthorizer extends Authorizer
    * @param requestToken the request token you need to authorize
    * @return the URL where you should redirect your users
    */
-  public String getAuthorizationUrl(Token requestToken);
+  String getAuthorizationUrl();
+
+  interface OAuthCompletion {
+    void onCompleted(Error error);
+  }
 }

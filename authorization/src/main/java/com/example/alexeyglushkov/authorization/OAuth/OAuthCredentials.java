@@ -1,4 +1,6 @@
-package com.example.alexeyglushkov.authorization;
+package com.example.alexeyglushkov.authorization.OAuth;
+
+import com.example.alexeyglushkov.authorization.AuthCredentials;
 
 import java.util.Date;
 
@@ -9,8 +11,6 @@ public class OAuthCredentials implements AuthCredentials {
     private String accessToken;
     private String requestToken;
     private String refreshToken;
-    private String consumerKey;
-    private String secretKey;
     private long expireTime;
 
     // AuthCredentials implementation
@@ -49,14 +49,6 @@ public class OAuthCredentials implements AuthCredentials {
         this.expireTime = expireTime;
     }
 
-    public void setConsumerKey(String consumerKey) {
-        this.consumerKey = consumerKey;
-    }
-
-    public void setSecretKey(String secretKey) {
-        this.secretKey = secretKey;
-    }
-
     public String getAccessToken() {
         return accessToken;
     }
@@ -67,13 +59,5 @@ public class OAuthCredentials implements AuthCredentials {
 
     public String getRefreshToken() {
         return refreshToken;
-    }
-
-    public String getConsumerKey() {
-        return consumerKey;
-    }
-
-    public String getSecretKey() {
-        return secretKey;
     }
 }

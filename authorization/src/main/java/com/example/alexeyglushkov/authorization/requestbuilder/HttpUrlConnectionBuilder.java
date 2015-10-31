@@ -40,14 +40,19 @@ public class HttpUrlConnectionBuilder
    * @param verb Http Verb (GET, POST, etc)
    * @param url url with optional querystring parameters.
    */
-  public HttpUrlConnectionBuilder(Verb verb, String url)
+  public HttpUrlConnectionBuilder(String url)
   {
-    this.verb = verb;
+    this.verb = Verb.GET;
     this.url = url;
     this.querystringParams = new ParameterList();
     this.bodyParams = new ParameterList();
     this.headers = new HashMap<String, String>();
   }
+
+    public HttpUrlConnectionBuilder setVerb(Verb verb) {
+        this.verb = verb;
+        return this;
+    }
 
     public HttpURLConnection build() throws IOException
     {
@@ -81,13 +86,15 @@ public class HttpUrlConnectionBuilder
     return querystringParams.appendTo(url);
   }
 
-  void addHeaders(HttpURLConnection conn)
-  {
-    for (String key : headers.keySet())
-      conn.setRequestProperty(key, headers.get(key));
-  }
+    HttpUrlConnectionBuilder addHeaders(HttpURLConnection conn)
+    {
+        for (String key : headers.keySet()) {
+            conn.setRequestProperty(key, headers.get(key));
+        }
+        return this;
+    }
 
-  void addBody(HttpURLConnection conn, byte[] content) throws IOException
+  private void addBody(HttpURLConnection conn, byte[] content) throws IOException
   {
     conn.setRequestProperty(CONTENT_LENGTH, String.valueOf(content.length));
 
@@ -106,9 +113,10 @@ public class HttpUrlConnectionBuilder
    * @param key the header name
    * @param value the header value
    */
-  public void addHeader(String key, String value)
+  public HttpUrlConnectionBuilder addHeader(String key, String value)
   {
     this.headers.put(key, value);
+      return this;
   }
 
   /**
@@ -117,9 +125,10 @@ public class HttpUrlConnectionBuilder
    * @param key the parameter name
    * @param value the parameter value
    */
-  public void addBodyParameter(String key, String value)
+  public HttpUrlConnectionBuilder addBodyParameter(String key, String value)
   {
-    this.bodyParams.add(key, value);
+      this.bodyParams.add(key, value);
+      return this;
   }
 
   /**
@@ -128,9 +137,10 @@ public class HttpUrlConnectionBuilder
    * @param key the parameter name
    * @param value the parameter value
    */
-  public void addQuerystringParameter(String key, String value)
+  public HttpUrlConnectionBuilder addQuerystringParameter(String key, String value)
   {
     this.querystringParams.add(key, value);
+      return this;
   }
 
   /**
@@ -143,9 +153,10 @@ public class HttpUrlConnectionBuilder
    * 
    * @param payload the body of the request
    */
-  public void addPayload(String payload)
+  public HttpUrlConnectionBuilder addPayload(String payload)
   {
     this.payload = payload;
+      return this;
   }
 
   /**
@@ -153,9 +164,10 @@ public class HttpUrlConnectionBuilder
    *
    * @param payload
    */
-  public void addPayload(byte[] payload)
+  public HttpUrlConnectionBuilder addPayload(byte[] payload)
   {
     this.bytePayload = payload.clone();
+      return this;
   }
 
   /**
@@ -287,9 +299,10 @@ public class HttpUrlConnectionBuilder
    * 
    * @param unit unit of time (milliseconds, seconds, etc)
    */
-  public void setConnectTimeout(int duration, TimeUnit unit)
+  public HttpUrlConnectionBuilder setConnectTimeout(int duration, TimeUnit unit)
   {
     this.connectTimeout = unit.toMillis(duration);
+      return this;
   }
 
   /**
@@ -299,9 +312,10 @@ public class HttpUrlConnectionBuilder
    * 
    * @param unit unit of time (milliseconds, seconds, etc)
    */
-  public void setReadTimeout(int duration, TimeUnit unit)
+  public HttpUrlConnectionBuilder setReadTimeout(int duration, TimeUnit unit)
   {
     this.readTimeout = unit.toMillis(duration);
+      return this;
   }
 
   /**
@@ -309,9 +323,10 @@ public class HttpUrlConnectionBuilder
    *
    * @param charsetName name of the charset of the request
    */
-  public void setCharset(String charsetName)
+  public HttpUrlConnectionBuilder setCharset(String charsetName)
   {
     this.charset = charsetName;
+      return this;
   }
 
   /**
@@ -320,9 +335,10 @@ public class HttpUrlConnectionBuilder
    * @see http://download.oracle.com/javase/1.5.0/docs/guide/net/http-keepalive.html
    * @param connectionKeepAlive
    */
-  public void setConnectionKeepAlive(boolean connectionKeepAlive)
+  public HttpUrlConnectionBuilder setConnectionKeepAlive(boolean connectionKeepAlive)
   {
     this.connectionKeepAlive = connectionKeepAlive;
+      return this;
   }
 
   /**
@@ -333,9 +349,10 @@ public class HttpUrlConnectionBuilder
    * @see http://docs.oracle.com/javase/6/docs/api/java/net/HttpURLConnection.html#setInstanceFollowRedirects(boolean)
    * @param followRedirects
    */
-  public void setFollowRedirects(boolean followRedirects)
+  public HttpUrlConnectionBuilder setFollowRedirects(boolean followRedirects)
   {
     this.followRedirects = followRedirects;
+      return this;
   }
 
   @Override
