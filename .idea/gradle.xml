@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/authorization" />
             <option value="$PROJECT_DIR$/cachemanager" />
+            <option value="$PROJECT_DIR$/scribeauthorization" />
             <option value="$PROJECT_DIR$/streamlib" />
             <option value="$PROJECT_DIR$/taskmanager" />
             <option value="$PROJECT_DIR$/testsupport" />

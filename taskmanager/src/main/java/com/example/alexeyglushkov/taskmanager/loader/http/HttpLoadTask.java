@@ -17,10 +17,10 @@ import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 public class HttpLoadTask extends SimpleTask {
     protected HttpURLConnectionProvider provider;
     protected int contentLength;
-    protected InputStreamReader handler;
+    protected HTTPConnectionResponseReader handler;
     protected Object handledData;
 
-    public HttpLoadTask(HttpURLConnectionProvider provider, InputStreamReader handler) {
+    public HttpLoadTask(HttpURLConnectionProvider provider, HTTPConnectionResponseReader handler) {
         super();
         this.provider = provider;
         this.handler = handler;
@@ -28,7 +28,7 @@ public class HttpLoadTask extends SimpleTask {
     }
 
     public void setHandler(InputStreamReader handler) {
-        this.handler = handler;
+        this.handler = (HTTPConnectionResponseReader)handler;
     }
 
     public InputStreamReader getHandler() {
@@ -56,9 +56,10 @@ public class HttpLoadTask extends SimpleTask {
             }
 
             int response = connection.getResponseCode();
-            Log.d("HttpLoadTask","HttpLoadingContext: The response is: " + response + "\n");
+            Log.d("HttpLoadTask", "HttpLoadingContext: The response is: " + response + "\n");
 
             handler.setProgressUpdater(getPrivate().createProgressUpdater(contentLength));
+            handler.handleConnectionResponse(connection);
 
             //TODO: handle cancellation well
             stream = new BufferedInputStream(connection.getInputStream());
