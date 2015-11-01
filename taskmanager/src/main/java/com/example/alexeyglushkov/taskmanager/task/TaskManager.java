@@ -15,8 +15,6 @@ public interface TaskManager extends TaskPool {
     SparseArray<Float> getLimits();
     SparseArray<Integer> getUsedSpace(); //type -> task count from loadingTasks
 
-
-
     // Task Running
 
     // Put a task, the same task can't be putted twice to the TaskManager

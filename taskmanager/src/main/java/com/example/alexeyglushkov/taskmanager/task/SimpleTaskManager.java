@@ -144,7 +144,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
                     final Task.Callback oldCallBack = task.getTaskCallback();
                     task.setTaskCallback(new Task.Callback() {
                         @Override
-                        public void finished(boolean cancelled) {
+                        public void onCompleted(boolean cancelled) {
                             triggerOnTaskRemoved(task, true);
                             handleTaskCompletionOnThread(task, oldCallBack, cancelled);
                         }
@@ -557,11 +557,11 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         final Task.Callback originalCallback = task.getTaskCallback();
         Task.Callback callback = new Task.Callback() {
             @Override
-            public void finished(final boolean cancelled) {
+            public void onCompleted(final boolean cancelled) {
                 Tools.runOnHandlerThread(handler, new Runnable() {
                     @Override
                     public void run() {
-                        logTask(task, "Task finished");
+                        logTask(task, "Task onCompleted");
                         handleTaskCompletionOnThread(task, originalCallback, cancelled);
                     }
                 });
@@ -594,7 +594,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
             @Override
             public void run() {
                 if (callback != null) {
-                    callback.finished(status == Task.Status.Cancelled);
+                    callback.onCompleted(status == Task.Status.Cancelled);
                 }
             }
         });

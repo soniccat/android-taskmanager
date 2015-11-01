@@ -159,7 +159,7 @@ public interface Task extends TaskContainer {
     // TODO: pass Error to get to know that the task was cancelled or an error happened
     interface Callback {
         //Here I put the cancelled as the argument to emphasise that it must be handled (also it can be got from status)
-        void finished(boolean cancelled);
+        void onCompleted(boolean cancelled);
     }
 
     interface StatusListener {

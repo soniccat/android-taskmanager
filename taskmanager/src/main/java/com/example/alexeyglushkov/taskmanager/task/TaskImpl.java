@@ -316,7 +316,7 @@ public class TaskImpl implements Task, TaskPrivate {
 
     private void callStartCallback() {
         if (startCallback != null) {
-            startCallback.finished(isCancelled);
+            startCallback.onCompleted(isCancelled);
             startCallback = null;
         }
     }

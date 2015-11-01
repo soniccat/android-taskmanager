@@ -58,7 +58,7 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
         final FileLoadTask httpLoadTask = new FileLoadTask(getFileName(), new ByteArrayReader(getByteArrayHandler()), context);
         httpLoadTask.setTaskCallback(new Task.Callback() {
             @Override
-            public void finished(boolean cancelled) {
+            public void onCompleted(boolean cancelled) {
                 if (callback != null) {
                     callback.completed(storage, httpLoadTask.getTaskError());
                 }
@@ -79,7 +79,7 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
 
         keepTask.setTaskCallback(new Task.Callback() {
             @Override
-            public void finished(boolean cancelled) {
+            public void onCompleted(boolean cancelled) {
                 if (callback != null) {
                     callback.completed(storage, keepTask.getTaskError());
                 }
@@ -112,7 +112,7 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
         final HttpLoadTask loatTask = new HttpLoadTask(feed, reader);
         loatTask.setTaskCallback(new Task.Callback() {
             @Override
-            public void finished(boolean cancelled) {
+            public void onCompleted(boolean cancelled) {
                 if (callback != null) {
                     callback.completed(feed, loatTask.getTaskError());
                 }

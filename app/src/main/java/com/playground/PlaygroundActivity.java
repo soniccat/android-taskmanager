@@ -183,7 +183,7 @@ public class PlaygroundActivity extends ActionBarActivity implements TaskManager
         final FileLoadTask fileLoadTask = new FileLoadTask(CONFIGS_FILE_NAME, new ObjectReader(null), this);
         fileLoadTask.setTaskCallback(new Task.Callback() {
             @Override
-            public void finished(boolean cancelled) {
+            public void onCompleted(boolean cancelled) {
                 List<TestTaskConfig> configs = null;
                 if (fileLoadTask.getHandledData() != null) {
                     configs = (List<TestTaskConfig>)fileLoadTask.getHandledData();

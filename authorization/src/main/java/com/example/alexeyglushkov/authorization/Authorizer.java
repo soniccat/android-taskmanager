@@ -9,6 +9,7 @@ public interface Authorizer {
     boolean isAuthorized();
     void logout();
 
+    void setServiceCommandRunner(ServiceCommandRunner runner);
     void setAuthCredentialStore(AuthCredentialStore store);
 
     interface AuthorizerCompletion {

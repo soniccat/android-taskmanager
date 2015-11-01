@@ -27,6 +27,10 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
             .addQuerystringParameter(OAuthConstants.CLIENT_ID, config.getApiKey())
             .addQuerystringParameter(OAuthConstants.CLIENT_SECRET, config.getApiSecret())
             .addQuerystringParameter(OAuthConstants.CODE, code);
+    if(config.hasScope()) {
+      builder.addQuerystringParameter(OAuthConstants.SCOPE, config.getScope());
+    }
+
   }
 
   /**
