@@ -3,11 +3,11 @@ package com.example.alexeyglushkov.authorization.OAuth;
 import android.support.annotation.NonNull;
 
 import com.example.alexeyglushkov.authorization.Api.DefaultApi20;
-import com.example.alexeyglushkov.authorization.AuthCredentialStore;
-import com.example.alexeyglushkov.authorization.AuthCredentials;
-import com.example.alexeyglushkov.authorization.ServiceCommand;
-import com.example.alexeyglushkov.authorization.ServiceCommandProvider;
-import com.example.alexeyglushkov.authorization.ServiceCommandRunner;
+import com.example.alexeyglushkov.authorization.Auth.AuthCredentialStore;
+import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
+import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
+import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProvider;
+import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
 
 import java.util.ArrayList;

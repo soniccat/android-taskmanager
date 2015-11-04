@@ -1,7 +1,7 @@
 package com.example.alexeyglushkov.authorization.OAuth;
 
 import com.example.alexeyglushkov.authorization.Api.OAuthApi;
-import com.example.alexeyglushkov.authorization.Authorizer;
+import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 
 import junit.framework.Assert;
 

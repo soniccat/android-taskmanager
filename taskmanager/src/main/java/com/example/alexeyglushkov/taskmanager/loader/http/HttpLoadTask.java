@@ -22,13 +22,17 @@ public class HttpLoadTask extends SimpleTask {
 
     public HttpLoadTask(HttpURLConnectionProvider provider, HTTPConnectionResponseReader handler) {
         super();
-        this.provider = provider;
-        this.handler = handler;
+        setProvider(provider);
+        setHandler(handler);
         setTaskId(provider.getURL().toString());
     }
 
-    public void setHandler(InputStreamReader handler) {
-        this.handler = (HTTPConnectionResponseReader)handler;
+    protected void setProvider(HttpURLConnectionProvider provider) {
+        this.provider = provider;
+    }
+
+    protected void setHandler(HTTPConnectionResponseReader handler) {
+        this.handler = handler;
     }
 
     public InputStreamReader getHandler() {
@@ -65,7 +69,7 @@ public class HttpLoadTask extends SimpleTask {
             stream = new BufferedInputStream(connection.getInputStream());
             Object data = handleStream(stream);
             if (data instanceof Error) {
-                getPrivate().setTaskError((Error) data);
+                setError((Error) data);
             } else {
                 setHandledData(data);
             }
@@ -95,6 +99,10 @@ public class HttpLoadTask extends SimpleTask {
 
     public Object getHandledData() {
         return handledData;
+    }
+
+    public void setError(Error error) {
+        getPrivate().setTaskError(error);
     }
 
     public void setHandledData(Object handledData) {

@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/android-taskmanager.iml" filepath="$PROJECT_DIR$/android-taskmanager.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/authorization/authorization.iml" filepath="$PROJECT_DIR$/authorization/authorization.iml" />
+      <module fileurl="file://$PROJECT_DIR$/authtaskmanager/authtaskmanager.iml" filepath="$PROJECT_DIR$/authtaskmanager/authtaskmanager.iml" />
       <module fileurl="file://$PROJECT_DIR$/cachemanager/cachemanager.iml" filepath="$PROJECT_DIR$/cachemanager/cachemanager.iml" />
       <module fileurl="file://$PROJECT_DIR$/scribeauthorization/scribeauthorization.iml" filepath="$PROJECT_DIR$/scribeauthorization/scribeauthorization.iml" />
       <module fileurl="file://$PROJECT_DIR$/streamlib/streamlib.iml" filepath="$PROJECT_DIR$/streamlib/streamlib.iml" />

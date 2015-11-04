@@ -1,6 +1,6 @@
 package com.example.alexeyglushkov.authorization.Api;
 
-import com.example.alexeyglushkov.authorization.Authorizer;
+import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Tools.AccessTokenExtractor;
 import com.example.alexeyglushkov.authorization.OAuth.OAuth20AuthorizerImpl;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthConfig;

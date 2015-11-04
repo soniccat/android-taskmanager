@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -34,32 +35,35 @@ public class HttpUrlConnectionBuilder
   private Long connectTimeout = null;
   private Long readTimeout = null;
 
-  /**
-   * Creates a new Http Request
-   * 
-   * @param verb Http Verb (GET, POST, etc)
-   * @param url url with optional querystring parameters.
-   */
-  public HttpUrlConnectionBuilder(String url)
+  public HttpUrlConnectionBuilder()
   {
     this.verb = Verb.GET;
-    this.url = url;
     this.querystringParams = new ParameterList();
     this.bodyParams = new ParameterList();
     this.headers = new HashMap<String, String>();
   }
 
-    public HttpUrlConnectionBuilder setVerb(Verb verb) {
+  public void setUrl(String url) {
+    this.url = url;
+  }
+
+  public HttpUrlConnectionBuilder setVerb(Verb verb) {
         this.verb = verb;
         return this;
     }
 
-    public HttpURLConnection build() throws IOException
+    public HttpURLConnection build()
     {
       String completeUrl = getCompleteUrl();
       System.setProperty("http.keepAlive", connectionKeepAlive ? "true" : "false");HttpURLConnection connection = (HttpURLConnection) new URL(completeUrl).openConnection();
       connection.setInstanceFollowRedirects(followRedirects);
-      connection.setRequestMethod(this.verb.name());
+
+      try {
+        connection.setRequestMethod(this.verb.name());
+      } catch (ProtocolException ex) {
+
+      }
+
       if (connectTimeout != null) {
         connection.setConnectTimeout(connectTimeout.intValue());
       }
@@ -70,7 +74,11 @@ public class HttpUrlConnectionBuilder
       addHeaders(connection);
       if (verb.equals(Verb.PUT) || verb.equals(Verb.POST))
       {
-        addBody(connection, getByteBodyContents());
+        try {
+          addBody(connection, getByteBodyContents());
+        } catch (IOException ex) {
+
+        }
       }
 
         return connection;

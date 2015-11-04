@@ -1,8 +1,6 @@
 package com.example.alexeyglushkov.authorization.OAuth;
 
-import com.example.alexeyglushkov.authorization.AuthCredentials;
-
-import java.util.Date;
+import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
 
 /**
  * Created by alexeyglushkov on 31.10.15.

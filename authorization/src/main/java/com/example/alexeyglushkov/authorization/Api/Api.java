@@ -1,6 +1,6 @@
 package com.example.alexeyglushkov.authorization.Api;
 
-import com.example.alexeyglushkov.authorization.Authorizer;
+import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 
 /**
  * Contains all the configuration needed to instantiate a valid {@link OAuthService}

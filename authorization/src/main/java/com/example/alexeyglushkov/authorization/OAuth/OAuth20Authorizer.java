@@ -1,7 +1,7 @@
 package com.example.alexeyglushkov.authorization.OAuth;
 
-import com.example.alexeyglushkov.authorization.Authorizer;
-import com.example.alexeyglushkov.authorization.ServiceCommand;
+import com.example.alexeyglushkov.authorization.Auth.Authorizer;
+import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 
 /**
  * The main Scribe object. 

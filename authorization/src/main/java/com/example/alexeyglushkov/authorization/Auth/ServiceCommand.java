@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.authorization;
+package com.example.alexeyglushkov.authorization.Auth;
 
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
 
@@ -11,6 +11,8 @@ import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnection
 
 // It could be a great idea to consider to implement also Task interface to be able to use it with
 // TaskManager
+
+    //TODO: implement simple subclass
 public interface ServiceCommand {
     HttpUrlConnectionBuilder getConnectionBulder();
     String getResponse();

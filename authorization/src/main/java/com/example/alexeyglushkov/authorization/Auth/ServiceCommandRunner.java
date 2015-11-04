@@ -1,8 +1,4 @@
-package com.example.alexeyglushkov.authorization;
-
-import com.example.alexeyglushkov.authorization.ServiceCommand;
-
-import java.net.URLConnection;
+package com.example.alexeyglushkov.authorization.Auth;
 
 /**
  * Created by alexeyglushkov on 01.11.15.

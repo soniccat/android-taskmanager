@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.authorization;
+package com.example.alexeyglushkov.authorization.Auth;
 
 import java.util.Date;
 
