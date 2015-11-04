@@ -39,6 +39,6 @@ public interface OAuth20Authorizer extends Authorizer
   String getAuthorizationUrl();
 
   interface OAuthCompletion {
-    void onCompleted(Error error);
+    void onCompleted(ServiceCommand command);
   }
 }

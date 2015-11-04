@@ -1,9 +1,14 @@
 package com.example.alexeyglushkov.authorization;
 
+import java.util.List;
+
 /**
  * Created by alexeyglushkov on 31.10.15.
  */
 public interface AuthCredentialStore {
-    Error putCredentials(String key, AuthCredentials credentials);
+    Error putCredentials(AuthCredentials credentials);
     AuthCredentials getCredentials(String key);
+    List<AuthCredentials> getCredentials();
+    Error removeCredentials(int id);
+    Error getError();
 }

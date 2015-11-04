@@ -2,9 +2,6 @@ package com.example.alexeyglushkov.authorization.requestbuilder;
 
 import junit.framework.Assert;
 
-import org.scribe.utils.OAuthEncoder;
-import org.scribe.utils.Preconditions;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

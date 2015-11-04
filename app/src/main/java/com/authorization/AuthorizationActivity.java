@@ -9,23 +9,21 @@ import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.example.alexeyglushkov.authorization.Authorizer;
+import com.example.alexeyglushkov.authorization.OAuth.Foursquare2Api;
+import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient;
+import com.example.alexeyglushkov.authorization.OAuth.OAuthAuthorizerBuilder;
 import com.rssclient.controllers.R;
-
-import org.scribe.builder.ServiceBuilder;
-import org.scribe.builder.api.PocketApi20;
-import org.scribe.model.Token;
-import org.scribe.oauth.OAuthService;
-import org.scribe.oauth.OAuthWebClient;
 
 /**
  * Created by alexeyglushkov on 24.10.15.
  */
 public class AuthorizationActivity extends ActionBarActivity implements OAuthWebClient {
 
-    private static final String CALLBACK_URL = "http://ya.ru";
+    private static final String CALLBACK_URL = "http://localhost:9000/";//"http://ya.ru";
 
     private WebView webView;
-    OAuthService service;
+    Authorizer authorizer;
     OAuthWebClient.Callback webCallback;
 
     @Override
@@ -95,28 +93,21 @@ public class AuthorizationActivity extends ActionBarActivity implements OAuthWeb
     }
 
     private void authorize() {
-        String apiKey = "12158-1a847cd6722e23d04c5007db";
-        this.service = new ServiceBuilder()
-                .provider(PocketApi20.class)
+        //String apiKey = "12158-1a847cd6722e23d04c5007db";
+        String apiKey = "FEGFXJUFANVVDHVSNUAMUKTTXCP1AJQD53E33XKJ44YP1S4I";
+        String apiSecret = "AYWKUL5SWPNC0CTQ202QXRUG2NLZYXMRA34ZSDW4AUYBG2RC";
+
+        this.authorizer = new OAuthAuthorizerBuilder()
                 .apiKey(apiKey)
+                .apiSecret(apiSecret)
                 .callback(CALLBACK_URL)
                 .webClient(this)
-                .build();
+                .build(new Foursquare2Api());
 
-        service.authorize(new OAuthService.OAuthServiceCompletion() {
+        authorizer.authorize(new Authorizer.AuthorizerCompletion() {
             @Override
-            public void onReceivedRequestToken(Token requestToken) {
-                Log.d("tag", requestToken.getToken());
-            }
-
-            @Override
-            public void onReceivedAccessToken(Token accessToken) {
-                Log.d("tag", accessToken.getToken());
-            }
-
-            @Override
-            public void onReceivedError(Error error) {
-                Log.d("tag", "error" + error.getMessage());
+            public void onFinished(Error error) {
+                Log.d("aa", "" +  authorizer.getCredentials().isValid());
             }
         });
     }

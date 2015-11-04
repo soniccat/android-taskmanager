@@ -8,12 +8,24 @@ import java.util.Date;
  * Created by alexeyglushkov on 31.10.15.
  */
 public class OAuthCredentials implements AuthCredentials {
+    private int id;
     private String accessToken;
     private String requestToken;
     private String refreshToken;
     private long expireTime;
 
     // AuthCredentials implementation
+
+
+    @Override
+    public int getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(int id) {
+        this.id = id;
+    }
 
     @Override
     public boolean isValid() {

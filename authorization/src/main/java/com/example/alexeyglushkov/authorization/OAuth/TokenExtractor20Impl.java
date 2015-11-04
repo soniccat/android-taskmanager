@@ -1,5 +1,10 @@
 package com.example.alexeyglushkov.authorization.OAuth;
 
+import junit.framework.Assert;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,18 +30,24 @@ public class TokenExtractor20Impl implements AccessTokenExtractor, RequestTokenE
    */
   public Token extract(String response)
   {
-    Preconditions.checkEmptyString(response, "Response body is incorrect. Can't extract a token from an empty string");
+    Assert.assertNotNull(response, "Response body is incorrect. Can't extract a token from an empty string");
 
     Pattern pattern = customPattern == null ? TOKEN_REGEX : customPattern;
     Matcher matcher = pattern.matcher(response);
     if (matcher.find())
     {
-      String token = OAuthEncoder.decode(matcher.group(1));
+      //String token = OAuthEncoder.decode(matcher.group(1));
+      String token = null;
+      try {
+        token = URLDecoder.decode(matcher.group(1), "UTF-8");
+      } catch(UnsupportedEncodingException ex) {
+
+      }
       return new Token(token, EMPTY_SECRET, response);
     } 
     else
     {
-      throw new OAuthException("Response body is incorrect. Can't extract a token from this: '" + response + "'", null);
+      return null;
     }
   }
 }

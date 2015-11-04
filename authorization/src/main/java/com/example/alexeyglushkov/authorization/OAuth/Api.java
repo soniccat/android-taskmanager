@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.authorization.OAuth;
 
+import com.example.alexeyglushkov.authorization.Authorizer;
+
 /**
  * Contains all the configuration needed to instantiate a valid {@link OAuthService}
  * 
@@ -7,16 +9,6 @@ package com.example.alexeyglushkov.authorization.OAuth;
  *
  */
 public interface Api
-{  
-  /**
-   * Creates an {@link OAuthService}
-   * 
-   * @param apiKey your application api key
-   * @param apiSecret your application api secret
-   * @param callback the callback url (or 'oob' for out of band OAuth)
-   * @param scope the OAuth scope
-   * 
-   * @return fully configured {@link OAuthService}
-   */
-  OAuthAuthorizer createService(OAuthConfig config);
+{
+  Authorizer createAuthorizer();
 }

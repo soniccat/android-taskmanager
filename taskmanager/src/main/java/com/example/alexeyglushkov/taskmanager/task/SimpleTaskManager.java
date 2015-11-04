@@ -589,7 +589,6 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         task.getPrivate().setTaskStatus(status);
         task.getPrivate().clearAllListeners();
 
-
         Tools.runOnHandlerThread(callbackHandler, new Runnable() {
             @Override
             public void run() {

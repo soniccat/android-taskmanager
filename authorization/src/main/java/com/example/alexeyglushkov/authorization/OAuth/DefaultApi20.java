@@ -1,5 +1,6 @@
 package com.example.alexeyglushkov.authorization.OAuth;
 
+import com.example.alexeyglushkov.authorization.Authorizer;
 import com.example.alexeyglushkov.authorization.requestbuilder.Verb;
 
 /**
@@ -18,8 +19,20 @@ import com.example.alexeyglushkov.authorization.requestbuilder.Verb;
  * @author Diego Silveira
  *
  */
-public abstract class DefaultApi20 implements Api
+public abstract class DefaultApi20 implements OAuthApi
 {
+  private OAuthConfig config;
+
+  @Override
+  public void setOAuthConfig(OAuthConfig config) {
+    this.config = config;
+  }
+
+  @Override
+  public OAuthConfig getOAuthConfig() {
+    return config;
+  }
+
   /**
    * Returns the access token extractor.
    * 
@@ -59,7 +72,7 @@ public abstract class DefaultApi20 implements Api
   /**
    * {@inheritDoc}
    */
-  public OAuthAuthorizer createService(OAuthConfig config)
+  public Authorizer createAuthorizer()
   {
     return new OAuth20AuthorizerImpl(this, config);
   }

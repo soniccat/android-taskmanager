@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.authorization.requestbuilder;
 
+import junit.framework.Assert;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -29,7 +31,7 @@ public class OAuthEncoder
 
   public static String encode(String plain)
   {
-    Preconditions.checkNotNull(plain, "Cannot encode null object");
+    Assert.assertNotNull(plain, "Cannot encode null object");
     String encoded = "";
     try
     {
@@ -53,7 +55,7 @@ public class OAuthEncoder
 
   public static String decode(String encoded)
   {
-    Preconditions.checkNotNull(encoded, "Cannot decode null object");
+    Assert.assertNotNull(encoded, "Cannot decode null object");
     try
     {
       return URLDecoder.decode(encoded, CHARSET);

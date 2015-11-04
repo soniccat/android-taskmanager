@@ -13,11 +13,13 @@ import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnection
 // TaskManager
 public interface ServiceCommand {
     HttpUrlConnectionBuilder getConnectionBulder();
+    String getResponse();
 
     Error getCommandError();
+    boolean isCancelled();
     void setServiceCommandCallback(Callback callback);
 
     interface Callback {
-        void onCompleted(boolean isCancelled);
+        void onCompleted();
     }
 }

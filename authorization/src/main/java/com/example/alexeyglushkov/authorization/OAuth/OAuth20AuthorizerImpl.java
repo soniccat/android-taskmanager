@@ -1,6 +1,18 @@
 package com.example.alexeyglushkov.authorization.OAuth;
 
+import android.support.annotation.NonNull;
+
+import com.example.alexeyglushkov.authorization.AuthCredentialStore;
+import com.example.alexeyglushkov.authorization.AuthCredentials;
+import com.example.alexeyglushkov.authorization.Authorizer;
+import com.example.alexeyglushkov.authorization.ServiceCommand;
+import com.example.alexeyglushkov.authorization.ServiceCommandProvider;
+import com.example.alexeyglushkov.authorization.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Semaphore;
 
 public class OAuth20AuthorizerImpl implements OAuth20Authorizer
 {
@@ -8,6 +20,48 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
 
   private final DefaultApi20 api;
   private final OAuthConfig config;
+  private ServiceCommandRunner commandRunner;
+  private ServiceCommandProvider commandProvider;
+
+  private AuthCredentials authCredentials;
+  private AuthCredentialStore credentialStore;
+
+  @Override
+  public void setServiceCommandRunner(ServiceCommandRunner runner) {
+    this.commandRunner = runner;
+  }
+
+  @Override
+  public void setServiceCommandProvider(ServiceCommandProvider provider) {
+    this.commandProvider = provider;
+  }
+
+  @Override
+  public void setAuthCredentialStore(AuthCredentialStore store) {
+    credentialStore = store;
+  }
+
+  @Override
+  public AuthCredentials getCredentials() {
+    return authCredentials;
+  }
+
+  @Override
+  public boolean isAuthorized() {
+    OAuthCredentials oAuthCredentials = getOAuthCredentials();
+    return oAuthCredentials != null && oAuthCredentials.getAccessToken() != null && !oAuthCredentials.isExpired();
+  }
+
+  @Override
+  public void logout() {
+    if (getOAuthCredentials() != null) {
+      credentialStore.removeCredentials(getOAuthCredentials().getId());
+    }
+  }
+
+  private OAuthCredentials getOAuthCredentials() {
+    return (OAuthCredentials)getCredentials();
+  }
 
   /**
    * Default constructor
@@ -22,7 +76,7 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
   }
 
   @Override
-  public void retrieveAccessToken(String code, OAuthCompletion completion) {
+  public void retrieveAccessToken(String code, final OAuthCompletion completion) {
     HttpUrlConnectionBuilder builder = new HttpUrlConnectionBuilder(api.getAccessTokenEndpoint())
             .addQuerystringParameter(OAuthConstants.CLIENT_ID, config.getApiKey())
             .addQuerystringParameter(OAuthConstants.CLIENT_SECRET, config.getApiSecret())
@@ -31,21 +85,15 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
       builder.addQuerystringParameter(OAuthConstants.SCOPE, config.getScope());
     }
 
-  }
+    final ServiceCommand command = commandProvider.getServiceCommand(builder);
+    command.setServiceCommandCallback(new ServiceCommand.Callback() {
+      @Override
+      public void onCompleted() {
+        completion.onCompleted(command);
+      }
+    });
 
-  /**
-   * {@inheritDoc}
-   */
-  public Token getAccessToken(Token requestToken, Verifier verifier)
-  {
-    OAuthRequest request = new OAuthRequest(api.getAccessTokenVerb(), api.getAccessTokenEndpoint());
-    request.addQuerystringParameter(OAuthConstants.CLIENT_ID, config.getApiKey());
-    request.addQuerystringParameter(OAuthConstants.CLIENT_SECRET, config.getApiSecret());
-    request.addQuerystringParameter(OAuthConstants.CODE, verifier.getValue());
-    request.addQuerystringParameter(OAuthConstants.REDIRECT_URI, config.getCallback());
-    if(config.hasScope()) request.addQuerystringParameter(OAuthConstants.SCOPE, config.getScope());
-    Response response = request.send();
-    return api.getAccessTokenExtractor().extract(response.getBody());
+    commandRunner.run(command);
   }
 
   /**
@@ -64,24 +112,78 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
     return VERSION;
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  public void signRequest(Token accessToken, OAuthRequest request)
-  {
-    request.addQuerystringParameter(OAuthConstants.ACCESS_TOKEN, accessToken.getToken());
+  @Override
+  public void signCommand(ServiceCommand command) {
+    command.getConnectionBulder().addQuerystringParameter(OAuthConstants.ACCESS_TOKEN, getOAuthCredentials().getAccessToken());
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  public String getAuthorizationUrl(Token requestToken)
-  {
+  @Override
+  public String getAuthorizationUrl() {
     return api.getAuthorizationUrl(config);
   }
 
   @Override
-  public void authorize(OAuthServiceCompletion completion) {
+  public void authorize(final AuthorizerCompletion completion) {
+    Error webError = webAuthorization();
 
+    if (webError != null) {
+      completion.onFinished(webError);
+
+    } else {
+      retrieveAccessToken("", new OAuthCompletion() {
+        @Override
+        public void onCompleted(ServiceCommand command) {
+          Token accessToken = api.getAccessTokenExtractor().extract(command.getResponse());
+
+          if (accessToken != null) {
+            storeAccessToken(accessToken);
+            completion.onFinished(null);
+          } else {
+            completion.onFinished(new Error("OAuthPocketServiceImpl authorize: Can't receive requestToken"));
+          }
+        }
+      });
+    }
+  }
+
+  private void storeAccessToken(Token accessToken) {
+    getOAuthCredentials().setAccessToken(accessToken.getToken());
+    credentialStore.putCredentials(getOAuthCredentials());
+  }
+
+  @NonNull
+  private Error webAuthorization() {
+    String url = getAuthorizationUrl();
+
+    final Semaphore waitSemaphore = new Semaphore(0);
+    final List<Error> errorList = new ArrayList<>();
+
+    OAuthWebClient.Callback callback = new OAuthWebClient.Callback() {
+      @Override
+      public void onReceivedError(Error error) {
+        errorList.add(error);
+        waitSemaphore.release();
+      }
+
+      @Override
+      public void onResult(String result) {
+        waitSemaphore.release();
+      }
+    };
+
+    config.getWebClient().loadUrl(url, callback);
+
+    Error resultError = null;
+    try {
+      waitSemaphore.acquire();
+    } catch (InterruptedException e) {
+      resultError = new Error("OAuthPocketServiceImpl authorize InterruptedException: " + e.getMessage());
+    }
+
+    if (resultError == null && errorList.size() > 0) {
+      resultError = errorList.get(0);
+    }
+
+    return resultError;
   }
 }
