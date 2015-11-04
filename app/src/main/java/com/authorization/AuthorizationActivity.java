@@ -10,7 +10,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.example.alexeyglushkov.authorization.Authorizer;
-import com.example.alexeyglushkov.authorization.OAuth.Foursquare2Api;
+import com.example.alexeyglushkov.authorization.Api.Foursquare2Api;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthAuthorizerBuilder;
 import com.rssclient.controllers.R;

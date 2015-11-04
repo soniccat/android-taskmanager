@@ -1,4 +1,8 @@
-package com.example.alexeyglushkov.authorization.OAuth;
+package com.example.alexeyglushkov.authorization.Api;
+
+import com.example.alexeyglushkov.authorization.Tools.AccessTokenExtractor;
+import com.example.alexeyglushkov.authorization.Tools.JsonTokenExtractor;
+import com.example.alexeyglushkov.authorization.OAuth.OAuthConfig;
 
 import junit.framework.Assert;
 

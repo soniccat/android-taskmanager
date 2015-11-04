@@ -1,6 +1,10 @@
-package com.example.alexeyglushkov.authorization.OAuth;
+package com.example.alexeyglushkov.authorization.Api;
 
 import com.example.alexeyglushkov.authorization.Authorizer;
+import com.example.alexeyglushkov.authorization.Tools.AccessTokenExtractor;
+import com.example.alexeyglushkov.authorization.OAuth.OAuth20AuthorizerImpl;
+import com.example.alexeyglushkov.authorization.OAuth.OAuthConfig;
+import com.example.alexeyglushkov.authorization.OAuth.TokenExtractor20Impl;
 import com.example.alexeyglushkov.authorization.requestbuilder.Verb;
 
 /**

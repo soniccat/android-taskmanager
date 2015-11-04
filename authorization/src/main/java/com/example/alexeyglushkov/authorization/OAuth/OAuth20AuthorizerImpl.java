@@ -2,9 +2,9 @@ package com.example.alexeyglushkov.authorization.OAuth;
 
 import android.support.annotation.NonNull;
 
+import com.example.alexeyglushkov.authorization.Api.DefaultApi20;
 import com.example.alexeyglushkov.authorization.AuthCredentialStore;
 import com.example.alexeyglushkov.authorization.AuthCredentials;
-import com.example.alexeyglushkov.authorization.Authorizer;
 import com.example.alexeyglushkov.authorization.ServiceCommand;
 import com.example.alexeyglushkov.authorization.ServiceCommandProvider;
 import com.example.alexeyglushkov.authorization.ServiceCommandRunner;

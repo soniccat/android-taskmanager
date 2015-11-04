@@ -174,7 +174,6 @@ public class HttpUrlConnectionBuilder
    * Get a {@link ParameterList} with the query string parameters.
    * 
    * @return a {@link ParameterList} containing the query string parameters.
-   * @throws OAuthException if the request URL is not valid.
    */
   public ParameterList getQueryStringParams()
   {
@@ -188,7 +187,7 @@ public class HttpUrlConnectionBuilder
     }
     catch (MalformedURLException mue)
     {
-      throw new OAuthException("Malformed URL", mue);
+      return null;
     }
   }
 
@@ -234,7 +233,6 @@ public class HttpUrlConnectionBuilder
    * Returns the body of the request
    * 
    * @return form encoded string
-   * @throws OAuthException if the charset chosen is not supported
    */
   public String getBodyContents()
   {
@@ -244,7 +242,7 @@ public class HttpUrlConnectionBuilder
     }
     catch(UnsupportedEncodingException uee)
     {
-      throw new OAuthException("Unsupported Charset: "+charset, uee);
+      return null;
     }
   }
 
@@ -258,7 +256,7 @@ public class HttpUrlConnectionBuilder
     }
     catch(UnsupportedEncodingException uee)
     {
-      throw new OAuthException("Unsupported Charset: "+getCharset(), uee);
+      return null;
     }
   }
 

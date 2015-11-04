@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.authorization.OAuth;
+package com.example.alexeyglushkov.authorization.Api;
 
 import com.example.alexeyglushkov.authorization.Authorizer;
 

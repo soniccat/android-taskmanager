@@ -1,4 +1,6 @@
-package com.example.alexeyglushkov.authorization.OAuth;
+package com.example.alexeyglushkov.authorization.Api;
+
+import com.example.alexeyglushkov.authorization.OAuth.OAuthConfig;
 
 /**
  * Created by alexeyglushkov on 04.11.15.

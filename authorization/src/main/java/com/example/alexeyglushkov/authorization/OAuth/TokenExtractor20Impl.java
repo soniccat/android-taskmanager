@@ -1,10 +1,12 @@
 package com.example.alexeyglushkov.authorization.OAuth;
 
+import com.example.alexeyglushkov.authorization.Tools.AccessTokenExtractor;
+import com.example.alexeyglushkov.authorization.Tools.RequestTokenExtractor;
+
 import junit.framework.Assert;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

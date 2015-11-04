@@ -39,7 +39,7 @@ public class OAuthEncoder
     }
     catch (UnsupportedEncodingException uee)
     {
-      throw new OAuthException("Charset not found while encoding string: " + CHARSET, uee);
+      return null;
     }
     for(Map.Entry<String, String> rule : ENCODING_RULES.entrySet())
     {
@@ -62,7 +62,7 @@ public class OAuthEncoder
     }
     catch(UnsupportedEncodingException uee)
     {
-      throw new OAuthException("Charset not found while decoding string: " + CHARSET, uee);
+      return null;
     }
   }
 }
