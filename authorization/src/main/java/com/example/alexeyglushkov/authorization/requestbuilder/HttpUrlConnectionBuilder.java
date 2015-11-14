@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.authorization.requestbuilder;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -18,6 +20,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class HttpUrlConnectionBuilder
 {
+  private static final String TAG = "HttpUrlConnectionBuilder";
   private static final String CONTENT_LENGTH = "Content-Length";
   private static final String CONTENT_TYPE = "Content-Type";
   public static final String DEFAULT_CONTENT_TYPE = "application/x-www-form-urlencoded";
@@ -43,8 +46,9 @@ public class HttpUrlConnectionBuilder
     this.headers = new HashMap<String, String>();
   }
 
-  public void setUrl(String url) {
+  public HttpUrlConnectionBuilder setUrl(String url) {
     this.url = url;
+    return this;
   }
 
   public HttpUrlConnectionBuilder setVerb(Verb verb) {
@@ -55,30 +59,29 @@ public class HttpUrlConnectionBuilder
     public HttpURLConnection build()
     {
       String completeUrl = getCompleteUrl();
-      System.setProperty("http.keepAlive", connectionKeepAlive ? "true" : "false");HttpURLConnection connection = (HttpURLConnection) new URL(completeUrl).openConnection();
-      connection.setInstanceFollowRedirects(followRedirects);
+      System.setProperty("http.keepAlive", connectionKeepAlive ? "true" : "false");
+      HttpURLConnection connection = null;
 
       try {
+        connection = (HttpURLConnection) new URL(completeUrl).openConnection();
+        connection.setInstanceFollowRedirects(followRedirects);
+
         connection.setRequestMethod(this.verb.name());
-      } catch (ProtocolException ex) {
 
-      }
-
-      if (connectTimeout != null) {
-        connection.setConnectTimeout(connectTimeout.intValue());
-      }
-
-      if (readTimeout != null) {
-        connection.setReadTimeout(readTimeout.intValue());
-      }
-      addHeaders(connection);
-      if (verb.equals(Verb.PUT) || verb.equals(Verb.POST))
-      {
-        try {
-          addBody(connection, getByteBodyContents());
-        } catch (IOException ex) {
-
+        if (connectTimeout != null) {
+          connection.setConnectTimeout(connectTimeout.intValue());
         }
+
+        if (readTimeout != null) {
+          connection.setReadTimeout(readTimeout.intValue());
+        }
+        addHeaders(connection);
+        if (verb.equals(Verb.PUT) || verb.equals(Verb.POST)) {
+            addBody(connection, getByteBodyContents());
+        }
+
+      } catch (Exception ex) {
+        Log.d(TAG, "HttpUrlConnectionBuilder build exception: " + ex.getMessage());
       }
 
         return connection;
@@ -107,10 +110,10 @@ public class HttpUrlConnectionBuilder
     conn.setRequestProperty(CONTENT_LENGTH, String.valueOf(content.length));
 
     // Set default content type if none is set.
-    if (conn.getRequestProperty(CONTENT_TYPE) == null)
-    {
+    if (conn.getRequestProperty(CONTENT_TYPE) == null) {
       conn.setRequestProperty(CONTENT_TYPE, DEFAULT_CONTENT_TYPE);
     }
+
     conn.setDoOutput(true);
     conn.getOutputStream().write(content);
   }
@@ -214,9 +217,20 @@ public class HttpUrlConnectionBuilder
    * 
    * @return the original URL of the HTTP Request
    */
-  public String getUrl()
+  public String getStringUrl()
   {
     return url;
+  }
+
+  public URL getUrl() {
+    try
+    {
+      return new URL(url);
+    }
+    catch (MalformedURLException mue)
+    {
+      return null;
+    }
   }
 
   /**
@@ -364,6 +378,6 @@ public class HttpUrlConnectionBuilder
   @Override
   public String toString()
   {
-    return String.format("@Request(%s %s)", getVerb(), getUrl());
+    return String.format("@Request(%s %s)", getVerb(), getStringUrl());
   }
 }

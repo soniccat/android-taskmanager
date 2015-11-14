@@ -9,6 +9,6 @@ public interface AuthCredentialStore {
     Error putCredentials(AuthCredentials credentials);
     AuthCredentials getCredentials(String key);
     List<AuthCredentials> getCredentials();
-    Error removeCredentials(int id);
+    Error removeCredentials(String id);
     Error getError();
 }

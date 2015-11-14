@@ -7,7 +7,6 @@ import com.example.alexeyglushkov.streamlib.readersandwriters.StringReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionResponseReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpLoadTask;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpURLConnectionProvider;
-import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 
 import java.io.InputStream;
@@ -31,6 +30,7 @@ public class ServiceTask extends HttpLoadTask implements ServiceCommand {
 
     public void setConnectionBuilder(HttpUrlConnectionBuilder connectionBuilder) {
         this.connectionBuilder = connectionBuilder;
+        setTaskId(connectionBuilder.getStringUrl());
     }
 
     protected HttpURLConnectionProvider getProvider() {
@@ -45,7 +45,7 @@ public class ServiceTask extends HttpLoadTask implements ServiceCommand {
                 URL url = null;
                 try {
                     //TODO: return URL from builder
-                    url = new URL(connectionBuilder.getUrl());
+                    url = new URL(connectionBuilder.getStringUrl());
                 } catch (MalformedURLException ex) {
                 }
 

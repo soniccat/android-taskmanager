@@ -22,8 +22,11 @@ public class StringReader implements InputStreamReader {
     @Override
     public Object readStream(InputStream stream) {
         try {
-            String object = this.readStreamToString(stream);
-            return stringHandler.handleString(object);
+            Object object = this.readStreamToString(stream);
+            if (stringHandler != null) {
+                object = stringHandler.handleString((String)object);
+            }
+            return object;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -32,7 +35,7 @@ public class StringReader implements InputStreamReader {
     }
 
     public String readStreamToString(InputStream stream) throws Exception {
-        StringBuffer builder = null;
+        StringBuilder builder = new StringBuilder();
         BufferedReader buffreader = null;
         try {
             java.io.InputStreamReader isr = new java.io.InputStreamReader(stream);

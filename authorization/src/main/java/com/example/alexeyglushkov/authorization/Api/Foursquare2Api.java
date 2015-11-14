@@ -1,8 +1,8 @@
 package com.example.alexeyglushkov.authorization.Api;
 
-import com.example.alexeyglushkov.authorization.Tools.AccessTokenExtractor;
 import com.example.alexeyglushkov.authorization.Tools.JsonTokenExtractor;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthConfig;
+import com.example.alexeyglushkov.authorization.Tools.TokenExtractor;
 
 import junit.framework.Assert;
 
@@ -34,7 +34,7 @@ public class Foursquare2Api extends DefaultApi20
   }
 
   @Override
-  public AccessTokenExtractor getAccessTokenExtractor()
+  public TokenExtractor getAccessTokenExtractor()
   {
     return new JsonTokenExtractor();
   }

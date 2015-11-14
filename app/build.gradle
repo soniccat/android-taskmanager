@@ -36,5 +36,6 @@ dependencies {
     compile 'com.google.guava:guava:18.0'
     compile project(':taskmanager')
     compile project(':authorization')
-    compile project(':authorization')
+    compile project(':authtaskmanager')
+    compile project(':authcachemanager')
 }

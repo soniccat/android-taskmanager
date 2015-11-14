@@ -2,6 +2,7 @@ package com.authorization;
 
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
+import android.content.Context;
 import android.content.Loader;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -9,11 +10,17 @@ import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.example.alexeyglushkov.authcachemanager.AuthCacheStore;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Api.Foursquare2Api;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthAuthorizerBuilder;
+import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider;
+import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
+import com.main.MainApplication;
 import com.rssclient.controllers.R;
+
+import java.io.File;
 
 /**
  * Created by alexeyglushkov on 24.10.15.
@@ -103,12 +110,21 @@ public class AuthorizationActivity extends ActionBarActivity implements OAuthWeb
                 .callback(CALLBACK_URL)
                 .webClient(this)
                 .build(new Foursquare2Api());
+        this.authorizer.setServiceCommandProvider(new ServiceTaskProvider());
+        this.authorizer.setServiceCommandRunner(new ServiceTaskRunner(getMainApplication().getTaskManager(), "authorizerId"));
+
+        File authDir = getDir("AuthFolder", Context.MODE_PRIVATE);
+        this.authorizer.setAuthCredentialStore(new AuthCacheStore(authDir));
 
         authorizer.authorize(new Authorizer.AuthorizerCompletion() {
             @Override
             public void onFinished(Error error) {
-                Log.d("aa", "" +  authorizer.getCredentials().isValid());
+                Log.d("aa", "" + authorizer.getCredentials().isValid());
             }
         });
+    }
+
+    private MainApplication getMainApplication() {
+        return (MainApplication)getApplication();
     }
 }

@@ -6,7 +6,7 @@ import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
  * Created by alexeyglushkov on 31.10.15.
  */
 public class OAuthCredentials implements AuthCredentials {
-    private int id;
+    private String id;
     private String accessToken;
     private String requestToken;
     private String refreshToken;
@@ -14,14 +14,13 @@ public class OAuthCredentials implements AuthCredentials {
 
     // AuthCredentials implementation
 
-
     @Override
-    public int getId() {
+    public String getId() {
         return id;
     }
 
     @Override
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

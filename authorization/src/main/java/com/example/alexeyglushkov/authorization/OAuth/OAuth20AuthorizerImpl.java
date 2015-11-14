@@ -1,5 +1,6 @@
 package com.example.alexeyglushkov.authorization.OAuth;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import com.example.alexeyglushkov.authorization.Api.DefaultApi20;
@@ -77,10 +78,12 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
 
   @Override
   public void retrieveAccessToken(String code, final OAuthCompletion completion) {
-    HttpUrlConnectionBuilder builder = new HttpUrlConnectionBuilder(api.getAccessTokenEndpoint())
+    HttpUrlConnectionBuilder builder = new HttpUrlConnectionBuilder()
+            .setUrl(api.getAccessTokenEndpoint())
             .addQuerystringParameter(OAuthConstants.CLIENT_ID, config.getApiKey())
             .addQuerystringParameter(OAuthConstants.CLIENT_SECRET, config.getApiSecret())
-            .addQuerystringParameter(OAuthConstants.CODE, code);
+            .addQuerystringParameter(OAuthConstants.CODE, code)
+            .addQuerystringParameter(OAuthConstants.REDIRECT_URI, config.getCallback());
     if(config.hasScope()) {
       builder.addQuerystringParameter(OAuthConstants.SCOPE, config.getScope());
     }
@@ -124,13 +127,17 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
 
   @Override
   public void authorize(final AuthorizerCompletion completion) {
-    Error webError = webAuthorization();
+    String code = webAuthorization();
+    authCredentials = new OAuthCredentials();
 
-    if (webError != null) {
-      completion.onFinished(webError);
+    String id = Integer.toString(credentialStore.getCredentials().size());
+    authCredentials.setId(id);
+
+    if (code == null) {
+      completion.onFinished(new Error("OAuthPocketServiceImpl authorize: Can't receive code"));
 
     } else {
-      retrieveAccessToken("", new OAuthCompletion() {
+      retrieveAccessToken(code, new OAuthCompletion() {
         @Override
         public void onCompleted(ServiceCommand command) {
           Token accessToken = api.getAccessTokenExtractor().extract(command.getResponse());
@@ -152,11 +159,12 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
   }
 
   @NonNull
-  private Error webAuthorization() {
+  private String webAuthorization() {
     String url = getAuthorizationUrl();
 
     final Semaphore waitSemaphore = new Semaphore(0);
     final List<Error> errorList = new ArrayList<>();
+    final List<String> codeList = new ArrayList<>();
 
     OAuthWebClient.Callback callback = new OAuthWebClient.Callback() {
       @Override
@@ -166,24 +174,31 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
       }
 
       @Override
-      public void onResult(String result) {
+      public void onResult(String resultUrl) {
+        String code = getCode(resultUrl);
+        codeList.add(code);
+
         waitSemaphore.release();
       }
     };
 
     config.getWebClient().loadUrl(url, callback);
 
-    Error resultError = null;
+    String resultCode = null;
     try {
       waitSemaphore.acquire();
     } catch (InterruptedException e) {
-      resultError = new Error("OAuthPocketServiceImpl authorize InterruptedException: " + e.getMessage());
     }
 
-    if (resultError == null && errorList.size() > 0) {
-      resultError = errorList.get(0);
+    if (codeList != null && codeList.size() > 0) {
+      resultCode = codeList.get(0);
     }
 
-    return resultError;
+    return resultCode;
+  }
+
+  private String getCode(String resultUrl) {
+    Uri uri = Uri.parse(resultUrl);
+    return uri.getQueryParameter("code");
   }
 }

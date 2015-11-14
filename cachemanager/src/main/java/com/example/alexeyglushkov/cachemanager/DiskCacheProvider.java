@@ -128,7 +128,6 @@ public class DiskCacheProvider implements CacheProvider {
     @Override
     public Object getValue(String key) {
         DiskCacheEntry entry = (DiskCacheEntry)getEntry(key);
-        entry.load();
         return entry.getObject();
     }
 

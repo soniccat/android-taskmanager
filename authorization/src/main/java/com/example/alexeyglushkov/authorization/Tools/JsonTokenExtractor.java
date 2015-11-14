@@ -4,22 +4,25 @@ import com.example.alexeyglushkov.authorization.OAuth.Token;
 
 import junit.framework.Assert;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class JsonTokenExtractor implements AccessTokenExtractor
+public class JsonTokenExtractor implements TokenExtractor
 {
-  private Pattern accessTokenPattern = Pattern.compile("\"access_token\":\\s*\"(\\S*?)\"");
-
   public Token extract(String response)
   {
-    Assert.assertNotNull(response);
-    Matcher matcher = accessTokenPattern.matcher(response);
-    if(matcher.find()) {
-      return new Token(matcher.group(1), "", response);
-    } else {
-      return null;
+    Token result = null;
+    try {
+      JSONObject jsonObject = new JSONObject(response);
+      result = new Token(jsonObject.getString("access_token"), "", response);
+    } catch (JSONException ex) {
+
     }
+
+    return result;
   }
 
 }

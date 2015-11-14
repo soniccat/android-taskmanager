@@ -1,10 +1,10 @@
 package com.example.alexeyglushkov.authorization.Api;
 
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
-import com.example.alexeyglushkov.authorization.Tools.AccessTokenExtractor;
 import com.example.alexeyglushkov.authorization.OAuth.OAuth20AuthorizerImpl;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthConfig;
 import com.example.alexeyglushkov.authorization.OAuth.TokenExtractor20Impl;
+import com.example.alexeyglushkov.authorization.Tools.TokenExtractor;
 import com.example.alexeyglushkov.authorization.requestbuilder.Verb;
 
 /**
@@ -42,7 +42,7 @@ public abstract class DefaultApi20 implements OAuthApi
    * 
    * @return access token extractor
    */
-  public AccessTokenExtractor getAccessTokenExtractor()
+  public TokenExtractor getAccessTokenExtractor()
   {
     return new TokenExtractor20Impl();
   }

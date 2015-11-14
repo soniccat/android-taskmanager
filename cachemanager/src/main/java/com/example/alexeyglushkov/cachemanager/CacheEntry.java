@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created by alexeyglushkov on 04.10.15.
  */
 public interface CacheEntry {
-    Error load();
+    Object getObject();
     Error delete();
     Serializable getMetadata();
 }

@@ -7,8 +7,8 @@ import java.util.Date;
  */
 public interface AuthCredentials {
     // to support multiple credentials for an authorizer
-    int getId();
-    void setId(int id);
+    String getId();
+    void setId(String id);
 
     boolean isValid();
     long getExpireTime();

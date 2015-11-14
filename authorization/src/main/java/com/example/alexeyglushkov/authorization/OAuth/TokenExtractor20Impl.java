@@ -1,7 +1,6 @@
 package com.example.alexeyglushkov.authorization.OAuth;
 
-import com.example.alexeyglushkov.authorization.Tools.AccessTokenExtractor;
-import com.example.alexeyglushkov.authorization.Tools.RequestTokenExtractor;
+import com.example.alexeyglushkov.authorization.Tools.TokenExtractor;
 
 import junit.framework.Assert;
 
@@ -13,7 +12,7 @@ import java.util.regex.Pattern;
 /**
  * Default implementation of {@link AccessTokenExtractor}. Conforms to OAuth 2.0
  */
-public class TokenExtractor20Impl implements AccessTokenExtractor, RequestTokenExtractor
+public class TokenExtractor20Impl implements TokenExtractor
 {
   private static final Pattern TOKEN_REGEX = Pattern.compile("access_token=([^&]+)");
   private static final String EMPTY_SECRET = "";

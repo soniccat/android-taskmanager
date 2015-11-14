@@ -9,6 +9,6 @@ public interface OAuthWebClient {
 
     interface Callback {
         void onReceivedError(Error error);
-        void onResult(String result);
+        void onResult(String resultUrl);
     }
 }

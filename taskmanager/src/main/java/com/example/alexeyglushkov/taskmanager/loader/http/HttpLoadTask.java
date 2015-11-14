@@ -24,11 +24,14 @@ public class HttpLoadTask extends SimpleTask {
         super();
         setProvider(provider);
         setHandler(handler);
-        setTaskId(provider.getURL().toString());
     }
 
     protected void setProvider(HttpURLConnectionProvider provider) {
         this.provider = provider;
+
+        if (this.provider != null && provider.getURL() != null) {
+            setTaskId(provider.getURL().toString());
+        }
     }
 
     protected void setHandler(HTTPConnectionResponseReader handler) {

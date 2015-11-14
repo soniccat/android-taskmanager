@@ -28,16 +28,11 @@ public class DiskCacheEntry implements CacheEntry {
     }
 
     public Object getObject() {
-        return object;
-    }
-
-    public Error load() {
-        Error error = null;
         if (object == null) {
-            error = loadObject();
+            loadObject();
         }
 
-        return error;
+        return object;
     }
 
     private Error loadObject() {
