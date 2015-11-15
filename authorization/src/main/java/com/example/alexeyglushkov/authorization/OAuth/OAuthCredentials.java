@@ -26,7 +26,7 @@ public class OAuthCredentials implements AuthCredentials {
 
     @Override
     public boolean isValid() {
-        return accessToken != null;
+        return accessToken != null && !isExpired();
     }
 
     @Override

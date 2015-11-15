@@ -11,8 +11,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.example.alexeyglushkov.authcachemanager.AuthCacheStore;
+import com.example.alexeyglushkov.authorization.Auth.Account;
+import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Api.Foursquare2Api;
+import com.example.alexeyglushkov.authorization.Auth.SimpleAccount;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthAuthorizerBuilder;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider;
@@ -113,13 +116,18 @@ public class AuthorizationActivity extends ActionBarActivity implements OAuthWeb
         this.authorizer.setServiceCommandProvider(new ServiceTaskProvider());
         this.authorizer.setServiceCommandRunner(new ServiceTaskRunner(getMainApplication().getTaskManager(), "authorizerId"));
 
-        File authDir = getDir("AuthFolder", Context.MODE_PRIVATE);
-        this.authorizer.setAuthCredentialStore(new AuthCacheStore(authDir));
+        final Account account = new SimpleAccount(1);
+        account.setAuthorizer(authorizer);
 
-        authorizer.authorize(new Authorizer.AuthorizerCompletion() {
+        File authDir = getDir("AuthFolder", Context.MODE_PRIVATE);
+        AuthCacheStore store = new AuthCacheStore(authDir);
+
+        account.setAuthCredentialStore(store);
+
+        account.authorize(new Authorizer.AuthorizerCompletion() {
             @Override
-            public void onFinished(Error error) {
-                Log.d("aa", "" + authorizer.getCredentials().isValid());
+            public void onFinished(AuthCredentials creds, Error error) {
+                Log.d("aa", "" + account.getCredentials().isValid());
             }
         });
     }

@@ -20,14 +20,6 @@ public interface OAuth20Authorizer extends Authorizer
    * @return access token
    */
   void retrieveAccessToken(String code, OAuthCompletion completion);
-
-  /**
-   * Signs am OAuth request
-   * 
-   * @param accessToken access token (obtained previously)
-   * @param request request to sign
-   */
-  void signCommand(ServiceCommand command);
   
   /**
    * Returns the URL where you should redirect your users to authenticate

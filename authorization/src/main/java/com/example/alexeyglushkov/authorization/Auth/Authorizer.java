@@ -5,15 +5,11 @@ package com.example.alexeyglushkov.authorization.Auth;
  */
 public interface Authorizer {
     void authorize(AuthorizerCompletion completion);
-    AuthCredentials getCredentials();
-    boolean isAuthorized();
-    void logout();
 
     void setServiceCommandProvider(ServiceCommandProvider provider);
     void setServiceCommandRunner(ServiceCommandRunner runner);
-    void setAuthCredentialStore(AuthCredentialStore store);
 
     interface AuthorizerCompletion {
-        void onFinished(Error error);
+        void onFinished(AuthCredentials credentials, Error error);
     }
 }

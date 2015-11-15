@@ -1,7 +1,11 @@
 package com.example.alexeyglushkov.cachemanager;
 
+import android.util.Log;
+
 import com.example.alexeyglushkov.streamlib.serializers.ObjectSerializer;
 import com.example.alexeyglushkov.streamlib.serializers.Serializer;
+
+import junit.framework.Assert;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +19,7 @@ import java.util.Map;
  * Created by alexeyglushkov on 26.09.15.
  */
 public class DiskCacheProvider implements CacheProvider {
+    private static String ERROR_TAG = "DiskCacheProvider error";
     private static String METADATA_PREFIX = "_metadata";
 
     private File directory;
@@ -35,9 +40,21 @@ public class DiskCacheProvider implements CacheProvider {
         Error error = prepareDirectory();
         if (error == null) {
             error = write(key, entry, (DiskCacheMetadata)metadata);
+            setLastError(error);
         }
 
         return error;
+    }
+
+    private void setLastError(Error error) {
+        if (error != null) {
+            this.lastError = error;
+            logError(error);
+        }
+    }
+
+    private void logError(Error error) {
+        Log.e(ERROR_TAG, error.getMessage());
     }
 
     private Error prepareDirectory() {
@@ -45,7 +62,8 @@ public class DiskCacheProvider implements CacheProvider {
             try {
                 directory.createNewFile();
             } catch (IOException ex) {
-                lastError = new Error("DiskCacheProvider.prepareDirectory() createNewFile exception:" + ex.getMessage());
+                Error error = new Error("DiskCacheProvider.prepareDirectory() createNewFile exception:" + ex.getMessage());
+                setLastError(error);
             }
         }
 
@@ -81,6 +99,7 @@ public class DiskCacheProvider implements CacheProvider {
             if (file.exists()) {
                 if (!file.delete()) {
                     error = new Error("DiskCacheProvider.writeByHash() delete: can't delete cache file");
+                    setLastError(error);
                 }
             }
         }
@@ -90,15 +109,17 @@ public class DiskCacheProvider implements CacheProvider {
                 file.createNewFile();
             } catch (IOException ex) {
                 error = new Error("DiskCacheProvider.write() createNewFile exception:" + ex.getMessage());
+                setLastError(error);
             }
         }
 
         if (error == null) {
             Serializer serializer = getSerializer(object.getClass());
-            assert serializer != null;
+            Assert.assertTrue(serializer != null);
 
             DiskCacheEntry entry = new DiskCacheEntry(file, object, metadata, serializer);
             error = entry.write();
+            setLastError(error);
         }
 
         if (error == null) {
@@ -111,6 +132,10 @@ public class DiskCacheProvider implements CacheProvider {
             metadata.calculateSize(file);
             metadata.setEntryClass(object.getClass());
             error = metadata.write();
+            setLastError(error);
+
+        } else if (file != null) {
+            file.delete();
         }
 
         return error;
@@ -146,7 +171,8 @@ public class DiskCacheProvider implements CacheProvider {
         Error error = null;
 
         if (!file.exists()) {
-            lastError = error = new Error("DiskCacheProvider.getValue() exists(): file doesn't exist");
+            error = new Error("DiskCacheProvider.getEntryByHash() exists(): file doesn't exist");
+            setLastError(error);
         }
 
         if (error == null) {
@@ -154,12 +180,15 @@ public class DiskCacheProvider implements CacheProvider {
             File metadataFile = getKeyMetadataFile(hash);
             if (metadataFile.exists()) {
                 metadata = DiskCacheMetadata.load(metadataFile);
+
+                Serializer serializer = getSerializer(metadata.getEntryClass());
+                assert serializer != null;
+
+                entry = new DiskCacheEntry(file, null, metadata, serializer);
+            } else {
+                error = new Error("DiskCacheProvider.getEntryByHash() exists(): metadata doesn't exist");
+                setLastError(error);
             }
-
-            Serializer serializer = getSerializer(metadata.getEntryClass());
-            assert serializer != null;
-
-            entry = new DiskCacheEntry(file, null, metadata, serializer);
         }
 
         return entry;
@@ -169,7 +198,8 @@ public class DiskCacheProvider implements CacheProvider {
     public Error remove(String key) {
         CacheEntry entry = getEntry(key);
         if (entry != null) {
-            lastError = entry.delete();
+            Error error = entry.delete();
+            setLastError(error);
         }
         return lastError;
     }
@@ -205,16 +235,18 @@ public class DiskCacheProvider implements CacheProvider {
         for (CacheEntry file : entries) {
             Error deleteError = file.delete();
             if (deleteError == null) {
-                lastError = error = deleteError;
+                error = deleteError;
+                setLastError(error);
             }
         }
 
         if (error == null) {
             if (!directory.delete()) {
-                lastError = error = new Error("DiskCacheProvider.removeAll() delete(): remove directory error");
+                error = new Error("DiskCacheProvider.removeAll() delete(): remove directory error");
+                setLastError(error);
             }
         }
 
-        return error;
+        return lastError;
     }
 }

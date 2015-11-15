@@ -1,11 +1,8 @@
 package com.example.alexeyglushkov.authorization.OAuth;
 
 import android.net.Uri;
-import android.support.annotation.NonNull;
 
 import com.example.alexeyglushkov.authorization.Api.DefaultApi20;
-import com.example.alexeyglushkov.authorization.Auth.AuthCredentialStore;
-import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProvider;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
@@ -24,9 +21,6 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
   private ServiceCommandRunner commandRunner;
   private ServiceCommandProvider commandProvider;
 
-  private AuthCredentials authCredentials;
-  private AuthCredentialStore credentialStore;
-
   @Override
   public void setServiceCommandRunner(ServiceCommandRunner runner) {
     this.commandRunner = runner;
@@ -35,33 +29,6 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
   @Override
   public void setServiceCommandProvider(ServiceCommandProvider provider) {
     this.commandProvider = provider;
-  }
-
-  @Override
-  public void setAuthCredentialStore(AuthCredentialStore store) {
-    credentialStore = store;
-  }
-
-  @Override
-  public AuthCredentials getCredentials() {
-    return authCredentials;
-  }
-
-  @Override
-  public boolean isAuthorized() {
-    OAuthCredentials oAuthCredentials = getOAuthCredentials();
-    return oAuthCredentials != null && oAuthCredentials.getAccessToken() != null && !oAuthCredentials.isExpired();
-  }
-
-  @Override
-  public void logout() {
-    if (getOAuthCredentials() != null) {
-      credentialStore.removeCredentials(getOAuthCredentials().getId());
-    }
-  }
-
-  private OAuthCredentials getOAuthCredentials() {
-    return (OAuthCredentials)getCredentials();
   }
 
   /**
@@ -116,11 +83,6 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
   }
 
   @Override
-  public void signCommand(ServiceCommand command) {
-    command.getConnectionBulder().addQuerystringParameter(OAuthConstants.ACCESS_TOKEN, getOAuthCredentials().getAccessToken());
-  }
-
-  @Override
   public String getAuthorizationUrl() {
     return api.getAuthorizationUrl(config);
   }
@@ -128,13 +90,10 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
   @Override
   public void authorize(final AuthorizerCompletion completion) {
     String code = webAuthorization();
-    authCredentials = new OAuthCredentials();
-
-    String id = Integer.toString(credentialStore.getCredentials().size());
-    authCredentials.setId(id);
+    final OAuthCredentials authCredentials = new OAuthCredentials();
 
     if (code == null) {
-      completion.onFinished(new Error("OAuthPocketServiceImpl authorize: Can't receive code"));
+      completion.onFinished(null, new Error("OAuthPocketServiceImpl authorize: Can't receive code"));
 
     } else {
       retrieveAccessToken(code, new OAuthCompletion() {
@@ -143,22 +102,16 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
           Token accessToken = api.getAccessTokenExtractor().extract(command.getResponse());
 
           if (accessToken != null) {
-            storeAccessToken(accessToken);
-            completion.onFinished(null);
+            authCredentials.setAccessToken(accessToken.getToken());
+            completion.onFinished(authCredentials, null);
           } else {
-            completion.onFinished(new Error("OAuthPocketServiceImpl authorize: Can't receive requestToken"));
+            completion.onFinished(null, new Error("OAuthPocketServiceImpl authorize: Can't receive requestToken"));
           }
         }
       });
     }
   }
 
-  private void storeAccessToken(Token accessToken) {
-    getOAuthCredentials().setAccessToken(accessToken.getToken());
-    credentialStore.putCredentials(getOAuthCredentials());
-  }
-
-  @NonNull
   private String webAuthorization() {
     String url = getAuthorizationUrl();
 
