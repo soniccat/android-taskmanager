@@ -31,9 +31,11 @@ import java.io.File;
  * Created by alexeyglushkov on 24.10.15.
  */
 public class AuthorizationActivity extends ActionBarActivity implements OAuthWebClient {
+    private static final String TAG = "AuthorizationActivity";
+    public static final String LOAD_URL = "LOAD_URL";
+
     private WebView webView;
-    Authorizer authorizer;
-    OAuthWebClient.Callback webCallback;
+    private OAuthWebClient.Callback webCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +50,7 @@ public class AuthorizationActivity extends ActionBarActivity implements OAuthWeb
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (url.startsWith(Networks.CALLBACK_URL)) {
                     webCallback.onResult(url);
+                    finish();
                     return true;
                 }
 
@@ -58,10 +61,20 @@ public class AuthorizationActivity extends ActionBarActivity implements OAuthWeb
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 super.onReceivedError(view, errorCode, description, failingUrl);
                 webCallback.onReceivedError(new Error("AuthorizationActivity webView error " + errorCode + " " + description));
+                finish();
             }
         });
 
-        startAutorization();
+        String url = getIntent().getExtras().getString(LOAD_URL);
+        loadUrl(url, AuthActivityProxy.getCurrentCallback());
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+
+        AuthActivityProxy.setCurrentActivity(null);
+        AuthActivityProxy.setCurrentCallback(null);
     }
 
     @Override
@@ -73,47 +86,5 @@ public class AuthorizationActivity extends ActionBarActivity implements OAuthWeb
                 webCallback = callback;
             }
         });
-    }
-
-    private void startAutorization() {
-        getLoaderManager().initLoader(0, null, new LoaderManager.LoaderCallbacks<Object>() {
-            @Override
-            public Loader<Object> onCreateLoader(int id, Bundle args) {
-                return new AsyncTaskLoader<Object>(AuthorizationActivity.this) {
-                    @Override
-                    public Object loadInBackground() {
-                        authorize();
-                        return null;
-                    }
-                };
-            }
-
-            @Override
-            public void onLoadFinished(Loader<Object> loader, Object data) {
-
-            }
-
-            @Override
-            public void onLoaderReset(Loader<Object> loader) {
-
-            }
-        }).forceLoad();
-    }
-
-    private void authorize() {
-        final Account account = Networks.createFoursquareAccount();
-        OAuth20Authorizer authorizer = (OAuth20Authorizer)account.getAuthorizer();
-        authorizer.setWebClient(this);
-
-        account.authorize(new Authorizer.AuthorizerCompletion() {
-            @Override
-            public void onFinished(AuthCredentials creds, Error error) {
-                Log.d("aa", "" + account.getCredentials().isValid());
-            }
-        });
-    }
-
-    private MainApplication getMainApplication() {
-        return (MainApplication)getApplication();
     }
 }

@@ -3,6 +3,7 @@ package com.main;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,12 +11,29 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.authorization.AuthActivityProxy;
 import com.authorization.AuthorizationActivity;
+import com.example.alexeyglushkov.authorization.Auth.Account;
+import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
+import com.example.alexeyglushkov.authorization.Auth.Authorizer;
+import com.example.alexeyglushkov.authorization.OAuth.OAuth20Authorizer;
+import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
+import com.example.alexeyglushkov.taskmanager.task.Task;
+import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 import com.playground.PlaygroundActivity;
 import com.rssclient.controllers.MainRssActivity;
 import com.rssclient.controllers.R;
 
 public class MainActivity extends ActionBarActivity {
+    private static final String TAG = "MainActivity";
+
+    private MainApplication getMainApplication() {
+        return (MainApplication)getApplication();
+    }
+
+    public TaskManager getTaskManager() {
+        return getMainApplication().getTaskManager();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +67,26 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void showAuthorization() {
-        Intent intent = new Intent(this, AuthorizationActivity.class);
-        startActivity(intent);
+        AuthActivityProxy.setCurrentActivity(this);
+
+        Task authTask = new SimpleTask() {
+            @Override
+            public void startTask() {
+                final Account account = Networks.createAccount(Networks.Network.Foursquare);
+                final OAuth20Authorizer authorizer = (OAuth20Authorizer)account.getAuthorizer();
+                authorizer.setWebClient(new AuthActivityProxy());
+
+                account.authorize(new Authorizer.AuthorizerCompletion() {
+                    @Override
+                    public void onFinished(AuthCredentials credentials, Error error) {
+                        Log.d(TAG, "showAuthorization onFinished " + account.getCredentials().isValid());
+                        getPrivate().handleTaskCompletion();
+                    }
+                });
+            }
+        };
+
+        getTaskManager().addTask(authTask);
     }
 
     @Override

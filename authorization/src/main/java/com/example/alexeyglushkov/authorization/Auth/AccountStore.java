@@ -7,11 +7,11 @@ import java.util.List;
  */
 public interface AccountStore {
     Error putAccount(Account account);
-    Account getAccount(String key);
+    Account getAccount(int key);
     int getAccountCount();
     int getMaxAccountId();
     List<Account> getAccounts();
-    Error removeAccount(String id);
+    Error removeAccount(int id);
     Error getError();
 
     // TODO: provide async loader

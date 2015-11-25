@@ -43,7 +43,7 @@ public class SimpleAccount implements Account, Serializable {
     @Override
     public void logout() {
         if (getCredentials() != null) {
-            accountStore.removeAccount(Integer.toString(getId()));
+            accountStore.removeAccount(getId());
         }
     }
 
@@ -69,16 +69,16 @@ public class SimpleAccount implements Account, Serializable {
                     updateCredentials(credentials);
                 }
 
-                completion.onFinished(credentials, error);
+                if (completion != null) {
+                    completion.onFinished(credentials, error);
+                }
             }
         });
     }
 
     private void updateCredentials(AuthCredentials creds) {
         credentials = creds;
-
         id = accountStore.getMaxAccountId() + 1;
-        //credentials.setId(id);
 
         accountStore.putAccount(this);
     }

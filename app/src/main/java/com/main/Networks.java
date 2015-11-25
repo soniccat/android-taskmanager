@@ -21,9 +21,10 @@ public class Networks {
     public static final String CALLBACK_URL = "http://localhost:9000/";
 
     public enum Network {
+        None,
         Foursquare;
 
-        public Network fromInt(int i) {
+        public static Network fromInt(int i) {
             return values()[i];
         }
     }
@@ -40,6 +41,14 @@ public class Networks {
         if (acc.getServiceType() == Networks.Network.Foursquare.ordinal()) {
             acc.setAuthorizer(Networks.getFoursquareAuthorizer());
         }
+    }
+
+    public static Account createAccount(Network network) {
+        if (network == Network.Foursquare) {
+            return createFoursquareAccount();
+        }
+
+        return null;
     }
 
     public static Account createFoursquareAccount() {
