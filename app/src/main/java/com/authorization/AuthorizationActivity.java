@@ -22,6 +22,7 @@ import com.example.alexeyglushkov.authorization.OAuth.OAuthAuthorizerBuilder;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
 import com.main.MainApplication;
+import com.main.Networks;
 import com.rssclient.controllers.R;
 
 import java.io.File;
@@ -45,7 +46,7 @@ public class AuthorizationActivity extends ActionBarActivity implements OAuthWeb
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url.startsWith(MainApplication.CALLBACK_URL)) {
+                if (url.startsWith(Networks.CALLBACK_URL)) {
                     webCallback.onResult(url);
                     return true;
                 }
@@ -100,7 +101,7 @@ public class AuthorizationActivity extends ActionBarActivity implements OAuthWeb
     }
 
     private void authorize() {
-        final Account account = getMainApplication().createFoursquareAccount();
+        final Account account = Networks.createFoursquareAccount();
         OAuth20Authorizer authorizer = (OAuth20Authorizer)account.getAuthorizer();
         authorizer.setWebClient(this);
 
