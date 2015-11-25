@@ -115,7 +115,7 @@ public class DiskCacheProvider implements CacheProvider {
 
         if (error == null) {
             Serializer serializer = getSerializer(object.getClass());
-            Assert.assertTrue(serializer != null);
+            Assert.assertTrue("Can't find a serializer for " + object.getClass(), serializer != null);
 
             DiskCacheEntry entry = new DiskCacheEntry(file, object, metadata, serializer);
             error = entry.write();
@@ -227,6 +227,19 @@ public class DiskCacheProvider implements CacheProvider {
         }
 
         return entries;
+    }
+
+    public int getEntryCount() {
+        File[] files = directory.listFiles();
+        int entryCount = 0;
+
+        for (File file : files) {
+            if (!isMetadataFile(file)) {
+                ++entryCount;
+            }
+        }
+
+        return entryCount;
     }
 
     public Error removeAll() {

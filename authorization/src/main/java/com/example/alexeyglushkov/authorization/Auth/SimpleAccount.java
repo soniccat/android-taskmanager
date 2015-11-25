@@ -1,27 +1,24 @@
 package com.example.alexeyglushkov.authorization.Auth;
 
-import com.example.alexeyglushkov.authorization.OAuth.OAuthConstants;
-import com.example.alexeyglushkov.authorization.OAuth.OAuthCredentials;
-
 /**
  * Created by alexeyglushkov on 15.11.15.
  */
 public class SimpleAccount implements Account {
 
-    private String id;
+    private int id;
     private int serviceType;
 
     private Authorizer authorizer;
     private AuthCredentials credentials;
-    private AuthCredentialStore credentialStore;
+    private AccountStore accountStore;
 
     public SimpleAccount(int serviceType) {
         this.serviceType = serviceType;
     }
 
     @Override
-    public String getId() {
-        return null;
+    public int getId() {
+        return id;
     }
 
     @Override
@@ -42,13 +39,13 @@ public class SimpleAccount implements Account {
     @Override
     public void logout() {
         if (getCredentials() != null) {
-            credentialStore.removeCredentials(getCredentials().getId());
+            accountStore.removeAccount(Integer.toString(getId()));
         }
     }
 
     @Override
-    public void setAuthCredentialStore(AuthCredentialStore store) {
-        this.credentialStore = store;
+    public void setAuthCredentialStore(AccountStore store) {
+        this.accountStore = store;
     }
 
     @Override
@@ -72,10 +69,10 @@ public class SimpleAccount implements Account {
     private void updateCredentials(AuthCredentials creds) {
         credentials = creds;
 
-        id = Integer.toString(credentialStore.getCredentials().size());
-        credentials.setId(id);
+        id = accountStore.getMaxAccountId() + 1;
+        //credentials.setId(id);
 
-        credentialStore.putCredentials(credentials);
+        accountStore.putAccount(this);
     }
 
     @Override

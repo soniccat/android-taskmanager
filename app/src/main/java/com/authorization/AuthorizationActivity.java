@@ -10,7 +10,7 @@ import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.example.alexeyglushkov.authcachemanager.AuthCacheStore;
+import com.example.alexeyglushkov.authcachemanager.AccountCacheStore;
 import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
@@ -120,7 +120,7 @@ public class AuthorizationActivity extends ActionBarActivity implements OAuthWeb
         account.setAuthorizer(authorizer);
 
         File authDir = getDir("AuthFolder", Context.MODE_PRIVATE);
-        AuthCacheStore store = new AuthCacheStore(authDir);
+        AccountCacheStore store = new AccountCacheStore(authDir);
 
         account.setAuthCredentialStore(store);
 

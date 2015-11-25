@@ -4,7 +4,7 @@ package com.example.alexeyglushkov.authorization.Auth;
  * Created by alexeyglushkov on 15.11.15.
  */
 public interface Account {
-    String getId();
+    int getId();
     int getServiceType();
 
     AuthCredentials getCredentials();
@@ -12,7 +12,7 @@ public interface Account {
     void logout();
 
     void setAuthorizer(Authorizer authorizer);
-    void setAuthCredentialStore(AuthCredentialStore store);
+    void setAuthCredentialStore(AccountStore store);
 
     void authorize(final Authorizer.AuthorizerCompletion completion);
 

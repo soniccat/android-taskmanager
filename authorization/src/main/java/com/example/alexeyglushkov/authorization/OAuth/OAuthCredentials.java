@@ -6,23 +6,12 @@ import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
  * Created by alexeyglushkov on 31.10.15.
  */
 public class OAuthCredentials implements AuthCredentials {
-    private String id;
     private String accessToken;
     private String requestToken;
     private String refreshToken;
     private long expireTime;
 
     // AuthCredentials implementation
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
 
     @Override
     public boolean isValid() {
