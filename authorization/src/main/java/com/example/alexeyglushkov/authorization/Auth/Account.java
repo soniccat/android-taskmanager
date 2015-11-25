@@ -12,6 +12,7 @@ public interface Account {
     void logout();
 
     void setAuthorizer(Authorizer authorizer);
+    Authorizer getAuthorizer();
     void setAuthCredentialStore(AccountStore store);
 
     void authorize(final Authorizer.AuthorizerCompletion completion);

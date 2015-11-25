@@ -16,6 +16,7 @@ import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Api.Foursquare2Api;
 import com.example.alexeyglushkov.authorization.Auth.SimpleAccount;
+import com.example.alexeyglushkov.authorization.OAuth.OAuth20Authorizer;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthAuthorizerBuilder;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider;
@@ -29,9 +30,6 @@ import java.io.File;
  * Created by alexeyglushkov on 24.10.15.
  */
 public class AuthorizationActivity extends ActionBarActivity implements OAuthWebClient {
-
-    private static final String CALLBACK_URL = "http://localhost:9000/";//"http://ya.ru";
-
     private WebView webView;
     Authorizer authorizer;
     OAuthWebClient.Callback webCallback;
@@ -42,13 +40,12 @@ public class AuthorizationActivity extends ActionBarActivity implements OAuthWeb
         setContentView(R.layout.activity_authorization);
 
         webView = (WebView)findViewById(R.id.web_view);
-
         webView.getSettings().setJavaScriptEnabled(true);
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url.startsWith(CALLBACK_URL)) {
+                if (url.startsWith(MainApplication.CALLBACK_URL)) {
                     webCallback.onResult(url);
                     return true;
                 }
@@ -103,26 +100,9 @@ public class AuthorizationActivity extends ActionBarActivity implements OAuthWeb
     }
 
     private void authorize() {
-        //String apiKey = "12158-1a847cd6722e23d04c5007db";
-        String apiKey = "FEGFXJUFANVVDHVSNUAMUKTTXCP1AJQD53E33XKJ44YP1S4I";
-        String apiSecret = "AYWKUL5SWPNC0CTQ202QXRUG2NLZYXMRA34ZSDW4AUYBG2RC";
-
-        this.authorizer = new OAuthAuthorizerBuilder()
-                .apiKey(apiKey)
-                .apiSecret(apiSecret)
-                .callback(CALLBACK_URL)
-                .webClient(this)
-                .build(new Foursquare2Api());
-        this.authorizer.setServiceCommandProvider(new ServiceTaskProvider());
-        this.authorizer.setServiceCommandRunner(new ServiceTaskRunner(getMainApplication().getTaskManager(), "authorizerId"));
-
-        final Account account = new SimpleAccount(1);
-        account.setAuthorizer(authorizer);
-
-        File authDir = getDir("AuthFolder", Context.MODE_PRIVATE);
-        AccountCacheStore store = new AccountCacheStore(authDir);
-
-        account.setAuthCredentialStore(store);
+        final Account account = getMainApplication().createFoursquareAccount();
+        OAuth20Authorizer authorizer = (OAuth20Authorizer)account.getAuthorizer();
+        authorizer.setWebClient(this);
 
         account.authorize(new Authorizer.AuthorizerCompletion() {
             @Override

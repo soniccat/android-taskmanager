@@ -58,16 +58,17 @@ public class DiskCacheProvider implements CacheProvider {
     }
 
     private Error prepareDirectory() {
+        Error error = null;
         if (!directory.exists()) {
             try {
                 directory.createNewFile();
             } catch (IOException ex) {
-                Error error = new Error("DiskCacheProvider.prepareDirectory() createNewFile exception:" + ex.getMessage());
+                error = new Error("DiskCacheProvider.prepareDirectory() createNewFile exception:" + ex.getMessage());
                 setLastError(error);
             }
         }
 
-        return lastError;
+        return error;
     }
 
     private File getKeyFile(int hash) {
@@ -196,12 +197,13 @@ public class DiskCacheProvider implements CacheProvider {
 
     @Override
     public Error remove(String key) {
+        Error error = null;
         CacheEntry entry = getEntry(key);
         if (entry != null) {
-            Error error = entry.delete();
+            error = entry.delete();
             setLastError(error);
         }
-        return lastError;
+        return error;
     }
 
     @Override
@@ -222,7 +224,9 @@ public class DiskCacheProvider implements CacheProvider {
             if (!isMetadataFile(file)) {
                 int hash = Integer.parseInt(file.getName());
                 CacheEntry entry = getEntryByHash(hash);
-                entries.add(entry);
+                if (entry != null) {
+                    entries.add(entry);
+                }
             }
         }
 
@@ -260,6 +264,6 @@ public class DiskCacheProvider implements CacheProvider {
             }
         }
 
-        return lastError;
+        return error;
     }
 }

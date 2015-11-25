@@ -2,10 +2,15 @@ package com.example.alexeyglushkov.authorization.OAuth;
 
 import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
 
+import java.io.Serializable;
+
 /**
  * Created by alexeyglushkov on 31.10.15.
  */
-public class OAuthCredentials implements AuthCredentials {
+public class OAuthCredentials implements AuthCredentials, Serializable {
+
+    private static final long serialVersionUID = 165145426084589963L;
+
     private String accessToken;
     private String requestToken;
     private String refreshToken;

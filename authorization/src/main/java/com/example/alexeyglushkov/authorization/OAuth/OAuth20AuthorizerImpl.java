@@ -18,6 +18,7 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
 
   private final DefaultApi20 api;
   private final OAuthConfig config;
+  private OAuthWebClient webClient;
   private ServiceCommandRunner commandRunner;
   private ServiceCommandProvider commandProvider;
 
@@ -29,6 +30,14 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
   @Override
   public void setServiceCommandProvider(ServiceCommandProvider provider) {
     this.commandProvider = provider;
+  }
+
+  public void setWebClient(OAuthWebClient webClient) {
+    this.webClient = webClient;
+  }
+
+  public OAuthWebClient getWebClient() {
+    return webClient;
   }
 
   /**
@@ -135,7 +144,7 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
       }
     };
 
-    config.getWebClient().loadUrl(url, callback);
+    getWebClient().loadUrl(url, callback);
 
     String resultCode = null;
     try {

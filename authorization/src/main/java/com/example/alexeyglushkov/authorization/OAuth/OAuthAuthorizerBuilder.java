@@ -19,7 +19,6 @@ public class OAuthAuthorizerBuilder
   private String callback;
   private String scope;
   private SignatureType signatureType;
-  private OAuthWebClient webClient;
   
   /**
    * Default constructor
@@ -89,17 +88,12 @@ public class OAuthAuthorizerBuilder
     return this;
   }
 
-  public OAuthAuthorizerBuilder webClient(OAuthWebClient webClient) {
-    this.webClient = webClient;
-    return this;
-  }
-
   public Authorizer build(OAuthApi api)
   {
     Assert.assertNotNull(api);
     Assert.assertNotNull(apiKey);
 
-    OAuthConfig config = new OAuthConfig(apiKey, apiSecret, callback, signatureType, scope, webClient);
+    OAuthConfig config = new OAuthConfig(apiKey, apiSecret, callback, signatureType, scope);
     api.setOAuthConfig(config);
 
     return api.createAuthorizer();

@@ -1,16 +1,20 @@
 package com.example.alexeyglushkov.authorization.Auth;
 
+import java.io.Serializable;
+
 /**
  * Created by alexeyglushkov on 15.11.15.
  */
-public class SimpleAccount implements Account {
+public class SimpleAccount implements Account, Serializable {
+
+    private static final long serialVersionUID = -6196365168677255570L;
 
     private int id;
     private int serviceType;
 
-    private Authorizer authorizer;
     private AuthCredentials credentials;
-    private AccountStore accountStore;
+    transient private Authorizer authorizer;
+    transient private AccountStore accountStore;
 
     public SimpleAccount(int serviceType) {
         this.serviceType = serviceType;
@@ -51,6 +55,10 @@ public class SimpleAccount implements Account {
     @Override
     public void setAuthorizer(Authorizer authorizer) {
         this.authorizer = authorizer;
+    }
+
+    public Authorizer getAuthorizer() {
+        return authorizer;
     }
 
     public void authorize(final Authorizer.AuthorizerCompletion completion) {

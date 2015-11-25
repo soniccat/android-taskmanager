@@ -16,9 +16,5 @@ public interface AccountStore {
 
     // TODO: provide async loader
     boolean isLoaded();
-    void load(LoadCallback callback);
-
-    interface LoadCallback {
-        void onLoaded(Error error);
-    }
+    void load();
 }
