@@ -17,10 +17,10 @@ import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 public class HttpLoadTask extends SimpleTask {
     protected HttpURLConnectionProvider provider;
     protected int contentLength;
-    protected HTTPConnectionResponseReader handler;
+    protected HTTPConnectionStreamReader handler;
     protected Object handledData;
 
-    public HttpLoadTask(HttpURLConnectionProvider provider, HTTPConnectionResponseReader handler) {
+    public HttpLoadTask(HttpURLConnectionProvider provider, HTTPConnectionStreamReader handler) {
         super();
         setProvider(provider);
         setHandler(handler);
@@ -34,7 +34,7 @@ public class HttpLoadTask extends SimpleTask {
         }
     }
 
-    protected void setHandler(HTTPConnectionResponseReader handler) {
+    protected void setHandler(HTTPConnectionStreamReader handler) {
         this.handler = handler;
     }
 

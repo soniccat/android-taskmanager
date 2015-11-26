@@ -11,7 +11,6 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.example.alexeyglushkov.streamlib.convertors.BytesBitmapConvertor;
 import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
 import com.example.alexeyglushkov.streamlib.readersandwriters.ByteArrayReader;
 import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
@@ -19,7 +18,7 @@ import com.example.alexeyglushkov.taskmanager.file.ByteArrayProvider;
 import com.example.alexeyglushkov.taskmanager.file.ByteArrayWriter;
 import com.example.alexeyglushkov.taskmanager.file.FileKeepTask;
 import com.example.alexeyglushkov.taskmanager.loader.file.FileLoadTask;
-import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionResponseReader;
+import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionStreamReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionResponseReaderAdaptor;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpLoadTask;
 import com.example.alexeyglushkov.taskmanager.task.Task;
@@ -108,7 +107,7 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
     public void loadFeed(TaskManager taskManager, Context context, final RssFeed feed, final RssFeedCallback callback) {
 
         InputStreamReader streamReader = new ByteArrayReader(feed.getDataHandler());
-        HTTPConnectionResponseReader reader = new HTTPConnectionResponseReaderAdaptor(streamReader);
+        HTTPConnectionStreamReader reader = new HTTPConnectionResponseReaderAdaptor(streamReader);
         final HttpLoadTask loatTask = new HttpLoadTask(feed, reader);
         loatTask.setTaskCallback(new Task.Callback() {
             @Override
@@ -135,18 +134,18 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
     public ByteArrayHandler getByteArrayHandler() {
         return new ByteArrayHandler() {
             @Override
-            public Object handleByteArrayBuffer(ByteArrayBuffer byteArray) {
+            public Object handleByteArrayBuffer(byte[] byteArray) {
                 return loadData(byteArray);
             }
 
             @Override
             public Object convert(Object object) {
-                return handleByteArrayBuffer((ByteArrayBuffer)object);
+                return handleByteArrayBuffer((byte[])object);
             }
         };
     }
 
-    private Error loadData(ByteArrayBuffer data) {
+    private Error loadData(byte[] data) {
         /*TODO:
 		if (obj instanceof RssStorage) {
 			RssStorage storage = (RssStorage)obj;

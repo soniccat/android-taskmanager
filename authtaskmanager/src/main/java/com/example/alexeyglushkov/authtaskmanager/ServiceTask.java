@@ -4,10 +4,12 @@ import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
 import com.example.alexeyglushkov.cachemanager.CacheProvider;
 import com.example.alexeyglushkov.service.CachedHttpLoadTask;
+import com.example.alexeyglushkov.streamlib.convertors.BytesStringConvertor;
+import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 import com.example.alexeyglushkov.streamlib.readersandwriters.StringReader;
-import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionResponseReader;
-import com.example.alexeyglushkov.taskmanager.loader.http.HttpLoadTask;
+import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionBytesReader;
+import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionStreamReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpURLConnectionProvider;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 
@@ -26,7 +28,7 @@ public class ServiceTask extends CachedHttpLoadTask implements ServiceCommand {
     public ServiceTask() {
         super(null, null);
         setProvider(getProvider());
-        setHandler(getReader());
+        byteArrayReader.setByteArrayHandler(getReader());
         this.connectionBuilder = new HttpUrlConnectionBuilder();
     }
 
@@ -60,29 +62,8 @@ public class ServiceTask extends CachedHttpLoadTask implements ServiceCommand {
         };
     }
 
-    protected HTTPConnectionResponseReader getReader() {
-        return new HTTPConnectionResponseReader() {
-            private StringReader stringReader = new StringReader(null);
-
-            @Override
-            public void handleConnectionResponse(HttpURLConnection connection) {
-            }
-
-            @Override
-            public Object readStream(InputStream data) {
-                return stringReader.readStream(data);
-            }
-
-            @Override
-            public void setProgressUpdater(ProgressUpdater progressUpdater) {
-                stringReader.setProgressUpdater(progressUpdater);
-            }
-
-            @Override
-            public Error getError() {
-                return stringReader.getError();
-            }
-        };
+    protected ByteArrayHandler getReader() {
+        return new BytesStringConvertor(null);
     }
 
     @Override

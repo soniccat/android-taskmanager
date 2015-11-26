@@ -7,6 +7,5 @@ import java.net.HttpURLConnection;
 /**
  * Created by alexeyglushkov on 31.10.15.
  */
-public interface HTTPConnectionResponseReader extends InputStreamReader {
-    void handleConnectionResponse(HttpURLConnection connection);
+public interface HTTPConnectionStreamReader extends InputStreamReader, HTTPConnectionHandler {
 }

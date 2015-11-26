@@ -105,23 +105,23 @@ public class RssFeed implements Parcelable, Serializable, Tasks.TaskListener, Ht
     public ByteArrayHandler getDataHandler() {
         return new ByteArrayHandler() {
             @Override
-            public Object handleByteArrayBuffer(ByteArrayBuffer byteArray) {
+            public Object handleByteArrayBuffer(byte[] byteArray) {
                 return loadData(byteArray);
             }
 
             @Override
             public Object convert(Object object) {
-                return handleByteArrayBuffer((ByteArrayBuffer)object);
+                return handleByteArrayBuffer((byte[])object);
             }
         };
     }
 
-    private Error loadData(ByteArrayBuffer data) {
+    private Error loadData(byte[] data) {
         // TODO Auto-generated method stub
         System.out.println("ready to parse");
 
         Charset ch = Charset.forName("UTF-8");
-        String str = new String(data.buffer(), ch);
+        String str = new String(data, ch);
         System.out.println(str);
 
         StringReader reader = null;

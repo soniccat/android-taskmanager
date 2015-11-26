@@ -19,7 +19,7 @@ public class BytesBitmapConvertor implements ByteArrayHandler {
     }
 
     @Override
-    public Object handleByteArrayBuffer(ByteArrayBuffer byteArray) {
+    public Object handleByteArrayBuffer(byte[] byteArray) {
         Object result = null;
         Bitmap bitmap = bitmapFromByteArray(byteArray);
         if (bitmapHandler != null) {
@@ -33,11 +33,10 @@ public class BytesBitmapConvertor implements ByteArrayHandler {
 
     @Override
     public Object convert(Object object) {
-        return handleByteArrayBuffer((ByteArrayBuffer)object);
+        return handleByteArrayBuffer((byte[])object);
     }
 
-    public static Bitmap bitmapFromByteArray(ByteArrayBuffer data) {
-        byte[] imageData = data.toByteArray();
-        return BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
+    public static Bitmap bitmapFromByteArray(byte[] data) {
+        return BitmapFactory.decodeByteArray(data, 0, data.length);
     }
 }
