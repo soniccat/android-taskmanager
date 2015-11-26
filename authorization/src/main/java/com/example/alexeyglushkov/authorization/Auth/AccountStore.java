@@ -11,6 +11,7 @@ public interface AccountStore {
     int getAccountCount();
     int getMaxAccountId();
     List<Account> getAccounts();
+    List<Account> getAccounts(int serviceType);
     Error removeAccount(int id);
     Error getError();
 

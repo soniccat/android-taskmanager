@@ -53,6 +53,17 @@ public class AccountCacheStore extends DiskCacheProvider implements AccountStore
         return accounts;
     }
 
+    public List<Account> getAccounts(int serviceType) {
+        List<Account> filteredAccounts = new ArrayList<>();
+        for (Account acc : accounts) {
+            if (acc.getServiceType() == serviceType) {
+                filteredAccounts.add(acc);
+            }
+        }
+
+        return filteredAccounts;
+    }
+
     @Override
     public Error removeAccount(int id) {
         return remove(Integer.toString(id));

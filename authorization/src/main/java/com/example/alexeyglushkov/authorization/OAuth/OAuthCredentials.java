@@ -31,7 +31,7 @@ public class OAuthCredentials implements AuthCredentials, Serializable {
     @Override
     public boolean isExpired() {
         long currentTime = System.currentTimeMillis() / 1000L;
-        return currentTime > expireTime;
+        return expireTime != 0 && currentTime > expireTime;
     }
 
     // Getters / Setters

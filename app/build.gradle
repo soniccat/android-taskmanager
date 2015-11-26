@@ -38,4 +38,5 @@ dependencies {
     compile project(':authorization')
     compile project(':authtaskmanager')
     compile project(':authcachemanager')
+    compile project(':service')
 }

@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.authorization.Auth;
 
+import com.example.alexeyglushkov.authorization.OAuth.OAuthConstants;
+
 import java.io.Serializable;
 
 /**
@@ -85,7 +87,7 @@ public class SimpleAccount implements Account, Serializable {
 
     @Override
     public void signCommand(ServiceCommand command) {
-        //command.getConnectionBulder().addQuerystringParameter(OAuthConstants.ACCESS_TOKEN, getOAuthCredentials().getAccessToken());
+        authorizer.signCommand(command, getCredentials());
     }
 
 }

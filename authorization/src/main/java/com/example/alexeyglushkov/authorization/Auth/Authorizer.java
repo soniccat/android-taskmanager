@@ -5,6 +5,7 @@ package com.example.alexeyglushkov.authorization.Auth;
  */
 public interface Authorizer {
     void authorize(AuthorizerCompletion completion);
+    void signCommand(ServiceCommand command, AuthCredentials credentials);
 
     void setServiceCommandProvider(ServiceCommandProvider provider);
     void setServiceCommandRunner(ServiceCommandRunner runner);

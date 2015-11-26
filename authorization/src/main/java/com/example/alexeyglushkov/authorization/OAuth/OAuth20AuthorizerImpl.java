@@ -3,6 +3,7 @@ package com.example.alexeyglushkov.authorization.OAuth;
 import android.net.Uri;
 
 import com.example.alexeyglushkov.authorization.Api.DefaultApi20;
+import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProvider;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
@@ -162,5 +163,10 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
   private String getCode(String resultUrl) {
     Uri uri = Uri.parse(resultUrl);
     return uri.getQueryParameter("code");
+  }
+
+  public void signCommand(ServiceCommand command, AuthCredentials credentials) {
+    OAuthCredentials oAuthCredentials = (OAuthCredentials)credentials;
+    command.getConnectionBulder().addQuerystringParameter(OAuthConstants.TOKEN, oAuthCredentials.getAccessToken());
   }
 }

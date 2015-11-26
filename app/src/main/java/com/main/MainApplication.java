@@ -3,6 +3,7 @@ package com.main;
 import com.example.alexeyglushkov.authcachemanager.AccountCacheStore;
 import com.example.alexeyglushkov.authorization.Api.Foursquare2Api;
 import com.example.alexeyglushkov.authorization.Auth.Account;
+import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Auth.SimpleAccount;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthAuthorizerBuilder;
@@ -22,7 +23,7 @@ import android.support.annotation.NonNull;
 import java.io.File;
 
 public class MainApplication extends Application {
-    AccountCacheStore accountStore;
+    AccountStore accountStore;
     TaskManager taskManager;
     RssStorage rssStorage;
 
@@ -44,7 +45,7 @@ public class MainApplication extends Application {
         return taskManager;
     }
 
-    public AccountCacheStore getAccountStore() {
+    public AccountStore getAccountStore() {
         return accountStore;
     }
 

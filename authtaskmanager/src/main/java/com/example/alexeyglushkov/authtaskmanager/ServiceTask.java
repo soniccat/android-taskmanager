@@ -2,6 +2,8 @@ package com.example.alexeyglushkov.authtaskmanager;
 
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
+import com.example.alexeyglushkov.cachemanager.CacheProvider;
+import com.example.alexeyglushkov.service.CachedHttpLoadTask;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 import com.example.alexeyglushkov.streamlib.readersandwriters.StringReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionResponseReader;
@@ -17,7 +19,7 @@ import java.net.URL;
 /**
  * Created by alexeyglushkov on 04.11.15.
  */
-public class ServiceTask extends HttpLoadTask implements ServiceCommand {
+public class ServiceTask extends CachedHttpLoadTask implements ServiceCommand {
 
     private HttpUrlConnectionBuilder connectionBuilder = new HttpUrlConnectionBuilder();
 
@@ -26,6 +28,10 @@ public class ServiceTask extends HttpLoadTask implements ServiceCommand {
         setProvider(getProvider());
         setHandler(getReader());
         this.connectionBuilder = new HttpUrlConnectionBuilder();
+    }
+
+    public void setCache(CacheProvider cache) {
+        this.cache = cache;
     }
 
     public void setConnectionBuilder(HttpUrlConnectionBuilder connectionBuilder) {

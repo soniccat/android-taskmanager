@@ -154,7 +154,11 @@ public class DiskCacheProvider implements CacheProvider {
     @Override
     public Object getValue(String key) {
         DiskCacheEntry entry = (DiskCacheEntry)getEntry(key);
-        return entry.getObject();
+
+        if (entry != null) {
+            return entry.getObject();
+        }
+        return null;
     }
 
     public Serializable getMetadata(String key) {
