@@ -37,9 +37,12 @@ public class CachedHttpLoadTask extends HttpBytesLoadTask {
     public void startTask() {
         if (cache != null) {
             byte[] bytes = (byte[])cache.getValue(getCacheKey());
-
             if (bytes != null) {
-                Object result = byteArrayReader.getByteArrayHandler().handleByteArrayBuffer(bytes);
+                Object result = bytes;
+                if (byteArrayReader.getByteArrayHandler() != null) {
+                    result = byteArrayReader.getByteArrayHandler().handleByteArrayBuffer(bytes);
+                }
+
                 setHandledData(result);
                 getPrivate().handleTaskCompletion();
                 return;
@@ -48,8 +51,6 @@ public class CachedHttpLoadTask extends HttpBytesLoadTask {
 
         needStore = true;
         super.startTask();
-
-
     }
 
     @Override
@@ -60,30 +61,4 @@ public class CachedHttpLoadTask extends HttpBytesLoadTask {
             cache.put(getCacheKey(), byteArrayReader.getByteArray(), null);
         }
     }
-
-    /*
-    @Override
-    protected Object handleStream(InputStream stream) {
-        stream.mark(0);
-        int chunkSize = 1024;
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-        byte[] bytes = new byte[chunkSize];
-        int n = 0;
-        try {
-            while ((n = stream.read(bytes)) != -1) {
-                outputStream.write(bytes);
-            }
-
-            stream.reset();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if (cache != null) {
-            cache.put(getCacheKey(), outputStream.toByteArray(), null);
-        }
-
-        return super.handleStream(stream);
-    }*/
 }

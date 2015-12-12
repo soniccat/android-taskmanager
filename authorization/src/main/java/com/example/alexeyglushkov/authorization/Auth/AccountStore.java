@@ -13,6 +13,7 @@ public interface AccountStore {
     List<Account> getAccounts();
     List<Account> getAccounts(int serviceType);
     Error removeAccount(int id);
+    Error removeAll();
     Error getError();
 
     // TODO: provide async loader

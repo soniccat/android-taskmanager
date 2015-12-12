@@ -1,7 +1,6 @@
 package com.main;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -11,14 +10,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.authorization.AuthActivityProxy;
-import com.authorization.AuthorizationActivity;
 import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
-import com.example.alexeyglushkov.authorization.OAuth.OAuth20Authorizer;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTask;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider;
@@ -34,10 +30,9 @@ import com.rssclient.controllers.MainRssActivity;
 import com.rssclient.controllers.R;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends BaseActivity {
     private static final String TAG = "MainActivity";
     private SimpleService service;
     private CacheProvider cacheProvider;
@@ -61,7 +56,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         ListView listView = (ListView)findViewById(R.id.list);
-        listView.setAdapter(new ArrayAdapter<String>(this,android.R.layout.activity_list_item, android.R.id.text1, new String[]{"Rss Client", "Playground", "Authorization", "Run Request"}));
+        listView.setAdapter(new ArrayAdapter<String>(this,android.R.layout.activity_list_item, android.R.id.text1, new String[]{"Rss Client", "Playground", "Authorization", "Run Request", "Clear cache"}));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -73,6 +68,8 @@ public class MainActivity extends ActionBarActivity {
                     showAuthorization();
                 } else if (position == 3) {
                     requestUser();
+                } else if (position == 4) {
+                    clearCache();
                 }
             }
         });
@@ -89,15 +86,10 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void showAuthorization() {
-        AuthActivityProxy.setCurrentActivity(this);
-
         Task authTask = new SimpleTask() {
             @Override
             public void startTask() {
                 final Account account = Networks.createAccount(Networks.Network.Foursquare);
-                final OAuth20Authorizer authorizer = (OAuth20Authorizer)account.getAuthorizer();
-                authorizer.setWebClient(new AuthActivityProxy());
-
                 account.authorize(new Authorizer.AuthorizerCompletion() {
                     @Override
                     public void onFinished(AuthCredentials credentials, Error error) {
@@ -115,10 +107,6 @@ public class MainActivity extends ActionBarActivity {
         if (service == null) {
             initService();
         }
-
-        AuthActivityProxy.setCurrentActivity(this);
-        final OAuth20Authorizer authorizer = (OAuth20Authorizer)service.getAccount().getAuthorizer();
-        authorizer.setWebClient(new AuthActivityProxy());
 
         HttpUrlConnectionBuilder builder = new HttpUrlConnectionBuilder();
         builder.setUrl("https://api.foursquare.com/v2/users/self?v=20140806&m=foursquare");
@@ -140,17 +128,30 @@ public class MainActivity extends ActionBarActivity {
         service = new SimpleService();
 
         List<Account> accounts = getAccountStore().getAccounts(Networks.Network.Foursquare.ordinal());
+        Account serviceAccount = null;
         if (accounts.size() > 0) {
-            Account acc = accounts.get(0);
-            service.setAccount(acc);
+            serviceAccount = accounts.get(0);
+        } else {
+            serviceAccount = Networks.createAccount(Networks.Network.Foursquare);
         }
 
-        // TODO: we need solution for id
+        service.setAccount(serviceAccount);
+
+        // TODO: we need the solution for id
         service.setServiceCommandProvider(new ServiceTaskProvider());
         service.setServiceCommandRunner(new ServiceTaskRunner(getTaskManager(), "31234"));
 
+        cacheProvider = getServiceCache();
+    }
+
+    private CacheProvider getServiceCache() {
         File cacheDir = getDir("ServiceCache", MODE_PRIVATE);
-        cacheProvider = new DiskCacheProvider(cacheDir);
+        return new DiskCacheProvider(cacheDir);
+    }
+
+    private void clearCache() {
+        getAccountStore().removeAll();
+        getServiceCache().removeAll();
     }
 
     @Override

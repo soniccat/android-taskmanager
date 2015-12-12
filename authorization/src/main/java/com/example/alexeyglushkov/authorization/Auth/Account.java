@@ -15,6 +15,7 @@ public interface Account {
     Authorizer getAuthorizer();
     void setAuthCredentialStore(AccountStore store);
 
+    // Method should be called not on main thread to be able show auth activity for OAuth20AuthorizerImpl
     void authorize(final Authorizer.AuthorizerCompletion completion);
 
     void signCommand(ServiceCommand command);

@@ -1,15 +1,10 @@
 package com.main;
 
+import com.authorization.AuthActivityProxy;
 import com.example.alexeyglushkov.authcachemanager.AccountCacheStore;
-import com.example.alexeyglushkov.authorization.Api.Foursquare2Api;
 import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
-import com.example.alexeyglushkov.authorization.Auth.Authorizer;
-import com.example.alexeyglushkov.authorization.Auth.SimpleAccount;
-import com.example.alexeyglushkov.authorization.OAuth.OAuthAuthorizerBuilder;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient;
-import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider;
-import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.rssclient.model.RssStorage;
@@ -18,20 +13,22 @@ import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
 import android.app.Application;
 import android.content.Context;
-import android.support.annotation.NonNull;
 
 import java.io.File;
 
 public class MainApplication extends Application {
-    AccountStore accountStore;
-    TaskManager taskManager;
-    RssStorage rssStorage;
+    private AccountStore accountStore;
+    private OAuthWebClient authWebClient;
+
+    private TaskManager taskManager;
+    private RssStorage rssStorage;
 
     public static MainApplication instance;
 
     public MainApplication() {
         super();
         instance = this;
+        authWebClient = new AuthActivityProxy();
         taskManager = new SimpleTaskManager(10);
         rssStorage = new RssStorage("RssStorage");
         loadAccountStore();
@@ -47,6 +44,10 @@ public class MainApplication extends Application {
 
     public AccountStore getAccountStore() {
         return accountStore;
+    }
+
+    public OAuthWebClient getAuthWebClient() {
+        return authWebClient;
     }
 
     public void loadAccountStore() {

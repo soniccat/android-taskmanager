@@ -64,7 +64,7 @@ public class ByteArrayReader implements InputStreamReader {
         int nRead;
         byte[] data = new byte[1024];
         while ((nRead = stream.read(data, 0, data.length)) != -1) {
-            result.write(data);
+            result.write(data, 0, nRead);
 
             if (progressUpdater != null) {
                 progressUpdater.append(nRead);

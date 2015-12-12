@@ -39,7 +39,7 @@ public class SimpleAccount implements Account, Serializable {
 
     @Override
     public boolean isAuthorized() {
-        return credentials.isValid();
+        return credentials != null && credentials.isValid();
     }
 
     @Override
