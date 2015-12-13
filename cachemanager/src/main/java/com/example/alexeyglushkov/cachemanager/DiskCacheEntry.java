@@ -27,6 +27,11 @@ public class DiskCacheEntry implements CacheEntry {
         this.serializer = serializer;
     }
 
+    public String getFileName() {
+        return file.getName();
+    }
+
+
     public Object getObject() {
         if (object == null) {
             loadObject();

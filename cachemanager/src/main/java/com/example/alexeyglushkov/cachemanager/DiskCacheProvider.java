@@ -1,6 +1,7 @@
 package com.example.alexeyglushkov.cachemanager;
 
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.example.alexeyglushkov.streamlib.serializers.ObjectSerializer;
 import com.example.alexeyglushkov.streamlib.serializers.Serializer;
@@ -10,10 +11,13 @@ import junit.framework.Assert;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Created by alexeyglushkov on 26.09.15.
@@ -25,6 +29,8 @@ public class DiskCacheProvider implements CacheProvider {
     private File directory;
     private Map<Class,Serializer> serializerMap;
     private Error lastError;
+
+    private SparseArray<WeakReference<Object>> lockMap = new SparseArray<>();
 
     public DiskCacheProvider(File directory) {
         this.directory = directory;
@@ -39,7 +45,7 @@ public class DiskCacheProvider implements CacheProvider {
     public Error put(String key, Object entry, Serializable metadata) {
         Error error = prepareDirectory();
         if (error == null) {
-            error = write(key, entry, (DiskCacheMetadata)metadata);
+            error = write(key, entry, (DiskCacheMetadata) metadata);
             setLastError(error);
         }
 
@@ -73,14 +79,12 @@ public class DiskCacheProvider implements CacheProvider {
 
     private File getKeyFile(int hash) {
         String fileName = Integer.toString(hash);
-        File file = new File(directory.getPath() + File.separator + fileName);
-        return file;
+        return new File(directory.getPath() + File.separator + fileName);
     }
 
     private File getKeyMetadataFile(int hash) {
         String fileName = Integer.toString(hash) + METADATA_PREFIX;
-        File file = new File(directory.getPath() + File.separator + fileName);
-        return file;
+        return new File(directory.getPath() + File.separator + fileName);
     }
 
     private boolean isMetadataFile(File file) {
@@ -88,20 +92,45 @@ public class DiskCacheProvider implements CacheProvider {
     }
 
     private Error write(String key, Object object, DiskCacheMetadata metadata) {
-        return writeByHash(key.hashCode(), object, metadata);
+        int hashCode = key.hashCode();
+        Error error = null;
+        Object lockObject = getLockObject(hashCode);
+        synchronized (lockObject) {
+            error = writeByHash(key.hashCode(), object, metadata);
+        }
+
+        return error;
+    }
+
+    synchronized private Object getLockObject(int hash) {
+        WeakReference<Object> lockObjectRef = lockMap.get(hash);
+        Object lockObject = null;
+        if (lockObjectRef != null) {
+            lockObject = lockObjectRef.get();
+            if (lockObject == null) {
+                lockObject = createLockObject(hash);
+            }
+        } else {
+            lockObject = createLockObject(hash);
+        }
+        return lockObject;
+    }
+
+    private Object createLockObject(int hash) {
+        Object lockObject;
+        lockObject = new Object();
+        lockMap.put(hash, new WeakReference<>(lockObject));
+        return lockObject;
     }
 
     private Error writeByHash(int hash, Object object, DiskCacheMetadata metadata) {
         Error error = null;
 
-        File file = null;
-        if (error == null) {
-            file = getKeyFile(hash);
-            if (file.exists()) {
-                if (!file.delete()) {
-                    error = new Error("DiskCacheProvider.writeByHash() delete: can't delete cache file");
-                    setLastError(error);
-                }
+        File file = getKeyFile(hash);
+        if (file.exists()) {
+            if (!file.delete()) {
+                error = new Error("DiskCacheProvider.writeByHash() delete: can't delete cache file");
+                setLastError(error);
             }
         }
 
@@ -153,12 +182,14 @@ public class DiskCacheProvider implements CacheProvider {
 
     @Override
     public Object getValue(String key) {
+        Object result = null;
         DiskCacheEntry entry = (DiskCacheEntry)getEntry(key);
 
         if (entry != null) {
-            return entry.getObject();
+            result = entry.getObject();
         }
-        return null;
+
+        return result;
     }
 
     public Serializable getMetadata(String key) {
@@ -167,7 +198,14 @@ public class DiskCacheProvider implements CacheProvider {
 
     @Override
     public CacheEntry getEntry(String key) {
-        return getEntryByHash(key.hashCode());
+        int hashCode = key.hashCode();
+        CacheEntry entry = null;
+        Object lockObject = getLockObject(hashCode);
+        synchronized (lockObject) {
+            entry = getEntryByHash(hashCode);
+        }
+
+        return entry;
     }
 
     private CacheEntry getEntryByHash(int hash) {
@@ -201,11 +239,15 @@ public class DiskCacheProvider implements CacheProvider {
 
     @Override
     public Error remove(String key) {
+        int hashCode = key.hashCode();
         Error error = null;
-        CacheEntry entry = getEntry(key);
-        if (entry != null) {
-            error = entry.delete();
-            setLastError(error);
+        Object lockObject = getLockObject(hashCode);
+        synchronized (lockObject) {
+            CacheEntry entry = getEntry(key);
+            if (entry != null) {
+                error = entry.delete();
+                setLastError(error);
+            }
         }
         return error;
     }
@@ -227,9 +269,12 @@ public class DiskCacheProvider implements CacheProvider {
         for (File file : files) {
             if (!isMetadataFile(file)) {
                 int hash = Integer.parseInt(file.getName());
-                CacheEntry entry = getEntryByHash(hash);
-                if (entry != null) {
-                    entries.add(entry);
+                Object lockObject = getLockObject(hash);
+                synchronized (lockObject) {
+                    CacheEntry entry = getEntryByHash(hash);
+                    if (entry != null) {
+                        entries.add(entry);
+                    }
                 }
             }
         }
@@ -254,10 +299,15 @@ public class DiskCacheProvider implements CacheProvider {
         Error error = null;
         List<CacheEntry> entries = getEntries();
         for (CacheEntry file : entries) {
-            Error deleteError = file.delete();
-            if (deleteError == null) {
-                error = deleteError;
-                setLastError(error);
+            DiskCacheEntry diskCacheEntry = (DiskCacheEntry)file;
+            int hash = diskCacheEntry.getFileName().hashCode();
+            Object lockObject = getLockObject(hash);
+            synchronized (lockObject) {
+                Error deleteError = file.delete();
+                if (deleteError == null) {
+                    error = deleteError;
+                    setLastError(error);
+                }
             }
         }
 

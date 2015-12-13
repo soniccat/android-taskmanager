@@ -5,6 +5,10 @@ import com.example.alexeyglushkov.authcachemanager.AccountCacheStore;
 import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient;
+import com.example.alexeyglushkov.cachemanager.CacheCleaner;
+import com.example.alexeyglushkov.cachemanager.CacheProvider;
+import com.example.alexeyglushkov.cachemanager.DiskCacheCleaner;
+import com.example.alexeyglushkov.cachemanager.DiskCacheProvider;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.rssclient.model.RssStorage;
@@ -23,6 +27,8 @@ public class MainApplication extends Application {
     private TaskManager taskManager;
     private RssStorage rssStorage;
 
+    private CacheProvider cacheProvider;
+
     public static MainApplication instance;
 
     public MainApplication() {
@@ -31,6 +37,11 @@ public class MainApplication extends Application {
         authWebClient = new AuthActivityProxy();
         taskManager = new SimpleTaskManager(10);
         rssStorage = new RssStorage("RssStorage");
+
+        File cacheDir = getDir("ServiceCache", MODE_PRIVATE);
+        cacheProvider = new DiskCacheProvider(cacheDir);
+
+        cleanCache();
         loadAccountStore();
     }
 
@@ -48,6 +59,24 @@ public class MainApplication extends Application {
 
     public OAuthWebClient getAuthWebClient() {
         return authWebClient;
+    }
+
+    public CacheProvider getCacheProvider() {
+        return cacheProvider;
+    }
+
+    public void cleanCache() {
+        final Task cleanTask = new SimpleTask() {
+            @Override
+            public void startTask() {
+                CacheCleaner cleaner = new DiskCacheCleaner();
+                cleaner.clean(getCacheProvider());
+
+                getPrivate().handleTaskCompletion();
+            }
+        };
+
+        taskManager.addTask(cleanTask);
     }
 
     public void loadAccountStore() {
