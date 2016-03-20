@@ -1,36 +1,43 @@
 package com.example.alexeyglushkov.authorization.Api;
 
+import com.example.alexeyglushkov.authorization.OAuth.OAuthConstants;
 import com.example.alexeyglushkov.authorization.Tools.JsonTokenExtractor;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthConfig;
 import com.example.alexeyglushkov.authorization.Tools.TokenExtractor;
+import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
+import com.example.alexeyglushkov.authorization.requestbuilder.Verb;
 
 import junit.framework.Assert;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+// TODO: refactor as QuizletApi
 public class Foursquare2Api extends DefaultApi20
 {
   private static final String AUTHORIZATION_URL = "https://foursquare.com/oauth2/authenticate?client_id=%s&response_type=code&redirect_uri=%s";
 
   @Override
-  public String getAccessTokenEndpoint(OAuthConfig config)
-  {
-    return "https://foursquare.com/oauth2/access_token?grant_type=authorization_code";
-  }
-
-  @Override
   public String getAuthorizationUrl(OAuthConfig config)
   {
-    Assert.assertNotNull(config.getCallback(), "Must provide a valid url as callback. Foursquare2 does not support OOB");
-    String callback = null;
-    try {
-      callback = URLEncoder.encode(config.getCallback(), "UTF-8");
-    } catch (UnsupportedEncodingException exception) {
-      return null;
-    }
+    String callback = getEncodedCallback(config);
+
+    Assert.assertNotNull(config.getCallback(), "Must provide a valid url as callback.");
 
     return String.format(AUTHORIZATION_URL, config.getApiKey(), callback);
+  }
+
+  public void fillAccessTokenConnectionBuilder(HttpUrlConnectionBuilder builder, OAuthConfig config, String code) {
+    builder.setUrl("https://foursquare.com/oauth2/access_token?grant_type=authorization_code");
+
+    builder.addQuerystringParameter(OAuthConstants.CLIENT_ID, config.getApiKey());
+    builder.addQuerystringParameter(OAuthConstants.CLIENT_SECRET, config.getApiSecret());
+    builder.addQuerystringParameter(OAuthConstants.CODE, code);
+    builder.addQuerystringParameter(OAuthConstants.REDIRECT_URI, config.getCallback());
+
+    if (config.hasScope()) {
+      builder.addQuerystringParameter(OAuthConstants.SCOPE, config.getScope());
+    }
   }
 
   @Override

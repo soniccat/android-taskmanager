@@ -3,6 +3,7 @@ package com.example.alexeyglushkov.authorization.requestbuilder;
 import android.util.Log;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -115,7 +116,9 @@ public class HttpUrlConnectionBuilder
     }
 
     conn.setDoOutput(true);
-    conn.getOutputStream().write(content);
+    OutputStream os = conn.getOutputStream();
+    os.write(content);
+    os.close();
   }
 
   /**
@@ -258,28 +261,29 @@ public class HttpUrlConnectionBuilder
    */
   public String getBodyContents()
   {
-    try
+    //try
     {
       return new String(getByteBodyContents(),getCharset());
     }
-    catch(UnsupportedEncodingException uee)
+    /*catch(UnsupportedEncodingException uee)
     {
       return null;
-    }
+    }*/
   }
 
   byte[] getByteBodyContents()
   {
     if (bytePayload != null) return bytePayload;
     String body = (payload != null) ? payload : bodyParams.asFormUrlEncodedString();
-    try
+    //try
     {
       return body.getBytes(getCharset());
     }
-    catch(UnsupportedEncodingException uee)
+    /*catch(UnsupportedEncodingException uee)
     {
+      uee.printStackTrace();
       return null;
-    }
+    }*/
   }
 
   /**
@@ -307,9 +311,9 @@ public class HttpUrlConnectionBuilder
    *
    * @return charset
    */
-  public String getCharset()
+  public Charset getCharset()
   {
-    return charset == null ? Charset.defaultCharset().name() : charset;
+    return charset == null ? Charset.forName("UTF-8") :  Charset.forName(charset);
   }
 
   /**

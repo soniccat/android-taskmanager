@@ -58,11 +58,8 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
 
   @Override
   public void retrieveAccessToken(String code, final OAuthCompletion completion) {
-    HttpUrlConnectionBuilder builder = new HttpUrlConnectionBuilder()
-            .setVerb(api.getAccessTokenVerb())
-            .setUrl(api.getAccessTokenEndpoint(config));
-
-    addAcessTokenParameters(code, builder);
+    HttpUrlConnectionBuilder builder = new HttpUrlConnectionBuilder();
+    api.fillAccessTokenConnectionBuilder(builder, config, code);
 
     final ServiceCommand command = commandProvider.getServiceCommand(builder);
     command.setServiceCommandCallback(new ServiceCommand.Callback() {
@@ -73,22 +70,6 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
     });
 
     commandRunner.run(command);
-  }
-
-  private void addAcessTokenParameters(String code, HttpUrlConnectionBuilder builder) {
-    builder.addQuerystringParameter(OAuthConstants.CLIENT_ID, config.getApiKey());
-    builder.addQuerystringParameter(OAuthConstants.CODE, code);
-    builder.addQuerystringParameter(OAuthConstants.REDIRECT_URI, config.getCallback());
-    if(config.hasScope()) {
-      builder.addQuerystringParameter(OAuthConstants.SCOPE, config.getScope());
-    }
-
-    Map<String, String> parameters = api.getAccessTokenPostParameters(config);
-    if (parameters != null) {
-      for (HashMap.Entry<String, String> entry : parameters.entrySet()) {
-        builder.addBodyParameter(entry.getKey(), entry.getValue());
-      }
-    }
   }
 
   /**

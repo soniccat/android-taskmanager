@@ -1,12 +1,17 @@
 package com.example.alexeyglushkov.authorization.Api;
 
+import android.support.annotation.Nullable;
+
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.OAuth.OAuth20AuthorizerImpl;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthConfig;
 import com.example.alexeyglushkov.authorization.OAuth.TokenExtractor20Impl;
 import com.example.alexeyglushkov.authorization.Tools.TokenExtractor;
+import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
 import com.example.alexeyglushkov.authorization.requestbuilder.Verb;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,65 +33,60 @@ import java.util.Map;
  */
 public abstract class DefaultApi20 implements OAuthApi
 {
-  private OAuthConfig config;
+    private OAuthConfig config;
 
-  @Override
-  public void setOAuthConfig(OAuthConfig config) {
-    this.config = config;
-  }
+    @Override
+    public void setOAuthConfig(OAuthConfig config) {
+        this.config = config;
+    }
 
-  @Override
-  public OAuthConfig getOAuthConfig() {
-    return config;
-  }
+    @Override
+    public OAuthConfig getOAuthConfig() {
+        return config;
+    }
 
-  /**
-   * Returns the access token extractor.
-   * 
-   * @return access token extractor
-   */
-  public TokenExtractor getAccessTokenExtractor()
-  {
-    return new TokenExtractor20Impl();
-  }
-	
-  /**
-   * Returns the verb for the access token endpoint (defaults to GET)
-   * 
-   * @return access token endpoint verb
-   */
-  public Verb getAccessTokenVerb()
-  {
-    return Verb.GET;
-  }
+    /**
+     * Returns the access token extractor.
+     *
+     * @return access token extractor
+     */
+    public TokenExtractor getAccessTokenExtractor()
+    {
+        return new TokenExtractor20Impl();
+    }
 
-  // to provide additional parameters
-  public Map<String, String> getAccessTokenPostParameters(OAuthConfig config) {
-    return null;
-  }
-	
-  /**
-   * Returns the URL that receives the access token requests.
-   * 
-   * @return access token URL
-   */
-  public abstract String getAccessTokenEndpoint(OAuthConfig config);
-	
-  /**
-   * Returns the URL where you should redirect your users to authenticate
-   * your application.
-   *
-   * @param config OAuth 2.0 configuration param object
-   * @return the URL where you should redirect your users
-   */
-  public abstract String getAuthorizationUrl(OAuthConfig config);
+    /**
+     * Returns the verb for the access token endpoint (defaults to GET)
+     *
+     * @return access token endpoint verb
+     */
+    public abstract void fillAccessTokenConnectionBuilder(HttpUrlConnectionBuilder builder, OAuthConfig config, String code);
 
-  /**
-   * {@inheritDoc}
-   */
-  public Authorizer createAuthorizer()
-  {
-    return new OAuth20AuthorizerImpl(this, config);
-  }
+    /**
+     * Returns the URL where you should redirect your users to authenticate
+     * your application.
+     *
+     * @param config OAuth 2.0 configuration param object
+     * @return the URL where you should redirect your users
+     */
+    public abstract String getAuthorizationUrl(OAuthConfig config);
 
+    /**
+     * {@inheritDoc}
+     */
+    public Authorizer createAuthorizer()
+    {
+        return new OAuth20AuthorizerImpl(this, config);
+    }
+
+    @Nullable
+    protected String getEncodedCallback(OAuthConfig config) {
+        String callback = null;
+        try {
+            callback = URLEncoder.encode(config.getCallback(), "UTF-8");
+        } catch (UnsupportedEncodingException exception) {
+            return null;
+        }
+        return callback;
+    }
 }

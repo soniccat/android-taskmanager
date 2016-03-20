@@ -3,58 +3,58 @@ package com.example.alexeyglushkov.authorization.Api;
 import android.util.Base64;
 
 import com.example.alexeyglushkov.authorization.OAuth.OAuthConfig;
+import com.example.alexeyglushkov.authorization.OAuth.OAuthConstants;
 import com.example.alexeyglushkov.authorization.Tools.JsonTokenExtractor;
 import com.example.alexeyglushkov.authorization.Tools.TokenExtractor;
+import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
 import com.example.alexeyglushkov.authorization.requestbuilder.Verb;
 
 import junit.framework.Assert;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Locale;
 import java.util.Random;
 
 /**
  * Created by alexeyglushkov on 20.03.16.
  */
 public class QuizletApi2 extends DefaultApi20 {
-
-    private static final String AUTHORIZATION_URL = "https://quizlet.com/authorize?client_id=%s&response_type=code&scope=read%%20write_set&state=%d&redirect_uri=%s";
-
     @Override
     public String getAuthorizationUrl(OAuthConfig config)
     {
-        Assert.assertNotNull(config.getCallback(), "Must provide a valid url as callback. Foursquare2 does not support OOB");
-        String callback = null;
-        try {
-            callback = URLEncoder.encode(config.getCallback(), "UTF-8");
-        } catch (UnsupportedEncodingException exception) {
-            return null;
-        }
+        String callback = getEncodedCallback(config);
 
-        return String.format(AUTHORIZATION_URL, config.getApiKey(), new Random().nextInt() % 10000, callback);
+        Assert.assertNotNull(config.getCallback(), "Callback mustn't be null");
+        Assert.assertNotNull(config.getApiKey(), "ApiKey mustn't be null");
+        Assert.assertNotNull(config.getApiSecret(), "ApiSecret mustn't be null");
+
+        StringBuilder urlBuilder = new StringBuilder("https://quizlet.com/authorize");
+        urlBuilder.append(String.format(Locale.US, "?client_id=%s",config.getApiKey()));
+        urlBuilder.append("&response_type=code");
+        urlBuilder.append("&scope=read%20write_set");
+        urlBuilder.append(String.format(Locale.US, "&state=%d", getAuthUrlState()));
+        urlBuilder.append(String.format(Locale.US, "&redirect_uri=%s", callback));
+
+        return urlBuilder.toString();
     }
 
-    @Override
-    public String getAccessTokenEndpoint(OAuthConfig config) {
-        return "https://api.quizlet.com/oauth/token";
+    private int getAuthUrlState() {
+        return new Random().nextInt() % 10000;
     }
 
-    @Override
-    public Verb getAccessTokenVerb() {
-        return Verb.POST;
+    public void fillAccessTokenConnectionBuilder(HttpUrlConnectionBuilder builder, OAuthConfig config, String code) {
+        builder.setUrl("https://api.quizlet.com/oauth/token")
+        .setVerb(Verb.POST);
+
+        builder.addBodyParameter("grant_type", "authorization_code");
+        builder.addBodyParameter(OAuthConstants.CODE, code);
+        builder.addBodyParameter(OAuthConstants.REDIRECT_URI, config.getCallback());
+
+        builder.addHeader("Authorization", getAuthHeader(config.getApiKey(), config.getApiSecret()));
     }
 
-    @Override
-    public Map<String, String> getAccessTokenPostParameters(OAuthConfig config) {
-        Map<String, String> parameters = new HashMap<>();
-        String stringToEncode = config.getApiKey() + ":" + config.getApiSecret();
+    private String getAuthHeader(String clentId, String secretKey) {
+        String stringToEncode = clentId + ":" + secretKey;
         String encodedString = Base64.encodeToString(stringToEncode.getBytes(), Base64.DEFAULT);
-        parameters.put("Basic Authorization", encodedString);
-        parameters.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-
-        return parameters;
+        return "Basic " + encodedString;
     }
 
     @Override
