@@ -62,7 +62,8 @@ public class DiskCacheMetadata extends HashMap<String, Object>
     }
 
     public long getExpireTime() {
-        return (long)get(expireTimeKey);
+        Long value = (Long)get(expireTimeKey);
+        return value == null ? 0 : value;
     }
 
     public void setExpireTime(long expireTime) {

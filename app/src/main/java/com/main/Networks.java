@@ -3,6 +3,7 @@ package com.main;
 import android.support.annotation.NonNull;
 
 import com.example.alexeyglushkov.authorization.Api.Foursquare2Api;
+import com.example.alexeyglushkov.authorization.Api.QuizletApi2;
 import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
@@ -19,12 +20,16 @@ import junit.framework.Assert;
 /**
  * Created by alexeyglushkov on 25.11.15.
  */
+
+// TODO: avoid method duplication for every network, move to classes
 public class Networks {
-    public static final String CALLBACK_URL = "http://localhost:9000/";
+    //TODO: it could be different for each network
+    public static final String CALLBACK_URL = "http://gaolife.blogspot.ru";
 
     public enum Network {
         None,
-        Foursquare;
+        Foursquare,
+        Quizlet;
 
         public static Network fromInt(int i) {
             return values()[i];
@@ -46,6 +51,9 @@ public class Networks {
     public static void restoreAuthorizer(Account acc) {
         if (acc.getServiceType() == Networks.Network.Foursquare.ordinal()) {
             acc.setAuthorizer(Networks.getFoursquareAuthorizer());
+
+        } else if (acc.getServiceType() == Network.Quizlet.ordinal()) {
+            acc.setAuthorizer(Networks.getQuizletAuthorizer());
         }
     }
 
@@ -53,6 +61,9 @@ public class Networks {
     public static Account createAccount(Network network) {
         if (network == Network.Foursquare) {
             return createFoursquareAccount();
+
+        } else if (network == Network.Quizlet) {
+            return createQuizletAccount();
         }
 
         Assert.assertTrue(false);
@@ -78,6 +89,32 @@ public class Networks {
                 .apiSecret(apiSecret)
                 .callback(CALLBACK_URL)
                 .build(new Foursquare2Api());
+        authorizer.setServiceCommandProvider(new ServiceTaskProvider());
+        authorizer.setServiceCommandRunner(new ServiceTaskRunner(getTaskManager(), "authorizerId"));
+        authorizer.setWebClient(getAuthWebClient());
+
+        return authorizer;
+    }
+
+    public static Account createQuizletAccount() {
+        Authorizer authorizer = getQuizletAuthorizer();
+        Account account = new SimpleAccount(Network.Quizlet.ordinal());
+        account.setAuthorizer(authorizer);
+        account.setAuthCredentialStore(getAccountStore());
+
+        return account;
+    }
+
+    @NonNull
+    public static Authorizer getQuizletAuthorizer() {
+        String apiKey = "9zpZ2myVfS";
+        String apiSecret = "bPHS9xz2sCXWwq5ddcWswG";
+
+        OAuth20Authorizer authorizer = (OAuth20Authorizer)new OAuthAuthorizerBuilder()
+                .apiKey(apiKey)
+                .apiSecret(apiSecret)
+                .callback(CALLBACK_URL)
+                .build(new QuizletApi2());
         authorizer.setServiceCommandProvider(new ServiceTaskProvider());
         authorizer.setServiceCommandRunner(new ServiceTaskRunner(getTaskManager(), "authorizerId"));
         authorizer.setWebClient(getAuthWebClient());

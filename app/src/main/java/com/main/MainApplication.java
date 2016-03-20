@@ -34,6 +34,12 @@ public class MainApplication extends Application {
     public MainApplication() {
         super();
         instance = this;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
         authWebClient = new AuthActivityProxy();
         taskManager = new SimpleTaskManager(10);
         rssStorage = new RssStorage("RssStorage");

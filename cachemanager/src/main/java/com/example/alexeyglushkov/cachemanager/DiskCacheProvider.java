@@ -22,6 +22,8 @@ import java.util.concurrent.locks.Lock;
 /**
  * Created by alexeyglushkov on 26.09.15.
  */
+
+// TODO: check synchronization
 public class DiskCacheProvider implements CacheProvider {
     private static String ERROR_TAG = "DiskCacheProvider error";
     private static String METADATA_PREFIX = "_metadata";

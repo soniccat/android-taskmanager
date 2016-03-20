@@ -89,7 +89,7 @@ public class MainActivity extends BaseActivity {
         Task authTask = new SimpleTask() {
             @Override
             public void startTask() {
-                final Account account = Networks.createAccount(Networks.Network.Foursquare);
+                final Account account = Networks.createAccount(Networks.Network.Quizlet);
                 account.authorize(new Authorizer.AuthorizerCompletion() {
                     @Override
                     public void onFinished(AuthCredentials credentials, Error error) {
@@ -127,12 +127,12 @@ public class MainActivity extends BaseActivity {
     private void initService() {
         service = new SimpleService();
 
-        List<Account> accounts = getAccountStore().getAccounts(Networks.Network.Foursquare.ordinal());
+        List<Account> accounts = getAccountStore().getAccounts(Networks.Network.Quizlet.ordinal());
         Account serviceAccount = null;
         if (accounts.size() > 0) {
             serviceAccount = accounts.get(0);
         } else {
-            serviceAccount = Networks.createAccount(Networks.Network.Foursquare);
+            serviceAccount = Networks.createAccount(Networks.Network.Quizlet);
         }
 
         service.setAccount(serviceAccount);

@@ -7,6 +7,9 @@ import com.example.alexeyglushkov.authorization.OAuth.TokenExtractor20Impl;
 import com.example.alexeyglushkov.authorization.Tools.TokenExtractor;
 import com.example.alexeyglushkov.authorization.requestbuilder.Verb;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Default implementation of the OAuth protocol, version 2.0 (draft 11)
  *
@@ -56,13 +59,18 @@ public abstract class DefaultApi20 implements OAuthApi
   {
     return Verb.GET;
   }
+
+  // to provide additional parameters
+  public Map<String, String> getAccessTokenPostParameters(OAuthConfig config) {
+    return null;
+  }
 	
   /**
    * Returns the URL that receives the access token requests.
    * 
    * @return access token URL
    */
-  public abstract String getAccessTokenEndpoint();
+  public abstract String getAccessTokenEndpoint(OAuthConfig config);
 	
   /**
    * Returns the URL where you should redirect your users to authenticate

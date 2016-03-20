@@ -14,7 +14,7 @@ public class Foursquare2Api extends DefaultApi20
   private static final String AUTHORIZATION_URL = "https://foursquare.com/oauth2/authenticate?client_id=%s&response_type=code&redirect_uri=%s";
 
   @Override
-  public String getAccessTokenEndpoint()
+  public String getAccessTokenEndpoint(OAuthConfig config)
   {
     return "https://foursquare.com/oauth2/access_token?grant_type=authorization_code";
   }
