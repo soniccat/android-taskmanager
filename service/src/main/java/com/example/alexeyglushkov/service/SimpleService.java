@@ -18,8 +18,8 @@ import java.io.File;
  */
 public class SimpleService implements Service {
     private Account account;
-    private ServiceCommandProvider commandProvider;
-    private ServiceCommandRunner commandRunner;
+    protected ServiceCommandProvider commandProvider;
+    protected ServiceCommandRunner commandRunner;
 
     // to run authorization
     private HandlerThread authThread;
@@ -62,20 +62,32 @@ public class SimpleService implements Service {
         }
     }
 
-    private void authorizeAndRun(final ServiceCommand command) {
+    protected void authorizeAndRun(final ServiceCommand command) {
+        authorize(new Authorizer.AuthorizerCompletion() {
+            @Override
+            public void onFinished(AuthCredentials credentials, Error error) {
+                if (error == null) {
+                    runCommand(command, false);
+                } else {
+                    commandRunner.cancel(command);
+                }
+            }
+        });
+    }
+
+    protected void authorizeIfNeeded(final Authorizer.AuthorizerCompletion completion) {
+        if (getAccount().isAuthorized()) {
+            completion.onFinished(getAccount().getCredentials(), null);
+        } else {
+            authorize(completion);
+        }
+    }
+
+    protected void authorize(final Authorizer.AuthorizerCompletion completion) {
         runAsync(new Runnable() {
             @Override
             public void run() {
-                account.authorize(new Authorizer.AuthorizerCompletion() {
-                    @Override
-                    public void onFinished(AuthCredentials credentials, Error error) {
-                        if (error == null) {
-                            runCommand(command, false);
-                        } else {
-                            commandRunner.cancel(command);
-                        }
-                    }
-                });
+                account.authorize(completion);
             }
         });
     }
@@ -96,5 +108,9 @@ public class SimpleService implements Service {
 
     private void runAsync(Runnable runnable) {
         Tools.runOnHandlerThread(getAuthHandler(), runnable);
+    }
+
+    public interface CommandCallback {
+        void onCompleted(Error error);
     }
 }

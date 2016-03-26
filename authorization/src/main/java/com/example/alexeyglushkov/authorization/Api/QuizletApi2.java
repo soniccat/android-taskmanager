@@ -1,15 +1,25 @@
 package com.example.alexeyglushkov.authorization.Api;
 
+import android.support.annotation.NonNull;
 import android.util.Base64;
 
+import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthConfig;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthConstants;
+import com.example.alexeyglushkov.authorization.OAuth.OAuthCredentials;
+import com.example.alexeyglushkov.authorization.OAuth.Token;
 import com.example.alexeyglushkov.authorization.Tools.JsonTokenExtractor;
 import com.example.alexeyglushkov.authorization.Tools.TokenExtractor;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
 import com.example.alexeyglushkov.authorization.requestbuilder.Verb;
 
 import junit.framework.Assert;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Random;
 
@@ -22,9 +32,9 @@ public class QuizletApi2 extends DefaultApi20 {
     {
         String callback = getEncodedCallback(config);
 
-        Assert.assertNotNull(config.getCallback(), "Callback mustn't be null");
-        Assert.assertNotNull(config.getApiKey(), "ApiKey mustn't be null");
-        Assert.assertNotNull(config.getApiSecret(), "ApiSecret mustn't be null");
+        Assert.assertNotNull("Callback mustn't be null", config.getCallback());
+        Assert.assertNotNull("ApiKey mustn't be null", config.getApiKey());
+        Assert.assertNotNull("ApiSecret mustn't be null", config.getApiSecret());
 
         StringBuilder urlBuilder = new StringBuilder("https://quizlet.com/authorize");
         urlBuilder.append(String.format(Locale.US, "?client_id=%s",config.getApiKey()));
@@ -58,8 +68,38 @@ public class QuizletApi2 extends DefaultApi20 {
     }
 
     @Override
-    public TokenExtractor getAccessTokenExtractor()
-    {
-        return new JsonTokenExtractor();
+    public OAuthCredentials createCredentials(String response) {
+        OAuthCredentials credentials = null;
+
+        try {
+            credentials = parseResponse(response);
+        } catch (JSONException ex) {
+
+        }
+
+        return credentials;
+    }
+
+    @NonNull
+    private OAuthCredentials parseResponse(String response) throws JSONException {
+        OAuthCredentials credentials;
+        credentials = new OAuthCredentials();
+        JSONObject jsonObject = new JSONObject(response);
+        credentials.setAccessToken(jsonObject.getString("access_token"));
+        credentials.setUserId(jsonObject.getString("user_id"));
+
+        String scope = jsonObject.getString("scope");
+        credentials.setScopes(scope.split(" "));
+
+        int expiresIn = jsonObject.getInt("expires_in");
+        long currentTime = System.currentTimeMillis() / 1000L;
+        credentials.setExpireTime(currentTime + expiresIn);
+        return credentials;
+    }
+
+    @Override
+    public void signCommand(ServiceCommand command, OAuthCredentials credentials) {
+        String authString = "Bearer " + credentials.getAccessToken();
+        command.getConnectionBulder().addHeader("Authorization", authString);
     }
 }

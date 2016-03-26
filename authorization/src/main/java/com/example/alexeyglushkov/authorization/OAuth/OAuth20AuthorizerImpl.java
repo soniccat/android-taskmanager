@@ -88,8 +88,6 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
   @Override
   public void authorize(final AuthorizerCompletion completion) {
     String code = webAuthorization();
-    final OAuthCredentials authCredentials = new OAuthCredentials();
-
     if (code == null) {
       completion.onFinished(null, new Error("OAuthPocketServiceImpl authorize: Can't receive code"));
 
@@ -98,10 +96,8 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
         @Override
         public void onCompleted(ServiceCommand command) {
           String response = command.getResponse();
-          Token accessToken = response != null ? api.getAccessTokenExtractor().extract(response) : null;
-
-          if (accessToken != null) {
-            authCredentials.setAccessToken(accessToken.getToken());
+          OAuthCredentials authCredentials = api.createCredentials(response);
+          if (authCredentials != null && authCredentials.isValid()) {
             completion.onFinished(authCredentials, null);
           } else {
             completion.onFinished(null, new Error("OAuthPocketServiceImpl authorize: Can't receive requestToken"));
@@ -156,6 +152,6 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
 
   public void signCommand(ServiceCommand command, AuthCredentials credentials) {
     OAuthCredentials oAuthCredentials = (OAuthCredentials)credentials;
-    command.getConnectionBulder().addQuerystringParameter(OAuthConstants.TOKEN, oAuthCredentials.getAccessToken());
+    api.signCommand(command, oAuthCredentials);
   }
 }

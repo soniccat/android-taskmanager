@@ -3,6 +3,8 @@ package com.example.alexeyglushkov.authorization.OAuth;
 import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by alexeyglushkov on 31.10.15.
@@ -14,6 +16,8 @@ public class OAuthCredentials implements AuthCredentials, Serializable {
     private String accessToken;
     private String requestToken;
     private String refreshToken;
+    private String userId;
+    private String[] scopes = new String[]{};
     private long expireTime;
 
     // AuthCredentials implementation
@@ -62,5 +66,21 @@ public class OAuthCredentials implements AuthCredentials, Serializable {
 
     public String getRefreshToken() {
         return refreshToken;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String[] getScopes() {
+        return scopes;
+    }
+
+    public void setScopes(String[] scopes) {
+        this.scopes = scopes;
     }
 }

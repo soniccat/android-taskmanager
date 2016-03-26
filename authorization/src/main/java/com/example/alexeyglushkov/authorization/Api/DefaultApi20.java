@@ -2,9 +2,13 @@ package com.example.alexeyglushkov.authorization.Api;
 
 import android.support.annotation.Nullable;
 
+import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
+import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.OAuth.OAuth20AuthorizerImpl;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthConfig;
+import com.example.alexeyglushkov.authorization.OAuth.OAuthConstants;
+import com.example.alexeyglushkov.authorization.OAuth.OAuthCredentials;
 import com.example.alexeyglushkov.authorization.OAuth.TokenExtractor20Impl;
 import com.example.alexeyglushkov.authorization.Tools.TokenExtractor;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
@@ -46,16 +50,6 @@ public abstract class DefaultApi20 implements OAuthApi
     }
 
     /**
-     * Returns the access token extractor.
-     *
-     * @return access token extractor
-     */
-    public TokenExtractor getAccessTokenExtractor()
-    {
-        return new TokenExtractor20Impl();
-    }
-
-    /**
      * Returns the verb for the access token endpoint (defaults to GET)
      *
      * @return access token endpoint verb
@@ -77,6 +71,12 @@ public abstract class DefaultApi20 implements OAuthApi
     public Authorizer createAuthorizer()
     {
         return new OAuth20AuthorizerImpl(this, config);
+    }
+
+    public abstract OAuthCredentials createCredentials(String response);
+
+    public void signCommand(ServiceCommand command, OAuthCredentials credentials) {
+        command.getConnectionBulder().addQuerystringParameter(OAuthConstants.TOKEN, credentials.getAccessToken());
     }
 
     @Nullable

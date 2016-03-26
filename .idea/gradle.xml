@@ -15,6 +15,7 @@
             <option value="$PROJECT_DIR$/authorization" />
             <option value="$PROJECT_DIR$/authtaskmanager" />
             <option value="$PROJECT_DIR$/cachemanager" />
+            <option value="$PROJECT_DIR$/quizletservice" />
             <option value="$PROJECT_DIR$/scribeauthorization" />
             <option value="$PROJECT_DIR$/service" />
             <option value="$PROJECT_DIR$/streamlib" />

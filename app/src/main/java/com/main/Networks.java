@@ -17,6 +17,8 @@ import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
 import junit.framework.Assert;
 
+import java.util.List;
+
 /**
  * Created by alexeyglushkov on 25.11.15.
  */
@@ -46,6 +48,20 @@ public class Networks {
 
     public static AccountStore getAccountStore() {
         return MainApplication.instance.getAccountStore();
+    }
+
+    public static Account getAccount(int serviceType) {
+        Assert.assertNotNull("accountStore must exists", getAccountStore());
+
+        List<Account> accounts = getAccountStore().getAccounts(serviceType);
+        Account account = null;
+        if (accounts.size() > 0) {
+            account = accounts.get(0);
+        } else {
+            account = createAccount(Networks.Network.Quizlet);
+        }
+
+        return account;
     }
 
     public static void restoreAuthorizer(Account acc) {

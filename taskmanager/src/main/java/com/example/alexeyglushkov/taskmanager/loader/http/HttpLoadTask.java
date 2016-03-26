@@ -1,5 +1,6 @@
 package com.example.alexeyglushkov.taskmanager.loader.http;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -8,6 +9,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 
 import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
+import com.example.alexeyglushkov.streamlib.readersandwriters.StringReader;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 
 // Reader - object which converts a stream to an object of another data type and then delegates it to its handler or just return it if handler is empty
@@ -78,8 +80,9 @@ public class HttpLoadTask extends SimpleTask {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
-            getPrivate().setTaskError(new Error("Load error"));
+            String errorString = getErrorString(connection);
+            getPrivate().setTaskError(new Error(errorString));
+            Log.d("HttpLoadTask", getTaskError().toString());
 
         } finally {
             try {
@@ -94,6 +97,21 @@ public class HttpLoadTask extends SimpleTask {
 
         getPrivate().handleTaskCompletion();
         return;
+    }
+
+    @NonNull
+    private String getErrorString(HttpURLConnection connection) {
+        String result = "HttpLoadTask load error";
+        try {
+            StringReader errorReader = new StringReader(null);
+            String errorString = errorReader.readStreamToString(connection.getErrorStream());
+
+            result = "HttpLoadTask load error, url " + connection.getURL() + " code: " + connection.getResponseCode() + " message: " + connection.getResponseMessage() + " response " + errorString;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
     protected Object handleStream(InputStream stream) {

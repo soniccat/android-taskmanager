@@ -21,6 +21,7 @@ public interface ServiceCommand {
     boolean isCancelled();
     void setServiceCommandCallback(Callback callback);
 
+    // TODO: need to pass an error or a way to get it
     interface Callback {
         void onCompleted();
     }

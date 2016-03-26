@@ -39,4 +39,5 @@ dependencies {
     compile project(':authtaskmanager')
     compile project(':authcachemanager')
     compile project(':service')
+    compile project(':quizletservice')
 }

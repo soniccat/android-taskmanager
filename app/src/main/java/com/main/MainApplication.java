@@ -4,13 +4,19 @@ import com.authorization.AuthActivityProxy;
 import com.example.alexeyglushkov.authcachemanager.AccountCacheStore;
 import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
+import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProvider;
+import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient;
+import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider;
+import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
 import com.example.alexeyglushkov.cachemanager.CacheCleaner;
 import com.example.alexeyglushkov.cachemanager.CacheProvider;
 import com.example.alexeyglushkov.cachemanager.DiskCacheCleaner;
 import com.example.alexeyglushkov.cachemanager.DiskCacheProvider;
+import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 import com.example.alexeyglushkov.taskmanager.task.Task;
+import com.example.alexeyglushkov.taskmanager.task.TaskProvider;
 import com.rssclient.model.RssStorage;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManager;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
@@ -18,11 +24,15 @@ import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 import android.app.Application;
 import android.content.Context;
 
+import junit.framework.Assert;
+
 import java.io.File;
 
 public class MainApplication extends Application {
     private AccountStore accountStore;
     private OAuthWebClient authWebClient;
+
+    private QuizletService quizletService;
 
     private TaskManager taskManager;
     private RssStorage rssStorage;
@@ -71,6 +81,10 @@ public class MainApplication extends Application {
         return cacheProvider;
     }
 
+    public QuizletService getQuizletService() {
+        return quizletService;
+    }
+
     public void cleanCache() {
         final Task cleanTask = new SimpleTask() {
             @Override
@@ -103,6 +117,7 @@ public class MainApplication extends Application {
             @Override
             public void onCompleted(boolean cancelled) {
                 MainApplication.this.accountStore = (AccountCacheStore) loadAccountTask.getTaskUserData();
+                onAccountStoreLoaded();
             }
         });
 
@@ -114,5 +129,19 @@ public class MainApplication extends Application {
             acc.setAuthCredentialStore(getAccountStore());
             Networks.restoreAuthorizer(acc);
         }
+    }
+
+    private void onAccountStoreLoaded() {
+        createQuizletService();
+    }
+
+    private void createQuizletService() {
+        Account quizletAccount = Networks.getAccount(Networks.Network.Quizlet.ordinal());
+        ServiceCommandProvider serviceCommandProvider = new ServiceTaskProvider();
+
+        String id = Integer.toString(quizletAccount.getServiceType());
+        ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
+
+        quizletService = new QuizletService(quizletAccount, serviceCommandProvider, serviceCommandRunner);
     }
 }

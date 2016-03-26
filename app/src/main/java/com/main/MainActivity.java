@@ -56,7 +56,7 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
 
         ListView listView = (ListView)findViewById(R.id.list);
-        listView.setAdapter(new ArrayAdapter<String>(this,android.R.layout.activity_list_item, android.R.id.text1, new String[]{"Rss Client", "Playground", "Authorization", "Run Request", "Clear cache"}));
+        listView.setAdapter(new ArrayAdapter<String>(this,android.R.layout.activity_list_item, android.R.id.text1, new String[]{"Rss Client", "Playground", "Authorization", "Run Request", "Clear cache", "Load Sets"}));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -70,6 +70,8 @@ public class MainActivity extends BaseActivity {
                     requestUser();
                 } else if (position == 4) {
                     clearCache();
+                } else if (position == 5) {
+                    loadSets();
                 }
             }
         });
@@ -152,6 +154,19 @@ public class MainActivity extends BaseActivity {
     private void clearCache() {
         getAccountStore().removeAll();
         getServiceCache().removeAll();
+    }
+
+    private void loadSets() {
+        getMainApplication().getQuizletService().loadSets(new SimpleService.CommandCallback() {
+            @Override
+            public void onCompleted(Error error) {
+                if (error != null) {
+                    Log.d("Quizlet", "error " + error.getMessage());
+                } else {
+                    Log.d("Quizlet", "fine ");
+                }
+            }
+        });
     }
 
     @Override

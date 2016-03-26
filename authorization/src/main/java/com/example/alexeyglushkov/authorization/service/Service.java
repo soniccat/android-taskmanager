@@ -14,5 +14,6 @@ public interface Service {
     void setServiceCommandProvider(ServiceCommandProvider provider);
     void setServiceCommandRunner(ServiceCommandRunner runner);
 
+    void runCommand(ServiceCommand command);
     void runCommand(ServiceCommand command, boolean needSign);
 }
