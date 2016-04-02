@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.id=":quizletservice" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$/.." external.system.id="GRADLE" external.system.module.group="android-taskmanager" external.system.module.version="unspecified" type="JAVA_MODULE" version="4">
+<module external.linked.project.id=":jacksonlib" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$/.." external.system.id="GRADLE" external.system.module.group="android-taskmanager" external.system.module.version="unspecified" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="android-gradle" name="Android-Gradle">
       <configuration>
-        <option name="GRADLE_PROJECT_PATH" value=":quizletservice" />
+        <option name="GRADLE_PROJECT_PATH" value=":jacksonlib" />
       </configuration>
     </facet>
     <facet type="android" name="Android">
@@ -65,13 +65,11 @@
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/rs" isTestSource="true" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/annotations" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/bundles" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dependency-cache" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/lint" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/rs" />
       <excludeFolder url="file://$MODULE_DIR$/build/outputs" />
       <excludeFolder url="file://$MODULE_DIR$/build/tmp" />
@@ -79,17 +77,7 @@
     <orderEntry type="jdk" jdkName="Android API 22 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="jackson-core-2.7.3" level="project" />
-    <orderEntry type="library" exported="" name="support-annotations-22.0.0" level="project" />
     <orderEntry type="library" exported="" name="jackson-annotations-2.7.0" level="project" />
     <orderEntry type="library" exported="" name="jackson-databind-2.7.3" level="project" />
-    <orderEntry type="library" exported="" name="objenesis-1.0" level="project" />
-    <orderEntry type="library" exported="" name="dexmaker-mockito-1.2" level="project" />
-    <orderEntry type="library" exported="" name="dexmaker-1.2" level="project" />
-    <orderEntry type="library" exported="" name="hamcrest-core-1.1" level="project" />
-    <orderEntry type="library" exported="" name="guava-18.0" level="project" />
-    <orderEntry type="library" exported="" name="mockito-core-1.9.5" level="project" />
-    <orderEntry type="module" module-name="jacksonlib" exported="" />
-    <orderEntry type="module" module-name="authorization" exported="" />
-    <orderEntry type="module" module-name="service" exported="" />
   </component>
 </module>
