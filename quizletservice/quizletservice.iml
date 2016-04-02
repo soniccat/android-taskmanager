@@ -78,13 +78,16 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 22 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" exported="" name="jackson-core-2.7.3" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-22.0.0" level="project" />
+    <orderEntry type="library" exported="" name="jackson-annotations-2.7.0" level="project" />
+    <orderEntry type="library" exported="" name="jackson-databind-2.7.3" level="project" />
     <orderEntry type="library" exported="" name="objenesis-1.0" level="project" />
     <orderEntry type="library" exported="" name="dexmaker-mockito-1.2" level="project" />
     <orderEntry type="library" exported="" name="dexmaker-1.2" level="project" />
     <orderEntry type="library" exported="" name="hamcrest-core-1.1" level="project" />
-    <orderEntry type="library" exported="" name="guava-18.0" level="project" />
     <orderEntry type="library" exported="" name="mockito-core-1.9.5" level="project" />
+    <orderEntry type="library" exported="" name="guava-18.0" level="project" />
     <orderEntry type="module" module-name="authorization" exported="" />
     <orderEntry type="module" module-name="service" exported="" />
   </component>
