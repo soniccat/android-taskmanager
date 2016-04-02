@@ -24,4 +24,5 @@ dependencies {
     compile project(':service')
     compile project(':authorization')
     compile project(':jacksonlib')
+    compile project(':authtaskmanager')
 }

@@ -13,36 +13,38 @@ import java.io.IOException;
 /**
  * Created by alexeyglushkov on 02.04.16.
  */
-public abstract class MyDeserializer<T> extends StdDeserializer<T> {
+public abstract class CustomDeserializer<T> extends StdDeserializer<T> {
     private static final long serialVersionUID = -7320280068663688141L;
 
-    public MyDeserializer(Class<?> vc) {
+    public CustomDeserializer(Class<?> vc) {
         super(vc);
     }
 
-    public MyDeserializer(JavaType valueType) {
+    public CustomDeserializer(JavaType valueType) {
         super(valueType);
     }
 
-    public MyDeserializer(StdDeserializer<?> src) {
+    public CustomDeserializer(StdDeserializer<?> src) {
         super(src);
     }
 
     @Override
     public T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        T object = createObject();
+
         while (p.nextValue() != null && p.getCurrentToken() != JsonToken.END_OBJECT) {
-            boolean isHandled = handle(p, ctxt);
+            boolean isHandled = handle(p, ctxt, object);
             if (!isHandled) {
                 skipElement(p);
             }
         }
 
-        return getResult();
+        return object;
     }
 
-    protected abstract boolean handle(JsonParser p, DeserializationContext ctxt) throws IOException;
+    protected abstract T createObject();
 
-    protected abstract T getResult();
+    protected abstract boolean handle(JsonParser p, DeserializationContext ctxt, T object) throws IOException;
 
     private void skipElement(JsonParser p) throws IOException {
         switch (p.getCurrentToken()) {

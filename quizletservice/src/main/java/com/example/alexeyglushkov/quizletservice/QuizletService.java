@@ -25,6 +25,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by alexeyglushkov on 26.03.16.
@@ -32,7 +35,9 @@ import java.io.IOException;
 public class QuizletService extends SimpleService {
     static final String server = "https://api.quizlet.com/2.0";
 
-    public QuizletService(Account account, ServiceCommandProvider commandProvider, ServiceCommandRunner commandRunner) {
+    private List<QuizletSet> sets = new ArrayList<>();
+
+    public QuizletService(Account account, QuizletCommandProvider commandProvider, ServiceCommandRunner commandRunner) {
         setAccount(account);
         setServiceCommandProvider(commandProvider);
         setServiceCommandRunner(commandRunner);
@@ -52,12 +57,7 @@ public class QuizletService extends SimpleService {
     }
 
     private void loadSetsAuthorized(final CommandCallback callback) {
-        HttpUrlConnectionBuilder requestBuilder = new HttpUrlConnectionBuilder();
-
-        String url = server + "/users/" + getOAuthCredentials().getUserId() + "/sets";
-        requestBuilder.setUrl(url);
-
-        final ServiceCommand command = commandProvider.getServiceCommand(requestBuilder);
+        final ServiceCommand command = getQuizletCommandProvider().getLoadSetsCommand(server, getOAuthCredentials().getUserId());
         command.setServiceCommandCallback(new ServiceCommand.Callback() {
             @Override
             public void onCompleted() {
@@ -75,16 +75,22 @@ public class QuizletService extends SimpleService {
         return (OAuthCredentials)getAccount().getCredentials();
     }
 
+    private QuizletCommandProvider getQuizletCommandProvider() {
+        return (QuizletCommandProvider)commandProvider;
+    }
+
     private void parseSets(String setsResponse) {
         try {
             SimpleModule md = new SimpleModule("QuizletModule", new Version(1,0,0,null,null,null));
             md.addDeserializer(QuizletSet.class, new QuizletSetDeserializer(QuizletSet.class));
             md.addDeserializer(QuizletUser.class, new QuizletUserDeserializer(QuizletUser.class));
+            md.addDeserializer(QuizletTerm.class, new QuizletTermDeserializer(QuizletTerm.class));
 
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(md);
 
-            QuizletSet[] sets = mapper.readValue(setsResponse, QuizletSet[].class);
+            QuizletSet[] setArray = mapper.readValue(setsResponse, QuizletSet[].class);
+            sets.addAll(Arrays.asList(setArray));
             Log.d("QuizletService", "success");
 
         } catch (IOException e) {

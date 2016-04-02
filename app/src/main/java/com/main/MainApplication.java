@@ -13,7 +13,9 @@ import com.example.alexeyglushkov.cachemanager.CacheCleaner;
 import com.example.alexeyglushkov.cachemanager.CacheProvider;
 import com.example.alexeyglushkov.cachemanager.DiskCacheCleaner;
 import com.example.alexeyglushkov.cachemanager.DiskCacheProvider;
+import com.example.alexeyglushkov.quizletservice.QuizletCommandProvider;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
+import com.example.alexeyglushkov.quizletservice.QuizletServiceTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskProvider;
@@ -137,11 +139,11 @@ public class MainApplication extends Application {
 
     private void createQuizletService() {
         Account quizletAccount = Networks.getAccount(Networks.Network.Quizlet.ordinal());
-        ServiceCommandProvider serviceCommandProvider = new ServiceTaskProvider();
+        QuizletCommandProvider quizletCommandProvider = new QuizletServiceTaskProvider();
 
         String id = Integer.toString(quizletAccount.getServiceType());
         ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
 
-        quizletService = new QuizletService(quizletAccount, serviceCommandProvider, serviceCommandRunner);
+        quizletService = new QuizletService(quizletAccount, quizletCommandProvider, serviceCommandRunner);
     }
 }

@@ -1,12 +1,13 @@
 package com.example.alexeyglushkov.quizletservice;
 
+import java.util.List;
+
 /**
  * Created by alexeyglushkov on 27.03.16.
  */
 public class QuizletSet {
     private long id;
     private String title;
-    private String createdBy;
     private long createDate;
     private long modifiedDate;
     private long publishedDate;
@@ -16,9 +17,9 @@ public class QuizletSet {
     private String description;
     private String langTerms;
     private String langDefs;
-    private long creatorId;
 
     private QuizletUser creator;
+    private List<QuizletTerm> terms;
 
     public long getId() {
         return id;
@@ -34,14 +35,6 @@ public class QuizletSet {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
     }
 
     public long getCreateDate() {
@@ -116,19 +109,19 @@ public class QuizletSet {
         this.langDefs = langDefs;
     }
 
-    public long getCreatorId() {
-        return creatorId;
-    }
-
-    public void setCreatorId(long creatorId) {
-        this.creatorId = creatorId;
-    }
-
     public QuizletUser getCreator() {
         return creator;
     }
 
     public void setCreator(QuizletUser creator) {
         this.creator = creator;
+    }
+
+    public List<QuizletTerm> getTerms() {
+        return terms;
+    }
+
+    public void setTerms(List<QuizletTerm> terms) {
+        this.terms = terms;
     }
 }
