@@ -96,4 +96,9 @@ public class ServiceTask extends CachedHttpLoadTask implements ServiceCommand {
             }
         });
     }
+
+    @Override
+    public ServiceCommand getServiceCommand() {
+        return this;
+    }
 }

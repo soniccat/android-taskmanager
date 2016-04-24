@@ -43,6 +43,8 @@ public class CachedHttpLoadTask extends HttpBytesLoadTask {
                     result = byteArrayReader.getByteArrayHandler().handleByteArrayBuffer(bytes);
                 }
 
+                //TODO: think to call base menthod which wrap calling this two
+                // now in base class something could be inserted after setHandleData and won't be called here
                 setHandledData(result);
                 getPrivate().handleTaskCompletion();
                 return;

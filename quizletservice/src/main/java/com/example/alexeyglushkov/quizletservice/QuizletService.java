@@ -1,9 +1,10 @@
 package com.example.alexeyglushkov.quizletservice;
 
+import android.support.annotation.NonNull;
+
 import com.example.alexeyglushkov.authorization.Auth.Account;
-import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
-import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
+import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProxy;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthCredentials;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
@@ -28,19 +29,21 @@ public class QuizletService extends SimpleService {
     }
 
     public void loadSets(final CommandCallback callback) {
-        authorizeIfNeeded(new Authorizer.AuthorizerCompletion() {
-            @Override
-            public void onFinished(AuthCredentials credentials, Error error) {
-                if (error != null) {
-                    callback.onCompleted(error);
-                } else {
-                    loadSetsAuthorized(callback);
-                }
-            }
-        });
+        runCommand(createSetsCommandProxy(callback), true, createAuthCompletion(callback));
     }
 
-    private void loadSetsAuthorized(final CommandCallback callback) {
+    @NonNull
+    private ServiceCommandProxy createSetsCommandProxy(final CommandCallback callback) {
+        return new ServiceCommandProxy() {
+            @Override
+            public ServiceCommand getServiceCommand() {
+                return createSetsCommand(callback);
+            }
+        };
+    }
+
+    @NonNull
+    private QuizletSetsCommand createSetsCommand(final CommandCallback callback) {
         final QuizletSetsCommand command = getQuizletCommandProvider().getLoadSetsCommand(server, getOAuthCredentials().getUserId());
         command.setServiceCommandCallback(new ServiceCommand.Callback() {
             @Override
@@ -50,11 +53,24 @@ public class QuizletService extends SimpleService {
                     sets.addAll(new ArrayList<>(Arrays.asList(command.getSets())));
                 }
 
-                callback.onCompleted(command.getCommandError());
+                if (callback != null) {
+                    callback.onCompleted(command.getCommandError());
+                }
             }
         });
+        return command;
+    }
 
-        runCommand(command, true);
+    @NonNull
+    private AuthCompletion createAuthCompletion(final CommandCallback callback) {
+        return new AuthCompletion() {
+            @Override
+            public void onFinished(ServiceCommand command, AuthError error) {
+                if (callback != null) {
+                    callback.onCompleted(error);
+                }
+            }
+        };
     }
 
     private OAuthCredentials getOAuthCredentials() {

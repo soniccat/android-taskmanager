@@ -8,10 +8,9 @@ import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProvider;
+import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProxy;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.service.Service;
-
-import java.io.File;
 
 /**
  * Created by alexeyglushkov on 26.11.15.
@@ -20,6 +19,7 @@ public class SimpleService implements Service {
     private Account account;
     protected ServiceCommandProvider commandProvider;
     protected ServiceCommandRunner commandRunner;
+    protected AuthCompletion authCompletion;
 
     // to run authorization
     private HandlerThread authThread;
@@ -48,39 +48,49 @@ public class SimpleService implements Service {
         this.commandRunner = runner;
     }
 
-    public void runCommand(ServiceCommand command) {
-        runCommand(command, true);
+    @Override
+    public void setAuthCompletion(AuthCompletion anAuthCompletion) {
+        authCompletion = anAuthCompletion;
+    }
+
+    public void runCommand(ServiceCommandProxy proxy) {
+        runCommand(proxy, true, authCompletion);
     }
 
     @Override
-    public void runCommand(final ServiceCommand command, final boolean needSign) {
-        if (needSign && !account.isAuthorized()) {
-            authorizeAndRun(command);
+    public void runCommand(ServiceCommandProxy proxy, boolean canSignIn) {
+        runCommand(proxy, canSignIn, authCompletion);
+    }
+
+    @Override
+    public void runCommand(final ServiceCommandProxy proxy, final boolean canSignIn, AuthCompletion anAuthCompletion) {
+        if (!account.isAuthorized()) {
+            if (canSignIn) {
+                authorizeAndRun(proxy, anAuthCompletion);
+
+            } else if (anAuthCompletion != null) {
+                anAuthCompletion.onFinished(proxy.getServiceCommand(), new AuthError(AuthError.Reason.NotAuthorized, null));
+            }
+
         } else {
-            account.signCommand(command);
-            commandRunner.run(command);
+            ServiceCommand serviceCommand = proxy.getServiceCommand();
+            account.signCommand(serviceCommand);
+            commandRunner.run(serviceCommand);
         }
     }
 
-    protected void authorizeAndRun(final ServiceCommand command) {
+    protected void authorizeAndRun(final ServiceCommandProxy proxy, final AuthCompletion anAuthCompletion) {
         authorize(new Authorizer.AuthorizerCompletion() {
             @Override
             public void onFinished(AuthCredentials credentials, Error error) {
                 if (error == null) {
-                    runCommand(command, false);
-                } else {
-                    commandRunner.cancel(command);
+                    runCommand(proxy, false);
+
+                } else if (authCompletion != null) {
+                    anAuthCompletion.onFinished(proxy.getServiceCommand(), new AuthError(AuthError.Reason.InnerError, error));
                 }
             }
         });
-    }
-
-    protected void authorizeIfNeeded(final Authorizer.AuthorizerCompletion completion) {
-        if (getAccount().isAuthorized()) {
-            completion.onFinished(getAccount().getCredentials(), null);
-        } else {
-            authorize(completion);
-        }
     }
 
     protected void authorize(final Authorizer.AuthorizerCompletion completion) {

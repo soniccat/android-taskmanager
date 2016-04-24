@@ -13,7 +13,7 @@ import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnection
 // TaskManager
 
     //TODO: implement simple subclass
-public interface ServiceCommand {
+public interface ServiceCommand extends ServiceCommandProxy{
     HttpUrlConnectionBuilder getConnectionBulder();
     String getResponse();
 
