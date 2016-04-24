@@ -26,7 +26,7 @@ public class ServiceTask extends CachedHttpLoadTask implements ServiceCommand {
     private HttpUrlConnectionBuilder connectionBuilder = new HttpUrlConnectionBuilder();
 
     public ServiceTask() {
-        //TODO: we pass null and lose HTTPConnectionHandler handling
+        //TODO: we pass null and lose HTTPConnectionHandler handling (HTTPConnectionResponseReaderAdaptor)
         super(null, null);
         setProvider(getProvider());
         byteArrayReader.setByteArrayHandler(getReader());

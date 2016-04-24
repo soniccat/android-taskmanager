@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.quizletservice;
+package com.example.alexeyglushkov.quizletservice.entities;
 
 import java.util.List;
 

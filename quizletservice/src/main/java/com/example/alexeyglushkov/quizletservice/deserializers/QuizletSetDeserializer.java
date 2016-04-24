@@ -1,6 +1,9 @@
-package com.example.alexeyglushkov.quizletservice;
+package com.example.alexeyglushkov.quizletservice.deserializers;
 
 import com.example.alexeyglushkov.jacksonlib.CustomDeserializer;
+import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
+import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
+import com.example.alexeyglushkov.quizletservice.entities.QuizletUser;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -4,10 +4,8 @@ import com.authorization.AuthActivityProxy;
 import com.example.alexeyglushkov.authcachemanager.AccountCacheStore;
 import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
-import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProvider;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient;
-import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
 import com.example.alexeyglushkov.cachemanager.CacheCleaner;
 import com.example.alexeyglushkov.cachemanager.CacheProvider;
@@ -15,18 +13,15 @@ import com.example.alexeyglushkov.cachemanager.DiskCacheCleaner;
 import com.example.alexeyglushkov.cachemanager.DiskCacheProvider;
 import com.example.alexeyglushkov.quizletservice.QuizletCommandProvider;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
-import com.example.alexeyglushkov.quizletservice.QuizletServiceTaskProvider;
+import com.example.alexeyglushkov.quizletservice.tasks.QuizletServiceTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 import com.example.alexeyglushkov.taskmanager.task.Task;
-import com.example.alexeyglushkov.taskmanager.task.TaskProvider;
 import com.rssclient.model.RssStorage;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManager;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
 import android.app.Application;
 import android.content.Context;
-
-import junit.framework.Assert;
 
 import java.io.File;
 

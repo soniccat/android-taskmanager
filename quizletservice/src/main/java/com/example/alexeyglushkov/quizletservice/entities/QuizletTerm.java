@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.quizletservice;
+package com.example.alexeyglushkov.quizletservice.entities;
 
 /**
  * Created by alexeyglushkov on 02.04.16.
