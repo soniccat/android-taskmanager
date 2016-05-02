@@ -3,11 +3,28 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
-        <option name="distributionType" value="DEFAULT_WRAPPED" />
+        <option name="distributionType" value="LOCAL" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleHome" value="$APPLICATION_HOME_DIR$/gradle/gradle-2.2.1" />
+        <option name="gradleHome" value="$APPLICATION_HOME_DIR$/gradle/gradle-2.10" />
         <option name="gradleJvm" value="1.7" />
         <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/authcachemanager" />
+            <option value="$PROJECT_DIR$/authorization" />
+            <option value="$PROJECT_DIR$/authtaskmanager" />
+            <option value="$PROJECT_DIR$/cachemanager" />
+            <option value="$PROJECT_DIR$/jacksonlib" />
+            <option value="$PROJECT_DIR$/quizletservice" />
+            <option value="$PROJECT_DIR$/scribeauthorization" />
+            <option value="$PROJECT_DIR$/service" />
+            <option value="$PROJECT_DIR$/streamlib" />
+            <option value="$PROJECT_DIR$/taskmanager" />
+            <option value="$PROJECT_DIR$/testsupport" />
+          </set>
+        </option>
+        <option name="myModules">
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />

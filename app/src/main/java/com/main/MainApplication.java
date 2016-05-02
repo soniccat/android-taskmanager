@@ -10,6 +10,7 @@ import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
 import com.example.alexeyglushkov.cachemanager.CacheCleaner;
 import com.example.alexeyglushkov.cachemanager.CacheProvider;
 import com.example.alexeyglushkov.cachemanager.DiskCacheCleaner;
+import com.example.alexeyglushkov.cachemanager.DiskCacheMetadata;
 import com.example.alexeyglushkov.cachemanager.DiskCacheProvider;
 import com.example.alexeyglushkov.quizletservice.QuizletCommandProvider;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
@@ -30,6 +31,7 @@ public class MainApplication extends Application {
     private OAuthWebClient authWebClient;
 
     private QuizletService quizletService;
+
 
     private TaskManager taskManager;
     private RssStorage rssStorage;
@@ -134,7 +136,8 @@ public class MainApplication extends Application {
 
     private void createQuizletService() {
         Account quizletAccount = Networks.getAccount(Networks.Network.Quizlet.ordinal());
-        QuizletCommandProvider quizletCommandProvider = new QuizletServiceTaskProvider(getCacheProvider());
+        QuizletServiceTaskProvider quizletCommandProvider = new QuizletServiceTaskProvider(getCacheProvider());
+        quizletCommandProvider.setSetsCommandMetadata(new DiskCacheMetadata());
 
         String id = Integer.toString(quizletAccount.getServiceType());
         ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);

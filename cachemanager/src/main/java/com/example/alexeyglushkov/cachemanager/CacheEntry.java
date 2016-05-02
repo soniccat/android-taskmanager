@@ -8,5 +8,5 @@ import java.io.Serializable;
 public interface CacheEntry {
     Object getObject();
     Error delete();
-    Serializable getMetadata();
+    CacheMetadata getMetadata();
 }

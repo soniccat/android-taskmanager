@@ -1,5 +1,6 @@
 package com.example.alexeyglushkov.service;
 
+import com.example.alexeyglushkov.cachemanager.CacheMetadata;
 import com.example.alexeyglushkov.cachemanager.CacheProvider;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionBytesReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionStreamReader;
@@ -11,6 +12,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -27,6 +29,10 @@ public class CachedHttpLoadTask extends HttpBytesLoadTask {
     public CachedHttpLoadTask(HttpURLConnectionProvider provider, HTTPConnectionBytesReader handler, CacheProvider cache) {
         super(provider, handler);
         this.cache = cache;
+    }
+
+    protected long cacheStoreDuration() {
+        return 0;
     }
 
     private String getCacheKey() {
@@ -60,7 +66,14 @@ public class CachedHttpLoadTask extends HttpBytesLoadTask {
         super.setHandledData(handledData);
 
         if (needStore && cache != null) {
-            cache.put(getCacheKey(), byteArrayReader.getByteArray(), null);
+            CacheMetadata metadata = cache.createMetadata();
+
+            if (cacheStoreDuration() != 0) {
+                // TODO: create a separate tools lib
+                long expireTime = System.currentTimeMillis() / 1000L + cacheStoreDuration();
+                metadata.setExpireTime(expireTime);
+            }
+            cache.put(getCacheKey(), byteArrayReader.getByteArray(), metadata);
         }
     }
 }

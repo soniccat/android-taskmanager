@@ -101,7 +101,7 @@ public class DiskCacheEntry implements CacheEntry {
     }
 
     @Override
-    public Serializable getMetadata() {
+    public DiskCacheMetadata getMetadata() {
         return metadata;
     }
 }

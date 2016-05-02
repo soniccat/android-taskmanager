@@ -6,6 +6,8 @@ import com.example.alexeyglushkov.quizletservice.QuizletCommandProvider;
 import com.example.alexeyglushkov.quizletservice.QuizletSetsCommand;
 import com.example.alexeyglushkov.quizletservice.tasks.QuizletSetsTask;
 
+import java.io.Serializable;
+
 /**
  * Created by alexeyglushkov on 03.04.16.
  */

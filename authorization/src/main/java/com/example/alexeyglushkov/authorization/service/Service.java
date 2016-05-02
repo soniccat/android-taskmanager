@@ -19,7 +19,7 @@ public interface Service {
 
     void setAuthCompletion(AuthCompletion authCompletion);
 
-    // pass ServiceCommandProxy to create the command after authorization
+    // pass a ServiceCommandProxy to create the command after authorization
     void runCommand(ServiceCommandProxy proxy);
     void runCommand(ServiceCommandProxy proxy, boolean canSignIn);
     void runCommand(ServiceCommandProxy proxy, boolean canSignIn, AuthCompletion authCompletion);
@@ -28,7 +28,7 @@ public interface Service {
         void onFinished(ServiceCommand command, AuthError error);
     }
 
-    public class AuthError extends Error {
+    class AuthError extends Error {
         private static final long serialVersionUID = 6206983256074915330L;
 
         public enum Reason {

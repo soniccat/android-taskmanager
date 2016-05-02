@@ -15,7 +15,7 @@ import java.util.HashMap;
 /**
  * Created by alexeyglushkov on 04.10.15.
  */
-public class DiskCacheMetadata extends HashMap<String, Object>
+public class DiskCacheMetadata extends HashMap<String, Object> implements CacheMetadata
 {
     private static final long serialVersionUID = -3043981628125337011L;
     private static final String createTimeKey = "metadataCreateTime";
@@ -49,7 +49,7 @@ public class DiskCacheMetadata extends HashMap<String, Object>
         return (long)get(fileSizeKey);
     }
 
-    public void setFileSize(long fileSize) {
+    public void setContentSize(long fileSize) {
         put(fileSizeKey, fileSize);
     }
 
@@ -113,6 +113,7 @@ public class DiskCacheMetadata extends HashMap<String, Object>
             result.setFile(file);
 
         } catch (Exception ex) {
+            // TODO: return these errors
             error = new Error("DiskCacheEntry exception: " + ex.getMessage());
         } finally {
             if (fis != null) {

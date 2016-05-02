@@ -44,7 +44,7 @@ public class DiskCacheProvider implements CacheProvider {
     }
 
     @Override
-    public Error put(String key, Object entry, Serializable metadata) {
+    public Error put(String key, Object entry, CacheMetadata metadata) {
         Error error = prepareDirectory();
         if (error == null) {
             error = write(key, entry, (DiskCacheMetadata) metadata);
@@ -156,7 +156,7 @@ public class DiskCacheProvider implements CacheProvider {
 
         if (error == null) {
             if (metadata == null) {
-                metadata = new DiskCacheMetadata();
+                metadata = createMetadata();
             }
 
             metadata.setFile(getKeyMetadataFile(hash));
@@ -194,7 +194,12 @@ public class DiskCacheProvider implements CacheProvider {
         return result;
     }
 
-    public Serializable getMetadata(String key) {
+    @Override
+    public DiskCacheMetadata createMetadata() {
+        return new DiskCacheMetadata();
+    }
+
+    public CacheMetadata getMetadata(String key) {
         return getEntry(key).getMetadata();
     }
 
