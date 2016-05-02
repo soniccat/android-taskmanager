@@ -1,1 +1,1 @@
-include ':app', ':taskmanager', ':cachemanager', ':testsupport', ':streamlib', ':scribeauthorization', ':authorization', ':authtaskmanager', ':authcachemanager', ':service', ':quizletservice', ':jacksonlib'
+include ':app', ':taskmanager', ':cachemanager', ':testsupport', ':streamlib', ':scribeauthorization', ':authorization', ':authtaskmanager', ':authcachemanager', ':service', ':quizletservice', ':jacksonlib', ':wordteacher'

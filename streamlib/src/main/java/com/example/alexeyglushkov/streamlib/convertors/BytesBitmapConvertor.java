@@ -6,8 +6,6 @@ import android.graphics.BitmapFactory;
 import com.example.alexeyglushkov.streamlib.handlers.BitmapHandler;
 import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
 
-import org.apache.http.util.ByteArrayBuffer;
-
 /**
  * Created by alexeyglushkov on 01.02.15.
  */

@@ -3,8 +3,6 @@ package com.example.alexeyglushkov.streamlib.readersandwriters;
 import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 
-import org.apache.http.util.ByteArrayBuffer;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
