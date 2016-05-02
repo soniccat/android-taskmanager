@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="set_word_count_formant">%d count</string>
+    <string name="set_word_count_formant">%d words</string>
 </resources>
