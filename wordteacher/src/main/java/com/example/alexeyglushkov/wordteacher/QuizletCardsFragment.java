@@ -3,15 +3,24 @@ package com.example.alexeyglushkov.wordteacher;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A placeholder fragment containing a simple view.
  */
 public class QuizletCardsFragment extends Fragment {
+
+    private QuizletSetAdapter adapter;
+    private LinearLayoutManager layoutManager;
 
     public QuizletCardsFragment() {
     }
@@ -27,7 +36,15 @@ public class QuizletCardsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         RecyclerView recyclerView = (RecyclerView)view.findViewById(R.id.recyclerView);
+        adapter = new QuizletSetAdapter();
 
-        //recyclerView.setAdapter();
+        layoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
     }
+
+    public void setSets(List<QuizletSet> sets) {
+        adapter.updateSets(sets);
+    }
+
 }

@@ -32,6 +32,10 @@ public class QuizletService extends SimpleService {
         runCommand(createSetsCommandProxy(callback), true, createAuthCompletion(callback));
     }
 
+    public List<QuizletSet> getSets() {
+        return sets;
+    }
+
     @NonNull
     private ServiceCommandProxy createSetsCommandProxy(final CommandCallback callback) {
         return new ServiceCommandProxy() {

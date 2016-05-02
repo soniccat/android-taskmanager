@@ -3,8 +3,6 @@ package com.example.alexeyglushkov.streamlib.readersandwriters;
 import com.example.alexeyglushkov.streamlib.convertors.Convertor;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 
-import org.apache.http.util.ByteArrayBuffer;
-
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -25,20 +23,22 @@ public class ByteArrayWriter implements OutputStreamWriter {
             object = this.convertor.convert(object);
         }
 
+        /*
         ByteArrayBuffer buffer = (ByteArrayBuffer)object;
         try {
             lastError = writeByteArray(stream, buffer);
         } catch (IOException ex) {
             lastError = new Error("ByteArrayWriter exception: " + ex.getMessage());
-        }
+        }*/
 
         return lastError;
     }
 
+    /*
     public Error writeByteArray(OutputStream stream, ByteArrayBuffer buffer) throws IOException {
-        stream.write(buffer.buffer());
+        //stream.write(buffer.buffer());
         return null;
-    }
+    }*/
 
     @Override
     public void setProgressUpdater(ProgressUpdater progressUpdater) {

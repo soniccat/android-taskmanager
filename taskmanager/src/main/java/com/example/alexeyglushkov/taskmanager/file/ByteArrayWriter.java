@@ -8,21 +8,21 @@ import java.io.OutputStream;
  */
 public class ByteArrayWriter implements OutputStreamWriter{
 
-    ByteArrayProvider provider;
+    /*ByteArrayProvider provider;
 
     public ByteArrayWriter(ByteArrayProvider provider) {
         this.provider = provider;
-    }
+    }*/
 
     @Override
     public Error writeToStream(OutputStream stream) {
-        try {
-            stream.write(provider.getByteArray().toByteArray());
+       /* try {
+            //stream.write(provider.getByteArray().toByteArray());
 
         } catch (IOException e) {
             e.printStackTrace();
             return new Error("ByteArrayWriter exception: " + e.getMessage());
-        }
+        }*/
 
         return null;
     }

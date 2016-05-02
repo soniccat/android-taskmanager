@@ -49,6 +49,7 @@ public class QuizletSetsTask extends ServiceTask implements QuizletSetsCommand {
     }
 
     private QuizletSet[] parseSets(String setsResponse) {
+        QuizletSet[] result = null;
         try {
             SimpleModule md = new SimpleModule("QuizletModule", new Version(1,0,0,null,null,null));
             md.addDeserializer(QuizletSet.class, new QuizletSetDeserializer(QuizletSet.class));
@@ -58,12 +59,12 @@ public class QuizletSetsTask extends ServiceTask implements QuizletSetsCommand {
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(md);
 
-            return mapper.readValue(setsResponse, QuizletSet[].class);
+            result = mapper.readValue(setsResponse, QuizletSet[].class);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return null;
+        return result;
     }
 
     @Override

@@ -1,6 +1,8 @@
-package com.main;
+package main;
 
-import com.authorization.AuthActivityProxy;
+import android.app.Application;
+import android.content.Context;
+
 import com.example.alexeyglushkov.authcachemanager.AccountCacheStore;
 import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
@@ -12,29 +14,23 @@ import com.example.alexeyglushkov.cachemanager.CacheProvider;
 import com.example.alexeyglushkov.cachemanager.DiskCacheCleaner;
 import com.example.alexeyglushkov.cachemanager.DiskCacheMetadata;
 import com.example.alexeyglushkov.cachemanager.DiskCacheProvider;
-import com.example.alexeyglushkov.quizletservice.QuizletCommandProvider;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.tasks.QuizletServiceTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
-import com.example.alexeyglushkov.taskmanager.task.Task;
-import com.rssclient.model.RssStorage;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManager;
+import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
-import android.app.Application;
-import android.content.Context;
-
 import java.io.File;
+
+import authorization.AuthActivityProxy;
 
 public class MainApplication extends Application {
     private AccountStore accountStore;
     private OAuthWebClient authWebClient;
 
     private QuizletService quizletService;
-
-
     private TaskManager taskManager;
-    private RssStorage rssStorage;
 
     private CacheProvider cacheProvider;
 
@@ -51,17 +47,12 @@ public class MainApplication extends Application {
 
         authWebClient = new AuthActivityProxy();
         taskManager = new SimpleTaskManager(10);
-        rssStorage = new RssStorage("RssStorage");
 
         File cacheDir = getDir("ServiceCache", MODE_PRIVATE);
         cacheProvider = new DiskCacheProvider(cacheDir);
 
         cleanCache();
         loadAccountStore();
-    }
-
-    public RssStorage getRssStorage() {
-        return rssStorage;
     }
 
     public TaskManager getTaskManager() {
@@ -135,7 +126,7 @@ public class MainApplication extends Application {
     }
 
     private void createQuizletService() {
-        Account quizletAccount = Networks.getAccount(Networks.Network.Quizlet.ordinal());
+        Account quizletAccount = Networks.getAccount(Networks.Network.Quizlet);
         QuizletServiceTaskProvider quizletCommandProvider = new QuizletServiceTaskProvider(getCacheProvider());
 
         String id = Integer.toString(quizletAccount.getServiceType());

@@ -69,7 +69,7 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
 
     public void keep(TaskManager taskManager, Context context, final RssStorageCallback callback) {
         final RssStorage storage = this;
-        final FileKeepTask keepTask = new FileKeepTask(getFileName(), new ByteArrayWriter(new ByteArrayProvider() {
+        /*final FileKeepTask keepTask = new FileKeepTask(getFileName(), new ByteArrayWriter(new ByteArrayProvider() {
             @Override
             public ByteArrayBuffer getByteArray() {
                 return RssStorage.this.getData();
@@ -85,7 +85,7 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
             }
         });
 
-        taskManager.addTask(keepTask);
+        taskManager.addTask(keepTask);*/
     }
 
     public void addFeed(RssFeed feed) {

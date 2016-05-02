@@ -86,8 +86,8 @@ public class SimpleService implements Service {
                 if (error == null) {
                     runCommand(proxy, false);
 
-                } else if (authCompletion != null) {
-                    anAuthCompletion.onFinished(proxy.getServiceCommand(), new AuthError(AuthError.Reason.InnerError, error));
+                } else if (anAuthCompletion != null) {
+                    anAuthCompletion.onFinished(null, new AuthError(AuthError.Reason.InnerError, error));
                 }
             }
         });
