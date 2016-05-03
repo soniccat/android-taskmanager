@@ -8,16 +8,27 @@ import android.support.v4.app.FragmentStatePagerAdapter;
  * Created by alexeyglushkov on 02.05.16.
  */
 public class MainPageAdapter extends FragmentStatePagerAdapter {
+
+    StackContainer stackContainer;
+
     public MainPageAdapter(FragmentManager fm) {
         super(fm);
     }
 
     @Override
     public Fragment getItem(int position) {
-        QuizletCardsFragment fr = new QuizletCardsFragment();
+        QuizletCardsFragment quizletFragment = new QuizletCardsFragment();
         QuizletCardsFragment.ViewType viewType = position == 0 ? QuizletCardsFragment.ViewType.Sets : QuizletCardsFragment.ViewType.Cards;
-        fr.setViewType(viewType);
-        return fr;
+        quizletFragment.setViewType(viewType);
+
+        Fragment result = quizletFragment;
+        if (position == 0) {
+            stackContainer = new StackContainer();
+            stackContainer.showFragment(quizletFragment);
+            result = stackContainer;
+        }
+
+        return result;
     }
 
     @Override
@@ -27,6 +38,19 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return position == 0 ? "Sets" : "Cards";
+        String result = "";
+        if (position == 0) {
+            if (stackContainer != null) {
+                result = stackContainer.getChildFragmentManager().getBackStackEntryCount() > 0 ? "Selected" : "";
+            }
+
+            if (result.length() == 0) {
+                result = "Sets";
+            }
+        } else {
+            result = "Cards";
+        }
+
+        return result;
     }
 }
