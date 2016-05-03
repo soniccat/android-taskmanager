@@ -1,13 +1,15 @@
 package com.example.alexeyglushkov.wordteacher;
 
+import android.content.res.TypedArray;
+import android.graphics.drawable.RippleDrawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,13 +21,10 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.service.SimpleService;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import authorization.AuthorizationActivity;
 import main.BaseActivity;
 import main.MainApplication;
-import main.Networks;
 
 public class MainActivity extends BaseActivity {
 
@@ -71,6 +70,19 @@ public class MainActivity extends BaseActivity {
                 onFabPressed();
             }
         });
+
+
+        //Test
+        int[] attrs = {android.R.attr.selectableItemBackgroundBorderless};
+
+        // Parse MyCustomStyle, using Context.obtainStyledAttributes()
+        TypedArray ta = obtainStyledAttributes(R.style.AppTheme, attrs);
+
+        RippleDrawable dr = (RippleDrawable)ta.getDrawable(0);
+        int id = ta.getResourceId(0,-1);
+
+        String str = getResources().getResourceEntryName(id);
+        Log.d("aa", dr.toString());
     }
 
     @Override
@@ -120,11 +132,16 @@ public class MainActivity extends BaseActivity {
 
     private void handleLoadedQuizletSets() {
         List<QuizletSet> sets = getQuizletService().getSets();
-        getQuizletFragment().setSets(sets);
+        getSetQuizletFragment().updateSets(sets);
+        getCardQuizletFragment().updateSets(sets);
     }
 
-    private QuizletCardsFragment getQuizletFragment() {
+    private QuizletCardsFragment getSetQuizletFragment() {
         return (QuizletCardsFragment)getFragment(0);
+    }
+
+    private QuizletCardsFragment getCardQuizletFragment() {
+        return (QuizletCardsFragment)getFragment(1);
     }
 
     private Fragment getFragment(int i) {

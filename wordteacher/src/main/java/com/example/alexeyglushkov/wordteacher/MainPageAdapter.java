@@ -15,6 +15,8 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         QuizletCardsFragment fr = new QuizletCardsFragment();
+        QuizletCardsFragment.ViewType viewType = position == 0 ? QuizletCardsFragment.ViewType.Sets : QuizletCardsFragment.ViewType.Cards;
+        fr.updateViewType(viewType);
         return fr;
     }
 
@@ -25,6 +27,6 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return "Page";
+        return position == 0 ? "Sets" : "Cards";
     }
 }
