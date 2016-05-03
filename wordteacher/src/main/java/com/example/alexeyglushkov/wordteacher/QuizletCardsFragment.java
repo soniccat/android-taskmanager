@@ -124,12 +124,12 @@ public class QuizletCardsFragment extends Fragment {
         QuizletCardAdapter adapter = new QuizletCardAdapter(new QuizletCardAdapter.Listener() {
             @Override
             public void onCardClicked(View view, QuizletTerm card) {
-                onCardClicked(view, card);
+                QuizletCardsFragment.this.onCardClicked(view, card);
             }
 
             @Override
             public void onMenuClicked(View view, QuizletTerm card) {
-                onTermMenuClicked(view, card);
+                QuizletCardsFragment.this.onTermMenuClicked(view, card);
             }
         });
 
@@ -144,11 +144,11 @@ public class QuizletCardsFragment extends Fragment {
 
     }
 
-    private void onTermClicked(View v, QuizletTerm term) {
+    private void onCardClicked(View v, QuizletTerm card) {
 
     }
 
-    private void onTermMenuClicked(View v, QuizletTerm term) {
+    private void onTermMenuClicked(View v, QuizletTerm card) {
 
     }
 }

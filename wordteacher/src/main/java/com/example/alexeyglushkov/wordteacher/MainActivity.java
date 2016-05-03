@@ -1,7 +1,5 @@
 package com.example.alexeyglushkov.wordteacher;
 
-import android.content.res.TypedArray;
-import android.graphics.drawable.RippleDrawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -9,10 +7,10 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewTreeObserver;
 
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.authorization.service.Service;
@@ -71,18 +69,35 @@ public class MainActivity extends BaseActivity {
             }
         });
 
+        setOnViewReadyCallback();
+    }
 
-        //Test
-        int[] attrs = {android.R.attr.selectableItemBackgroundBorderless};
+    private void setOnViewReadyCallback() {
+        final View rootView = getWindow().getDecorView().getRootView();
+        rootView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                rootView.getViewTreeObserver().removeOnPreDrawListener(this);
+                onViewReady();
+                return true;
+            }
+        });
+    }
 
-        // Parse MyCustomStyle, using Context.obtainStyledAttributes()
-        TypedArray ta = obtainStyledAttributes(R.style.AppTheme, attrs);
+    private void onViewReady() {
+        if (getQuizletService().getAccount().isAuthorized()) {
+            loadQuizletSets();
+        }
+    }
 
-        RippleDrawable dr = (RippleDrawable)ta.getDrawable(0);
-        int id = ta.getResourceId(0,-1);
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+    }
 
-        String str = getResources().getResourceEntryName(id);
-        Log.d("aa", dr.toString());
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
     }
 
     @Override
