@@ -5,6 +5,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -16,15 +17,17 @@ import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.authorization.service.Service;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
+import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.service.SimpleService;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import main.BaseActivity;
 import main.MainApplication;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements QuizletCardsFragment.Listener {
 
     private ViewPager pager;
 
@@ -84,8 +87,19 @@ public class MainActivity extends BaseActivity {
         });
     }
 
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        super.onAttachFragment(fragment);
+
+
+        if (fragment instanceof QuizletCardsFragment) {
+            QuizletCardsFragment quizletFragment = (QuizletCardsFragment)fragment;
+            quizletFragment.setListener(this);
+        }
+    }
+
     private void onViewReady() {
-        if (getQuizletService().getAccount().isAuthorized()) {
+        if (getQuizletService() != null && getQuizletService().getAccount() != null && getQuizletService().getAccount().isAuthorized()) {
             loadQuizletSets();
         }
     }
@@ -120,6 +134,23 @@ public class MainActivity extends BaseActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        // if there is a fragment and the back stack of this fragment is not empty,
+        // then emulate 'onBackPressed' behaviour, because in default, it is not working
+        FragmentManager fm = getSupportFragmentManager();
+        for (Fragment frag : fm.getFragments()) {
+            if (frag.isVisible()) {
+                FragmentManager childFm = frag.getChildFragmentManager();
+                if (childFm.getBackStackEntryCount() > 0) {
+                    childFm.popBackStack();
+                    return;
+                }
+            }
+        }
+        super.onBackPressed();
     }
 
     //// Other
@@ -172,5 +203,40 @@ public class MainActivity extends BaseActivity {
         }
 
         Snackbar.make(pager.getChildAt(pager.getCurrentItem()), errorString, Snackbar.LENGTH_LONG).show();
+    }
+
+    // QuizletCardsFragment.Listener
+
+
+    @Override
+    public void onSetClicked(QuizletSet set) {
+        showWordFragment(set);
+    }
+
+    private void showWordFragment(QuizletSet set) {
+        QuizletCardsFragment fragment = new QuizletCardsFragment();
+        fragment.setViewType(QuizletCardsFragment.ViewType.Cards);
+
+        ArrayList<QuizletSet> list = new ArrayList<>();
+        list.add(set);
+        fragment.updateSets(list);
+
+        //getSetQuizletFragment().getChildFragmentManager().beginTransaction().addToBackStack("showSet").replace(R.id.container,fragment).commitAllowingStateLoss();
+        //getSupportFragmentManager().beginTransaction().addToBackStack("showSet").replace(R.id.pager,fragment).commitAllowingStateLoss();
+    }
+
+    @Override
+    public void onSetMenuClicked(QuizletSet set) {
+
+    }
+
+    @Override
+    public void onCardClicked(QuizletTerm card) {
+
+    }
+
+    @Override
+    public void onTermMenuClicked(QuizletTerm card) {
+
     }
 }

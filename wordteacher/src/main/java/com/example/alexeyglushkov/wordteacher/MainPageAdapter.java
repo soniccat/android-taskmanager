@@ -16,7 +16,7 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         QuizletCardsFragment fr = new QuizletCardsFragment();
         QuizletCardsFragment.ViewType viewType = position == 0 ? QuizletCardsFragment.ViewType.Sets : QuizletCardsFragment.ViewType.Cards;
-        fr.updateViewType(viewType);
+        fr.setViewType(viewType);
         return fr;
     }
 

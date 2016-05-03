@@ -31,8 +31,13 @@ public class QuizletCardsFragment extends Fragment {
     private RecyclerView.Adapter adapter;
     private LinearLayoutManager layoutManager;
     private ViewType viewType = ViewType.Sets;
+    private Listener listener;
 
     public QuizletCardsFragment() {
+    }
+
+    public void setListener(Listener listener) {
+        this.listener = listener;
     }
 
     @Override
@@ -50,7 +55,11 @@ public class QuizletCardsFragment extends Fragment {
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
 
-        recreateAdapter();
+        if (adapter == null) {
+            recreateAdapter();
+        }
+
+        applyAdapter();
     }
 
     public void updateSets(List<QuizletSet> sets) {
@@ -77,7 +86,7 @@ public class QuizletCardsFragment extends Fragment {
         return cards;
     }
 
-    public void updateViewType(ViewType aViewType) {
+    public void setViewType(ViewType aViewType) {
         if (viewType != aViewType) {
             viewType = aViewType;
             recreateAdapter();
@@ -100,8 +109,12 @@ public class QuizletCardsFragment extends Fragment {
         }
 
         if (recyclerView != null) {
-            recyclerView.setAdapter(adapter);
+            applyAdapter();
         }
+    }
+
+    private void applyAdapter() {
+        recyclerView.setAdapter(adapter);
     }
 
     private QuizletSetAdapter createSetAdapter() {
@@ -137,18 +150,25 @@ public class QuizletCardsFragment extends Fragment {
     }
 
     private void onSetClicked(View v, QuizletSet set) {
-
+        listener.onSetClicked(set);
     }
 
     private void onSetMenuClicked(View v, QuizletSet set) {
-
+        listener.onSetMenuClicked(set);
     }
 
     private void onCardClicked(View v, QuizletTerm card) {
-
+        listener.onCardClicked(card);
     }
 
     private void onTermMenuClicked(View v, QuizletTerm card) {
+        listener.onTermMenuClicked(card);
+    }
 
+    public interface Listener {
+        void onSetClicked(QuizletSet set);
+        void onSetMenuClicked(QuizletSet set);
+        void onCardClicked(QuizletTerm card);
+        void onTermMenuClicked(QuizletTerm card);
     }
 }
