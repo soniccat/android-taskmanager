@@ -171,13 +171,13 @@ public class QuizletCardsFragment extends Fragment {
     }
 
     private void onTermMenuClicked(View v, QuizletTerm card) {
-        listener.onTermMenuClicked(card);
+        listener.onTermMenuClicked(card, v);
     }
 
     public interface Listener {
         void onSetClicked(QuizletSet set);
         void onSetMenuClicked(QuizletSet set);
         void onCardClicked(QuizletTerm card);
-        void onTermMenuClicked(QuizletTerm card);
+        void onTermMenuClicked(QuizletTerm card, View view);
     }
 }

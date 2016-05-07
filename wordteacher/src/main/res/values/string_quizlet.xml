@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="set_word_count_formant">%d words</string>
+
+    <string name="menu_create_course">Create new course</string>
+
+    <string name="error_auth_error">Auth Error</string>
+    <string name="error_load_error">Load Error</string>
 </resources>

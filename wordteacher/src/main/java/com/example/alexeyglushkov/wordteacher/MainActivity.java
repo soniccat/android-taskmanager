@@ -6,7 +6,9 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.*;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -262,9 +264,9 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     private void showErrorSnackBar(Error error) {
         String errorString = "";
         if (error instanceof Service.AuthError) {
-            errorString = "Auth Error";
+            errorString = getString(R.string.error_auth_error);
         } else {
-            errorString = "Load Error";
+            errorString = getString(R.string.error_load_error);
         }
 
         Snackbar.make(pager.getChildAt(pager.getCurrentItem()), errorString, Snackbar.LENGTH_LONG).show();
@@ -309,7 +311,24 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     }
 
     @Override
-    public void onTermMenuClicked(QuizletTerm card) {
+    public void onTermMenuClicked(final QuizletTerm card, View v) {
+        PopupMenu popupMenu = new PopupMenu(this, v);
+        popupMenu.getMenu().add(Menu.NONE, R.id.create_set, 0, R.string.menu_create_course);
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.create_set) {
+                    onCreateCourseFromCard(card);
+                }
+
+                return false;
+            }
+        });
+
+        popupMenu.show();
+    }
+
+    private void onCreateCourseFromCard(QuizletTerm card) {
 
     }
 }
