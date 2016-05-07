@@ -13,9 +13,13 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 
@@ -32,7 +36,7 @@ public class DiskCacheProvider implements CacheProvider {
     private Map<Class,Serializer> serializerMap;
     private Error lastError;
 
-    private SparseArray<WeakReference<Object>> lockMap = new SparseArray<>();
+    private Map<String, WeakReference<Object>> lockMap = new HashMap<>();
 
     public DiskCacheProvider(File directory) {
         this.directory = directory;
@@ -79,13 +83,12 @@ public class DiskCacheProvider implements CacheProvider {
         return error;
     }
 
-    private File getKeyFile(int hash) {
-        String fileName = Integer.toString(hash);
-        return new File(directory.getPath() + File.separator + fileName);
+    private File getKeyFile(String key) {
+        return new File(directory.getPath() + File.separator + key);
     }
 
-    private File getKeyMetadataFile(int hash) {
-        String fileName = Integer.toString(hash) + METADATA_PREFIX;
+    private File getKeyMetadataFile(String key) {
+        String fileName = key + METADATA_PREFIX;
         return new File(directory.getPath() + File.separator + fileName);
     }
 
@@ -93,45 +96,61 @@ public class DiskCacheProvider implements CacheProvider {
         return file.getName().endsWith(METADATA_PREFIX);
     }
 
-    private Error write(String key, Object object, DiskCacheMetadata metadata) {
-        int hashCode = key.hashCode();
+    private Error write(String fileName, Object object, DiskCacheMetadata metadata) {
         Error error = null;
-        Object lockObject = getLockObject(hashCode);
+        String key = getKeyName(fileName);
+        Object lockObject = getLockObject(key);
         synchronized (lockObject) {
-            error = writeByHash(key.hashCode(), object, metadata);
+            error = writeByKey(key, object, metadata);
         }
 
         return error;
     }
 
-    synchronized private Object getLockObject(int hash) {
-        WeakReference<Object> lockObjectRef = lockMap.get(hash);
+    private static final Set<Character> ReservedCharsSet = new HashSet<>(Arrays.asList(
+            new Character[] {'/','|','"','?','*','<','>','\\',':','+','[',']'}
+    ));
+
+    private String getKeyName(String fileName) {
+        StringBuilder builder = new StringBuilder(fileName);
+        for (int i = 0; i < builder.length(); i++) {
+            char c = builder.charAt(i);
+            if (ReservedCharsSet.contains(c)) {
+                builder.replace(i,i+1,"_");
+            }
+        }
+
+        return builder.toString();
+    }
+
+    synchronized private Object getLockObject(String key) {
+        WeakReference<Object> lockObjectRef = lockMap.get(key);
         Object lockObject = null;
         if (lockObjectRef != null) {
             lockObject = lockObjectRef.get();
             if (lockObject == null) {
-                lockObject = createLockObject(hash);
+                lockObject = createLockObject(key);
             }
         } else {
-            lockObject = createLockObject(hash);
+            lockObject = createLockObject(key);
         }
         return lockObject;
     }
 
-    private Object createLockObject(int hash) {
+    private Object createLockObject(String key) {
         Object lockObject;
         lockObject = new Object();
-        lockMap.put(hash, new WeakReference<>(lockObject));
+        lockMap.put(key, new WeakReference<>(lockObject));
         return lockObject;
     }
 
-    private Error writeByHash(int hash, Object object, DiskCacheMetadata metadata) {
+    private Error writeByKey(String key, Object object, DiskCacheMetadata metadata) {
         Error error = null;
 
-        File file = getKeyFile(hash);
+        File file = getKeyFile(key);
         if (file.exists()) {
             if (!file.delete()) {
-                error = new Error("DiskCacheProvider.writeByHash() delete: can't delete cache file");
+                error = new Error("DiskCacheProvider.writeByKey() delete: can't delete cache file");
                 setLastError(error);
             }
         }
@@ -159,7 +178,7 @@ public class DiskCacheProvider implements CacheProvider {
                 metadata = createMetadata();
             }
 
-            metadata.setFile(getKeyMetadataFile(hash));
+            metadata.setFile(getKeyMetadataFile(key));
             metadata.setCreateTime(System.currentTimeMillis() / 1000L);
             metadata.calculateSize(file);
             metadata.setEntryClass(object.getClass());
@@ -200,34 +219,38 @@ public class DiskCacheProvider implements CacheProvider {
     }
 
     public CacheMetadata getMetadata(String key) {
-        return getEntry(key).getMetadata();
+        CacheMetadata result = null;
+        CacheEntry entry = getEntry(key);
+        if (entry != null) {
+            result = entry.getMetadata();
+        }
+        return result;
     }
 
     @Override
-    public CacheEntry getEntry(String key) {
-        int hashCode = key.hashCode();
+    public CacheEntry getEntry(String fileName) {
         CacheEntry entry = null;
-        Object lockObject = getLockObject(hashCode);
+        String key = getKeyName(fileName);
+        Object lockObject = getLockObject(key);
         synchronized (lockObject) {
-            entry = getEntryByHash(hashCode);
+            entry = getEntryByKey(key);
         }
 
         return entry;
     }
 
-    private CacheEntry getEntryByHash(int hash) {
+    private CacheEntry getEntryByKey(String key) {
         DiskCacheEntry entry = null;
-        File file = getKeyFile(hash);
+        File file = getKeyFile(key);
         Error error = null;
 
         if (!file.exists()) {
-            error = new Error("DiskCacheProvider.getEntryByHash() exists(): file doesn't exist");
-            setLastError(error);
+            error = new Error("DiskCacheProvider.getEntryByKey() exists(): file doesn't exist");
         }
 
         if (error == null) {
             DiskCacheMetadata metadata = null;
-            File metadataFile = getKeyMetadataFile(hash);
+            File metadataFile = getKeyMetadataFile(key);
             if (metadataFile.exists()) {
                 metadata = DiskCacheMetadata.load(metadataFile);
 
@@ -236,7 +259,7 @@ public class DiskCacheProvider implements CacheProvider {
 
                 entry = new DiskCacheEntry(file, null, metadata, serializer);
             } else {
-                error = new Error("DiskCacheProvider.getEntryByHash() exists(): metadata doesn't exist");
+                error = new Error("DiskCacheProvider.getEntryByKey() exists(): metadata doesn't exist");
                 setLastError(error);
             }
         }
@@ -246,9 +269,8 @@ public class DiskCacheProvider implements CacheProvider {
 
     @Override
     public Error remove(String key) {
-        int hashCode = key.hashCode();
         Error error = null;
-        Object lockObject = getLockObject(hashCode);
+        Object lockObject = getLockObject(key);
         synchronized (lockObject) {
             CacheEntry entry = getEntry(key);
             if (entry != null) {
@@ -275,10 +297,10 @@ public class DiskCacheProvider implements CacheProvider {
 
         for (File file : files) {
             if (!isMetadataFile(file)) {
-                int hash = Integer.parseInt(file.getName());
-                Object lockObject = getLockObject(hash);
+                String key = file.getName();
+                Object lockObject = getLockObject(key);
                 synchronized (lockObject) {
-                    CacheEntry entry = getEntryByHash(hash);
+                    CacheEntry entry = getEntryByKey(key);
                     if (entry != null) {
                         entries.add(entry);
                     }
@@ -307,8 +329,8 @@ public class DiskCacheProvider implements CacheProvider {
         List<CacheEntry> entries = getEntries();
         for (CacheEntry file : entries) {
             DiskCacheEntry diskCacheEntry = (DiskCacheEntry)file;
-            int hash = diskCacheEntry.getFileName().hashCode();
-            Object lockObject = getLockObject(hash);
+            String key = diskCacheEntry.getFileName();
+            Object lockObject = getLockObject(key);
             synchronized (lockObject) {
                 Error deleteError = file.delete();
                 if (deleteError == null) {

@@ -44,8 +44,25 @@ public class DiskCacheProviderTest extends InstrumentationTestCase {
         assertEquals("123", cacheProvider.getValue("1"));
 
         DiskCacheMetadata readMetadata = (DiskCacheMetadata)cacheProvider.getMetadata("1");
-        assertNotNull(cacheProvider.getEntry("1"));
         assertEquals("mvalue", readMetadata.get("mkey"));
+        assertNotNull(readMetadata.getCreateTime());
+        assertTrue(readMetadata.getFileSize() != 0);
+    }
+
+    public void testStoreUrlData() {
+        // Arrange
+        DiskCacheMetadata metadata = new DiskCacheMetadata();
+        metadata.put("https://api.quizlet.com/2.0/users/alexey_glushkov/sets", "https://api.quizlet.com/2.0/users/alexey_glushkov/sets/data");
+
+        // Act
+        Error putError = cacheProvider.put("https://api.quizlet.com/2.0/users/alexey_glushkov/sets2", "https://api.quizlet.com/2.0/users/alexey_glushkov/sets/data2", metadata);
+
+        // Verify
+        assertNull(putError);
+        assertEquals("https://api.quizlet.com/2.0/users/alexey_glushkov/sets/data2", cacheProvider.getValue("https://api.quizlet.com/2.0/users/alexey_glushkov/sets2"));
+
+        DiskCacheMetadata readMetadata = (DiskCacheMetadata)cacheProvider.getMetadata("https://api.quizlet.com/2.0/users/alexey_glushkov/sets2");
+        assertEquals("https://api.quizlet.com/2.0/users/alexey_glushkov/sets/data", readMetadata.get("https://api.quizlet.com/2.0/users/alexey_glushkov/sets"));
         assertNotNull(readMetadata.getCreateTime());
         assertTrue(readMetadata.getFileSize() != 0);
     }
@@ -67,6 +84,7 @@ public class DiskCacheProviderTest extends InstrumentationTestCase {
         DiskCacheMetadata readMetadata = (DiskCacheMetadata)cacheProvider.getMetadata("img");
         assertNotNull(result);
         assertNotNull(readMetadata);
+        assertEquals(bitmap.getByteCount(), result.getByteCount());
     }
 
     public void testDeleteEntry() {

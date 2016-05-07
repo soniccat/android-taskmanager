@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <id name="create_set"/>
+    <item type="id" name="create_set"/>
 </resources>
