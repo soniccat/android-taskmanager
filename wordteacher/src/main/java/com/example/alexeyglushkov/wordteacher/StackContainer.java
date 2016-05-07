@@ -34,7 +34,10 @@ public class StackContainer extends Fragment {
         }
 
         transaction.replace(R.id.container, fragment).commitAllowingStateLoss();
-        pendingFragment = null;
+
+        if (pendingFragment == fragment) {
+            pendingFragment = null;
+        }
     }
 
     @Nullable

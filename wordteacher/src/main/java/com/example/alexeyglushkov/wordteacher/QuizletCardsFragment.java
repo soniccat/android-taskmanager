@@ -27,6 +27,7 @@ public class QuizletCardsFragment extends Fragment {
         Cards
     }
 
+    private QuizletSet parentSet;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private LinearLayoutManager layoutManager;
@@ -60,6 +61,14 @@ public class QuizletCardsFragment extends Fragment {
         }
 
         applyAdapter();
+    }
+
+    public void setParentSet(QuizletSet set) {
+        this.parentSet = set;
+    }
+
+    public QuizletSet getParentSet() {
+        return parentSet;
     }
 
     public void updateSets(List<QuizletSet> sets) {

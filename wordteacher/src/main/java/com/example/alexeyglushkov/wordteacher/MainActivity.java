@@ -75,7 +75,6 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
             }
 
             @Override
@@ -285,6 +284,8 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
 
         ArrayList<QuizletSet> list = new ArrayList<>();
         list.add(set);
+
+        fragment.setParentSet(set);
         fragment.updateSets(list);
 
         getStackContainer().getChildFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {

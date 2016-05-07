@@ -41,16 +41,28 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
         String result = "";
         if (position == 0) {
             if (stackContainer != null) {
-                result = stackContainer.getChildFragmentManager().getBackStackEntryCount() > 0 ? "Selected" : "";
+                result = getStackContainerTitle();
             }
 
             if (result.length() == 0) {
                 result = "Sets";
             }
+
         } else {
             result = "Cards";
         }
 
+        return result;
+    }
+
+    private String getStackContainerTitle() {
+        String result = "";
+        if (stackContainer.getBackStackSize() > 0) {
+            QuizletCardsFragment cardsFragment = (QuizletCardsFragment)stackContainer.getFragment();
+            if (cardsFragment.getParentSet() != null) {
+                result = cardsFragment.getParentSet().getTitle();
+            }
+        }
         return result;
     }
 }
