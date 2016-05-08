@@ -14,14 +14,19 @@ import android.view.ViewGroup;
  */
 public class StackContainer extends Fragment {
 
-    private Fragment pendingFragment;
+    //private Fragment pendingFragment;
+    private Listener listener;
+
+    public void setListener(Listener listener) {
+        this.listener = listener;
+    }
 
     public void showFragment(Fragment fragment) {
         if (getActivity() != null && getView() != null) {
             addFragment(fragment);
-        } else {
+        } /*else {
             pendingFragment = fragment;
-        }
+        }*/
     }
 
     private void addFragment(Fragment fragment) {
@@ -35,9 +40,13 @@ public class StackContainer extends Fragment {
 
         transaction.replace(R.id.container, fragment).commitAllowingStateLoss();
 
-        if (pendingFragment == fragment) {
-            pendingFragment = null;
+        if (!needSaveState) {
+            getChildFragmentManager().executePendingTransactions();
         }
+
+        /*if (pendingFragment == fragment) {
+            pendingFragment = null;
+        }*/
     }
 
     @Nullable
@@ -50,11 +59,13 @@ public class StackContainer extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (getAttachedFragment() != null) {
+        listener.onViewCreated(savedInstanceState);
+
+        /*if (getAttachedFragment() != null) {
             pendingFragment = null;
         } else if (pendingFragment != null) {
             addFragment(pendingFragment);
-        }
+        }*/
     }
 
     @Override
@@ -63,7 +74,7 @@ public class StackContainer extends Fragment {
     }
 
     public Fragment getFragment() {
-        return pendingFragment != null ? pendingFragment : getAttachedFragment();
+        return /*pendingFragment != null ? pendingFragment :*/ getAttachedFragment();
     }
 
     public int getBackStackSize() {
@@ -72,5 +83,9 @@ public class StackContainer extends Fragment {
 
     private Fragment getAttachedFragment() {
         return getChildFragmentManager().findFragmentById(R.id.container);
+    }
+
+    public interface Listener {
+        void onViewCreated(Bundle savedInstanceState);
     }
 }

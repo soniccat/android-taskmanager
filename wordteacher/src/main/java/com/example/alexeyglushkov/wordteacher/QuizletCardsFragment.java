@@ -57,22 +57,32 @@ public class QuizletCardsFragment extends Fragment {
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
 
+        if (savedInstanceState != null) {
+            restore(savedInstanceState);
+        }
+
         if (adapter == null) {
             recreateAdapter();
         }
 
-        applyAdapter();
+        if (recyclerView.getAdapter() == null) {
+            applyAdapter();
+        }
+    }
 
-        if (savedInstanceState != null) {
-            int intViewType = savedInstanceState.getInt("viewType");
-            viewType = ViewType.values()[intViewType];
+    private void restore(@Nullable Bundle savedInstanceState) {
+        int intViewType = savedInstanceState.getInt("viewType");
+        viewType = ViewType.values()[intViewType];
+        recreateAdapter();
+        restoreAdapter(savedInstanceState);
+    }
 
-            Parcelable parcelable = savedInstanceState.getParcelable("adapter");
-            if (viewType == ViewType.Sets) {
-                getSetAdapter().onRestoreInstanceState(parcelable);
-            } else {
-                getWordAdapter().onRestoreInstanceState(parcelable);
-            }
+    private void restoreAdapter(@Nullable Bundle savedInstanceState) {
+        Parcelable parcelable = savedInstanceState.getParcelable("adapter");
+        if (viewType == ViewType.Sets) {
+            getSetAdapter().onRestoreInstanceState(parcelable);
+        } else {
+            getWordAdapter().onRestoreInstanceState(parcelable);
         }
     }
 
@@ -81,7 +91,10 @@ public class QuizletCardsFragment extends Fragment {
         super.onSaveInstanceState(outState);
 
         outState.putInt("viewType", viewType.ordinal());
+        saveAdapterState(outState);
+    }
 
+    private void saveAdapterState(Bundle outState) {
         Parcelable parcelable;
         if (viewType == ViewType.Sets) {
             parcelable = getSetAdapter().onSaveInstanceState();

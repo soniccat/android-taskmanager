@@ -91,6 +91,12 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         });
 
         pagerAdapter = new MainPageAdapter(getSupportFragmentManager());
+        pagerAdapter.setListener(new MainPageAdapter.Listener() {
+            @Override
+            public void onFragmentReady(Fragment fragment, int position) {
+                onPagerFragmentReady(fragment, position);
+            }
+        });
         pager.setAdapter(pagerAdapter);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -114,8 +120,7 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         });
     }
 
-    @Override
-    public void onAttachFragment(Fragment fragment) {
+    public void onPagerFragmentReady(Fragment fragment, int position) {
         super.onAttachFragment(fragment);
 
         if (fragment instanceof StackContainer) {
@@ -127,6 +132,13 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
             QuizletCardsFragment quizletFragment = (QuizletCardsFragment)fragment;
             quizletFragment.setListener(this);
         }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+
     }
 
     private void onViewReady() {
