@@ -42,6 +42,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
 
     public void setCourses(ArrayList<Course> courses) {
         this.courses = courses;
+        notifyDataSetChanged();
     }
 
     @Override

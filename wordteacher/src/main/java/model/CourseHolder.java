@@ -15,10 +15,11 @@ import java.util.List;
 public class CourseHolder {
     private DiskCacheProvider diskProvider;
 
-    private List<Course> courses = new ArrayList<>();
+    private ArrayList<Course> courses = new ArrayList<>();
 
     public CourseHolder(File directory) {
         diskProvider = new DiskCacheProvider(directory);
+        diskProvider.setSerializer(new CourseSerializer(), Course.class);
     }
 
     public void loadCourses() {
@@ -26,13 +27,15 @@ public class CourseHolder {
         for (CacheEntry entry : entries) {
             DiskCacheEntry diskEntry = (DiskCacheEntry)entry;
             Course course = (Course)diskEntry.getObject();
-            courses.add(course);
+            if (course != null) {
+                courses.add(course);
+            }
         }
     }
 
     public Error addCourse(Course course) {
         Error error = diskProvider.put(course.getId().toString(), course, null);
-        if (error == null) {
+        if (error == null && course != null) {
             courses.add(course);
         }
 
@@ -48,5 +51,7 @@ public class CourseHolder {
         return error;
     }
 
-
+    public ArrayList<Course> getCourses() {
+        return courses;
+    }
 }

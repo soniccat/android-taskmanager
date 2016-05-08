@@ -23,9 +23,13 @@ import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import main.BaseActivity;
 import main.MainApplication;
+import model.Card;
+import model.Course;
+import model.CourseHolder;
 
 public class MainActivity extends BaseActivity implements QuizletCardsFragment.Listener {
 
@@ -43,6 +47,10 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
 
     public AccountStore getAccountStore() {
         return getMainApplication().getAccountStore();
+    }
+
+    public CourseHolder getCourseHolder() {
+        return getMainApplication().getCourseHolder();
     }
 
     //// Lifecycle
@@ -177,6 +185,8 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         if (frag.isVisible()) {
             final FragmentManager childFm = frag.getChildFragmentManager();
             if (childFm.getBackStackEntryCount() > 0) {
+
+                // put this in popBackStack callback
                 childFm.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
                     @Override
                     public void onBackStackChanged() {
@@ -199,7 +209,12 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     }
 
     private void updateToolbarBackButton() {
-        boolean needShowBackButton = pager.getCurrentItem() == 0 && getStackContainer().getBackStackSize() > 0;
+        StackContainer stackContainer = getStackContainer(pager.getCurrentItem());
+
+        boolean needShowBackButton = false;
+        if (stackContainer != null) {
+            needShowBackButton = pager.getCurrentItem() == 0 && stackContainer.getBackStackSize() > 0;
+        }
 
         if (needShowBackButton) {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
@@ -249,12 +264,32 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     }
 
     private QuizletCardsFragment getSetQuizletFragment() {
-        StackContainer container = getStackContainer();
-        return (QuizletCardsFragment)container.getFragment();
+        QuizletCardsFragment result = null;
+        StackContainer container = getStackContainer(0);
+        if (container != null) {
+            result = (QuizletCardsFragment)container.getFragment();
+        }
+        return result;
     }
 
-    private StackContainer getStackContainer() {
-        return (StackContainer)getFragment(0);
+    private CourseFragment getCourseFragment() {
+        CourseFragment result = null;
+        StackContainer container = getStackContainer(2);
+        if (container != null) {
+            result = (CourseFragment)container.getFragment();
+        }
+        return result;
+    }
+
+    private StackContainer getStackContainer(int position) {
+        StackContainer result = null;
+
+        Fragment fragment = getFragment(position);
+        if (fragment instanceof StackContainer) {
+            result = (StackContainer)fragment;
+        }
+
+        return result;
     }
 
     private QuizletCardsFragment getCardQuizletFragment() {
@@ -294,19 +329,33 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         fragment.setParentSet(set);
         fragment.updateSets(list);
 
-        getStackContainer().getChildFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+        // TODO: put this in showFragment callback
+        getStackContainer(0).getChildFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {
-                getStackContainer().getChildFragmentManager().removeOnBackStackChangedListener(this);
+                getStackContainer(0).getChildFragmentManager().removeOnBackStackChangedListener(this);
                 onQuizletSetFragmentBackStackChanged();
             }
         });
-        getStackContainer().showFragment(fragment);
+        getStackContainer(0).showFragment(fragment);
    }
 
     @Override
-    public void onSetMenuClicked(QuizletSet set) {
+    public void onSetMenuClicked(final QuizletSet set, View v) {
+        PopupMenu popupMenu = new PopupMenu(this, v);
+        popupMenu.getMenu().add(Menu.NONE, R.id.create_set, 0, R.string.menu_create_course);
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.create_set) {
+                    onCreateCourseFromSet(set);
+                }
 
+                return false;
+            }
+        });
+
+        popupMenu.show();
     }
 
     @Override
@@ -334,5 +383,27 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
 
     private void onCreateCourseFromCard(QuizletTerm card) {
 
+    }
+
+    private void onCreateCourseFromSet(QuizletSet set) {
+        Course course = new Course();
+        course.setTitle(set.getTitle());
+
+        for (QuizletTerm term : set.getTerms()) {
+            Card card = new Card();
+            card.setTerm(term.getTerm());
+            card.setDefinition(term.getDefinition());
+            card.setQuizletTerm(term);
+
+            course.addCard(card);
+        }
+
+        Error error = getCourseHolder().addCourse(course);
+        if (error != null) {
+            CourseFragment courseFragment = getCourseFragment();
+            if (courseFragment != null) {
+                courseFragment.setCourses(getCourseHolder().getCourses());
+            }
+        }
     }
 }

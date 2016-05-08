@@ -41,6 +41,7 @@ public class Course implements Parcelable {
 
     public Course() {
         id = UUID.randomUUID();
+        createDate = new Date();
     }
 
     public void addCard(Card card) {
@@ -55,6 +56,10 @@ public class Course implements Parcelable {
         return id;
     }
 
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -65,6 +70,18 @@ public class Course implements Parcelable {
 
     public List<Card> getCards() {
         return cards;
+    }
+
+    public void setCards(ArrayList<Card> cards) {
+        this.cards = cards;
+    }
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
     }
 
     @Override
