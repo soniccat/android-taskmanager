@@ -17,10 +17,10 @@ public class StackContainer extends Fragment {
     private Fragment pendingFragment;
 
     public void showFragment(Fragment fragment) {
-        pendingFragment = fragment;
-
         if (getActivity() != null && getView() != null) {
             addFragment(fragment);
+        } else {
+            pendingFragment = fragment;
         }
     }
 
@@ -49,7 +49,17 @@ public class StackContainer extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        addFragment(pendingFragment);
+
+        if (getAttachedFragment() != null) {
+            pendingFragment = null;
+        } else if (pendingFragment != null) {
+            addFragment(pendingFragment);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
     public Fragment getFragment() {

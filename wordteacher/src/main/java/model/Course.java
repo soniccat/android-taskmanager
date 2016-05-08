@@ -12,6 +12,7 @@ import java.util.UUID;
  */
 public class Course {
     private UUID id;
+    private String title;
     private List<Card> cards = new ArrayList<>();
 
     public Course() {
@@ -28,5 +29,17 @@ public class Course {
 
     public UUID getId() {
         return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public List<Card> getCards() {
+        return cards;
     }
 }

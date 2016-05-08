@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.wordteacher;
 
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,11 +18,23 @@ import java.util.List;
  * Created by alexeyglushkov on 03.05.16.
  */
 public class QuizletCardAdapter extends RecyclerView.Adapter<QuizletCardAdapter.Holder> {
-    List<QuizletTerm> cards = new ArrayList<>();
+    ArrayList<QuizletTerm> cards = new ArrayList<>();
     Listener listener;
 
     public QuizletCardAdapter(Listener listener) {
         this.listener = listener;
+    }
+
+    public Parcelable onSaveInstanceState() {
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("cards", cards);
+        return bundle;
+    }
+
+    public void onRestoreInstanceState (Parcelable state) {
+        Bundle bundle = (Bundle)state;
+        cards = bundle.getParcelableArrayList("cards");
+        notifyDataSetChanged();
     }
 
     public void updateCards(List<QuizletTerm> newCards) {

@@ -1,11 +1,15 @@
 package com.example.alexeyglushkov.quizletservice.entities;
 
+import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.List;
 
 /**
  * Created by alexeyglushkov on 27.03.16.
  */
-public class QuizletSet {
+public class QuizletSet implements Parcelable {
     private long id;
     private String title;
     private long createDate;
@@ -20,6 +24,43 @@ public class QuizletSet {
 
     private QuizletUser creator;
     private List<QuizletTerm> terms;
+
+    public QuizletSet() {
+
+    }
+
+    public QuizletSet(Parcel parcel) {
+        Bundle bundle = parcel.readBundle();
+        id = bundle.getLong("id");
+        title = bundle.getString("title");
+        createDate = bundle.getLong("createDate");
+        modifiedDate = bundle.getLong("modifiedDate");
+        publishedDate = bundle.getLong("publishedDate");
+        hasImages = bundle.getBoolean("hasImages");
+        canEdit = bundle.getBoolean("canEdit");
+        hasAccess = bundle.getBoolean("hasAccess");
+        description = bundle.getString("description");
+        langTerms = bundle.getString("langTerms");
+        langDefs = bundle.getString("langDefs");
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        Bundle bundle = new Bundle();
+        bundle.putLong("id", id);
+        bundle.putString("title",title);
+        bundle.putLong("createDate",createDate);
+        bundle.putLong("modifiedDate",modifiedDate);
+        bundle.putLong("publishedDate",publishedDate);
+        bundle.putBoolean("hasImages",hasImages);
+        bundle.putBoolean("canEdit",canEdit);
+        bundle.putBoolean("hasAccess",hasAccess);
+        bundle.putString("description",description);
+        bundle.putString("langTerms",langTerms);
+        bundle.putString("langDefs",langDefs);
+
+        parcel.writeBundle(bundle);
+    }
 
     public long getId() {
         return id;
@@ -123,5 +164,20 @@ public class QuizletSet {
 
     public void setTerms(List<QuizletTerm> terms) {
         this.terms = terms;
+    }
+
+    public static final Parcelable.Creator<QuizletSet> CREATOR = new Parcelable.Creator<QuizletSet>() {
+        public QuizletSet createFromParcel(Parcel in) {
+            return new QuizletSet(in);
+        }
+
+        public QuizletSet[] newArray(int size) {
+            return new QuizletSet[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 }

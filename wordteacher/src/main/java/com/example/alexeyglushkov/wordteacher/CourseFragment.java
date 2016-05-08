@@ -1,0 +1,171 @@
+package com.example.alexeyglushkov.wordteacher;
+
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import model.Card;
+import model.Course;
+
+/**
+ * Created by alexeyglushkov on 08.05.16.
+ */
+public class CourseFragment extends Fragment {
+
+    enum ViewType {
+        Course,
+        Cards
+    }
+
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter adapter;
+    private ViewType viewType = ViewType.Course;
+    private Listener listener;
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_quizlet_cards, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        recyclerView = (RecyclerView)view.findViewById(R.id.recyclerView);
+
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(layoutManager);
+
+        if (adapter == null) {
+            recreateAdapter();
+        }
+
+        applyAdapter();
+    }
+
+
+    public void setCourses(List<Course> courses) {
+        if (viewType == ViewType.Course) {
+            getCourseAdapter().setCourses(courses);
+        } else {
+            getCardAdapter().updateCards(getCards(courses));
+        }
+    }
+
+    public List<Card> getCards(List<Course> sets) {
+        List<Card> cards = new ArrayList<>();
+        for (Course set : sets) {
+            cards.addAll(set.getCards());
+        }
+
+        Collections.sort(cards, new Comparator<Card>() {
+            @Override
+            public int compare(Card lhs, Card rhs) {
+                return lhs.getTerm().compareTo(rhs.getTerm());
+            }
+        });
+
+        return cards;
+    }
+
+    public void setViewType(ViewType aViewType) {
+        if (viewType != aViewType) {
+            viewType = aViewType;
+            recreateAdapter();
+        }
+    }
+
+    public void setListener(Listener listener) {
+        this.listener = listener;
+    }
+
+    private CourseAdapter getCourseAdapter() {
+        return (CourseAdapter)adapter;
+    }
+
+    private CardAdapter getCardAdapter() {
+        return (CardAdapter)adapter;
+    }
+
+    private void recreateAdapter() {
+        if (viewType == ViewType.Course) {
+            adapter = createCourseAdapter();
+        } else {
+            adapter = createCardAdapter();
+        }
+
+        if (recyclerView != null) {
+            applyAdapter();
+        }
+    }
+
+    private void applyAdapter() {
+        recyclerView.setAdapter(adapter);
+    }
+
+    private CourseAdapter createCourseAdapter() {
+        CourseAdapter adapter = new CourseAdapter(new CourseAdapter.Listener() {
+            @Override
+            public void onCourseClicked(View view, Course course) {
+                CourseFragment.this.onCourseClicked(view, course);
+            }
+
+            @Override
+            public void onCourseMenuClicked(View view, Course course) {
+                CourseFragment.this.onCourseMenuClicked(view, course);
+            }
+        });
+
+        return adapter;
+    }
+
+    private CardAdapter createCardAdapter() {
+        CardAdapter adapter = new CardAdapter(new CardAdapter.Listener() {
+            @Override
+            public void onCardClicked(View view, Card card) {
+                CourseFragment.this.onCardClicked(view, card);
+            }
+
+            @Override
+            public void onMenuClicked(View view, Card card) {
+                CourseFragment.this.onCardMenuClicked(view, card);
+            }
+        });
+
+        return adapter;
+    }
+
+    private void onCourseClicked(View v, Course course) {
+        listener.onCourseClicked(course);
+    }
+
+    private void onCourseMenuClicked(View v, Course course) {
+        listener.onCourseMenuClicked(course);
+    }
+
+    private void onCardClicked(View v, Card card) {
+        listener.onCardClicked(card);
+    }
+
+    private void onCardMenuClicked(View v, Card card) {
+        listener.onCardMenuClicked(card, v);
+    }
+
+    public interface Listener {
+        void onCourseClicked(Course set);
+        void onCourseMenuClicked(Course set);
+        void onCardClicked(Card card);
+        void onCardMenuClicked(Card card, View view);
+    }
+}

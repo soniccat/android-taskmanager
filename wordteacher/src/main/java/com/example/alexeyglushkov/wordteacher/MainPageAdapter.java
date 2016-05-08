@@ -1,5 +1,6 @@
 package com.example.alexeyglushkov.wordteacher;
 
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -17,23 +18,39 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        QuizletCardsFragment quizletFragment = new QuizletCardsFragment();
-        QuizletCardsFragment.ViewType viewType = position == 0 ? QuizletCardsFragment.ViewType.Sets : QuizletCardsFragment.ViewType.Cards;
-        quizletFragment.setViewType(viewType);
+        Fragment result = null;
+        if (position == 0 || position == 1) {
+            QuizletCardsFragment quizletFragment = createQuizletFragment(position);
+            result = quizletFragment;
 
-        Fragment result = quizletFragment;
-        if (position == 0) {
+        } else {
+            result = new CourseFragment();
+        }
+
+        if (isStackContainer(position)) {
             stackContainer = new StackContainer();
-            stackContainer.showFragment(quizletFragment);
+            stackContainer.showFragment(result);
             result = stackContainer;
         }
 
         return result;
     }
 
+    private boolean isStackContainer(int position) {
+        return position == 0 || position == 2;
+    }
+
+    @NonNull
+    private QuizletCardsFragment createQuizletFragment(int position) {
+        QuizletCardsFragment quizletFragment = new QuizletCardsFragment();
+        QuizletCardsFragment.ViewType viewType = position == 0 ? QuizletCardsFragment.ViewType.Sets : QuizletCardsFragment.ViewType.Cards;
+        quizletFragment.setViewType(viewType);
+        return quizletFragment;
+    }
+
     @Override
     public int getCount() {
-        return 2;
+        return 3;
     }
 
     @Override

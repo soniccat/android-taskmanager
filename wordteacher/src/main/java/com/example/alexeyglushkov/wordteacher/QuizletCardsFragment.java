@@ -1,5 +1,6 @@
 package com.example.alexeyglushkov.wordteacher;
 
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -61,6 +62,39 @@ public class QuizletCardsFragment extends Fragment {
         }
 
         applyAdapter();
+
+        if (savedInstanceState != null) {
+            int intViewType = savedInstanceState.getInt("viewType");
+            viewType = ViewType.values()[intViewType];
+
+            Parcelable parcelable = savedInstanceState.getParcelable("adapter");
+            if (viewType == ViewType.Sets) {
+                getSetAdapter().onRestoreInstanceState(parcelable);
+            } else {
+                getWordAdapter().onRestoreInstanceState(parcelable);
+            }
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt("viewType", viewType.ordinal());
+
+        Parcelable parcelable;
+        if (viewType == ViewType.Sets) {
+            parcelable = getSetAdapter().onSaveInstanceState();
+        } else {
+            parcelable = getWordAdapter().onSaveInstanceState();
+        }
+
+        outState.putParcelable("adapter", parcelable);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
     }
 
     public void setParentSet(QuizletSet set) {
