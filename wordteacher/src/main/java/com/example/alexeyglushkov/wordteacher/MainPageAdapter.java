@@ -109,7 +109,11 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
             }
 
             if (result.length() == 0) {
-                result = "Sets";
+                if (position == 0) {
+                    result = "Sets";
+                } else {
+                    result = "Courses";
+                }
             }
 
         } else {

@@ -14,6 +14,7 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import model.Course;
 
@@ -55,6 +56,10 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
     public void onBindViewHolder(ViewHolder holder, int position) {
         final Course course = courses.get(position);
         holder.nameTextview.setText(course.getTitle());
+
+        String format = holder.itemView.getContext().getResources().getString(R.string.set_word_count_formant);
+        String description = String.format(Locale.US, format, course.getCards().size());
+        holder.wordCountTextView.setText(description);
 
         bindListener(holder, course);
     }

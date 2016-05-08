@@ -216,7 +216,7 @@ public class QuizletCardsFragment extends Fragment {
     }
 
     private void onCardClicked(View v, QuizletTerm card) {
-        listener.onCardClicked(card);
+        listener.onTermClicked(card);
     }
 
     private void onTermMenuClicked(View v, QuizletTerm card) {
@@ -226,7 +226,7 @@ public class QuizletCardsFragment extends Fragment {
     public interface Listener {
         void onSetClicked(QuizletSet set);
         void onSetMenuClicked(QuizletSet set, View view);
-        void onCardClicked(QuizletTerm card);
+        void onTermClicked(QuizletTerm card);
         void onTermMenuClicked(QuizletTerm card, View view);
     }
 }

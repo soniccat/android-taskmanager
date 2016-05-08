@@ -31,7 +31,7 @@ import model.Card;
 import model.Course;
 import model.CourseHolder;
 
-public class MainActivity extends BaseActivity implements QuizletCardsFragment.Listener {
+public class MainActivity extends BaseActivity implements QuizletCardsFragment.Listener, CourseFragment.Listener {
 
     private Toolbar toolbar;
     private ViewPager pager;
@@ -88,7 +88,7 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
 
             @Override
             public void onPageSelected(int position) {
-                updateToolbarBackButton();
+                onPagerPageChanged();
             }
 
             @Override
@@ -108,6 +108,16 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(pager);
+    }
+
+    private void onPagerPageChanged() {
+        CourseFragment course = getCourseFragment();
+        if (course != null) {
+            ArrayList<Course> courses = getCourseHolder().getCourses();
+            course.setCourses(courses);
+        }
+
+        updateToolbarBackButton();
     }
 
     @Override
@@ -137,6 +147,10 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
 
         if (fragment instanceof QuizletCardsFragment) {
             QuizletCardsFragment quizletFragment = (QuizletCardsFragment)fragment;
+            quizletFragment.setListener(this);
+
+        } else if (fragment instanceof CourseFragment) {
+            CourseFragment quizletFragment = (CourseFragment)fragment;
             quizletFragment.setListener(this);
         }
     }
@@ -359,7 +373,7 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     }
 
     @Override
-    public void onCardClicked(QuizletTerm card) {
+    public void onTermClicked(QuizletTerm card) {
 
     }
 
@@ -405,5 +419,25 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
                 courseFragment.setCourses(getCourseHolder().getCourses());
             }
         }
+    }
+
+    @Override
+    public void onCourseClicked(Course set) {
+
+    }
+
+    @Override
+    public void onCourseMenuClicked(Course set) {
+
+    }
+
+    @Override
+    public void onCardClicked(Card card) {
+
+    }
+
+    @Override
+    public void onCardMenuClicked(Card card, View view) {
+
     }
 }
