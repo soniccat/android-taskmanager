@@ -8,7 +8,6 @@ import android.support.v4.app.*;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -94,7 +93,7 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         pagerAdapter.setListener(new MainPageAdapter.Listener() {
             @Override
             public void onFragmentReady(Fragment fragment, int position) {
-                onPagerFragmentReady(fragment, position);
+                onPageFragmentReady(fragment, position);
             }
         });
         pager.setAdapter(pagerAdapter);
@@ -120,7 +119,7 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         });
     }
 
-    public void onPagerFragmentReady(Fragment fragment, int position) {
+    public void onPageFragmentReady(Fragment fragment, int position) {
         super.onAttachFragment(fragment);
 
         if (fragment instanceof StackContainer) {
@@ -132,13 +131,6 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
             QuizletCardsFragment quizletFragment = (QuizletCardsFragment)fragment;
             quizletFragment.setListener(this);
         }
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-
     }
 
     private void onViewReady() {
@@ -270,7 +262,7 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     }
 
     private Fragment getFragment(int i) {
-        return (Fragment)pager.getAdapter().instantiateItem(pager, i);
+        return (Fragment)pagerAdapter.getFragment(i);
     }
 
     private void showErrorSnackBar(Error error) {

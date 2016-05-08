@@ -42,6 +42,11 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
                     onStackContainerReady(stackContainer, position, savedInstanceState);
                     onFragmentReady(stackContainer, position);
                 }
+
+                @Override
+                public void onBackStackChanged() {
+                    onFragmentReady(stackContainer, position);
+                }
             });
 
             result = stackContainer;
@@ -59,6 +64,10 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
     public void destroyItem(ViewGroup container, int position, Object object) {
         super.destroyItem(container, position, object);
         fragments.remove(position);
+    }
+
+    public Fragment getFragment(int position) {
+        return fragments.get(position);
     }
 
     private void onStackContainerReady(StackContainer container, int position, Bundle savedInstanceState) {

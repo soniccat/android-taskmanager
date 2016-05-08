@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,9 +13,8 @@ import android.view.ViewGroup;
 /**
  * Created by alexeyglushkov on 03.05.16.
  */
-public class StackContainer extends Fragment {
+public class StackContainer extends Fragment implements FragmentManager.OnBackStackChangedListener {
 
-    //private Fragment pendingFragment;
     private Listener listener;
 
     public void setListener(Listener listener) {
@@ -24,9 +24,7 @@ public class StackContainer extends Fragment {
     public void showFragment(Fragment fragment) {
         if (getActivity() != null && getView() != null) {
             addFragment(fragment);
-        } /*else {
-            pendingFragment = fragment;
-        }*/
+        }
     }
 
     private void addFragment(Fragment fragment) {
@@ -43,10 +41,6 @@ public class StackContainer extends Fragment {
         if (!needSaveState) {
             getChildFragmentManager().executePendingTransactions();
         }
-
-        /*if (pendingFragment == fragment) {
-            pendingFragment = null;
-        }*/
     }
 
     @Nullable
@@ -59,13 +53,18 @@ public class StackContainer extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        getChildFragmentManager().addOnBackStackChangedListener(this);
         listener.onViewCreated(savedInstanceState);
+    }
 
-        /*if (getAttachedFragment() != null) {
-            pendingFragment = null;
-        } else if (pendingFragment != null) {
-            addFragment(pendingFragment);
-        }*/
+    public void onBackStackChanged() {
+        listener.onBackStackChanged();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        getChildFragmentManager().removeOnBackStackChangedListener(this);
     }
 
     @Override
@@ -74,7 +73,7 @@ public class StackContainer extends Fragment {
     }
 
     public Fragment getFragment() {
-        return /*pendingFragment != null ? pendingFragment :*/ getAttachedFragment();
+        return getAttachedFragment();
     }
 
     public int getBackStackSize() {
@@ -87,5 +86,6 @@ public class StackContainer extends Fragment {
 
     public interface Listener {
         void onViewCreated(Bundle savedInstanceState);
+        void onBackStackChanged();
     }
 }

@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.wordteacher;
 
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,14 +22,25 @@ import model.Course;
  */
 public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder> {
 
-    private List<Course> courses = new ArrayList<>();
+    private ArrayList<Course> courses = new ArrayList<>();
     private Listener listener;
 
     public CourseAdapter(Listener listener) {
         this.listener = listener;
     }
 
-    public void setCourses(List<Course> courses) {
+    public Parcelable onSaveInstanceState() {
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("courses", courses);
+        return bundle;
+    }
+
+    public void onRestoreInstanceState (Parcelable state) {
+        Bundle bundle = (Bundle)state;
+        courses = bundle.getParcelableArrayList("courses");
+    }
+
+    public void setCourses(ArrayList<Course> courses) {
         this.courses = courses;
     }
 

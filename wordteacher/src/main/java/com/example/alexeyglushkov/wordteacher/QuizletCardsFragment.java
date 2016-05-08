@@ -78,6 +78,7 @@ public class QuizletCardsFragment extends Fragment {
     private void restore(@Nullable Bundle savedInstanceState) {
         int intViewType = savedInstanceState.getInt("viewType");
         viewType = ViewType.values()[intViewType];
+        parentSet = savedInstanceState.getParcelable("parentSet");
         recreateAdapter();
         restoreAdapter(savedInstanceState);
     }
@@ -96,6 +97,7 @@ public class QuizletCardsFragment extends Fragment {
         super.onSaveInstanceState(outState);
 
         outState.putInt("viewType", viewType.ordinal());
+        outState.putParcelable("parentSet", parentSet);
         saveAdapterState(outState);
     }
 
@@ -108,11 +110,6 @@ public class QuizletCardsFragment extends Fragment {
         }
 
         outState.putParcelable("adapter", parcelable);
-    }
-
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
     }
 
     public void setParentSet(QuizletSet set) {

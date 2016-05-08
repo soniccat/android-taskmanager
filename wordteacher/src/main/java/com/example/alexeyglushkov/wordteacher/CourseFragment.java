@@ -1,6 +1,7 @@
 package com.example.alexeyglushkov.wordteacher;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -27,10 +28,20 @@ public class CourseFragment extends Fragment {
         Cards
     }
 
+    private Course parentCourse;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private ViewType viewType = ViewType.Course;
     private Listener listener;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            restore(savedInstanceState);
+        }
+    }
 
     @Nullable
     @Override
@@ -55,7 +66,44 @@ public class CourseFragment extends Fragment {
     }
 
 
-    public void setCourses(List<Course> courses) {
+    private void restore(@Nullable Bundle savedInstanceState) {
+        int intViewType = savedInstanceState.getInt("viewType");
+        viewType = ViewType.values()[intViewType];
+        parentCourse = savedInstanceState.getParcelable("parentCourse");
+        recreateAdapter();
+        restoreAdapter(savedInstanceState);
+    }
+
+    private void restoreAdapter(@Nullable Bundle savedInstanceState) {
+        Parcelable parcelable = savedInstanceState.getParcelable("adapter");
+        if (viewType == ViewType.Course) {
+            getCourseAdapter().onRestoreInstanceState(parcelable);
+        } else {
+            getCardAdapter().onRestoreInstanceState(parcelable);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt("viewType", viewType.ordinal());
+        outState.putParcelable("parentCourse", parentCourse);
+        saveAdapterState(outState);
+    }
+
+    private void saveAdapterState(Bundle outState) {
+        Parcelable parcelable;
+        if (viewType == ViewType.Course) {
+            parcelable = getCourseAdapter().onSaveInstanceState();
+        } else {
+            parcelable = getCardAdapter().onSaveInstanceState();
+        }
+
+        outState.putParcelable("adapter", parcelable);
+    }
+
+    public void setCourses(ArrayList<Course> courses) {
         if (viewType == ViewType.Course) {
             getCourseAdapter().setCourses(courses);
         } else {
