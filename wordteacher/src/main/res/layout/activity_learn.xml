@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
@@ -9,6 +9,7 @@
     tools:context="learning.LearnActivity">
 
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
@@ -18,66 +19,65 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:layout_scrollFlags="scroll|enterAlways"/>
+            app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
     </android.support.design.widget.AppBarLayout>
 
-    <LinearLayout
+    <ScrollView
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_margin="@dimen/activity_vertical_margin"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_below="@+id/appbar"
+        android:layout_above="@+id/definition">
         <TextView
             android:id="@+id/word"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Word"
+            android:gravity="center_horizontal"/>
+
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="@dimen/activity_vertical_margin">
+
+        <Button
+            android:id="@+id/giveUpButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="Word"/>
+            android:text="@string/learning_giveUp"
+            android:layout_weight="1"
+            style="@style/Widget.AppCompat.Button.Borderless"/>
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/definition"
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/checkButton"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:errorEnabled="true">
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:singleLine="true"/>
-        </android.support.design.widget.TextInputLayout>
+            android:text="@string/learning_check"
+            android:layout_weight="1"
+            style="@style/Widget.AppCompat.Button.Borderless"/>
 
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/giveUpButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/learning_giveUp"
-                android:layout_weight="1"
-                style="@style/Widget.AppCompat.Button.Borderless"/>
-
-            <Button
-                android:id="@+id/checkButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/learning_check"
-                android:layout_weight="1"
-                style="@style/Widget.AppCompat.Button.Borderless"/>
-
-        </LinearLayout>
     </LinearLayout>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/definition"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_dialog_email" />
+        app:errorEnabled="true"
+        android:layout_above="@+id/buttons"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin">
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"/>
+    </android.support.design.widget.TextInputLayout>
 
-</android.support.design.widget.CoordinatorLayout>
+</RelativeLayout>

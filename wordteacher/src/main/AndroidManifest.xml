@@ -38,7 +38,8 @@
         <activity
             android:name="learning.LearnActivity"
             android:label="@string/learning_title"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
