@@ -48,6 +48,10 @@ public class Course implements Parcelable {
         cards.add(card);
     }
 
+    public void addCards(List<Card> cards) {
+        this.cards.addAll(cards);
+    }
+
     public void removeCard(Card card) {
         cards.remove(card);
     }

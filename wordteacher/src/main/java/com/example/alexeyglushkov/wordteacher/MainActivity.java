@@ -3,6 +3,7 @@ package com.example.alexeyglushkov.wordteacher;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -408,68 +409,48 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         popupMenu.show();
     }
 
-    private void onCreateCourseFromCard(QuizletTerm card) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        View titleView = getLayoutInflater().inflate(R.layout.dialog_rename, (ViewGroup)getWindow().getDecorView(), false);
-        final TextInputLayout inputLayout = (TextInputLayout)titleView.findViewById(R.id.input_layout);
-        inputLayout.setError("");
-
-        builder.setTitle(R.string.dialog_rename_hint);
-        builder.setView(titleView);
-
-        // Set up the buttons
-        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //inputLayout.setError("");
-            }
-        });
-
-        builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                //inputLayout.setError("");
-            }
-        });
-
-        final AlertDialog alertDialog = builder.create();
-        alertDialog.show();
-
-        Button theButton = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
-        theButton.setOnClickListener(new View.OnClickListener() {
+    private void onCreateCourseFromCard(final QuizletTerm card) {
+        final RenameAlert renameAlert = new RenameAlert();
+        renameAlert.setPositiveButtonListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (inputLayout.getEditText().length() == 0) {
-                    String str = getString(R.string.error_empty_title);
-                    inputLayout.setError(str);
-                } else {
-                    //inputLayout.setError("");
-                    alertDialog.dismiss();
-                }
+                createCourseFromCard(card, renameAlert.getName());
             }
         });
+        renameAlert.show(this, (ViewGroup) getWindow().getDecorView());
+    }
+
+    private void createCourseFromCard(QuizletTerm quizletTerm, String name) {
+        Card card = createCard(quizletTerm);
+        ArrayList<Card> cards = new ArrayList<>();
+        cards.add(card);
+
+        createCourse(name, cards);
     }
 
     private void onCreateCourseFromSet(QuizletSet set) {
-        Course course = new Course();
-        course.setTitle(set.getTitle());
-
+        ArrayList<Card> cards = new ArrayList<>();
         for (QuizletTerm term : set.getTerms()) {
-            Card card = new Card();
-            card.setTerm(term.getTerm());
-            card.setDefinition(term.getDefinition());
-            card.setQuizletTerm(term);
-
-            course.addCard(card);
+            Card card = createCard(term);
+            cards.add(card);
         }
+
+        createCourse(set.getTitle(), cards);
+    }
+
+    @NonNull
+    private Card createCard(QuizletTerm term) {
+        Card card = new Card();
+        card.setTerm(term.getTerm());
+        card.setDefinition(term.getDefinition());
+        card.setQuizletTerm(term);
+        return card;
+    }
+
+    private void createCourse(String title, ArrayList<Card> cards) {
+        Course course = new Course();
+        course.setTitle(title);
+        course.addCards(cards);
 
         Error error = getCourseHolder().addCourse(course);
         if (error != null) {
