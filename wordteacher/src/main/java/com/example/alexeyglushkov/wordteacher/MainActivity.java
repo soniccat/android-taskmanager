@@ -2,6 +2,7 @@ package com.example.alexeyglushkov.wordteacher;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import learning.LearnActivity;
 import main.BaseActivity;
 import main.MainApplication;
 import model.Card;
@@ -462,8 +464,11 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     }
 
     @Override
-    public void onCourseClicked(Course set) {
+    public void onCourseClicked(Course course) {
+        Intent activityIntent = new Intent(this, LearnActivity.class);
+        activityIntent.putExtra(LearnActivity.EXTRA_COURSE, course);
 
+        startActivity(activityIntent);
     }
 
     @Override

@@ -6,7 +6,12 @@
 
     <string name="dialog_rename_hint">Course title</string>
 
+    <string name="learning_giveUp">Give Up</string>
+    <string name="learning_check">Check</string>
+
     <string name="error_auth_error">Auth Error</string>
     <string name="error_load_error">Load Error</string>
     <string name="error_empty_title">Title is empty</string>
+    <string name="error_wrong_input">Something is wrong</string>
+    <string name="error_answer_format">It\'s: %s</string>
 </resources>

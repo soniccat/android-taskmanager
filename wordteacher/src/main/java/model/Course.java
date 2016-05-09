@@ -21,7 +21,7 @@ public class Course implements Parcelable {
     private ArrayList<Card> cards = new ArrayList<>();
 
     public Course(Parcel parcel) {
-        Bundle bundle = parcel.readBundle();
+        Bundle bundle = parcel.readBundle(Card.class.getClassLoader());
         id = UUID.fromString(bundle.getString("id"));
         title = bundle.getString("title");
         createDate = new Date(bundle.getLong("createDate"));

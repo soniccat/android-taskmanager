@@ -137,7 +137,7 @@ public class QuizletCardsFragment extends Fragment {
         Collections.sort(cards, new Comparator<QuizletTerm>() {
             @Override
             public int compare(QuizletTerm lhs, QuizletTerm rhs) {
-                return lhs.getTerm().compareTo(rhs.getTerm());
+                return lhs.getTerm().compareToIgnoreCase(rhs.getTerm());
             }
         });
 

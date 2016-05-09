@@ -36,11 +36,20 @@
         </activity>
 
         <activity
+            android:name="learning.LearnActivity"
+            android:label="@string/learning_title"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
+        <activity
             android:name="authorization.AuthorizationActivity"
             android:label="@string/title_activity_authorization" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="main.MainActivity" />
+                android:value=".MainActivity" />
         </activity>
     </application>
 

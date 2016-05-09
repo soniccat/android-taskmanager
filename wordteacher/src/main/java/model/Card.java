@@ -21,7 +21,7 @@ public class Card implements Parcelable {
     private QuizletTerm quizletTerm;
 
     public Card(Parcel parcel) {
-        Bundle bundle = parcel.readBundle();
+        Bundle bundle = parcel.readBundle(QuizletTerm.class.getClassLoader());
         id = UUID.fromString(bundle.getString("id"));
         term = bundle.getString("term");
         definition = bundle.getString("definition");
