@@ -20,21 +20,24 @@ import model.Course;
  */
 public class LearnActivity extends BaseActivity {
 
-    public final static String EXTRA_COURSE = "Course";
+    public final static String EXTRA_DEFINITION_TO_TERM = "EXTRA_DEFINITION_TO_TERM";
+    public final static String EXTRA_COURSE = "EXTRA_COURSE";
 
     private CourseTeacher teacher;
 
-    private TextView titleView;
+    private TextView termView;
     private TextInputLayout inputLayout;
     private Button giveUpButton;
     private Button checkButton;
+
+    private boolean definitionToTerm;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_learn);
-        titleView = (TextView)findViewById(R.id.word);
+        termView = (TextView)findViewById(R.id.word);
         inputLayout = (TextInputLayout)findViewById(R.id.definition);
         giveUpButton = (Button)findViewById(R.id.giveUpButton);
         checkButton = (Button)findViewById(R.id.checkButton);
@@ -54,6 +57,8 @@ public class LearnActivity extends BaseActivity {
         });
 
         Course course = getIntent().getParcelableExtra(EXTRA_COURSE);
+        definitionToTerm = getIntent().getBooleanExtra(EXTRA_DEFINITION_TO_TERM, false);
+
         teacher = new CourseTeacher(course);
         bindCurrentCard();
     }
@@ -65,14 +70,23 @@ public class LearnActivity extends BaseActivity {
     }
 
     private void bindCard(Card card) {
-        titleView.setText(card.getTerm());
+        termView.setText(getTerm(card));
         inputLayout.setError(null);
+        inputLayout.getEditText().setText(null);
+    }
+
+    private String getTerm(Card card) {
+        return definitionToTerm ? card.getDefinition() : card.getTerm();
+    }
+
+    private String getDefinition(Card card) {
+        return definitionToTerm ? card.getTerm() : card.getDefinition();
     }
 
     private void checkInput() {
         Card card = teacher.getCurrentCard();
         String input = inputLayout.getEditText().getText().toString();
-        if (input.equalsIgnoreCase(card.getDefinition())) {
+        if (input.equalsIgnoreCase(getDefinition(card))) {
             onRightInput();
         } else {
             onWrongInput();
@@ -81,11 +95,19 @@ public class LearnActivity extends BaseActivity {
 
     private void onRightInput() {
         Card card = teacher.getNextCard();
-        bindCard(card);
+        if (card != null) {
+            bindCard(card);
+        } else {
+            onFinished();
+        }
     }
 
     private void onWrongInput() {
         inputLayout.setError(getString(R.string.error_wrong_input));
+    }
+
+    private void onFinished() {
+
     }
 
     private void giveUp() {
@@ -93,7 +115,7 @@ public class LearnActivity extends BaseActivity {
         inputLayout.getEditText().setText("");
 
         String format = getString(R.string.error_answer_format);
-        String answerString = String.format(Locale.US, format, card.getDefinition());
+        String answerString = String.format(Locale.US, format, getDefinition(card));
         inputLayout.setError(answerString);
     }
 }

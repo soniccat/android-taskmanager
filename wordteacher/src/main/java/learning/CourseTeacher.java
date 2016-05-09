@@ -21,9 +21,9 @@ public class CourseTeacher {
 
     public Card getNextCard() {
         Card result = null;
+        ++currentIndex;
         if (currentIndex < course.getCards().size()) {
             result = course.getCards().get(currentIndex);
-            ++currentIndex;
         }
 
         return result;

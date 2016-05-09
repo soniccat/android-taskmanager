@@ -1,15 +1,11 @@
 package com.example.alexeyglushkov.wordteacher;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.design.widget.TextInputEditText;
-import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.*;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.PopupMenu;
@@ -20,8 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.Button;
-import android.widget.EditText;
 
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.authorization.service.Service;
@@ -33,7 +27,6 @@ import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 import learning.LearnActivity;
 import main.BaseActivity;
@@ -467,6 +460,7 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     public void onCourseClicked(Course course) {
         Intent activityIntent = new Intent(this, LearnActivity.class);
         activityIntent.putExtra(LearnActivity.EXTRA_COURSE, course);
+        activityIntent.putExtra(LearnActivity.EXTRA_DEFINITION_TO_TERM, true);
 
         startActivity(activityIntent);
     }
