@@ -1,17 +1,25 @@
 package com.example.alexeyglushkov.wordteacher;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.*;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
+import android.widget.EditText;
 
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.authorization.service.Service;
@@ -157,7 +165,10 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
 
     private void onViewReady() {
         if (getQuizletService() != null && getQuizletService().getAccount() != null && getQuizletService().getAccount().isAuthorized()) {
+            Log.d("load","start load quizlet sets");
             loadQuizletSets();
+        } else {
+            Log.d("quizlet status", "");
         }
     }
 
@@ -273,6 +284,8 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
 
     private void handleLoadedQuizletSets() {
         List<QuizletSet> sets = getQuizletService().getSets();
+        Log.d("load", "handleLoadedQuizletSets " + sets.size());
+
         getSetQuizletFragment().updateSets(sets);
         getCardQuizletFragment().updateSets(sets);
     }
@@ -396,7 +409,53 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     }
 
     private void onCreateCourseFromCard(QuizletTerm card) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
+        View titleView = getLayoutInflater().inflate(R.layout.dialog_rename, (ViewGroup)getWindow().getDecorView(), false);
+        final TextInputLayout inputLayout = (TextInputLayout)titleView.findViewById(R.id.input_layout);
+        inputLayout.setError("");
+
+        builder.setTitle(R.string.dialog_rename_hint);
+        builder.setView(titleView);
+
+        // Set up the buttons
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //inputLayout.setError("");
+            }
+        });
+
+        builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                //inputLayout.setError("");
+            }
+        });
+
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+
+        Button theButton = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        theButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (inputLayout.getEditText().length() == 0) {
+                    String str = getString(R.string.error_empty_title);
+                    inputLayout.setError(str);
+                } else {
+                    //inputLayout.setError("");
+                    alertDialog.dismiss();
+                }
+            }
+        });
     }
 
     private void onCreateCourseFromSet(QuizletSet set) {

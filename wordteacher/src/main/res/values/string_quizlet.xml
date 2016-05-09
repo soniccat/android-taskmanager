@@ -4,6 +4,9 @@
 
     <string name="menu_create_course">Create new course</string>
 
+    <string name="dialog_rename_hint">Course title</string>
+
     <string name="error_auth_error">Auth Error</string>
     <string name="error_load_error">Load Error</string>
+    <string name="error_empty_title">Title is empty</string>
 </resources>
