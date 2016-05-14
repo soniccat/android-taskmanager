@@ -1,0 +1,24 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <item
+        android:id="@+id/hint_show_letter"
+        android:orderInCategory="100"
+        android:title="@string/menu_hint_show_next_letter"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/hint_show_random_letter"
+        android:orderInCategory="101"
+        android:title="@string/menu_hint_show_random_letter"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/hint_play_man"
+        android:orderInCategory="103"
+        android:title="@string/menu_hint_play_hangman"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/hint_clue"
+        android:orderInCategory="104"
+        android:title="@string/menu_hint_clue"
+        app:showAsAction="never" />
+</menu>

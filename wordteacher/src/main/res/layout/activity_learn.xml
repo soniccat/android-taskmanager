@@ -30,12 +30,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/appbar"
-        android:layout_above="@+id/definition">
+        android:layout_above="@+id/definition_container">
         <TextView
             android:id="@+id/word"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Word"
+            android:textSize="25dp"
             android:gravity="center_horizontal"/>
 
     </ScrollView>
@@ -64,20 +65,46 @@
             android:layout_weight="1"
             style="@style/Widget.AppCompat.Button.Borderless"/>
 
+        <Button
+            android:id="@+id/go_next_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/learning_next"
+            android:layout_weight="1"
+            android:visibility="gone"
+            style="@style/Widget.AppCompat.Button.Borderless"/>
+
+
     </LinearLayout>
 
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/definition"
+    <LinearLayout
+        android:id="@+id/definition_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:errorEnabled="true"
+        android:orientation="horizontal"
         android:layout_above="@+id/buttons"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin">
-        <EditText
-            android:layout_width="match_parent"
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/definition"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:singleLine="true"/>
-    </android.support.design.widget.TextInputLayout>
+            app:errorEnabled="true"
+            android:layout_weight="1">
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                />
+        </android.support.design.widget.TextInputLayout>
+        <ImageButton
+            android:id="@+id/hit_button"
+            android:padding="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_more_vert_gray_24dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:layout_gravity="center_vertical"/>
+    </LinearLayout>
 
 </RelativeLayout>

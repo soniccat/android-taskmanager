@@ -3,5 +3,10 @@
     <string name="learning_title">Learning</string>
     <string name="action_settings">Settings</string>
 
+    <string name="menu_hint_show_next_letter">Show next letter</string>
+    <string name="menu_hint_show_random_letter">Show a random letter</string>
+    <string name="menu_hint_play_hangman">Play hangman</string>
+    <string name="menu_hint_clue">Ask for a clue</string>
+
     <string name="title_activity_authorization">Authorization</string>
 </resources>
