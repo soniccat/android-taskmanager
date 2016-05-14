@@ -43,6 +43,8 @@ public class LearnActivity extends BaseActivity {
 
     private boolean definitionToTerm;
     private boolean needShowNextButtonIfCorrect;
+    private boolean isNextLetterHintUsed;
+    private boolean isRandomLetterHintUsed;
     private int numberOfChecks;
     private ArrayList<Character> hintArray = new ArrayList<>();
 
@@ -223,10 +225,11 @@ public class LearnActivity extends BaseActivity {
         int index = hintArray.indexOf(GAP_CHAR);
         updateHintString(index);
         showHintString();
+        updateHintButton();
+    }
 
-        if (isHintStringFull()) {
-            setHintButtonEnabled(false);
-        }
+    private void updateHintButton() {
+        setHintButtonEnabled(!isHintStringFull());
     }
 
     private void setHintButtonEnabled(boolean isEnable) {
@@ -236,10 +239,7 @@ public class LearnActivity extends BaseActivity {
     private void onShowRandomLetterPressed() {
         updateHintStringWithRandomLetter();
         showHintString();
-
-        if (isHintStringFull()) {
-            setHintButtonEnabled(false);
-        }
+        updateHintButton();
     }
 
     private boolean isHintStringFull() {
@@ -301,12 +301,14 @@ public class LearnActivity extends BaseActivity {
 
     private void onGiveUpPressed() {
         needShowNextButtonIfCorrect = true;
-
-        Card card = teacher.getCurrentCard();
         inputLayout.getEditText().setText("");
 
-        String format = getString(R.string.error_answer_format);
-        String answerString = String.format(Locale.US, format, getDefinition(card));
-        inputLayout.setError(answerString);
+        String definition = getDefinition(teacher.getCurrentCard());
+        for (int i=0; i<definition.length(); ++i) {
+            hintArray.set(i, definition.charAt(i));
+        }
+
+        showHintString();
+        updateHintButton();
     }
 }

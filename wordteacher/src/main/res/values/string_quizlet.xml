@@ -14,5 +14,5 @@
     <string name="error_load_error">Load Error</string>
     <string name="error_empty_title">Title is empty</string>
     <string name="error_wrong_input">Something is wrong</string>
-    <string name="error_answer_format">It\'s: %s</string>
+    <string name="error_answer_format">%s</string>
 </resources>
