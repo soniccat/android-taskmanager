@@ -33,6 +33,7 @@ public class CourseReader implements InputStreamReader {
             md.addDeserializer(Course.class, new CourseDeserializer(Course.class));
             md.addDeserializer(Card.class, new CardDeserializer(Card.class));
             md.addDeserializer(QuizletTerm.class, new QuizletTermDeserializer(QuizletTerm.class));
+            md.addDeserializer(CardProgress.class, new CardProgressDeserializer(CardProgress.class));
 
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(md);

@@ -18,25 +18,30 @@ public class Card implements Parcelable {
     private String term;
     private String definition;
 
+    private CardProgress progress;
     private QuizletTerm quizletTerm;
 
     public Card(Parcel parcel) {
+        // TODO: remove bundle
         Bundle bundle = parcel.readBundle(QuizletTerm.class.getClassLoader());
         id = UUID.fromString(bundle.getString("id"));
         term = bundle.getString("term");
         definition = bundle.getString("definition");
         createDate = new Date(bundle.getLong("createDate"));
         quizletTerm = bundle.getParcelable("quizletTerm");
+        progress = bundle.getParcelable("progress");
     }
 
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
+        // TODO: remove bundle
         Bundle bundle = new Bundle();
         bundle.putString("id", id.toString());
         bundle.putString("term", term);
         bundle.putString("definition", definition);
         bundle.putLong("createDate", createDate.getTime());
         bundle.putParcelable("quizletTerm", quizletTerm);
+        bundle.putParcelable("progress", progress);
 
         parcel.writeBundle(bundle);
     }
@@ -84,6 +89,14 @@ public class Card implements Parcelable {
 
     public void setQuizletTerm(QuizletTerm quizletTerm) {
         this.quizletTerm = quizletTerm;
+    }
+
+    public CardProgress getProgress() {
+        return progress;
+    }
+
+    public void setProgress(CardProgress progress) {
+        this.progress = progress;
     }
 
     @Override

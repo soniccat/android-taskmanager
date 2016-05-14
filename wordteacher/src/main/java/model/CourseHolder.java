@@ -3,7 +3,6 @@ package model;
 import com.example.alexeyglushkov.cachemanager.CacheEntry;
 import com.example.alexeyglushkov.cachemanager.DiskCacheEntry;
 import com.example.alexeyglushkov.cachemanager.DiskCacheProvider;
-import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,7 +13,6 @@ import java.util.List;
  */
 public class CourseHolder {
     private DiskCacheProvider diskProvider;
-
     private ArrayList<Course> courses = new ArrayList<>();
 
     public CourseHolder(File directory) {
@@ -34,11 +32,19 @@ public class CourseHolder {
     }
 
     public Error addCourse(Course course) {
-        Error error = diskProvider.put(course.getId().toString(), course, null);
-        if (error == null && course != null) {
-            courses.add(course);
+        Error error = null;
+        if (course != null) {
+            error = storeCourse(course);
+            if (error == null) {
+                courses.add(course);
+            }
         }
 
+        return error;
+    }
+
+    private Error storeCourse(Course course) {
+        Error error = diskProvider.put(course.getId().toString(), course, null);
         return error;
     }
 
@@ -49,6 +55,24 @@ public class CourseHolder {
         }
 
         return error;
+    }
+
+    public void countRighAnswer(Course course, Card card) {
+        CardProgress progress = card.getProgress();
+        if (progress != null) {
+            progress = new CardProgress();
+        }
+
+        progress.countRightAnswer();
+        storeCourse(course);
+    }
+
+    public void countWrongAnswer(Course course, Card card) {
+        CardProgress progress = card.getProgress();
+        if (progress != null) {
+            progress.countWrongAnswer();
+            storeCourse(course);
+        }
     }
 
     public ArrayList<Course> getCourses() {

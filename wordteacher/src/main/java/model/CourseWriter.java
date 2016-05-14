@@ -36,15 +36,22 @@ public class CourseWriter implements OutputStreamWriter {
 
             g.writeEndArray();
 
-            g.close();
-
         } catch (Exception e) {
             error = new Error(e.getMessage());
+        } finally {
+            if (g != null) {
+                try {
+                    g.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         return error;
     }
 
+    // TODO: separate in different wirter
     private void writeCard(Card card, JsonGenerator g) throws IOException{
         g.writeStartObject();
         g.writeStringField("id",card.getId().toString());
@@ -52,13 +59,23 @@ public class CourseWriter implements OutputStreamWriter {
         g.writeStringField("term",card.getTerm());
         g.writeStringField("definition",card.getDefinition());
 
-        g.writeObjectFieldStart("quizletTerm");
-        writeQuizletTerm(card.getQuizletTerm(), g);
-        g.writeEndObject();
+        if (card.getQuizletTerm() != null) {
+            g.writeObjectFieldStart("quizletTerm");
+            writeQuizletTerm(card.getQuizletTerm(), g);
+            g.writeEndObject();
+        }
+
+        if (card.getProgress() != null) {
+            CardProgressWriter progressWriter = new CardProgressWriter();
+            g.writeObjectFieldStart("progress");
+            progressWriter.write(card.getProgress(), g);
+            g.writeEndObject();
+        }
 
         g.writeEndObject();
     }
 
+    // TODO: separate in different writer
     private void writeQuizletTerm(QuizletTerm term, JsonGenerator g) throws IOException {
         g.writeNumberField("id", term.getId());
         g.writeStringField("term", term.getTerm());

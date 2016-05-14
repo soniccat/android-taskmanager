@@ -21,6 +21,7 @@ public class Course implements Parcelable {
     private ArrayList<Card> cards = new ArrayList<>();
 
     public Course(Parcel parcel) {
+        //TODO: remove bundle
         Bundle bundle = parcel.readBundle(Card.class.getClassLoader());
         id = UUID.fromString(bundle.getString("id"));
         title = bundle.getString("title");
@@ -30,6 +31,7 @@ public class Course implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
+        //TODO: remove bundle
         Bundle bundle = new Bundle();
         bundle.putString("id", id.toString());
         bundle.putString("title", title);

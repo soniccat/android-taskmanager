@@ -1,12 +1,15 @@
 package model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.Date;
 
 /**
  * Created by alexeyglushkov on 14.05.16.
  */
-public class CardProgress {
+public class CardProgress implements Parcelable {
 
     private int MIN = 60;
     private int HOUR = 25*MIN;
@@ -27,6 +30,24 @@ public class CardProgress {
     private int rightAnswerCount = 0;
     private int lastMistakeCount = 0;
     private Date lastLessonDate;
+
+    public CardProgress(Parcel parcel) {
+        parcel.writeInt(rightAnswerCount);
+        parcel.writeInt(lastMistakeCount);
+        parcel.writeLong(lastLessonDate.getTime());
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        rightAnswerCount = dest.readInt();
+        lastMistakeCount = dest.readInt();
+        long time = dest.readLong();
+        lastLessonDate = new Date(time);
+    }
+
+    public CardProgress() {
+
+    }
 
     public float getProgress() {
         float result = 0;
@@ -78,6 +99,49 @@ public class CardProgress {
     private void updateLastLessonDate() {
         lastLessonDate = new Date();
     }
+
+    public static final Parcelable.Creator<CardProgress> CREATOR = new Parcelable.Creator<CardProgress>() {
+        public CardProgress createFromParcel(Parcel in) {
+            return new CardProgress(in);
+        }
+
+        public CardProgress[] newArray(int size) {
+            return new CardProgress[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    // for parsers
+
+    public int getRightAnswerCount() {
+        return rightAnswerCount;
+    }
+
+    public void setRightAnswerCount(int rightAnswerCount) {
+        this.rightAnswerCount = rightAnswerCount;
+    }
+
+    public int getLastMistakeCount() {
+        return lastMistakeCount;
+    }
+
+    public void setLastMistakeCount(int lastMistakeCount) {
+        this.lastMistakeCount = lastMistakeCount;
+    }
+
+    public Date getLastLessonDate() {
+        return lastLessonDate;
+    }
+
+    public void setLastLessonDate(Date lastLessonDate) {
+        this.lastLessonDate = lastLessonDate;
+    }
+
+
 
     /*
     public class CardLesson {

@@ -52,6 +52,10 @@ public class CardDeserializer extends CustomDeserializer<Card> {
             QuizletTerm quizletTerm = mapper.readValue(p, QuizletTerm.class);
             card.setQuizletTerm(quizletTerm);
             isHandled = true;
+        } else if (name.equals("progress")) {
+            CardProgress progress = mapper.readValue(p, CardProgress.class);
+            card.setProgress(progress);
+            isHandled = true;
         }
 
         return isHandled;
