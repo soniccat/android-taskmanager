@@ -46,6 +46,15 @@
         </activity>
 
         <activity
+            android:name="learning.SessionResultActivity"
+            android:label="@string/learning_title"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="learning.LearnActivity" />
+        </activity>
+
+        <activity
             android:name="authorization.AuthorizationActivity"
             android:label="@string/title_activity_authorization" >
             <meta-data

@@ -1,5 +1,6 @@
 package learning;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -113,8 +114,7 @@ public class LearnActivity extends BaseActivity {
         definitionToTerm = getIntent().getBooleanExtra(EXTRA_DEFINITION_TO_TERM, false);
 
         teacher = new CourseTeacher(courseId);
-        prepareToNewCard();
-        bindCurrentCard();
+        showCurrentCard();
     }
 
     private void bindCurrentCard() {
@@ -203,12 +203,17 @@ public class LearnActivity extends BaseActivity {
         showNextCard();
     }
 
+    private void showCurrentCard() {
+        prepareToNewCard();
+        bindCurrentCard();
+    }
+
     private void showNextCard() {
-        Card card = teacher.getNextCard();
+        teacher.getNextCard();
         prepareToNewCard();
 
-        if (card != null) {
-            bindCard(card);
+        if (teacher.getCurrentCard() != null) {
+            bindCurrentCard();
         } else {
             onFinished();
         }
@@ -235,7 +240,24 @@ public class LearnActivity extends BaseActivity {
     }
 
     private void onFinished() {
-        finish();
+        LearnSession session = teacher.getCurrentSession();
+        teacher.onSessionsFinished();
+
+        Intent intent = new Intent(this, SessionResultActivity.class);
+        startActivityForResult(intent, SessionResultActivity.ACTIVITY_RESULT);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == SessionResultActivity.ACTIVITY_RESULT) {
+            if (teacher.getCurrentCard() == null) {
+                finish();
+            } else {
+                showCurrentCard();
+            }
+        }
     }
 
     private void showHintMenu() {
@@ -337,6 +359,8 @@ public class LearnActivity extends BaseActivity {
     }
 
     private void onGiveUpPressed() {
+        onFinished();
+        /*
         teacher.onGiveUp();
         inputLayout.getEditText().setText("");
 
@@ -346,6 +370,6 @@ public class LearnActivity extends BaseActivity {
         }
 
         showHintString();
-        updateHintButton();
+        updateHintButton();*/
     }
 }

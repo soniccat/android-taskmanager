@@ -1,5 +1,8 @@
 package learning;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -8,19 +11,33 @@ import model.Card;
 /**
  * Created by alexeyglushkov on 15.05.16.
  */
-public class LearnSession {
+public class LearnSession implements Parcelable {
     private ArrayList<Card> cards = new ArrayList<>();
-    private ArrayList<CardResult> results = new ArrayList<>();
+    private ArrayList<SessionCardResult> results = new ArrayList<>();
     private int currentIndex;
 
     public LearnSession(ArrayList<Card> cards) {
         this.cards.addAll(cards);
 
         for (Card card : this.cards) {
-            CardResult result = new CardResult();
+            SessionCardResult result = new SessionCardResult();
             result.cardId = card.getId();
             result.oldProgress = card.getFloatProgress();
+
+            results.add(result);
         }
+    }
+
+    public LearnSession(Parcel parcel) {
+        parcel.readTypedList(cards, Card.CREATOR);
+        parcel.readTypedList(results, SessionCardResult.CREATOR);
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeTypedList(cards);
+        dest.writeTypedList(results);
+        dest.writeInt(currentIndex);
     }
 
     public Card getCurrentCard() {
@@ -38,13 +55,13 @@ public class LearnSession {
     }
 
     public void updateProgress(Card card, boolean isRight) {
-        CardResult result = getCardResult(card);
+        SessionCardResult result = getCardResult(card);
         result.newProgress = card.getFloatProgress();
         result.isRight = isRight;
     }
 
-    private CardResult getCardResult(Card card) {
-        for (CardResult c : this.results) {
+    private SessionCardResult getCardResult(Card card) {
+        for (SessionCardResult c : this.results) {
             if (card.getId().equals(c.cardId)) {
                 return c;
             }
@@ -56,7 +73,7 @@ public class LearnSession {
     public ArrayList<Card> getRightAnsweredCards() {
         ArrayList<Card> resultArray = new ArrayList<>();
         for (int i=0; i<cards.size(); ++i) {
-            CardResult result = results.get(i);
+            SessionCardResult result = results.get(i);
             if (result.isRight) {
                 resultArray.add(cards.get(i));
             }
@@ -65,10 +82,19 @@ public class LearnSession {
         return resultArray;
     }
 
-    private class CardResult {
-        public UUID cardId;
-        public float oldProgress;
-        public float newProgress;
-        public boolean isRight;
+    @Override
+    public int describeContents() {
+        return 0;
     }
+
+    public final Parcelable.Creator<LearnSession> CREATOR
+            = new Parcelable.Creator<LearnSession>() {
+        public LearnSession createFromParcel(Parcel in) {
+            return new LearnSession(in);
+        }
+
+        public LearnSession[] newArray(int size) {
+            return new LearnSession[size];
+        }
+    };
 }

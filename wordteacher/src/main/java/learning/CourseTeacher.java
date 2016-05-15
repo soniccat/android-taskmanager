@@ -38,7 +38,7 @@ public class CourseTeacher {
         buildCourseSession();
     }
 
-    public void buildCourseSession() {
+    private void buildCourseSession() {
         ArrayList<Card> cards = new ArrayList<>();
         cards.addAll(course.getCards());
 
@@ -63,7 +63,7 @@ public class CourseTeacher {
     }
 
     public Card getCurrentCard() {
-        return currentSession.getCurrentCard();
+        return currentSession != null ? currentSession.getCurrentCard() : null;
     }
 
     public Card getNextCard() {
@@ -90,7 +90,7 @@ public class CourseTeacher {
     }
 
     public void onWrongInput() {
-        if (checkCount > 1) {
+        if (checkCount > 2) {
             countWronAnswer();
         }
     }
@@ -103,15 +103,26 @@ public class CourseTeacher {
         }
     }
 
+    public void onSessionsFinished() {
+        sessions.add(currentSession);
+        buildCourseSession();
+    }
+
+    public LearnSession getCurrentSession() {
+        return currentSession;
+    }
+
     private void countWronAnswer() {
         if (!isWrongAnswerCounted) {
             getCourseHolder().countWrongAnswer(course, getCurrentCard());
+            currentSession.updateProgress(getCurrentCard(), true);
             isWrongAnswerCounted = true;
         }
     }
 
     private void countRightAnswer() {
         getCourseHolder().countRighAnswer(course, getCurrentCard());
+        currentSession.updateProgress(getCurrentCard(), true);
     }
 
 
