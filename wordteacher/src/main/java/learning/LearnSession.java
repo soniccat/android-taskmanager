@@ -37,8 +37,10 @@ public class LearnSession {
         return result;
     }
 
-    public void updateProgress(Card card) {
-        getCardResult(card).newProgress = card.getFloatProgress();
+    public void updateProgress(Card card, boolean isRight) {
+        CardResult result = getCardResult(card);
+        result.newProgress = card.getFloatProgress();
+        result.isRight = isRight;
     }
 
     private CardResult getCardResult(Card card) {
@@ -51,9 +53,22 @@ public class LearnSession {
         return null;
     }
 
+    public ArrayList<Card> getRightAnsweredCards() {
+        ArrayList<Card> resultArray = new ArrayList<>();
+        for (int i=0; i<cards.size(); ++i) {
+            CardResult result = results.get(i);
+            if (result.isRight) {
+                resultArray.add(cards.get(i));
+            }
+        }
+
+        return resultArray;
+    }
+
     private class CardResult {
         public UUID cardId;
         public float oldProgress;
         public float newProgress;
+        public boolean isRight;
     }
 }

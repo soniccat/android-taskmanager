@@ -1,5 +1,8 @@
 package learning;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
 
 import main.MainApplication;
@@ -12,8 +15,11 @@ import model.CourseHolder;
  */
 public class CourseTeacher {
 
+    private int cardPerSession = 7;
+
     private Course course;
-    private int currentIndex = 0;
+    private ArrayList<LearnSession> sessions = new ArrayList<>();
+    private LearnSession currentSession;
 
     private int checkCount;
     private int hintShowCount;
@@ -29,22 +35,40 @@ public class CourseTeacher {
 
     public CourseTeacher(UUID courseId) {
         this.course = getCourseHolder().getCourse(courseId);
+        buildCourseSession();
+    }
+
+    public void buildCourseSession() {
+        ArrayList<Card> cards = new ArrayList<>();
+        cards.addAll(course.getCards());
+
+        ArrayList<Card> answeredCards = new ArrayList<>();
+        for (LearnSession session : sessions) {
+            answeredCards.addAll(session.getRightAnsweredCards());
+        }
+
+        for (Card card : answeredCards) {
+            int index = cards.indexOf(card);
+            if (index != -1) {
+                cards.remove(index);
+            }
+        }
+
+        if (cards.size() > cardPerSession) {
+            cards.subList(cardPerSession, cards.size()-1).clear();
+        }
+
+        Collections.shuffle(cards);
+        currentSession = new LearnSession(cards);
     }
 
     public Card getCurrentCard() {
-        return course.getCards().get(currentIndex);
+        return currentSession.getCurrentCard();
     }
 
     public Card getNextCard() {
         prepareToNewCard();
-
-        Card result = null;
-        ++currentIndex;
-        if (currentIndex < course.getCards().size()) {
-            result = course.getCards().get(currentIndex);
-        }
-
-        return result;
+        return currentSession.getNextCard();
     }
 
     private void prepareToNewCard() {

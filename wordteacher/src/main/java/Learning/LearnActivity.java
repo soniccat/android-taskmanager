@@ -143,6 +143,9 @@ public class LearnActivity extends BaseActivity {
             int intPorgress = (int)(progress.getProgress() * 100);
             String resultString = String.format(Locale.US, progressFormat, intPorgress);
             progressTextView.setText(resultString);
+
+        } else {
+            progressTextView.setText("");
         }
     }
 
