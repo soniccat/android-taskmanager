@@ -147,7 +147,7 @@ public class LearnActivity extends BaseActivity {
     }
 
     private void updateCardBg(Card card) {
-        float progress = card.getProgress() != null ? card.getProgress().getProgress() : 0.0f;
+        float progress = card.getFloatProgress();
         int learnColor = getResources().getColor(R.color.learnProgressColor);
         int resultColor = Color.argb((int)(progress * 255), Color.red(learnColor), Color.green(learnColor), Color.blue(learnColor));
         rootView.setBackgroundColor(resultColor);

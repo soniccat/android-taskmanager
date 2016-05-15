@@ -95,6 +95,10 @@ public class Card implements Parcelable {
         return progress;
     }
 
+    public float getFloatProgress() {
+        return getProgress() != null ? getProgress().getProgress() : 0.0f;
+    }
+
     public void setProgress(CardProgress progress) {
         this.progress = progress;
     }
