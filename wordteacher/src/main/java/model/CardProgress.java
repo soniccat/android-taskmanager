@@ -11,7 +11,7 @@ import java.util.Date;
  */
 public class CardProgress implements Parcelable {
 
-    private int MIN = 60;
+    private int MIN = 60000;
     private int HOUR = 25*MIN;
     private int DAY = 24*HOUR;
 
@@ -32,17 +32,17 @@ public class CardProgress implements Parcelable {
     private Date lastLessonDate;
 
     public CardProgress(Parcel parcel) {
-        parcel.writeInt(rightAnswerCount);
-        parcel.writeInt(lastMistakeCount);
-        parcel.writeLong(lastLessonDate.getTime());
+        rightAnswerCount = parcel.readInt();
+        lastMistakeCount = parcel.readInt();
+        long time = parcel.readLong();
+        lastLessonDate = new Date(time);
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        rightAnswerCount = dest.readInt();
-        lastMistakeCount = dest.readInt();
-        long time = dest.readLong();
-        lastLessonDate = new Date(time);
+        dest.writeInt(rightAnswerCount);
+        dest.writeInt(lastMistakeCount);
+        dest.writeLong(lastLessonDate.getTime());
     }
 
     public CardProgress() {
@@ -57,13 +57,15 @@ public class CardProgress implements Parcelable {
             result = 100;
         }
 
-        return result;
+        return result / 100.0f;
     }
 
     public boolean needHaveLesson() {
-        boolean result = false;
+        boolean result = true;
         if (lastLessonDate != null) {
-            result = new Date().compareTo(lastLessonDate) >= 0;
+            int interval = getNextLessonInterval(rightAnswerCount);
+            Date newLessonDate = new Date(lastLessonDate.getTime() + interval);
+            result = new Date().compareTo(newLessonDate) >= 0;
         }
 
         return result;
@@ -83,7 +85,10 @@ public class CardProgress implements Parcelable {
 
             if (lastMistakeCount >= 2 || rightAnswerCount > 4) {
                 lastMistakeCount = 0;
-                rightAnswerCount--;
+
+                if (rightAnswerCount > 0) {
+                    rightAnswerCount--;
+                }
             }
         }
     }

@@ -48,7 +48,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_quizlet_set_card, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_course, parent, false);
         return new ViewHolder(view);
     }
 
@@ -60,6 +60,18 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
         String format = holder.itemView.getContext().getResources().getString(R.string.set_word_count_formant);
         String description = String.format(Locale.US, format, course.getCards().size());
         holder.wordCountTextView.setText(description);
+
+        int inProgressCount = course.getInProgressCount();
+        if (inProgressCount > 0) {
+            holder.inProgressTextView.setVisibility(View.VISIBLE);
+            String inPorgressFormat = holder.itemView.getContext().getResources().getString(R.string.cell_course_in_progress);
+            String inProgressString = String.format(Locale.US, inPorgressFormat, inProgressCount);
+            holder.inProgressTextView.setText(inProgressString);
+            
+        } else {
+            holder.inProgressTextView.setText(null);
+            holder.inProgressTextView.setVisibility(View.INVISIBLE);
+        }
 
         bindListener(holder, course);
     }
@@ -89,6 +101,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
         public View cardView;
         public TextView nameTextview;
         public TextView wordCountTextView;
+        public TextView inProgressTextView;
         public ImageView menuButton;
 
         public ViewHolder(View itemView) {
@@ -97,6 +110,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
             nameTextview = (TextView)itemView.findViewById(R.id.name);
             wordCountTextView = (TextView)itemView.findViewById(R.id.wordCount);
             menuButton = (ImageView)itemView.findViewById(R.id.menuButton);
+            inProgressTextView = (TextView)itemView.findViewById(R.id.inProgressCount);
         }
     }
 

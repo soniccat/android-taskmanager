@@ -46,6 +46,29 @@ public class Course implements Parcelable {
         createDate = new Date();
     }
 
+    public int getInProgressCount() {
+        int result = 0;
+        for (Card card : cards) {
+            if (card.getProgress() != null) {
+                result++;
+            }
+        }
+
+        return result;
+    }
+
+    public Card getCard(UUID courseId) {
+        Card card = null;
+        for (Card c : getCards()) {
+            if (c.getId().equals(courseId)) {
+                card = c;
+                break;
+            }
+        }
+
+        return card;
+    }
+
     public void addCard(Card card) {
         cards.add(card);
     }

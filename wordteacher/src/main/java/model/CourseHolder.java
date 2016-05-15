@@ -7,6 +7,9 @@ import com.example.alexeyglushkov.cachemanager.DiskCacheProvider;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
+import main.MainApplication;
 
 /**
  * Created by alexeyglushkov on 07.05.16.
@@ -43,12 +46,29 @@ public class CourseHolder {
         return error;
     }
 
+    public Course getCourse(UUID courseId) {
+        Course course = null;
+        for (Course c : getCourses()) {
+            if (c.getId().equals(courseId)) {
+                course = c;
+                break;
+            }
+        }
+
+        return course;
+    }
+
     private Error storeCourse(Course course) {
         Error error = diskProvider.put(course.getId().toString(), course, null);
         return error;
     }
 
-    public Error removeCourse(Course course) {
+    public Error removeCourse(UUID courseId) {
+        Course course = getCourse(courseId);
+        return removeCourse(course);
+    }
+
+    private Error removeCourse(Course course) {
         Error error = diskProvider.remove(course.getId().toString());
         if (error == null) {
             courses.remove(course);
@@ -57,14 +77,27 @@ public class CourseHolder {
         return error;
     }
 
+    public void countRighAnswer(UUID courseId, UUID cardId) {
+        Course course = getCourse(courseId);
+        Card card = course.getCard(cardId);
+        countRighAnswer(course, card);
+    }
+
     public void countRighAnswer(Course course, Card card) {
         CardProgress progress = card.getProgress();
-        if (progress != null) {
+        if (progress == null) {
             progress = new CardProgress();
+            card.setProgress(progress);
         }
 
         progress.countRightAnswer();
         storeCourse(course);
+    }
+
+    public void countWrongAnswer(UUID courseId, UUID cardId) {
+        Course course = getCourse(courseId);
+        Card card = course.getCard(cardId);
+        countWrongAnswer(course, card);
     }
 
     public void countWrongAnswer(Course course, Card card) {

@@ -1,5 +1,6 @@
 package learning;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
@@ -18,23 +19,30 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
+import java.util.UUID;
 
 import main.BaseActivity;
+import main.MainApplication;
 import model.Card;
+import model.CardProgress;
 import model.Course;
+import model.CourseHolder;
 
 /**
  * Created by alexeyglushkov on 09.05.16.
  */
+// TODO: consider moving content to fragment
 public class LearnActivity extends BaseActivity {
 
     public final static String EXTRA_DEFINITION_TO_TERM = "EXTRA_DEFINITION_TO_TERM";
-    public final static String EXTRA_COURSE = "EXTRA_COURSE";
+    public final static String EXTRA_COURSE_ID = "EXTRA_COURSE_ID";
     public final static Character GAP_CHAR = '_';
 
     private CourseTeacher teacher;
 
+    private View rootView;
     private TextView termView;
+    private TextView progressTextView;
     private TextInputLayout inputLayout;
     private Button giveUpButton;
     private Button checkButton;
@@ -42,10 +50,6 @@ public class LearnActivity extends BaseActivity {
     private ImageButton hintButton;
 
     private boolean definitionToTerm;
-    private boolean needShowNextButtonIfCorrect;
-    private boolean isNextLetterHintUsed;
-    private boolean isRandomLetterHintUsed;
-    private int numberOfChecks;
     private ArrayList<Character> hintArray = new ArrayList<>();
 
     @Override
@@ -53,7 +57,9 @@ public class LearnActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_learn);
+        rootView = (View)findViewById(R.id.root);
         termView = (TextView)findViewById(R.id.word);
+        progressTextView = (TextView)findViewById(R.id.progressTextView);
         inputLayout = (TextInputLayout)findViewById(R.id.definition);
         giveUpButton = (Button)findViewById(R.id.giveUpButton);
         checkButton = (Button)findViewById(R.id.checkButton);
@@ -75,7 +81,7 @@ public class LearnActivity extends BaseActivity {
         goNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onRightInput();
+                showNextCard();
             }
         });
         hintButton.setOnClickListener(new View.OnClickListener() {
@@ -102,24 +108,49 @@ public class LearnActivity extends BaseActivity {
             }
         });
 
-        Course course = getIntent().getParcelableExtra(EXTRA_COURSE);
+        String courseIdString = getIntent().getStringExtra(EXTRA_COURSE_ID);
+        UUID courseId = UUID.fromString(courseIdString);
         definitionToTerm = getIntent().getBooleanExtra(EXTRA_DEFINITION_TO_TERM, false);
 
-        teacher = new CourseTeacher(course);
+        teacher = new CourseTeacher(courseId);
         prepareToNewCard();
         bindCurrentCard();
     }
 
     private void bindCurrentCard() {
         Card card = teacher.getCurrentCard();
-
         bindCard(card);
     }
 
     private void bindCard(Card card) {
+        //updateCardBg(card);
+        updateProgressText(card);
         termView.setText(getTerm(card));
         inputLayout.setError(null);
         inputLayout.getEditText().setText(null);
+    }
+
+    private void updateProgressText(Card card) {
+        CardProgress progress = card.getProgress();
+        if (progress != null) {
+            String progressFormat;
+            if (progress.needHaveLesson()) {
+                progressFormat = getString(R.string.learning_is_important);
+            } else {
+                progressFormat = getString(R.string.learning_progress_format);
+            }
+
+            int intPorgress = (int)(progress.getProgress() * 100);
+            String resultString = String.format(Locale.US, progressFormat, intPorgress);
+            progressTextView.setText(resultString);
+        }
+    }
+
+    private void updateCardBg(Card card) {
+        float progress = card.getProgress() != null ? card.getProgress().getProgress() : 0.0f;
+        int learnColor = getResources().getColor(R.color.learnProgressColor);
+        int resultColor = Color.argb((int)(progress * 255), Color.red(learnColor), Color.green(learnColor), Color.blue(learnColor));
+        rootView.setBackgroundColor(resultColor);
     }
 
     private String getTerm(Card card) {
@@ -131,7 +162,7 @@ public class LearnActivity extends BaseActivity {
     }
 
     private void onTextChanged() {
-        if (isInputCorrect() && needShowNextButtonIfCorrect) {
+        if (isInputCorrect() && teacher.isWrongAnswerCounted()) {
             showNextButton();
         }
     }
@@ -149,7 +180,7 @@ public class LearnActivity extends BaseActivity {
     }
 
     private void checkInput() {
-        ++numberOfChecks;
+        teacher.onCheckInput();
 
         if (isInputCorrect()) {
             onRightInput();
@@ -165,6 +196,11 @@ public class LearnActivity extends BaseActivity {
     }
 
     private void onRightInput() {
+        teacher.onRightInput();
+        showNextCard();
+    }
+
+    private void showNextCard() {
         Card card = teacher.getNextCard();
         prepareToNewCard();
 
@@ -177,8 +213,6 @@ public class LearnActivity extends BaseActivity {
 
     private void prepareToNewCard() {
         showDefaultButtons();
-        needShowNextButtonIfCorrect = false;
-        numberOfChecks = 0;
         setHintButtonEnabled(true);
         prepareHintString();
     }
@@ -193,12 +227,12 @@ public class LearnActivity extends BaseActivity {
     }
 
     private void onWrongInput() {
-        needShowNextButtonIfCorrect = true;
+        teacher.onWrongInput();
         inputLayout.setError(getString(R.string.error_wrong_input));
     }
 
     private void onFinished() {
-
+        finish();
     }
 
     private void showHintMenu() {
@@ -285,7 +319,7 @@ public class LearnActivity extends BaseActivity {
     }
 
     private void showHintString() {
-        needShowNextButtonIfCorrect = true;
+        teacher.onHintShown();
 
         StringBuilder builder = new StringBuilder();
         for (Character ch : hintArray) {
@@ -300,7 +334,7 @@ public class LearnActivity extends BaseActivity {
     }
 
     private void onGiveUpPressed() {
-        needShowNextButtonIfCorrect = true;
+        teacher.onGiveUp();
         inputLayout.getEditText().setText("");
 
         String definition = getDefinition(teacher.getCurrentCard());

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="set_word_count_formant">%d words</string>
+    <string name="cell_course_in_progress">%d in progress</string>
 
     <string name="menu_create_course">Create new course</string>
 
@@ -9,6 +10,8 @@
     <string name="learning_giveUp">Give Up</string>
     <string name="learning_check">Check</string>
     <string name="learning_next">Next</string>
+    <string name="learning_progress_format">Progress: %d%%</string>
+    <string name="learning_is_important">Answer will be counted in progress (%d%%)</string>
 
     <string name="error_auth_error">Auth Error</string>
     <string name="error_load_error">Load Error</string>

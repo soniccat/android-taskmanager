@@ -35,6 +35,7 @@ import model.Card;
 import model.Course;
 import model.CourseHolder;
 
+// TODO: consider moving content to fragment
 public class MainActivity extends BaseActivity implements QuizletCardsFragment.Listener, CourseFragment.Listener {
 
     private Toolbar toolbar;
@@ -459,7 +460,8 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     @Override
     public void onCourseClicked(Course course) {
         Intent activityIntent = new Intent(this, LearnActivity.class);
-        activityIntent.putExtra(LearnActivity.EXTRA_COURSE, course);
+        String courseId = course.getId().toString();
+        activityIntent.putExtra(LearnActivity.EXTRA_COURSE_ID, courseId);
         activityIntent.putExtra(LearnActivity.EXTRA_DEFINITION_TO_TERM, true);
 
         startActivity(activityIntent);
