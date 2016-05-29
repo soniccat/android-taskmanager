@@ -169,10 +169,10 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
             StackContainer container = (StackContainer)fragment;
             pagerAdapter.prepareContainer(container);
 
-            /*Fragment innerFragment = container.getFragment();
+            Fragment innerFragment = container.getFragment();
             if (innerFragment != null) {
                 updateFragmentListener(innerFragment);
-            }*/
+            }
 
         } else if (fragment instanceof QuizletCardsFragment) {
             QuizletCardsFragment quizletFragment = (QuizletCardsFragment)fragment;

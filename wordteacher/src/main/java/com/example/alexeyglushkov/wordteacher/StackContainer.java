@@ -26,9 +26,13 @@ public class StackContainer extends Fragment implements FragmentManager.OnBackSt
     }
 
     public void showFragment(Fragment fragment) {
-        if (getActivity() != null && getView() != null) {
+        if (isReadyToAddFragment()) {
             addFragment(fragment);
         }
+    }
+
+    private boolean isReadyToAddFragment() {
+        return getActivity() != null && getView() != null;
     }
 
     private void addFragment(Fragment fragment) {
@@ -93,7 +97,8 @@ public class StackContainer extends Fragment implements FragmentManager.OnBackSt
     }
 
     public Fragment getFragment() {
-        return getAttachedFragment();
+        // calling findFragmentById when view is null is error prone
+        return isReadyToAddFragment() ? getAttachedFragment() : null;
     }
 
     public int getBackStackSize() {
