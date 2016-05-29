@@ -102,16 +102,16 @@ public class StackContainer extends Fragment implements FragmentManager.OnBackSt
     }
 
     public int getBackStackSize() {
-        return getChildFragmentManager().getBackStackEntryCount();
+        // calling findFragmentById when view is null is error prone
+        return isReadyToAddFragment() ? getChildFragmentManager().getBackStackEntryCount() : 0;
     }
 
     private Fragment getAttachedFragment() {
-        return getChildFragmentManager().findFragmentById(R.id.container);
+        return isReadyToAddFragment() ? getChildFragmentManager().findFragmentById(R.id.container) : null;
     }
 
     public interface Listener {
         void onViewCreated(Bundle savedInstanceState);
-        void onViewAttached();
         void onBackStackChanged();
     }
 }

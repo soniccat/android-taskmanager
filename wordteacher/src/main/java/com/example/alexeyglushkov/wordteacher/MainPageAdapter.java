@@ -31,54 +31,60 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
         Fragment result = null;
         if (position == 1) {
             QuizletCardsFragment quizletFragment = createQuizletFragment(position);
-            onFragmentReady(quizletFragment, position);
             result = quizletFragment;
 
         } else if (isStackContainer(position)) {
             final StackContainer stackContainer = new StackContainer();
-            //setContainerListener(position, stackContainer);
             result = stackContainer;
         }
 
-        fragments.put(position, result);
+        putFragment(position, result);
         return result;
     }
 
-    /*
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        Object result = super.instantiateItem(container, position);
-        if (isStackContainer(position)) {
-            StackContainer stackContainer = (StackContainer)result;
-            if (stackContainer.getListener() == null) {
-                setContainerListener(position, stackContainer);
-            }
-        }
-
+        Fragment result = (Fragment) super.instantiateItem(container, position);
+        putFragment(position, result);
         return result;
     }
-    */
 
-    public void prepareContainer(final StackContainer stackContainer) {
-        stackContainer.setListener(new StackContainer.Listener() {
-            @Override
-            public void onViewCreated(Bundle savedInstanceState) {
-                final int position = fragments.indexOfValue(stackContainer);
-                onStackContainerReady(stackContainer, position, savedInstanceState);
-                onFragmentReady(stackContainer, position);
-            }
+    private void putFragment(int position, Fragment fragment) {
+        Fragment oldFragment = fragments.get(position);
+        if (oldFragment == null || oldFragment != fragment) {
+            fragments.put(position, fragment);
+            onFragmentsUpdated();
+        }
+    }
 
-            @Override
-            public void onViewAttached() {
+    private void onFragmentsUpdated() {
+        notifyDataSetChanged();
+    }
 
-            }
+    // must be called from onAttach
+    public void prepareStackContainer(final StackContainer stackContainer) {
+        if (stackContainer.getListener() == null) {
+            stackContainer.setListener(new StackContainer.Listener() {
+                @Override
+                public void onViewCreated(Bundle savedInstanceState) {
+                    final int position = getFragmentIndex(stackContainer);
+                    onStackContainerReady(stackContainer, position, savedInstanceState);
+                    onFragmentReady(stackContainer.getFragment(), position);
+                    notifyDataSetChanged();
+                }
 
-            @Override
-            public void onBackStackChanged() {
-                final int position = fragments.indexOfValue(stackContainer);
-                onFragmentReady(stackContainer, position);
-            }
-        });
+                @Override
+                public void onBackStackChanged() {
+                    final int position = getFragmentIndex(stackContainer);
+                    onFragmentReady(stackContainer.getFragment(), position);
+                    notifyDataSetChanged();
+                }
+            });
+        }
+    }
+
+    private int getFragmentIndex(Fragment fragment) {
+        return fragments.indexOfValue(fragment);
     }
 
     private void onFragmentReady(Fragment fragment, int position) {
@@ -89,6 +95,7 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
     public void destroyItem(ViewGroup container, int position, Object object) {
         super.destroyItem(container, position, object);
         fragments.remove(position);
+        onFragmentsUpdated();
     }
 
     public Fragment getFragment(int position) {
