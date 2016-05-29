@@ -36,24 +36,49 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
 
         } else if (isStackContainer(position)) {
             final StackContainer stackContainer = new StackContainer();
-            stackContainer.setListener(new StackContainer.Listener() {
-                @Override
-                public void onViewCreated(Bundle savedInstanceState) {
-                    onStackContainerReady(stackContainer, position, savedInstanceState);
-                    onFragmentReady(stackContainer, position);
-                }
-
-                @Override
-                public void onBackStackChanged() {
-                    onFragmentReady(stackContainer, position);
-                }
-            });
-
+            //setContainerListener(position, stackContainer);
             result = stackContainer;
         }
 
         fragments.put(position, result);
         return result;
+    }
+
+    /*
+    @Override
+    public Object instantiateItem(ViewGroup container, int position) {
+        Object result = super.instantiateItem(container, position);
+        if (isStackContainer(position)) {
+            StackContainer stackContainer = (StackContainer)result;
+            if (stackContainer.getListener() == null) {
+                setContainerListener(position, stackContainer);
+            }
+        }
+
+        return result;
+    }
+    */
+
+    public void prepareContainer(final StackContainer stackContainer) {
+        stackContainer.setListener(new StackContainer.Listener() {
+            @Override
+            public void onViewCreated(Bundle savedInstanceState) {
+                final int position = fragments.indexOfValue(stackContainer);
+                onStackContainerReady(stackContainer, position, savedInstanceState);
+                onFragmentReady(stackContainer, position);
+            }
+
+            @Override
+            public void onViewAttached() {
+
+            }
+
+            @Override
+            public void onBackStackChanged() {
+                final int position = fragments.indexOfValue(stackContainer);
+                onFragmentReady(stackContainer, position);
+            }
+        });
     }
 
     private void onFragmentReady(Fragment fragment, int position) {
@@ -70,7 +95,11 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
         return fragments.get(position);
     }
 
-    private void onStackContainerReady(StackContainer container, int position, Bundle savedInstanceState) {
+    public boolean hasFragment(Fragment fragment) {
+        return fragments.indexOfValue(fragment) != -1;
+    }
+
+    public void onStackContainerReady(StackContainer container, int position, Bundle savedInstanceState) {
         Fragment result;
         if (savedInstanceState == null) {
             if (position == 0) {
@@ -97,7 +126,7 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return 3;
+        return 2;
     }
 
     @Override

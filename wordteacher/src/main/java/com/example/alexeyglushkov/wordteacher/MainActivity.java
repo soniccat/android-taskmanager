@@ -27,6 +27,7 @@ import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import learning.LearnActivity;
 import main.BaseActivity;
@@ -37,7 +38,6 @@ import model.CourseHolder;
 
 // TODO: consider moving content to fragment
 public class MainActivity extends BaseActivity implements QuizletCardsFragment.Listener, CourseFragment.Listener {
-
     private Toolbar toolbar;
     private ViewPager pager;
     private MainPageAdapter pagerAdapter;
@@ -67,6 +67,7 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -82,6 +83,20 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         });
 
         setOnViewReadyCallback();
+        if (savedInstanceState != null) {
+            restoreListeners();
+        }
+    }
+
+    private void restoreListeners() {
+        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+            updateFragmentListener(fragment);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
     private void initPager() {
@@ -106,7 +121,7 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         pagerAdapter.setListener(new MainPageAdapter.Listener() {
             @Override
             public void onFragmentReady(Fragment fragment, int position) {
-                onPageFragmentReady(fragment, position);
+                updateFragmentListener(fragment);
             }
         });
         pager.setAdapter(pagerAdapter);
@@ -116,11 +131,11 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     }
 
     private void onPagerPageChanged() {
-        CourseFragment course = getCourseFragment();
+        /*CourseFragment course = getCourseFragment();
         if (course != null) {
             ArrayList<Course> courses = getCourseHolder().getCourses();
             course.setCourses(courses);
-        }
+        }*/
 
         updateToolbarBackButton();
     }
@@ -142,9 +157,35 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         });
     }
 
-    public void onPageFragmentReady(Fragment fragment, int position) {
+    @Override
+    public void onAttachFragment(Fragment fragment) {
         super.onAttachFragment(fragment);
+        updateFragmentListener(fragment);
+    }
 
+    private void updateFragmentListener(Fragment fragment) {
+        // while restoration pagerAdapter could be null
+        if (fragment instanceof StackContainer && pagerAdapter != null) {
+            StackContainer container = (StackContainer)fragment;
+            pagerAdapter.prepareContainer(container);
+
+            /*Fragment innerFragment = container.getFragment();
+            if (innerFragment != null) {
+                updateFragmentListener(innerFragment);
+            }*/
+
+        } else if (fragment instanceof QuizletCardsFragment) {
+            QuizletCardsFragment quizletFragment = (QuizletCardsFragment)fragment;
+            quizletFragment.setListener(this);
+
+        } else if (fragment instanceof CourseFragment) {
+            CourseFragment quizletFragment = (CourseFragment)fragment;
+            quizletFragment.setListener(this);
+        }
+    }
+
+    /*
+    public void onPageFragmentReady(Fragment fragment, int position) {
         if (fragment instanceof StackContainer) {
             StackContainer container = (StackContainer)fragment;
             fragment = container.getFragment();
@@ -158,7 +199,7 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
             CourseFragment quizletFragment = (CourseFragment)fragment;
             quizletFragment.setListener(this);
         }
-    }
+    }*/
 
     private void onViewReady() {
         if (getQuizletService() != null && getQuizletService().getAccount() != null && getQuizletService().getAccount().isAuthorized()) {
@@ -321,7 +362,7 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     }
 
     private Fragment getFragment(int i) {
-        return (Fragment)pagerAdapter.getFragment(i);
+        return (Fragment) pagerAdapter.instantiateItem(pager, i);//(Fragment)pagerAdapter.getFragment(i);
     }
 
     private void showErrorSnackBar(Error error) {

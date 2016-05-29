@@ -17,6 +17,10 @@ public class StackContainer extends Fragment implements FragmentManager.OnBackSt
 
     private Listener listener;
 
+    public Listener getListener() {
+        return listener;
+    }
+
     public void setListener(Listener listener) {
         this.listener = listener;
     }
@@ -43,6 +47,16 @@ public class StackContainer extends Fragment implements FragmentManager.OnBackSt
         }
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -55,6 +69,12 @@ public class StackContainer extends Fragment implements FragmentManager.OnBackSt
 
         getChildFragmentManager().addOnBackStackChangedListener(this);
         listener.onViewCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        //listener.onViewAttached();
     }
 
     public void onBackStackChanged() {
@@ -86,6 +106,7 @@ public class StackContainer extends Fragment implements FragmentManager.OnBackSt
 
     public interface Listener {
         void onViewCreated(Bundle savedInstanceState);
+        void onViewAttached();
         void onBackStackChanged();
     }
 }
