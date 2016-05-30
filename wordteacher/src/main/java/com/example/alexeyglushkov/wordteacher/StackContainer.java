@@ -78,7 +78,6 @@ public class StackContainer extends Fragment implements FragmentManager.OnBackSt
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        //listener.onViewAttached();
     }
 
     public void onBackStackChanged() {
