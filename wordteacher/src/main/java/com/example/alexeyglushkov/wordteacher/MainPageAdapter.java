@@ -6,7 +6,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.SparseArray;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+
+import com.example.alexeyglushkov.taskmanager.task.Tools;
 
 import java.util.Stack;
 
@@ -27,6 +31,15 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
     }
 
     @Override
+    public int getCount() {
+        return 3;
+    }
+
+    private boolean isStackContainer(int position) {
+        return position == 0 || position == 2;
+    }
+
+    @Override
     public Fragment getItem(final int position) {
         Fragment result = null;
         if (position == 1) {
@@ -38,27 +51,20 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
             result = stackContainer;
         }
 
-        putFragment(position, result);
         return result;
     }
 
     @Override
-    public Object instantiateItem(ViewGroup container, int position) {
-        Fragment result = (Fragment) super.instantiateItem(container, position);
-        putFragment(position, result);
-        return result;
+    public Object instantiateItem(ViewGroup container, final int position) {
+        final Fragment fragment = (Fragment) super.instantiateItem(container, position);
+        fragments.put(position, fragment);
+        return fragment;
     }
 
-    private void putFragment(int position, Fragment fragment) {
-        Fragment oldFragment = fragments.get(position);
-        if (oldFragment == null || oldFragment != fragment) {
-            fragments.put(position, fragment);
-            onFragmentsUpdated();
-        }
-    }
-
-    private void onFragmentsUpdated() {
-        notifyDataSetChanged();
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+        super.destroyItem(container, position, object);
+        fragments.remove(position);
     }
 
     // must be called from onAttach
@@ -68,9 +74,19 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
                 @Override
                 public void onViewCreated(Bundle savedInstanceState) {
                     final int position = getFragmentIndex(stackContainer);
+                    // fill stackContainer.fragment
                     onStackContainerReady(stackContainer, position, savedInstanceState);
                     onFragmentReady(stackContainer.getFragment(), position);
-                    notifyDataSetChanged();
+
+                    final View view = stackContainer.getView();
+                    view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                        @Override
+                        public boolean onPreDraw() {
+                            view.getViewTreeObserver().removeOnPreDrawListener(this);
+                            notifyDataSetChanged();
+                            return false;
+                        }
+                    });
                 }
 
                 @Override
@@ -83,27 +99,8 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
         }
     }
 
-    private int getFragmentIndex(Fragment fragment) {
-        return fragments.indexOfValue(fragment);
-    }
-
     private void onFragmentReady(Fragment fragment, int position) {
         listener.onFragmentReady(fragment, position);
-    }
-
-    @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
-        super.destroyItem(container, position, object);
-        fragments.remove(position);
-        onFragmentsUpdated();
-    }
-
-    public Fragment getFragment(int position) {
-        return fragments.get(position);
-    }
-
-    public boolean hasFragment(Fragment fragment) {
-        return fragments.indexOfValue(fragment) != -1;
     }
 
     public void onStackContainerReady(StackContainer container, int position, Bundle savedInstanceState) {
@@ -119,21 +116,17 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
         }
     }
 
-    private boolean isStackContainer(int position) {
-        return position == 0 || position == 2;
-    }
-
     @NonNull
     private QuizletCardsFragment createQuizletFragment(int position) {
         QuizletCardsFragment quizletFragment = new QuizletCardsFragment();
-        QuizletCardsFragment.ViewType viewType = position == 0 ? QuizletCardsFragment.ViewType.Sets : QuizletCardsFragment.ViewType.Cards;
+        QuizletCardsFragment.ViewType viewType = getQuizletFragmentType(position);
         quizletFragment.setViewType(viewType);
         return quizletFragment;
     }
 
-    @Override
-    public int getCount() {
-        return 2;
+    @NonNull
+    private QuizletCardsFragment.ViewType getQuizletFragmentType(int position) {
+        return position == 0 ? QuizletCardsFragment.ViewType.Sets : QuizletCardsFragment.ViewType.Cards;
     }
 
     @Override
@@ -145,11 +138,7 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
             }
 
             if (result.length() == 0) {
-                if (position == 0) {
-                    result = "Sets";
-                } else {
-                    result = "Courses";
-                }
+                result = getDefaultStackTitle(position);
             }
 
         } else {
@@ -159,20 +148,37 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
         return result;
     }
 
-    private StackContainer getStackContainer(int position) {
-        return (StackContainer)fragments.get(position);
-    }
-
     private String getStackContainerTitle(int position) {
         String result = "";
         StackContainer stackContainer = getStackContainer(position);
         if (stackContainer.getBackStackSize() > 0) {
-            QuizletCardsFragment cardsFragment = (QuizletCardsFragment)stackContainer.getFragment();
-            if (cardsFragment.getParentSet() != null) {
-                result = cardsFragment.getParentSet().getTitle();
+            if (position == 0) {
+                QuizletCardsFragment cardsFragment = (QuizletCardsFragment) stackContainer.getFragment();
+                if (cardsFragment.getParentSet() != null) {
+                    result = cardsFragment.getParentSet().getTitle();
+                }
             }
         }
         return result;
+    }
+
+    @NonNull
+    private String getDefaultStackTitle(int position) {
+        String result;
+        if (position == 0) {
+            result = "Sets";
+        } else {
+            result = "Courses";
+        }
+        return result;
+    }
+
+    private StackContainer getStackContainer(int position) {
+        return (StackContainer)fragments.get(position);
+    }
+
+    private int getFragmentIndex(Fragment fragment) {
+        return fragments.indexOfValue(fragment);
     }
 
     public interface Listener {

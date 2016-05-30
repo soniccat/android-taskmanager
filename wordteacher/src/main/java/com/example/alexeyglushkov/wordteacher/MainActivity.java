@@ -131,11 +131,11 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     }
 
     private void onPagerPageChanged() {
-        /*CourseFragment course = getCourseFragment();
+        CourseFragment course = getCourseFragment();
         if (course != null) {
             ArrayList<Course> courses = getCourseHolder().getCourses();
             course.setCourses(courses);
-        }*/
+        }
 
         updateToolbarBackButton();
     }
