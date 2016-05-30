@@ -1,6 +1,7 @@
 package com.example.alexeyglushkov.wordteacher;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,11 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
+import java.util.HashMap;
+
 /**
  * Created by alexeyglushkov on 02.05.16.
  */
 public class MainPageAdapter extends FragmentStatePagerAdapter {
 
+    // keep last titles because fragment could be fully unloaded
+    private SparseArray<String> titles = new SparseArray<>();
     private SparseArray<Fragment> fragments = new SparseArray<>();
     private Listener listener;
 
@@ -131,6 +136,8 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
         if (isStackContainer(position)) {
             if (getStackContainer(position) != null) {
                 result = getStackContainerTitle(position);
+            } else {
+                result = titles.get(position, "");
             }
 
             if (result.length() == 0) {
@@ -141,6 +148,7 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
             result = "Cards";
         }
 
+        titles.put(position, result);
         return result;
     }
 
@@ -166,6 +174,40 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
         } else {
             result = "Courses";
         }
+        return result;
+    }
+
+    @Override
+    public Parcelable saveState() {
+        Bundle bundle = (Bundle)super.saveState();
+        storeSparceArray(titles, bundle);
+        return bundle;
+    }
+
+    @Override
+    public void restoreState(Parcelable state, ClassLoader loader) {
+        super.restoreState(state, loader);
+        Bundle bundle = (Bundle)state;
+        titles = readSparceArray(bundle);
+    }
+
+    private void storeSparceArray(SparseArray<String> array, Bundle bundle) {
+        bundle.putInt("sparceArrayLength", array.size());
+        for (int i = 0; i < array.size(); i++) {
+            bundle.putInt("sparceArrayKey" + i, array.keyAt(i));
+            bundle.putString("sparceArrayValue" + i, array.valueAt(i));
+        }
+    }
+
+    private SparseArray<String> readSparceArray(Bundle bundle) {
+        SparseArray<String> result = new SparseArray<>();
+        int len = bundle.getInt("sparceArrayLength");
+        for (int i=0; i<len; ++i) {
+            int key = bundle.getInt("sparceArrayKey" + i);
+            String value = bundle.getString("sparceArrayValue" + i);
+            result.put(key, value);
+        }
+
         return result;
     }
 
