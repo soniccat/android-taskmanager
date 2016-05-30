@@ -120,7 +120,7 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         pagerAdapter = new MainPageAdapter(getSupportFragmentManager());
         pagerAdapter.setListener(new MainPageAdapter.Listener() {
             @Override
-            public void onFragmentReady(Fragment fragment, int position) {
+            public void onStackFragmentReady(Fragment fragment, int position) {
                 onPageFragmentReady(fragment);
             }
         });
@@ -172,7 +172,7 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         // while restoration pagerAdapter could be null
         if (fragment instanceof StackContainer && pagerAdapter != null) {
             StackContainer container = (StackContainer)fragment;
-            pagerAdapter.prepareStackContainer(container);
+            pagerAdapter.updateStackContainerListener(container);
 
             Fragment innerFragment = container.getFragment();
             if (innerFragment != null) {
@@ -349,7 +349,7 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     }
 
     private Fragment getFragment(int i) {
-        return (Fragment) pagerAdapter.instantiateItem(pager, i);//(Fragment)pagerAdapter.getFragment(i);
+        return (Fragment)pagerAdapter.getFragment(i);
     }
 
     private void showErrorSnackBar(Error error) {

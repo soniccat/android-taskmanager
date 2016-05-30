@@ -10,10 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
-import com.example.alexeyglushkov.taskmanager.task.Tools;
-
-import java.util.Stack;
-
 /**
  * Created by alexeyglushkov on 02.05.16.
  */
@@ -68,7 +64,7 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
     }
 
     // must be called from onAttach
-    public void prepareStackContainer(final StackContainer stackContainer) {
+    public void updateStackContainerListener(final StackContainer stackContainer) {
         if (stackContainer.getListener() == null) {
             stackContainer.setListener(new StackContainer.Listener() {
                 @Override
@@ -100,7 +96,7 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
     }
 
     private void onFragmentReady(Fragment fragment, int position) {
-        listener.onFragmentReady(fragment, position);
+        listener.onStackFragmentReady(fragment, position);
     }
 
     public void onStackContainerReady(StackContainer container, int position, Bundle savedInstanceState) {
@@ -177,11 +173,15 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
         return (StackContainer)fragments.get(position);
     }
 
+    public Fragment getFragment(int i) {
+        return fragments.get(i);
+    }
+
     private int getFragmentIndex(Fragment fragment) {
         return fragments.indexOfValue(fragment);
     }
 
     public interface Listener {
-        void onFragmentReady(Fragment fragment, int position);
+        void onStackFragmentReady(Fragment fragment, int position);
     }
 }
