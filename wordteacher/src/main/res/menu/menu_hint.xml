@@ -11,6 +11,7 @@
         android:orderInCategory="101"
         android:title="@string/menu_hint_show_random_letter"
         app:showAsAction="never" />
+    <!--
     <item
         android:id="@+id/hint_play_man"
         android:orderInCategory="103"
@@ -21,4 +22,5 @@
         android:orderInCategory="104"
         android:title="@string/menu_hint_clue"
         app:showAsAction="never" />
+        -->
 </menu>

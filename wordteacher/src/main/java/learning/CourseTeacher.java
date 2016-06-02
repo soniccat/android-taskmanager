@@ -15,7 +15,7 @@ import model.CourseHolder;
  */
 public class CourseTeacher {
 
-    private int cardPerSession = 7;
+    private int cardPerSession = 2;
 
     private Course course;
     private ArrayList<LearnSession> sessions = new ArrayList<>();
@@ -41,6 +41,7 @@ public class CourseTeacher {
     private void buildCourseSession() {
         ArrayList<Card> cards = new ArrayList<>();
         cards.addAll(course.getCards());
+        Collections.shuffle(cards);
 
         ArrayList<Card> answeredCards = new ArrayList<>();
         for (LearnSession session : sessions) {
@@ -55,10 +56,9 @@ public class CourseTeacher {
         }
 
         if (cards.size() > cardPerSession) {
-            cards.subList(cardPerSession, cards.size()-1).clear();
+            cards.subList(cardPerSession-1, cards.size()-1).clear();
         }
 
-        Collections.shuffle(cards);
         currentSession = new LearnSession(cards);
     }
 

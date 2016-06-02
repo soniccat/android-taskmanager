@@ -4,4 +4,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#3f8cb5</color>
     <color name="learnProgressColor">#3f8cb5</color>
+
+    <color name="positiveProgress">#a21c931c</color>
+    <color name="negativeProgress">#bbfc4545</color>
 </resources>

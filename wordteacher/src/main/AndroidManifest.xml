@@ -47,7 +47,7 @@
 
         <activity
             android:name="learning.SessionResultActivity"
-            android:label="@string/learning_title"
+            android:label="@string/learning_results"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

@@ -23,11 +23,8 @@ import java.util.Random;
 import java.util.UUID;
 
 import main.BaseActivity;
-import main.MainApplication;
 import model.Card;
 import model.CardProgress;
-import model.Course;
-import model.CourseHolder;
 
 /**
  * Created by alexeyglushkov on 09.05.16.
@@ -210,12 +207,12 @@ public class LearnActivity extends BaseActivity {
 
     private void showNextCard() {
         teacher.getNextCard();
-        prepareToNewCard();
 
         if (teacher.getCurrentCard() != null) {
+            prepareToNewCard();
             bindCurrentCard();
         } else {
-            onFinished();
+            onSessionFinished();
         }
     }
 
@@ -239,11 +236,12 @@ public class LearnActivity extends BaseActivity {
         inputLayout.setError(getString(R.string.error_wrong_input));
     }
 
-    private void onFinished() {
+    private void onSessionFinished() {
         LearnSession session = teacher.getCurrentSession();
         teacher.onSessionsFinished();
 
         Intent intent = new Intent(this, SessionResultActivity.class);
+        intent.putExtra(SessionResultActivity.EXTERNAL_SESSION, session);
         startActivityForResult(intent, SessionResultActivity.ACTIVITY_RESULT);
     }
 
@@ -359,8 +357,6 @@ public class LearnActivity extends BaseActivity {
     }
 
     private void onGiveUpPressed() {
-        onFinished();
-        /*
         teacher.onGiveUp();
         inputLayout.getEditText().setText("");
 
@@ -370,6 +366,6 @@ public class LearnActivity extends BaseActivity {
         }
 
         showHintString();
-        updateHintButton();*/
+        updateHintButton();
     }
 }

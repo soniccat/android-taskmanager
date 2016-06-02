@@ -41,7 +41,7 @@ public class LearnSession implements Parcelable {
     }
 
     public Card getCurrentCard() {
-        return cards.get(currentIndex);
+        return currentIndex < cards.size() ? cards.get(currentIndex) : null;
     }
 
     public Card getNextCard() {
@@ -87,7 +87,7 @@ public class LearnSession implements Parcelable {
         return 0;
     }
 
-    public final Parcelable.Creator<LearnSession> CREATOR
+    public static final Parcelable.Creator<LearnSession> CREATOR
             = new Parcelable.Creator<LearnSession>() {
         public LearnSession createFromParcel(Parcel in) {
             return new LearnSession(in);
@@ -97,4 +97,16 @@ public class LearnSession implements Parcelable {
             return new LearnSession[size];
         }
     };
+
+    public int getSize() {
+        return cards.size();
+    }
+
+    public Card getCard(int i) {
+        return cards.get(i);
+    }
+
+    public SessionCardResult getCardResult(int i) {
+        return results.get(i);
+    }
 }
