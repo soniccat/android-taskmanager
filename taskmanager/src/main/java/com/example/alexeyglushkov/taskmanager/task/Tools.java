@@ -26,4 +26,10 @@ public class Tools {
         Handler hd = new Handler(mainLooper);
         hd.post(runnable);
     }
+
+    public static void runOnMainThreadDelayed(Runnable runnable, long delay) {
+        Looper mainLooper = Looper.getMainLooper();
+        Handler hd = new Handler(mainLooper);
+        hd.postDelayed(runnable, delay);
+    }
 }

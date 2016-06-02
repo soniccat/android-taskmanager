@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.alexeyglushkov.taskmanager.task.Tools;
 import com.example.alexeyglushkov.wordteacher.R;
 
 import java.util.ArrayList;
@@ -254,6 +255,15 @@ public class LearnActivity extends BaseActivity {
                 finish();
             } else {
                 showCurrentCard();
+
+                /*
+                Tools.runOnMainThreadDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        inputLayout.getEditText().requestFocus();
+                    }
+                }, 300);*/
+
             }
         }
     }

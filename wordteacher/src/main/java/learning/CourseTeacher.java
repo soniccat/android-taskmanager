@@ -115,7 +115,7 @@ public class CourseTeacher {
     private void countWronAnswer() {
         if (!isWrongAnswerCounted) {
             getCourseHolder().countWrongAnswer(course, getCurrentCard());
-            currentSession.updateProgress(getCurrentCard(), true);
+            currentSession.updateProgress(getCurrentCard(), false);
             isWrongAnswerCounted = true;
         }
     }
