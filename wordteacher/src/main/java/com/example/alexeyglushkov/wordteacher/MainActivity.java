@@ -233,20 +233,15 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     @Override
     public void onBackPressed() {
         Fragment frag = getCurrentFragment();
-        if (frag.isVisible()) {
-            final FragmentManager childFm = frag.getChildFragmentManager();
-            if (childFm.getBackStackEntryCount() > 0) {
-
-                // put this in popBackStack callback
-                childFm.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+        if (frag.isVisible() && frag instanceof StackContainer) {
+            StackContainer stackContainer = (StackContainer)frag;
+            if (stackContainer.getBackStackSize() > 0) {
+                stackContainer.popFragment(new StackContainer.TransactionCallback() {
                     @Override
-                    public void onBackStackChanged() {
-                        childFm.removeOnBackStackChangedListener(this);
+                    public void onFinished(boolean isCompleted) {
                         onQuizletSetFragmentBackStackChanged();
                     }
                 });
-
-                childFm.popBackStack();
                 return;
             }
         }
@@ -381,15 +376,12 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         fragment.setParentSet(set);
         fragment.updateSets(list);
 
-        // TODO: put this in showFragment callback
-        getStackContainer(0).getChildFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+        getStackContainer(0).showFragment(fragment, new StackContainer.TransactionCallback() {
             @Override
-            public void onBackStackChanged() {
-                getStackContainer(0).getChildFragmentManager().removeOnBackStackChangedListener(this);
+            public void onFinished(boolean isCompleted) {
                 onQuizletSetFragmentBackStackChanged();
             }
         });
-        getStackContainer(0).showFragment(fragment);
    }
 
     @Override

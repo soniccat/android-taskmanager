@@ -113,7 +113,7 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
                 result = new CourseFragment();
             }
 
-            container.showFragment(result);
+            container.showFragment(result, null);
         }
     }
 

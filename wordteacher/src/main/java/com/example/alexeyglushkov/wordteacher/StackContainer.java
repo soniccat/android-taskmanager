@@ -25,9 +25,13 @@ public class StackContainer extends Fragment implements FragmentManager.OnBackSt
         this.listener = listener;
     }
 
-    public void showFragment(Fragment fragment) {
+    public void showFragment(Fragment fragment, final TransactionCallback callback) {
         if (isReadyToAddFragment()) {
-            addFragment(fragment);
+            addFragment(fragment, callback);
+        } else {
+            if (callback != null) {
+                callback.onFinished(false);
+            }
         }
     }
 
@@ -35,11 +39,20 @@ public class StackContainer extends Fragment implements FragmentManager.OnBackSt
         return getActivity() != null && getView() != null;
     }
 
-    private void addFragment(Fragment fragment) {
+    private void addFragment(Fragment fragment, final TransactionCallback callback) {
         boolean needSaveState = getAttachedFragment() != null;
 
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         if (needSaveState) {
+            getChildFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+                @Override
+                public void onBackStackChanged() {
+                    getChildFragmentManager().removeOnBackStackChangedListener(this);
+                    if (callback != null) {
+                        callback.onFinished(true);
+                    }
+                }
+            });
             transaction.addToBackStack("currentState");
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         }
@@ -48,7 +61,24 @@ public class StackContainer extends Fragment implements FragmentManager.OnBackSt
 
         if (!needSaveState) {
             getChildFragmentManager().executePendingTransactions();
+            if (callback != null) {
+                callback.onFinished(true);
+            }
         }
+    }
+
+    public void popFragment(final TransactionCallback callback) {
+        getChildFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                getChildFragmentManager().removeOnBackStackChangedListener(this);
+                if (callback != null) {
+                    callback.onFinished(true);
+                }
+            }
+        });
+
+        getChildFragmentManager().popBackStack();
     }
 
     @Override
@@ -112,5 +142,9 @@ public class StackContainer extends Fragment implements FragmentManager.OnBackSt
     public interface Listener {
         void onViewCreated(Bundle savedInstanceState);
         void onBackStackChanged();
+    }
+
+    public interface TransactionCallback {
+        void onFinished(boolean isCompleted);
     }
 }
