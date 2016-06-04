@@ -28,6 +28,8 @@ import com.example.alexeyglushkov.service.SimpleService;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -136,8 +138,7 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     private void onPagerPageChanged() {
         CourseFragment course = getCourseFragment();
         if (course != null) {
-            ArrayList<Course> courses = getCourseHolder().getCourses();
-            course.setCourses(courses);
+            updateCourses(course);
         }
 
         updateToolbarBackButton();
@@ -330,11 +331,27 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     }
 
     private void handleLoadedQuizletSets() {
-        List<QuizletSet> sets = getQuizletService().getSets();
+        List<QuizletSet> sets = getSortedSets();
         Log.d("load", "handleLoadedQuizletSets " + sets.size());
 
         getSetQuizletFragment().updateSets(sets);
         getCardQuizletFragment().updateSets(sets);
+    }
+
+    private List<QuizletSet> getSortedSets() {
+        List<QuizletSet> sets = getQuizletService().getSets();
+        Collections.sort(sets, new Comparator<QuizletSet>() {
+            @Override
+            public int compare(QuizletSet lhs, QuizletSet rhs) {
+                return longCompare(rhs.getModifiedDate(), lhs.getModifiedDate());
+            }
+        });
+
+        return sets;
+    }
+
+    public static int longCompare(long lhs, long rhs) {
+        return lhs < rhs ? -1 : (lhs == rhs ? 0 : 1);
     }
 
     private QuizletCardsFragment getSetQuizletFragment() {
@@ -459,9 +476,21 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         if (error != null) {
             CourseFragment courseFragment = getCourseFragment();
             if (courseFragment != null) {
-                courseFragment.setCourses(getCourseHolder().getCourses());
+                updateCourses(courseFragment);
             }
         }
+    }
+
+    private void updateCourses(CourseFragment courseFragment) {
+        ArrayList<Course> courses = getCourseHolder().getCourses();
+        Collections.sort(courses, new Comparator<Course>() {
+            @Override
+            public int compare(Course lhs, Course rhs) {
+                return rhs.getCreateDate().compareTo(lhs.getCreateDate());
+            }
+        });
+
+        courseFragment.setCourses(courses);
     }
 
     private void deleteCourseWithConfirmation(final Course course) {
