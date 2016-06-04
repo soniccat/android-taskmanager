@@ -33,6 +33,8 @@ import model.CardProgress;
 // TODO: consider moving content to fragment
 public class LearnActivity extends BaseActivity {
 
+    public static final int ACTIVITY_RESULT = 10002;
+    public static final int ACTIVITY_RESULT_CODE = 1;
     public final static String EXTRA_DEFINITION_TO_TERM = "EXTRA_DEFINITION_TO_TERM";
     public final static String EXTRA_COURSE_ID = "EXTRA_COURSE_ID";
     public final static Character GAP_CHAR = '_';
@@ -107,6 +109,8 @@ public class LearnActivity extends BaseActivity {
             }
         });
 
+        setResult(ACTIVITY_RESULT_CODE, getIntent());
+
         String courseIdString = getIntent().getStringExtra(EXTRA_COURSE_ID);
         UUID courseId = UUID.fromString(courseIdString);
         definitionToTerm = getIntent().getBooleanExtra(EXTRA_DEFINITION_TO_TERM, false);
@@ -132,13 +136,13 @@ public class LearnActivity extends BaseActivity {
         CardProgress progress = card.getProgress();
         if (progress != null) {
             String progressFormat;
-            if (progress.needHaveLesson()) {
+            int intPorgress = (int)(progress.getProgress() * 100);
+            if (progress.needHaveLesson() && intPorgress > 0) {
                 progressFormat = getString(R.string.learning_is_important);
             } else {
                 progressFormat = getString(R.string.learning_progress_format);
             }
 
-            int intPorgress = (int)(progress.getProgress() * 100);
             String resultString = String.format(Locale.US, progressFormat, intPorgress);
             progressTextView.setText(resultString);
 
@@ -263,7 +267,6 @@ public class LearnActivity extends BaseActivity {
                         inputLayout.getEditText().requestFocus();
                     }
                 }, 300);*/
-
             }
         }
     }

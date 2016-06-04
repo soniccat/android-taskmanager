@@ -27,6 +27,7 @@ import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import learning.LearnActivity;
 import main.BaseActivity;
@@ -358,13 +359,6 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         Snackbar.make(pager.getChildAt(pager.getCurrentItem()), errorString, Snackbar.LENGTH_LONG).show();
     }
 
-    // QuizletCardsFragment.Listener
-
-    @Override
-    public void onSetClicked(QuizletSet set) {
-        showWordFragment(set);
-    }
-
     private void showWordFragment(QuizletSet set) {
         QuizletCardsFragment fragment = new QuizletCardsFragment();
         fragment.setListener(this);
@@ -382,7 +376,53 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
                 onQuizletSetFragmentBackStackChanged();
             }
         });
-   }
+    }
+
+    private void startLearnReadyWords(Course course) {
+
+    }
+
+    private void startLearnCourse(Course course) {
+
+    }
+
+    private void createCourseFromCard(QuizletTerm quizletTerm, String name) {
+        Card card = createCard(quizletTerm);
+        ArrayList<Card> cards = new ArrayList<>();
+        cards.add(card);
+
+        createCourse(name, cards);
+    }
+
+    @NonNull
+    private Card createCard(QuizletTerm term) {
+        Card card = new Card();
+        card.setTerm(term.getTerm());
+        card.setDefinition(term.getDefinition());
+        card.setQuizletTerm(term);
+        return card;
+    }
+
+    private void createCourse(String title, ArrayList<Card> cards) {
+        Course course = new Course();
+        course.setTitle(title);
+        course.addCards(cards);
+
+        Error error = getCourseHolder().addCourse(course);
+        if (error != null) {
+            CourseFragment courseFragment = getCourseFragment();
+            if (courseFragment != null) {
+                courseFragment.setCourses(getCourseHolder().getCourses());
+            }
+        }
+    }
+
+    // Callbacks
+
+    @Override
+    public void onSetClicked(QuizletSet set) {
+        showWordFragment(set);
+    }
 
     @Override
     public void onSetMenuClicked(final QuizletSet set, View v) {
@@ -436,14 +476,6 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         renameAlert.show(this, (ViewGroup) getWindow().getDecorView());
     }
 
-    private void createCourseFromCard(QuizletTerm quizletTerm, String name) {
-        Card card = createCard(quizletTerm);
-        ArrayList<Card> cards = new ArrayList<>();
-        cards.add(card);
-
-        createCourse(name, cards);
-    }
-
     private void onCreateCourseFromSet(QuizletSet set) {
         ArrayList<Card> cards = new ArrayList<>();
         for (QuizletTerm term : set.getTerms()) {
@@ -454,29 +486,6 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         createCourse(set.getTitle(), cards);
     }
 
-    @NonNull
-    private Card createCard(QuizletTerm term) {
-        Card card = new Card();
-        card.setTerm(term.getTerm());
-        card.setDefinition(term.getDefinition());
-        card.setQuizletTerm(term);
-        return card;
-    }
-
-    private void createCourse(String title, ArrayList<Card> cards) {
-        Course course = new Course();
-        course.setTitle(title);
-        course.addCards(cards);
-
-        Error error = getCourseHolder().addCourse(course);
-        if (error != null) {
-            CourseFragment courseFragment = getCourseFragment();
-            if (courseFragment != null) {
-                courseFragment.setCourses(getCourseHolder().getCourses());
-            }
-        }
-    }
-
     @Override
     public void onCourseClicked(Course course) {
         Intent activityIntent = new Intent(this, LearnActivity.class);
@@ -484,12 +493,32 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         activityIntent.putExtra(LearnActivity.EXTRA_COURSE_ID, courseId);
         activityIntent.putExtra(LearnActivity.EXTRA_DEFINITION_TO_TERM, true);
 
-        startActivity(activityIntent);
+        startActivityForResult(activityIntent, LearnActivity.ACTIVITY_RESULT);
     }
 
     @Override
-    public void onCourseMenuClicked(Course set) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if (requestCode == LearnActivity.ACTIVITY_RESULT) {
+            getCourseFragment().reloadData();
+        }
+    }
+
+    @Override
+    public void onCourseMenuClicked(final Course course, View v) {
+        PopupMenu popupMenu = new PopupMenu(this, v);
+        popupMenu.getMenu().add(Menu.NONE, R.id.learn_ready_words, 0, R.string.menu_course_learn_only_ready_words);
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.learn_ready_words) {
+                    startLearnReadyWords(course);
+                }
+
+                return false;
+            }
+        });
     }
 
     @Override

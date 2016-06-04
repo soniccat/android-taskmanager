@@ -2,8 +2,12 @@
 <resources>
     <string name="set_word_count_formant">%d words</string>
     <string name="cell_course_in_progress">%d in progress</string>
+    <string name="cell_course_waiting_words">%d are needed to revise</string>
+    <string name="cell_course_no_waiting_words">nothing is ready to revise</string>
 
     <string name="menu_create_course">Create new course</string>
+
+    <string name="menu_course_learn_only_ready_words">Learn only ready words</string>
 
     <string name="dialog_rename_hint">Course title</string>
 

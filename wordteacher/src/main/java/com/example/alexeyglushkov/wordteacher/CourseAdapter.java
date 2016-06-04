@@ -55,25 +55,45 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         final Course course = courses.get(position);
-        holder.nameTextview.setText(course.getTitle());
+        bindWordNameTextView(holder, course);
+        bindWordCountTextView(holder, course);
+        bindProgressTextView(holder, course);
+        bindListener(holder, course);
+    }
 
+    private void bindWordNameTextView(ViewHolder holder, Course course) {
+        holder.nameTextview.setText(course.getTitle());
+    }
+
+    private void bindWordCountTextView(ViewHolder holder, Course course) {
         String format = holder.itemView.getContext().getResources().getString(R.string.set_word_count_formant);
         String description = String.format(Locale.US, format, course.getCards().size());
         holder.wordCountTextView.setText(description);
+    }
 
-        int inProgressCount = course.getInProgressCount();
-        if (inProgressCount > 0) {
+    private void bindProgressTextView(ViewHolder holder, Course course) {
+        int inProgressCount = course.getInProgressCards().size();
+        if (inProgressCount > 0 && inProgressCount == course.getCards().size()) {
+            int waitingCardCount = course.getReadyToLearnCards().size();
+            if (waitingCardCount != 0) {
+                String waitingFormat = holder.itemView.getContext().getResources().getString(R.string.cell_course_waiting_words);
+                String inProgressString = String.format(Locale.US, waitingFormat, waitingCardCount);
+                holder.inProgressTextView.setText(inProgressString);
+
+            } else {
+                holder.inProgressTextView.setText(R.string.cell_course_no_waiting_words);
+            }
+
+        } else if (inProgressCount > 0) {
             holder.inProgressTextView.setVisibility(View.VISIBLE);
             String inPorgressFormat = holder.itemView.getContext().getResources().getString(R.string.cell_course_in_progress);
             String inProgressString = String.format(Locale.US, inPorgressFormat, inProgressCount);
             holder.inProgressTextView.setText(inProgressString);
-            
+
         } else {
             holder.inProgressTextView.setText(null);
             holder.inProgressTextView.setVisibility(View.INVISIBLE);
         }
-
-        bindListener(holder, course);
     }
 
     private void bindListener(ViewHolder holder, final Course course) {
