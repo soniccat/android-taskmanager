@@ -287,6 +287,7 @@ public class LearnActivity extends BaseActivity {
                 Tools.runOnMainThreadDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        inputLayout.getEditText().requestFocus();
                         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.showSoftInput(inputLayout.getEditText(), InputMethodManager.SHOW_IMPLICIT);
                     }
