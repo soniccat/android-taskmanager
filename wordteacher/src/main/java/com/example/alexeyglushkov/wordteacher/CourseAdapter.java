@@ -74,6 +74,8 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
     private void bindProgressTextView(ViewHolder holder, Course course) {
         int inProgressCount = course.getInProgressCards().size();
         if (inProgressCount > 0 && inProgressCount == course.getCards().size()) {
+            holder.inProgressTextView.setVisibility(View.VISIBLE);
+
             int waitingCardCount = course.getReadyToLearnCards().size();
             if (waitingCardCount != 0) {
                 String waitingFormat = holder.itemView.getContext().getResources().getString(R.string.cell_course_waiting_words);

@@ -3,6 +3,7 @@ package learning;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import main.MainApplication;
@@ -13,11 +14,11 @@ import model.CourseHolder;
 /**
  * Created by alexeyglushkov on 09.05.16.
  */
-public class CourseTeacher {
+public class CardTeacher {
 
     private int cardPerSession = 7;
 
-    private Course course;
+    private List<Card> cards = new ArrayList<>();
     private ArrayList<LearnSession> sessions = new ArrayList<>();
     private LearnSession currentSession;
 
@@ -33,15 +34,21 @@ public class CourseTeacher {
         return getMainApplication().getCourseHolder();
     }
 
-    public CourseTeacher(UUID courseId) {
-        this.course = getCourseHolder().getCourse(courseId);
+    public CardTeacher(UUID courseId) {
+        Course course = getCourseHolder().getCourse(courseId);
+        cards.addAll(course.getCards());
+        buildCourseSession();
+    }
+
+    public CardTeacher(List<Card> cards) {
+        this.cards.addAll(cards);
         buildCourseSession();
     }
 
     private void buildCourseSession() {
-        ArrayList<Card> cards = new ArrayList<>();
-        cards.addAll(course.getCards());
-        Collections.shuffle(cards);
+        ArrayList<Card> sessinCards = new ArrayList<>();
+        sessinCards.addAll(this.cards);
+        Collections.shuffle(sessinCards);
 
         ArrayList<Card> answeredCards = new ArrayList<>();
         for (LearnSession session : sessions) {
@@ -49,17 +56,17 @@ public class CourseTeacher {
         }
 
         for (Card card : answeredCards) {
-            int index = cards.indexOf(card);
+            int index = sessinCards.indexOf(card);
             if (index != -1) {
-                cards.remove(index);
+                sessinCards.remove(index);
             }
         }
 
-        if (cards.size() > cardPerSession) {
-            cards.subList(cardPerSession-1, cards.size()-1).clear();
+        if (sessinCards.size() > cardPerSession) {
+            sessinCards.subList(cardPerSession-1, sessinCards.size()-1).clear();
         }
 
-        currentSession = new LearnSession(cards);
+        currentSession = new LearnSession(sessinCards);
     }
 
     public Card getCurrentCard() {
@@ -114,14 +121,14 @@ public class CourseTeacher {
 
     private void countWronAnswer() {
         if (!isWrongAnswerCounted) {
-            getCourseHolder().countWrongAnswer(course, getCurrentCard());
+            getCourseHolder().countWrongAnswer(getCurrentCard());
             currentSession.updateProgress(getCurrentCard(), false);
             isWrongAnswerCounted = true;
         }
     }
 
     private void countRightAnswer() {
-        getCourseHolder().countRighAnswer(course, getCurrentCard());
+        getCourseHolder().countRighAnswer(getCurrentCard());
         currentSession.updateProgress(getCurrentCard(), true);
     }
 

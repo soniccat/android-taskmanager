@@ -58,6 +58,24 @@ public class CourseHolder {
         return course;
     }
 
+    public Card getCard(UUID cardId) {
+        Card resultCard = null;
+        for (Course course : getCourses()) {
+            for (Card card : course.getCards()) {
+                if (card.getId().equals(cardId)) {
+                    resultCard = card;
+                    break;
+                }
+            }
+
+            if (resultCard != null) {
+                break;
+            }
+        }
+
+        return resultCard;
+    }
+
     private Error storeCourse(Course course) {
         Error error = diskProvider.put(course.getId().toString(), course, null);
         return error;
@@ -77,9 +95,8 @@ public class CourseHolder {
         return error;
     }
 
-    public void countRighAnswer(UUID courseId, UUID cardId) {
-        Course course = getCourse(courseId);
-        Card card = course.getCard(cardId);
+    public void countRighAnswer(Card card) {
+        Course course = getCourse(card.getCourseId());
         countRighAnswer(course, card);
     }
 
@@ -94,9 +111,8 @@ public class CourseHolder {
         storeCourse(course);
     }
 
-    public void countWrongAnswer(UUID courseId, UUID cardId) {
-        Course course = getCourse(courseId);
-        Card card = course.getCard(cardId);
+    public void countWrongAnswer(Card card) {
+        Course course = getCourse(card.getCourseId());
         countWrongAnswer(course, card);
     }
 

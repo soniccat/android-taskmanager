@@ -383,17 +383,26 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     }
 
     private void startLearnActivity(Course course) {
-        Intent activityIntent = new Intent(this, LearnActivity.class);
-
-        String courseId = course.getId().toString();
-        activityIntent.putExtra(LearnActivity.EXTRA_COURSE_ID, courseId);
-        activityIntent.putExtra(LearnActivity.EXTRA_DEFINITION_TO_TERM, true);
-
-        startActivityForResult(activityIntent, LearnActivity.ACTIVITY_RESULT);
+        startLearnActivity(course.getCards());
     }
 
     private void startLearnReadyWords(Course course) {
+        startLearnActivity(course.getReadyToLearnCards());
+    }
 
+    private void startLearnActivity(List<Card> cards) {
+        Intent activityIntent = new Intent(this, LearnActivity.class);
+        String[] cardIds = new String[cards.size()];
+
+        for (int i=0; i<cards.size(); ++i) {
+            Card card = cards.get(i);
+            cardIds[i] = card.getId().toString();
+        }
+
+        activityIntent.putExtra(LearnActivity.EXTRA_CARD_IDS, cardIds);
+        activityIntent.putExtra(LearnActivity.EXTRA_DEFINITION_TO_TERM, true);
+
+        startActivityForResult(activityIntent, LearnActivity.ACTIVITY_RESULT);
     }
 
     private void startLearnCourse(Course course) {

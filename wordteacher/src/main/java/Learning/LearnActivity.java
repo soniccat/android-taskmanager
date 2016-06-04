@@ -14,18 +14,20 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.example.alexeyglushkov.taskmanager.task.Tools;
 import com.example.alexeyglushkov.wordteacher.R;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.UUID;
 
 import main.BaseActivity;
+import main.MainApplication;
 import model.Card;
 import model.CardProgress;
+import model.CourseHolder;
 
 /**
  * Created by alexeyglushkov on 09.05.16.
@@ -36,10 +38,10 @@ public class LearnActivity extends BaseActivity {
     public static final int ACTIVITY_RESULT = 10002;
     public static final int ACTIVITY_RESULT_CODE = 1;
     public final static String EXTRA_DEFINITION_TO_TERM = "EXTRA_DEFINITION_TO_TERM";
-    public final static String EXTRA_COURSE_ID = "EXTRA_COURSE_ID";
+    public final static String EXTRA_CARD_IDS = "EXTRA_CARD_IDS";
     public final static Character GAP_CHAR = '_';
 
-    private CourseTeacher teacher;
+    private CardTeacher teacher;
 
     private View rootView;
     private TextView termView;
@@ -52,6 +54,14 @@ public class LearnActivity extends BaseActivity {
 
     private boolean definitionToTerm;
     private ArrayList<Character> hintArray = new ArrayList<>();
+
+    private MainApplication getMainApplication() {
+        return MainApplication.instance;
+    }
+
+    public CourseHolder getCourseHolder() {
+        return getMainApplication().getCourseHolder();
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -110,13 +120,23 @@ public class LearnActivity extends BaseActivity {
         });
 
         setResult(ACTIVITY_RESULT_CODE, getIntent());
+        createTeacher();
 
-        String courseIdString = getIntent().getStringExtra(EXTRA_COURSE_ID);
-        UUID courseId = UUID.fromString(courseIdString);
         definitionToTerm = getIntent().getBooleanExtra(EXTRA_DEFINITION_TO_TERM, false);
 
-        teacher = new CourseTeacher(courseId);
         showCurrentCard();
+    }
+
+    private void createTeacher() {
+        String[] courseIdStrings = getIntent().getStringArrayExtra(EXTRA_CARD_IDS);
+        List<Card> cards = new ArrayList<>();
+        for (String id : courseIdStrings) {
+            UUID cardId = UUID.fromString(id);
+            Card card = getCourseHolder().getCard(cardId);
+            cards.add(card);
+        }
+
+        teacher = new CardTeacher(cards);
     }
 
     private void bindCurrentCard() {
