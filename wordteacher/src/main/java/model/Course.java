@@ -86,6 +86,7 @@ public class Course implements Parcelable {
     }
 
     public void addCard(Card card) {
+        card.setCourseId(getId());
         cards.add(card);
     }
 
@@ -118,7 +119,10 @@ public class Course implements Parcelable {
     }
 
     public void setCards(ArrayList<Card> cards) {
-        this.cards = cards;
+        this.cards = new ArrayList<>();
+        for (Card card : cards) {
+            addCard(card);
+        }
     }
 
     public Date getCreateDate() {

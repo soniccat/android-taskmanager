@@ -38,6 +38,10 @@ public class CardDeserializer extends CustomDeserializer<Card> {
             String uuid = _parseString(p, ctxt);
             card.setId(UUID.fromString(uuid));
             isHandled = true;
+        } else if (name.equals("courseId")) {
+            String uuid = _parseString(p, ctxt);
+            card.setCourseId(UUID.fromString(uuid));
+            isHandled = true;
         } else if (name.equals("term")) {
             card.setTerm(_parseString(p, ctxt));
             isHandled = true;

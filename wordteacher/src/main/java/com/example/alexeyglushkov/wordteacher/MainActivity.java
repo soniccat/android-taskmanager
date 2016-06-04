@@ -240,7 +240,9 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
                 stackContainer.popFragment(new StackContainer.TransactionCallback() {
                     @Override
                     public void onFinished(boolean isCompleted) {
-                        onQuizletSetFragmentBackStackChanged();
+                        if (isCompleted) {
+                            onQuizletSetFragmentBackStackChanged();
+                        }
                     }
                 });
                 return;
@@ -373,9 +375,21 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         getStackContainer(0).showFragment(fragment, new StackContainer.TransactionCallback() {
             @Override
             public void onFinished(boolean isCompleted) {
-                onQuizletSetFragmentBackStackChanged();
+                if (isCompleted) {
+                    onQuizletSetFragmentBackStackChanged();
+                }
             }
         });
+    }
+
+    private void startLearnActivity(Course course) {
+        Intent activityIntent = new Intent(this, LearnActivity.class);
+
+        String courseId = course.getId().toString();
+        activityIntent.putExtra(LearnActivity.EXTRA_COURSE_ID, courseId);
+        activityIntent.putExtra(LearnActivity.EXTRA_DEFINITION_TO_TERM, true);
+
+        startActivityForResult(activityIntent, LearnActivity.ACTIVITY_RESULT);
     }
 
     private void startLearnReadyWords(Course course) {
@@ -488,12 +502,7 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
 
     @Override
     public void onCourseClicked(Course course) {
-        Intent activityIntent = new Intent(this, LearnActivity.class);
-        String courseId = course.getId().toString();
-        activityIntent.putExtra(LearnActivity.EXTRA_COURSE_ID, courseId);
-        activityIntent.putExtra(LearnActivity.EXTRA_DEFINITION_TO_TERM, true);
-
-        startActivityForResult(activityIntent, LearnActivity.ACTIVITY_RESULT);
+        startLearnActivity(course);
     }
 
     @Override
@@ -519,6 +528,8 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
                 return false;
             }
         });
+
+        popupMenu.show();
     }
 
     @Override

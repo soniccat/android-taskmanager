@@ -14,6 +14,7 @@ import java.util.UUID;
  */
 public class Card implements Parcelable {
     private UUID id;
+    private UUID courseId;
     private Date createDate;
     private String term;
     private String definition;
@@ -25,6 +26,7 @@ public class Card implements Parcelable {
         // TODO: remove bundle
         Bundle bundle = parcel.readBundle(QuizletTerm.class.getClassLoader());
         id = UUID.fromString(bundle.getString("id"));
+        courseId = UUID.fromString(bundle.getString("courseId"));
         term = bundle.getString("term");
         definition = bundle.getString("definition");
         createDate = new Date(bundle.getLong("createDate"));
@@ -37,6 +39,7 @@ public class Card implements Parcelable {
         // TODO: remove bundle
         Bundle bundle = new Bundle();
         bundle.putString("id", id.toString());
+        bundle.putString("courseId", courseId.toString());
         bundle.putString("term", term);
         bundle.putString("definition", definition);
         bundle.putLong("createDate", createDate.getTime());
@@ -57,6 +60,14 @@ public class Card implements Parcelable {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public UUID getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(UUID courseId) {
+        this.courseId = courseId;
     }
 
     public Date getCreateDate() {

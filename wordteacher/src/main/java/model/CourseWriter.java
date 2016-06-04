@@ -55,6 +55,7 @@ public class CourseWriter implements OutputStreamWriter {
     private void writeCard(Card card, JsonGenerator g) throws IOException{
         g.writeStartObject();
         g.writeStringField("id",card.getId().toString());
+        g.writeStringField("courseId", card.getCourseId().toString());
         g.writeNumberField("createDate", card.getCreateDate().getTime());
         g.writeStringField("term",card.getTerm());
         g.writeStringField("definition",card.getDefinition());
@@ -65,6 +66,7 @@ public class CourseWriter implements OutputStreamWriter {
             g.writeEndObject();
         }
 
+        //TODO: think about storing writers and getting them automatically
         if (card.getProgress() != null) {
             CardProgressWriter progressWriter = new CardProgressWriter();
             g.writeObjectFieldStart("progress");
