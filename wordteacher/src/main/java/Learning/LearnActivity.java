@@ -1,5 +1,6 @@
 package learning;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -10,10 +11,12 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.alexeyglushkov.taskmanager.task.Tools;
 import com.example.alexeyglushkov.wordteacher.R;
 
 import java.util.ArrayList;
@@ -280,13 +283,14 @@ public class LearnActivity extends BaseActivity {
             } else {
                 showCurrentCard();
 
-                /*
+                // to show keyboard
                 Tools.runOnMainThreadDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        inputLayout.getEditText().requestFocus();
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.showSoftInput(inputLayout.getEditText(), InputMethodManager.SHOW_IMPLICIT);
                     }
-                }, 300);*/
+                }, 300);
             }
         }
     }

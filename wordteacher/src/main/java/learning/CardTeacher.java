@@ -16,7 +16,7 @@ import model.CourseHolder;
  */
 public class CardTeacher {
 
-    private int cardPerSession = 7;
+    private int cardPerSession = 2;
 
     private List<Card> cards = new ArrayList<>();
     private ArrayList<LearnSession> sessions = new ArrayList<>();
