@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 
 import learning.LearnActivity;
 import main.BaseActivity;
@@ -343,15 +342,15 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         Collections.sort(sets, new Comparator<QuizletSet>() {
             @Override
             public int compare(QuizletSet lhs, QuizletSet rhs) {
-                return longCompare(rhs.getModifiedDate(), lhs.getModifiedDate());
+                return reverseLongCompare(lhs.getCreateDate(), rhs.getCreateDate());
             }
         });
 
         return sets;
     }
 
-    public static int longCompare(long lhs, long rhs) {
-        return lhs < rhs ? -1 : (lhs == rhs ? 0 : 1);
+    public static int reverseLongCompare(long lhs, long rhs) {
+        return lhs < rhs ? 1 : (lhs == rhs ? 0 : -1);
     }
 
     private QuizletCardsFragment getSetQuizletFragment() {

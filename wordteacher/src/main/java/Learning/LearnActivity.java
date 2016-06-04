@@ -142,6 +142,15 @@ public class LearnActivity extends BaseActivity {
         teacher = new CardTeacher(cards);
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable("teacher", teacher);
+        outState.putBoolean("definitionToTerm", definitionToTerm);
+
+    }
+
     private void bindCurrentCard() {
         Card card = teacher.getCurrentCard();
         bindCard(card);

@@ -1,5 +1,8 @@
 package learning;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,9 +17,9 @@ import model.CourseHolder;
 /**
  * Created by alexeyglushkov on 09.05.16.
  */
-public class CardTeacher {
+public class CardTeacher implements Parcelable {
 
-    private int cardPerSession = 2;
+    private int cardPerSession = 7;
 
     private List<Card> cards = new ArrayList<>();
     private ArrayList<LearnSession> sessions = new ArrayList<>();
@@ -25,6 +28,27 @@ public class CardTeacher {
     private int checkCount;
     private int hintShowCount;
     private boolean isWrongAnswerCounted;
+
+    public CardTeacher(Parcel parcel) {
+        cardPerSession = parcel.readInt();
+        parcel.readTypedList(cards, Card.CREATOR);
+        parcel.readTypedList(sessions, LearnSession.CREATOR);
+        currentSession = parcel.readParcelable(LearnSession.class.getClassLoader());
+        checkCount = parcel.readInt();
+        hintShowCount = parcel.readInt();
+        isWrongAnswerCounted = parcel.readInt() > 0 ? true : false;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(cardPerSession);
+        dest.writeTypedList(cards);
+        dest.writeTypedList(sessions);
+        dest.writeParcelable(currentSession, flags);
+        dest.writeInt(checkCount);
+        dest.writeInt(hintShowCount);
+        dest.writeInt(isWrongAnswerCounted ? 1 : 0);
+    }
 
     private MainApplication getMainApplication() {
         return MainApplication.instance;
@@ -132,8 +156,22 @@ public class CardTeacher {
         currentSession.updateProgress(getCurrentCard(), true);
     }
 
-
     public boolean isWrongAnswerCounted() {
         return isWrongAnswerCounted;
+    }
+
+    public static final Parcelable.Creator<CardTeacher> CREATOR = new Parcelable.Creator<CardTeacher>() {
+        public CardTeacher createFromParcel(Parcel in) {
+            return new CardTeacher(in);
+        }
+
+        public CardTeacher[] newArray(int size) {
+            return new CardTeacher[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 }

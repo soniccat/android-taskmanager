@@ -192,7 +192,8 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
     }
 
     private void storeSparceArray(SparseArray<String> array, Bundle bundle) {
-        bundle.putInt("sparceArrayLength", array.size());
+        int size = array != null ? array.size() : 0;
+        bundle.putInt("sparceArrayLength", size);
         for (int i = 0; i < array.size(); i++) {
             bundle.putInt("sparceArrayKey" + i, array.keyAt(i));
             bundle.putString("sparceArrayValue" + i, array.valueAt(i));
