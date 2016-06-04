@@ -217,6 +217,15 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.getItem(0);
+        List<Card> cards = getReadyCards();
+        item.setVisible(cards.size() > 0);
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -226,9 +235,22 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+
+        } else if (id == R.id.learn_ready_words) {
+            startLearnActivity(getReadyCards());
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private List<Card> getReadyCards() {
+        ArrayList<Card> cards = new ArrayList<>();
+        for (Course course : getCourseHolder().getCourses()) {
+            cards.addAll(course.getReadyToLearnCards());
+        }
+
+        return cards;
     }
 
     @Override
