@@ -42,7 +42,8 @@ public class LearnActivity extends BaseActivity {
     public static final int ACTIVITY_RESULT_CODE = 1;
     public final static String EXTRA_DEFINITION_TO_TERM = "EXTRA_DEFINITION_TO_TERM";
     public final static String EXTRA_CARD_IDS = "EXTRA_CARD_IDS";
-    public final static Character GAP_CHAR = '_';
+    public final static char GAP_CHAR = '_';
+    public final static String GAP_STRING = "_";
 
     private CardTeacher teacher;
 
@@ -56,7 +57,7 @@ public class LearnActivity extends BaseActivity {
     private ImageButton hintButton;
 
     private boolean definitionToTerm;
-    private ArrayList<Character> hintArray = new ArrayList<>();
+    private StringBuilder hintArray = new StringBuilder();
 
     private MainApplication getMainApplication() {
         return MainApplication.instance;
@@ -123,11 +124,14 @@ public class LearnActivity extends BaseActivity {
         });
 
         setResult(ACTIVITY_RESULT_CODE, getIntent());
-        createTeacher();
 
-        definitionToTerm = getIntent().getBooleanExtra(EXTRA_DEFINITION_TO_TERM, false);
-
-        showCurrentCard();
+        if (savedInstanceState == null) {
+            createTeacher();
+            definitionToTerm = getIntent().getBooleanExtra(EXTRA_DEFINITION_TO_TERM, false);
+            showCurrentCard();
+        } else {
+            restore(savedInstanceState);
+        }
     }
 
     private void createTeacher() {
@@ -142,13 +146,28 @@ public class LearnActivity extends BaseActivity {
         teacher = new CardTeacher(cards);
     }
 
+    private void restore(Bundle savedInstanceState) {
+        teacher = savedInstanceState.getParcelable("teacher");
+        definitionToTerm = savedInstanceState.getBoolean("definitionToTerm");
+
+        String string = savedInstanceState.getString("hintArray");
+        hintArray = new StringBuilder(string);
+
+        // because of the support lib bug
+        string = savedInstanceState.getString("input");
+        inputLayout.getEditText().setText(string);
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putParcelable("teacher", teacher);
         outState.putBoolean("definitionToTerm", definitionToTerm);
+        outState.putString("hintArray", hintArray.toString());
 
+        // because of the support lib bug
+        outState.putString("input", inputLayout.getEditText().getText().toString());
     }
 
     private void bindCurrentCard() {
@@ -260,11 +279,11 @@ public class LearnActivity extends BaseActivity {
     }
 
     private void prepareHintString() {
-        hintArray.clear();
+        hintArray.setLength(0);
 
         Card currentCard = teacher.getCurrentCard();
         for (int i=0; i<getDefinition(currentCard).length(); ++i) {
-            hintArray.add(GAP_CHAR);
+            hintArray.append(GAP_CHAR);
         }
     }
 
@@ -326,7 +345,7 @@ public class LearnActivity extends BaseActivity {
     }
 
     private void onShowNextLetterPressed() {
-        int index = hintArray.indexOf(GAP_CHAR);
+        int index = hintArray.indexOf(GAP_STRING);
         updateHintString(index);
         showHintString();
         updateHintButton();
@@ -359,8 +378,8 @@ public class LearnActivity extends BaseActivity {
 
     private int getHintGapCount() {
         int gapCount = 0;
-        for (int i=0; i<hintArray.size(); ++i) {
-            if (hintArray.get(i) == GAP_CHAR) {
+        for (int i=0; i<hintArray.length(); ++i) {
+            if (hintArray.charAt(i) == GAP_CHAR) {
                 ++gapCount;
             }
         }
@@ -370,8 +389,8 @@ public class LearnActivity extends BaseActivity {
     private int gapIndexToCharIndex(int searchGapIndex) {
         int gapIndex = -1;
         int position = -1;
-        for (int i=0; i<hintArray.size(); ++i) {
-            if (hintArray.get(i) == GAP_CHAR) {
+        for (int i=0; i<hintArray.length(); ++i) {
+            if (hintArray.charAt(i) == GAP_CHAR) {
                 ++gapIndex;
                 if (gapIndex == searchGapIndex) {
                     position = i;
@@ -385,17 +404,18 @@ public class LearnActivity extends BaseActivity {
 
     private void updateHintString(int index) {
         String definition = getDefinition(teacher.getCurrentCard());
-        hintArray.set(index, definition.charAt(index));
+        hintArray.setCharAt(index, definition.charAt(index));
     }
 
     private void showHintString() {
         teacher.onHintShown();
 
         StringBuilder builder = new StringBuilder();
-        for (Character ch : hintArray) {
+        for (int i=0; i < hintArray.length(); ++i) {
+            char ch = hintArray.charAt(i);
             builder.append(ch);
 
-            if (builder.length() < hintArray.size()*2-1) {
+            if (builder.length() < hintArray.length()*2-1) {
                 builder.append(' ');
             }
         }
@@ -409,7 +429,7 @@ public class LearnActivity extends BaseActivity {
 
         String definition = getDefinition(teacher.getCurrentCard());
         for (int i=0; i<definition.length(); ++i) {
-            hintArray.set(i, definition.charAt(i));
+            hintArray.setCharAt(i, definition.charAt(i));
         }
 
         showHintString();
