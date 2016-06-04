@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.wordteacher;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -462,6 +464,28 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         }
     }
 
+    private void deleteCourseWithConfirmation(final Course course) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.dialog_delete_confirmation);
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteCourse(course);
+            }
+        });
+
+        builder.show();
+    }
+
+    private void deleteCourse(Course course) {
+        CourseFragment courseFragment = getCourseFragment();
+        if (getCourseHolder().removeCourse(course) == null) {
+            if (courseFragment != null) {
+                courseFragment.deleteCourse(course);
+            }
+        }
+    }
+
     // Callbacks
 
     @Override
@@ -549,11 +573,15 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     public void onCourseMenuClicked(final Course course, View v) {
         PopupMenu popupMenu = new PopupMenu(this, v);
         popupMenu.getMenu().add(Menu.NONE, R.id.learn_ready_words, 0, R.string.menu_course_learn_only_ready_words);
+        popupMenu.getMenu().add(Menu.NONE, R.id.delete_course, 0, R.string.menu_course_delete);
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.learn_ready_words) {
                     startLearnReadyWords(course);
+
+                } else if (item.getItemId() == R.id.delete_course) {
+                    deleteCourseWithConfirmation(course);
                 }
 
                 return false;

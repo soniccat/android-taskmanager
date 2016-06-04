@@ -86,7 +86,7 @@ public class CourseHolder {
         return removeCourse(course);
     }
 
-    private Error removeCourse(Course course) {
+    public Error removeCourse(Course course) {
         Error error = diskProvider.remove(course.getId().toString());
         if (error == null) {
             courses.remove(course);

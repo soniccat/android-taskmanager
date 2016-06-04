@@ -65,6 +65,25 @@ public class CourseFragment extends Fragment {
         applyAdapter();
     }
 
+    public void deleteCourse(Course course) {
+        CourseAdapter adapter = getCourseAdapter();
+        int index = adapter.getCourseIndex(course);
+        if (index != -1) {
+            View view = getCourseView(index);
+            if (view != null) {
+                int position = recyclerView.getChildLayoutPosition(view);
+                adapter.deleteCourseAtIndex(index);
+                adapter.notifyItemRemoved(position);
+            }
+        }
+    }
+
+    private View getCourseView(int index) {
+        RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(index);
+        View view = holder.itemView;
+
+        return view;
+    }
 
     private void restore(@Nullable Bundle savedInstanceState) {
         int intViewType = savedInstanceState.getInt("viewType");

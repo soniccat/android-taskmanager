@@ -91,7 +91,9 @@ public class Course implements Parcelable {
     }
 
     public void addCards(List<Card> cards) {
-        this.cards.addAll(cards);
+        for (Card card : cards) {
+            addCard(card);
+        }
     }
 
     public void removeCard(Card card) {
@@ -134,10 +136,15 @@ public class Course implements Parcelable {
     }
 
     @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    @Override
     public boolean equals(Object o) {
-        if (o instanceof Card) {
-            Course card = (Course)o;
-            return id.equals(card.id);
+        if (o instanceof Course) {
+            Course course = (Course)o;
+            return id.equals(course.id);
         }
 
         return false;

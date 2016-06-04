@@ -2,4 +2,5 @@
 <resources>
     <item type="id" name="create_set"/>
     <item type="id" name="learn_ready_words"/>
+    <item type="id" name="delete_course"/>
 </resources>

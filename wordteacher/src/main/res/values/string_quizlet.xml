@@ -7,8 +7,10 @@
 
     <string name="menu_create_course">Create new course</string>
     <string name="menu_course_learn_only_ready_words">Learn only ready words</string>
+    <string name="menu_course_delete">Delete</string>
 
     <string name="dialog_rename_hint">Course title</string>
+    <string name="dialog_delete_confirmation">Really delete?</string>
 
     <string name="learning_giveUp">Give Up</string>
     <string name="learning_check">Check</string>

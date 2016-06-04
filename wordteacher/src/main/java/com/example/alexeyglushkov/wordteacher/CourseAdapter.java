@@ -42,8 +42,17 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
     }
 
     public void setCourses(ArrayList<Course> courses) {
-        this.courses = courses;
+        this.courses.clear();
+        this.courses.addAll(courses);
         notifyDataSetChanged();
+    }
+
+    public void deleteCourseAtIndex(int index) {
+        courses.remove(index);
+    }
+
+    public int getCourseIndex(Course course) {
+        return courses.indexOf(course);
     }
 
     @Override
