@@ -257,7 +257,7 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
 
     @Override
     public void onBackPressed() {
-        Fragment frag = getCurrentFragment();
+        final Fragment frag = getCurrentFragment();
         if (frag.isVisible() && frag instanceof StackContainer) {
             StackContainer stackContainer = (StackContainer)frag;
             if (stackContainer.getBackStackSize() > 0) {
@@ -265,7 +265,12 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
                     @Override
                     public void onFinished(boolean isCompleted) {
                         if (isCompleted) {
-                            onQuizletSetFragmentBackStackChanged();
+                            if (frag == getCardQuizletFragment()) {
+                                onQuizletSetFragmentBackStackChanged();
+
+                            } else if (frag == getCourseStackContainer()) {
+                                onCourseFragmentBackStackChanged();
+                            }
                         }
                     }
                 });
@@ -280,12 +285,16 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         updateToolbarBackButton();
     }
 
+    private void onCourseFragmentBackStackChanged() {
+        updateToolbarBackButton();
+    }
+
     private void updateToolbarBackButton() {
         StackContainer stackContainer = getStackContainer(pager.getCurrentItem());
 
         boolean needShowBackButton = false;
         if (stackContainer != null) {
-            needShowBackButton = pager.getCurrentItem() == 0 && stackContainer.getBackStackSize() > 0;
+            needShowBackButton = stackContainer.getBackStackSize() > 0;
         }
 
         if (needShowBackButton) {
@@ -355,7 +364,7 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
 
     private QuizletCardsFragment getSetQuizletFragment() {
         QuizletCardsFragment result = null;
-        StackContainer container = getStackContainer(0);
+        StackContainer container = getQuizletSetStackContainer();
         if (container != null) {
             result = (QuizletCardsFragment)container.getFragment();
         }
@@ -364,11 +373,19 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
 
     private CourseFragment getCourseFragment() {
         CourseFragment result = null;
-        StackContainer container = getStackContainer(2);
+        StackContainer container = getCourseStackContainer();
         if (container != null) {
             result = (CourseFragment)container.getFragment();
         }
         return result;
+    }
+
+    private StackContainer getQuizletSetStackContainer() {
+        return getStackContainer(0);
+    }
+
+    private StackContainer getCourseStackContainer() {
+        return getStackContainer(2);
     }
 
     private StackContainer getStackContainer(int position) {
@@ -412,7 +429,7 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         fragment.setParentSet(set);
         fragment.updateSets(list);
 
-        getStackContainer(0).showFragment(fragment, new StackContainer.TransactionCallback() {
+        getQuizletSetStackContainer().showFragment(fragment, new StackContainer.TransactionCallback() {
             @Override
             public void onFinished(boolean isCompleted) {
                 if (isCompleted) {
@@ -494,6 +511,21 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         });
 
         courseFragment.setCourses(courses);
+    }
+
+    private void showCourseContent(Course course) {
+        CourseFragment fragment = new CourseFragment();
+        fragment.setParentCourse(course);
+        fragment.setCards(course.getCards());
+
+        getCourseStackContainer().showFragment(fragment, new StackContainer.TransactionCallback() {
+            @Override
+            public void onFinished(boolean isCompleted) {
+                if (isCompleted) {
+                    updateToolbarBackButton();
+                }
+            }
+        });
     }
 
     private void deleteCourseWithConfirmation(final Course course) {
@@ -610,6 +642,7 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         if (course.getNotStartedCards().size() > 0) {
             popupMenu.getMenu().add(Menu.NONE, R.id.learn_new_words, 0, R.string.menu_course_learn_only_new_words);
         }
+        popupMenu.getMenu().add(Menu.NONE, R.id.edit_course, 0, R.string.menu_course_show_cards);
         popupMenu.getMenu().add(Menu.NONE, R.id.delete_course, 0, R.string.menu_course_delete);
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
@@ -619,6 +652,9 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
 
                 } else if (item.getItemId() == R.id.learn_new_words) {
                     startLearnNewWords(course);
+
+                } else if (item.getItemId() == R.id.edit_course) {
+                    showCourseContent(course);
 
                 } else if (item.getItemId() == R.id.delete_course) {
                     deleteCourseWithConfirmation(course);

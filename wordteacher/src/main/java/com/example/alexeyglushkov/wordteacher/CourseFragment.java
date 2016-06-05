@@ -134,20 +134,41 @@ public class CourseFragment extends Fragment {
         }
     }
 
+    public void setParentCourse(Course parentCourse) {
+        this.parentCourse = parentCourse;
+    }
+
+    public Course getParentCourse() {
+        return parentCourse;
+    }
+
+    public void setCards(List<Card> inCards) {
+        setViewType(ViewType.Cards);
+
+        ArrayList<Card> cards = new ArrayList<>();
+        cards.addAll(inCards);
+
+        sortCards(cards);
+        getCardAdapter().updateCards(cards);
+    }
+
     public List<Card> getCards(List<Course> sets) {
         List<Card> cards = new ArrayList<>();
         for (Course set : sets) {
             cards.addAll(set.getCards());
         }
 
+        sortCards(cards);
+        return cards;
+    }
+
+    private void sortCards(List<Card> cards) {
         Collections.sort(cards, new Comparator<Card>() {
             @Override
             public int compare(Card lhs, Card rhs) {
                 return lhs.getTerm().compareTo(rhs.getTerm());
             }
         });
-
-        return cards;
     }
 
     public void setViewType(ViewType aViewType) {

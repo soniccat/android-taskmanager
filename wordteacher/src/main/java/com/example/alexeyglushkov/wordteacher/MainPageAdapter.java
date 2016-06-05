@@ -152,6 +152,7 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
         return result;
     }
 
+    // It's not good that we assume here which fragment will be showed in stackContainer
     private String getStackContainerTitle(int position) {
         String result = "";
         StackContainer stackContainer = getStackContainer(position);
@@ -160,6 +161,11 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
                 QuizletCardsFragment cardsFragment = (QuizletCardsFragment) stackContainer.getFragment();
                 if (cardsFragment.getParentSet() != null) {
                     result = cardsFragment.getParentSet().getTitle();
+                }
+            } else if (position == 2) {
+                CourseFragment cardsFragment = (CourseFragment) stackContainer.getFragment();
+                if (cardsFragment.getParentCourse() != null) {
+                    result = cardsFragment.getParentCourse().getTitle();
                 }
             }
         }
