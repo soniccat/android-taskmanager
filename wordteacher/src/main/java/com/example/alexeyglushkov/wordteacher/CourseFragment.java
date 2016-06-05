@@ -65,6 +65,19 @@ public class CourseFragment extends Fragment {
         applyAdapter();
     }
 
+    public void deleteCard(Card card) {
+        CardAdapter adapter = getCardAdapter();
+        int index = adapter.getCardIndex(card);
+        if (index != -1) {
+            View view = getCourseView(index);
+            if (view != null) {
+                int position = recyclerView.getChildLayoutPosition(view);
+                adapter.deleteCardAtIndex(index);
+                adapter.notifyItemRemoved(position);
+            }
+        }
+    }
+
     public void deleteCourse(Course course) {
         CourseAdapter adapter = getCourseAdapter();
         int index = adapter.getCourseIndex(course);

@@ -95,6 +95,26 @@ public class CourseHolder {
         return error;
     }
 
+    public boolean removeCard(Card card) {
+        boolean isRemoved = false;
+        Course course = getCourse(card.getCourseId());
+        if (course != null) {
+            int index = course.getCardIndex(card);
+            if (index != -1) {
+                course.removeCard(card);
+
+                Error error = storeCourse(course);
+                if (error != null) {
+                    course.addCard(index, card);
+                } else {
+                    isRemoved = true;
+                }
+            }
+        }
+
+        return isRemoved;
+    }
+
     public void countRighAnswer(Card card) {
         Course course = getCourse(card.getCourseId());
         countRighAnswer(course, card);

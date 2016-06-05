@@ -541,11 +541,38 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
         builder.show();
     }
 
+    private void deleteCardWithConfirmation(final Card card) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.dialog_delete_confirmation);
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteCard(card);
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+
+        builder.show();
+    }
+
     private void deleteCourse(Course course) {
         CourseFragment courseFragment = getCourseFragment();
         if (getCourseHolder().removeCourse(course) == null) {
             if (courseFragment != null) {
                 courseFragment.deleteCourse(course);
+            }
+        }
+    }
+
+    private void deleteCard(Card card) {
+        CourseFragment courseFragment = getCourseFragment();
+        if (getCourseHolder().removeCard(card)) {
+            if (courseFragment != null) {
+                courseFragment.deleteCard(card);
             }
         }
     }
@@ -621,7 +648,9 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
 
     @Override
     public void onCourseClicked(Course course) {
-        startLearnActivity(course);
+        if (course.getCards().size() > 0) {
+            startLearnActivity(course);
+        }
     }
 
     @Override
@@ -674,7 +703,20 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     }
 
     @Override
-    public void onCardMenuClicked(Card card, View view) {
+    public void onCardMenuClicked(final Card card, View view) {
+        PopupMenu popupMenu = new PopupMenu(this, view);
+        popupMenu.getMenu().add(Menu.NONE, R.id.delete_card, 0, R.string.menu_card_delete);
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.delete_card) {
+                    deleteCardWithConfirmation(card);
+                }
 
+                return false;
+            }
+        });
+
+        popupMenu.show();
     }
 }

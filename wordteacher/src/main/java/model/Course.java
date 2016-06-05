@@ -100,6 +100,14 @@ public class Course implements Parcelable {
         return card;
     }
 
+    public int getCardIndex(Card card) {
+        return cards.indexOf(card);
+    }
+
+    public void addCard(int index, Card card) {
+        cards.add(index, card);
+    }
+
     public void addCard(Card card) {
         card.setCourseId(getId());
         cards.add(card);

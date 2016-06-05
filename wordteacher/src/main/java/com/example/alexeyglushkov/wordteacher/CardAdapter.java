@@ -43,6 +43,14 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.Holder> {
         notifyDataSetChanged();
     }
 
+    public int getCardIndex(Card card) {
+        return cards.indexOf(card);
+    }
+
+    public void deleteCardAtIndex(int index) {
+        cards.remove(index);
+    }
+
     @Override
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_quizlet_set_card, parent, false);

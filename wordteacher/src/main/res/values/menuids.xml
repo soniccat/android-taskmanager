@@ -5,4 +5,5 @@
     <item type="id" name="learn_new_words"/>
     <item type="id" name="edit_course"/>
     <item type="id" name="delete_course"/>
+    <item type="id" name="delete_card"/>
 </resources>
