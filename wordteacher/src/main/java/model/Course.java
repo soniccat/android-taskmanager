@@ -67,6 +67,21 @@ public class Course implements Parcelable {
                 if (progress.needHaveLesson()) {
                     result.add(card);
                 }
+            } else {
+                result.add(card);
+            }
+        }
+
+        return result;
+    }
+
+    public List<Card> getNotStartedCards() {
+        List<Card> result = new ArrayList<>();
+
+        for (Card card : cards) {
+            CardProgress progress = card.getProgress();
+            if (progress == null || progress.getProgress() == 0) {
+                result.add(card);
             }
         }
 

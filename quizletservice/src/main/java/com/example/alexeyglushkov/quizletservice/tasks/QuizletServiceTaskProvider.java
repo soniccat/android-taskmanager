@@ -19,8 +19,9 @@ public class QuizletServiceTaskProvider extends ServiceTaskProvider implements Q
     }
 
     @Override
-    public QuizletSetsCommand getLoadSetsCommand(String server, String userId) {
+    public QuizletSetsCommand getLoadSetsCommand(String server, String userId, boolean useCache) {
         QuizletSetsTask task = new QuizletSetsTask(server, userId);
+        task.setOnlyStoreInCache(!useCache);
         task.setCache(cacheProvider);
 
         return task;

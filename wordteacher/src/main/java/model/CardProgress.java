@@ -11,6 +11,7 @@ import java.util.Date;
  */
 public class CardProgress implements Parcelable {
 
+    // TODO: move it in tool lib
     private int MIN = 60000;
     private int HOUR = 25*MIN;
     private int DAY = 24*HOUR;
@@ -83,7 +84,7 @@ public class CardProgress implements Parcelable {
         if (needHaveLesson()) {
             ++lastMistakeCount;
 
-            if (lastMistakeCount >= 2 || rightAnswerCount > 4) {
+            if (lastMistakeCount >= 2) {
                 lastMistakeCount = 0;
 
                 if (rightAnswerCount > 0) {
@@ -145,19 +146,4 @@ public class CardProgress implements Parcelable {
     public void setLastLessonDate(Date lastLessonDate) {
         this.lastLessonDate = lastLessonDate;
     }
-
-
-
-    /*
-    public class CardLesson {
-        public Date date;
-        public int numberOfChecks;
-        boolean isNextLetterHintUsed;
-        boolean isRandomLetterHintUsed;
-        boolean definitionToTerm;
-
-        public CardLesson() {
-            date = new Date();
-        }
-    }*/
 }

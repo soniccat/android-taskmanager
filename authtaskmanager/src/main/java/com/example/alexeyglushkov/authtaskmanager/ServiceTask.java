@@ -33,10 +33,6 @@ public class ServiceTask extends CachedHttpLoadTask implements ServiceCommand {
         this.connectionBuilder = new HttpUrlConnectionBuilder();
     }
 
-    public void setCache(CacheProvider cache) {
-        this.cache = cache;
-    }
-
     public void setConnectionBuilder(HttpUrlConnectionBuilder connectionBuilder) {
         this.connectionBuilder = connectionBuilder;
         setTaskId(connectionBuilder.getStringUrl());

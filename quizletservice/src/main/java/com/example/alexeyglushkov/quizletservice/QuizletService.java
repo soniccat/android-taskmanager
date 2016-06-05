@@ -28,8 +28,8 @@ public class QuizletService extends SimpleService {
         setServiceCommandRunner(commandRunner);
     }
 
-    public void loadSets(final CommandCallback callback) {
-        runCommand(createSetsCommandProxy(callback), true, createAuthCompletion(callback));
+    public void loadSets(final CommandCallback callback, boolean useCache) {
+        runCommand(createSetsCommandProxy(callback, useCache), true, createAuthCompletion(callback));
     }
 
     public List<QuizletSet> getSets() {
@@ -37,18 +37,18 @@ public class QuizletService extends SimpleService {
     }
 
     @NonNull
-    private ServiceCommandProxy createSetsCommandProxy(final CommandCallback callback) {
+    private ServiceCommandProxy createSetsCommandProxy(final CommandCallback callback, final boolean useCache) {
         return new ServiceCommandProxy() {
             @Override
             public ServiceCommand getServiceCommand() {
-                return createSetsCommand(callback);
+                return createSetsCommand(callback, useCache);
             }
         };
     }
 
     @NonNull
-    private QuizletSetsCommand createSetsCommand(final CommandCallback callback) {
-        final QuizletSetsCommand command = getQuizletCommandProvider().getLoadSetsCommand(server, getOAuthCredentials().getUserId());
+    private QuizletSetsCommand createSetsCommand(final CommandCallback callback, boolean useCache) {
+        final QuizletSetsCommand command = getQuizletCommandProvider().getLoadSetsCommand(server, getOAuthCredentials().getUserId(), useCache);
         command.setServiceCommandCallback(new ServiceCommand.Callback() {
             @Override
             public void onCompleted() {

@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
  */
 public class CachedHttpLoadTask extends HttpBytesLoadTask {
     protected CacheProvider cache;
+    protected boolean onlyStoreInCache;
     private boolean needStore = false;
 
     public CachedHttpLoadTask(HttpURLConnectionProvider provider, HTTPConnectionBytesReader handler) {
@@ -29,6 +30,14 @@ public class CachedHttpLoadTask extends HttpBytesLoadTask {
     public CachedHttpLoadTask(HttpURLConnectionProvider provider, HTTPConnectionBytesReader handler, CacheProvider cache) {
         super(provider, handler);
         this.cache = cache;
+    }
+
+    public void setCache(CacheProvider cache) {
+        this.cache = cache;
+    }
+
+    public void setOnlyStoreInCache(boolean onlyStoreInCache) {
+        this.onlyStoreInCache = onlyStoreInCache;
     }
 
     protected long cacheStoreDuration() {
@@ -41,7 +50,7 @@ public class CachedHttpLoadTask extends HttpBytesLoadTask {
 
     @Override
     public void startTask() {
-        if (cache != null) {
+        if (cache != null && !onlyStoreInCache) {
             byte[] bytes = (byte[])cache.getValue(getCacheKey());
             if (bytes != null) {
                 Object result = bytes;

@@ -195,7 +195,7 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     private void onViewReady() {
         if (getQuizletService() != null && getQuizletService().getAccount() != null && getQuizletService().getAccount().isAuthorized()) {
             Log.d("load","start load quizlet sets");
-            loadQuizletSets();
+            loadQuizletSets(true);
         } else {
             Log.d("quizlet status", "");
         }
@@ -309,16 +309,16 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     //// Other
 
     private void onFabPressed() {
-        loadQuizletSets();
+        loadQuizletSets(false);
     }
 
-    private void loadQuizletSets() {
+    private void loadQuizletSets(boolean useCache) {
         getQuizletService().loadSets(new SimpleService.CommandCallback() {
             @Override
             public void onCompleted(Error error) {
                 onQuizletSetsLoaded(error);
             }
-        });
+        }, useCache);
     }
 
     private void onQuizletSetsLoaded(Error error) {
@@ -428,6 +428,10 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
 
     private void startLearnReadyWords(Course course) {
         startLearnActivity(course.getReadyToLearnCards());
+    }
+
+    private void startLearnNewWords(Course course) {
+        startLearnActivity(course.getNotStartedCards());
     }
 
     private void startLearnActivity(List<Card> cards) {
@@ -600,7 +604,12 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
     @Override
     public void onCourseMenuClicked(final Course course, View v) {
         PopupMenu popupMenu = new PopupMenu(this, v);
-        popupMenu.getMenu().add(Menu.NONE, R.id.learn_ready_words, 0, R.string.menu_course_learn_only_ready_words);
+        if (course.getReadyToLearnCards().size() > 0) {
+            popupMenu.getMenu().add(Menu.NONE, R.id.learn_ready_words, 0, R.string.menu_course_learn_only_ready_words);
+        }
+        if (course.getNotStartedCards().size() > 0) {
+            popupMenu.getMenu().add(Menu.NONE, R.id.learn_new_words, 0, R.string.menu_course_learn_only_new_words);
+        }
         popupMenu.getMenu().add(Menu.NONE, R.id.delete_course, 0, R.string.menu_course_delete);
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
@@ -608,8 +617,12 @@ public class MainActivity extends BaseActivity implements QuizletCardsFragment.L
                 if (item.getItemId() == R.id.learn_ready_words) {
                     startLearnReadyWords(course);
 
+                } else if (item.getItemId() == R.id.learn_new_words) {
+                    startLearnNewWords(course);
+
                 } else if (item.getItemId() == R.id.delete_course) {
                     deleteCourseWithConfirmation(course);
+
                 }
 
                 return false;

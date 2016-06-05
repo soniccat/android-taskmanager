@@ -71,7 +71,7 @@ public class MainActivity extends BaseActivity {
                 } else if (position == 4) {
                     clearCache();
                 } else if (position == 5) {
-                    loadSets();
+                    loadSets(true);
                 }
             }
         });
@@ -156,7 +156,7 @@ public class MainActivity extends BaseActivity {
         getServiceCache().removeAll();
     }
 
-    private void loadSets() {
+    private void loadSets(boolean useCache) {
         getMainApplication().getQuizletService().loadSets(new SimpleService.CommandCallback() {
             @Override
             public void onCompleted(Error error) {
@@ -166,7 +166,7 @@ public class MainActivity extends BaseActivity {
                     Log.d("Quizlet", "fine ");
                 }
             }
-        });
+        }, useCache);
     }
 
     @Override

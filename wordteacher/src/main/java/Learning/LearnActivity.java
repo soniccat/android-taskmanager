@@ -128,10 +128,11 @@ public class LearnActivity extends BaseActivity {
         if (savedInstanceState == null) {
             createTeacher();
             definitionToTerm = getIntent().getBooleanExtra(EXTRA_DEFINITION_TO_TERM, false);
-            showCurrentCard();
         } else {
             restore(savedInstanceState);
         }
+
+        showCurrentCard();
     }
 
     private void createTeacher() {
