@@ -105,6 +105,7 @@ public class CourseHolder {
 
                 Error error = storeCourse(course);
                 if (error != null) {
+                    // rollback
                     course.addCard(index, card);
                 } else {
                     isRemoved = true;
