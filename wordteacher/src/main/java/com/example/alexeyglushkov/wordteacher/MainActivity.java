@@ -40,7 +40,7 @@ import model.Course;
 import model.CourseHolder;
 
 // TODO: consider moving content to fragment
-public class MainActivity extends BaseActivity implements MainPageAdapter.Listener, QuizletStackCardsFragment.Listener, CourseFragment.Listener {
+public class MainActivity extends BaseActivity implements MainPageAdapter.Listener, QuizletStackFragment.Listener, CourseFragment.Listener {
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager pager;
@@ -88,6 +88,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
         if (savedInstanceState != null) {
             restoreListeners();
+            setOnViewRestoredCallback();
         } else {
             setOnViewReadyCallback();
         }
@@ -156,10 +157,23 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         });
     }
 
+    private void setOnViewRestoredCallback() {
+        final View rootView = getWindow().getDecorView().getRootView();
+        rootView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                rootView.getViewTreeObserver().removeOnPreDrawListener(this);
+
+                // here pagerAdapter will be restored
+                updateTabs();
+                return true;
+            }
+        });
+    }
+
     @Override
     public void onAttachFragment(Fragment fragment) {
         super.onAttachFragment(fragment);
-        //updateFragmentListener(fragment);
     }
 
     /*
@@ -171,8 +185,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     private void restoreFragmentListener(Fragment fragment) {
         // while restoration pagerAdapter could be null
-        if (fragment instanceof QuizletStackCardsFragment && pagerAdapter != null) {
-            QuizletStackCardsFragment cardsFragment = (QuizletStackCardsFragment)fragment;
+        if (fragment instanceof QuizletStackFragment && pagerAdapter != null) {
+            QuizletStackFragment cardsFragment = (QuizletStackFragment)fragment;
             cardsFragment.setListener(this);
 
         } else if (fragment instanceof QuizletCardsFragment) {
@@ -334,8 +348,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     @NonNull
-    private QuizletStackCardsFragment createQuizletStackFragment() {
-        QuizletStackCardsFragment fragment = new QuizletStackCardsFragment();
+    private QuizletStackFragment createQuizletStackFragment() {
+        QuizletStackFragment fragment = new QuizletStackFragment();
         fragment.setListener(this);
 
         return fragment;
@@ -351,8 +365,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     public String getTitleAtIndex(int index) {
         String title = null;
         if (index == 0) {
-            QuizletStackCardsFragment quizletStackCardsFragment = getQuizletStackFragment();
-            if (quizletStackCardsFragment != null) {
+            QuizletStackFragment quizletStackFragment = getQuizletStackFragment();
+            if (quizletStackFragment != null) {
                 title = getQuizletStackFragment().getTitle();
             } else {
                 title = "";
@@ -427,8 +441,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         return result;
     }
 
-    private QuizletStackCardsFragment getQuizletStackFragment() {
-        return (QuizletStackCardsFragment)getStackContainer(0);
+    private QuizletStackFragment getQuizletStackFragment() {
+        return (QuizletStackFragment)getStackContainer(0);
     }
 
     private StackContainer getCourseStackContainer() {

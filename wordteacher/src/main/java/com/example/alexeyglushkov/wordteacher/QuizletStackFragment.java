@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by alexeyglushkov on 11.06.16.
  */
-public class QuizletStackCardsFragment extends StackContainer implements QuizletCardsFragment.Listener {
+public class QuizletStackFragment extends StackContainer implements QuizletCardsFragment.Listener {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -25,10 +25,11 @@ public class QuizletStackCardsFragment extends StackContainer implements Quizlet
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (getSetFragment() == null) {
+        if (savedInstanceState == null) {
             showSetFragment();
         } else {
             restoreListeners();
+            onBackStackChanged();
         }
     }
 
@@ -68,9 +69,14 @@ public class QuizletStackCardsFragment extends StackContainer implements Quizlet
     }
 
     private void restoreListeners() {
-        for (Fragment fragment : getChildFragmentManager().getFragments()) {
-            QuizletCardsFragment quizletFragment = (QuizletCardsFragment)fragment;
-            quizletFragment.setListener(this);
+        QuizletCardsFragment setFragment = getSetFragment();
+        if (setFragment != null) {
+            setFragment.setListener(this);
+        }
+
+        QuizletCardsFragment cardsFragment = getCardsFragment();
+        if (cardsFragment != null) {
+            cardsFragment.setListener(this);
         }
     }
 
