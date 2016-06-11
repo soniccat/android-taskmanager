@@ -15,16 +15,17 @@ import android.view.ViewGroup;
  */
 public class StackContainer extends Fragment implements FragmentManager.OnBackStackChangedListener {
 
-    private Listener listener;
+    protected Listener listener;
 
-    public Listener getListener() {
+    /*public Listener getListener() {
         return listener;
-    }
+    }*/
 
     public void setListener(Listener listener) {
         this.listener = listener;
     }
 
+    /*
     public void showFragment(Fragment fragment, final TransactionCallback callback) {
         if (isReadyToAddFragment()) {
             addFragment(fragment, callback);
@@ -33,13 +34,13 @@ public class StackContainer extends Fragment implements FragmentManager.OnBackSt
                 callback.onFinished(false);
             }
         }
-    }
+    }*/
 
     private boolean isReadyToAddFragment() {
         return getActivity() != null && getView() != null;
     }
 
-    private void addFragment(Fragment fragment, final TransactionCallback callback) {
+    protected void addFragment(Fragment fragment, final TransactionCallback callback) {
         boolean needSaveState = getAttachedFragment() != null;
 
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
@@ -49,8 +50,9 @@ public class StackContainer extends Fragment implements FragmentManager.OnBackSt
                 public void onBackStackChanged() {
                     getChildFragmentManager().removeOnBackStackChangedListener(this);
                     if (callback != null) {
-                        callback.onFinished(true);
+                        callback.onFinished();
                     }
+                    StackContainer.this.onBackStackChanged();
                 }
             });
             transaction.addToBackStack("currentState");
@@ -62,7 +64,8 @@ public class StackContainer extends Fragment implements FragmentManager.OnBackSt
         if (!needSaveState) {
             getChildFragmentManager().executePendingTransactions();
             if (callback != null) {
-                callback.onFinished(true);
+                callback.onFinished();
+                StackContainer.this.onBackStackChanged();
             }
         }
     }
@@ -73,8 +76,10 @@ public class StackContainer extends Fragment implements FragmentManager.OnBackSt
             public void onBackStackChanged() {
                 getChildFragmentManager().removeOnBackStackChangedListener(this);
                 if (callback != null) {
-                    callback.onFinished(true);
+                    callback.onFinished();
                 }
+
+                StackContainer.this.onBackStackChanged();
             }
         });
 
@@ -102,7 +107,7 @@ public class StackContainer extends Fragment implements FragmentManager.OnBackSt
         super.onViewCreated(view, savedInstanceState);
 
         getChildFragmentManager().addOnBackStackChangedListener(this);
-        listener.onViewCreated(savedInstanceState);
+        //listener.onViewCreated(savedInstanceState);
     }
 
     @Override
@@ -140,11 +145,11 @@ public class StackContainer extends Fragment implements FragmentManager.OnBackSt
     }
 
     public interface Listener {
-        void onViewCreated(Bundle savedInstanceState);
+        //void onViewCreated(Bundle savedInstanceState);
         void onBackStackChanged();
     }
 
     public interface TransactionCallback {
-        void onFinished(boolean isCompleted);
+        void onFinished();
     }
 }
