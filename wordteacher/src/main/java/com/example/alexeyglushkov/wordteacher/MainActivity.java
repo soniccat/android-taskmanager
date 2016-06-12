@@ -620,7 +620,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
                     onCreateCourseFromSet(set);
 
                 } else if (item.getItemId() == R.id.add_to_course) {
-                    showAddFromSetDialog(set);
+                    showAddFromSetDialog(set.getTerms());
                 }
 
                 return false;
@@ -636,14 +636,20 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     @Override
-    public void onTermMenuClicked(final QuizletTerm card, View v) {
+    public void onTermMenuClicked(final QuizletTerm term, View v) {
         PopupMenu popupMenu = new PopupMenu(this, v);
         popupMenu.getMenu().add(Menu.NONE, R.id.create_set, 0, R.string.menu_create_course);
+        popupMenu.getMenu().add(Menu.NONE, R.id.add_to_course, 0, R.string.menu_add_to_course);
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.create_set) {
-                    onCreateCourseFromCard(card);
+                    onCreateCourseFromCard(term);
+
+                } else if (item.getItemId() == R.id.add_to_course) {
+                    ArrayList<QuizletTerm> terms = new ArrayList<QuizletTerm>();
+                    terms.add(term);
+                    showAddFromSetDialog(terms);
                 }
 
                 return false;
@@ -674,7 +680,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         createCourse(set.getTitle(), cards);
     }
 
-    private void showAddFromSetDialog(final QuizletSet set) {
+    private void showAddFromSetDialog(final List<QuizletTerm> terms) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         List<String> rows = new ArrayList<>();
         final ArrayList<Course> courses = getCourseHolder().getCourses();
@@ -687,7 +693,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Course course = courses.get(which);
-                addCardsToCourse(course, set.getTerms());
+                addCardsToCourse(course, terms);
             }
         });
 

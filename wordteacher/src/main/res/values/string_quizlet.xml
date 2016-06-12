@@ -15,7 +15,7 @@
 
     <string name="dialog_rename_hint">Course title</string>
     <string name="dialog_delete_confirmation">Really delete?</string>
-    <string name="dialog_choose_course">Course course</string>
+    <string name="dialog_choose_course">Choose course</string>
 
     <string name="learning_giveUp">Give Up</string>
     <string name="learning_check">Check</string>
