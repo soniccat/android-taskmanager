@@ -45,11 +45,7 @@ public class CourseStackFragment extends StackFragment implements CourseFragment
         courseFragment.setViewType(CourseFragment.ViewType.Courses);
         courseFragment.setListener(this);
 
-        addFragment(courseFragment, new TransactionCallback() {
-            @Override
-            public void onFinished() {
-            }
-        });
+        addFragment(courseFragment, null);
     }
 
     public void showCardsFragment(Course course) {

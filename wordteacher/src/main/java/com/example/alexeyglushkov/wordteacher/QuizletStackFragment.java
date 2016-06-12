@@ -45,11 +45,7 @@ public class QuizletStackFragment extends StackFragment implements QuizletCardsF
         setFragment.setViewType(QuizletCardsFragment.ViewType.Sets);
         setFragment.setListener(this);
 
-        addFragment(setFragment, new TransactionCallback() {
-            @Override
-            public void onFinished() {
-            }
-        });
+        addFragment(setFragment, null);
     }
 
     private void showWordFragment(QuizletSet set) {

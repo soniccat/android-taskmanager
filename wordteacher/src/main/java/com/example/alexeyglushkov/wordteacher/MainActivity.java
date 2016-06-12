@@ -176,13 +176,6 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         super.onAttachFragment(fragment);
     }
 
-    /*
-    public void onPageFragmentReady(Fragment fragment) {
-        updateFragmentListener(fragment);
-        updateToolbarBackButton();
-    }
-    */
-
     private void restoreFragmentListener(Fragment fragment) {
         // while restoration pagerAdapter could be null
         if (fragment instanceof QuizletStackFragment && pagerAdapter != null) {
@@ -270,33 +263,13 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         if (frag.isVisible() && frag instanceof StackFragment) {
             StackFragment stackFragment = (StackFragment)frag;
             if (stackFragment.getBackStackSize() > 0) {
-                stackFragment.popFragment(new StackFragment.TransactionCallback() {
-                    @Override
-                    public void onFinished() {
-                        /*if (frag == getQuizletStackFragment()) {
-                            onQuizletSetFragmentBackStackChanged();
-
-                        } else if (frag == getCourseStackFragment()) {
-                            onCourseFragmentBackStackChanged();
-                        }*/
-                    }
-                });
+                stackFragment.popFragment(null);
                 return;
             }
         }
 
         super.onBackPressed();
     }
-
-    /*
-    private void onQuizletSetFragmentBackStackChanged() {
-        updateToolbarBackButton();
-    }
-
-    private void onCourseFragmentBackStackChanged() {
-        updateToolbarBackButton();
-    }
-    */
 
     private void updateToolbarBackButton() {
         StackFragment stackFragment = getStackContainer(pager.getCurrentItem());
