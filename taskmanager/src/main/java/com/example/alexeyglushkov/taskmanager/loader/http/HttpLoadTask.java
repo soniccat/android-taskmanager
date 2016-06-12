@@ -81,8 +81,9 @@ public class HttpLoadTask extends SimpleTask {
 
         } catch (IOException e) {
             String errorString = getErrorString(connection);
-            getPrivate().setTaskError(new Error(errorString));
-            Log.d("HttpLoadTask", getTaskError().toString());
+            Error error = new Error(errorString);
+            setError(error);
+            Log.d("HttpLoadTask", error.toString());
 
         } finally {
             try {
@@ -104,7 +105,11 @@ public class HttpLoadTask extends SimpleTask {
         String result = "HttpLoadTask load error";
         try {
             StringReader errorReader = new StringReader(null);
-            String errorString = errorReader.readStreamToString(connection.getErrorStream());
+            String errorString = "";
+            InputStream errorStream = connection.getErrorStream();
+            if (errorStream != null) {
+                errorReader.readStreamToString(errorStream);
+            }
 
             result = "HttpLoadTask load error, url " + connection.getURL() + " code: " + connection.getResponseCode() + " message: " + connection.getResponseMessage() + " response " + errorString;
         } catch (Exception e) {

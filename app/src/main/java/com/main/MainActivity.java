@@ -21,6 +21,7 @@ import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
 import com.example.alexeyglushkov.cachemanager.CacheProvider;
 import com.example.alexeyglushkov.cachemanager.DiskCacheProvider;
+import com.example.alexeyglushkov.service.CachableHttpLoadTask;
 import com.example.alexeyglushkov.service.SimpleService;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 import com.example.alexeyglushkov.taskmanager.task.Task;
@@ -166,7 +167,7 @@ public class MainActivity extends BaseActivity {
                     Log.d("Quizlet", "fine ");
                 }
             }
-        }, useCache);
+        }, CachableHttpLoadTask.CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD);
     }
 
     @Override

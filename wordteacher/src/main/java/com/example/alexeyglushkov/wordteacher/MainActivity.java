@@ -24,6 +24,7 @@ import com.example.alexeyglushkov.authorization.service.Service;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
+import com.example.alexeyglushkov.service.CachableHttpLoadTask;
 import com.example.alexeyglushkov.service.SimpleService;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
@@ -195,7 +196,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     private void onViewReady() {
         if (getQuizletService() != null && getQuizletService().getAccount() != null && getQuizletService().getAccount().isAuthorized()) {
             Log.d("load","start load quizlet sets");
-            loadQuizletSets(true);
+            loadQuizletSets();
         } else {
             Log.d("quizlet status", "");
         }
@@ -379,16 +380,16 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     //// Other
 
     private void onFabPressed() {
-        loadQuizletSets(false);
+        loadQuizletSets();
     }
 
-    private void loadQuizletSets(boolean useCache) {
+    private void loadQuizletSets() {
         getQuizletService().loadSets(new SimpleService.CommandCallback() {
             @Override
             public void onCompleted(Error error) {
                 onQuizletSetsLoaded(error);
             }
-        }, useCache);
+        }, CachableHttpLoadTask.CacheMode.LOAD_IF_ERROR_THEN_CHECK_CACHE);
     }
 
     private void onQuizletSetsLoaded(Error error) {

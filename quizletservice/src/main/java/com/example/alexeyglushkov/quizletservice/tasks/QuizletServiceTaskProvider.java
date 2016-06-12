@@ -5,6 +5,7 @@ import com.example.alexeyglushkov.cachemanager.CacheProvider;
 import com.example.alexeyglushkov.quizletservice.QuizletCommandProvider;
 import com.example.alexeyglushkov.quizletservice.QuizletSetsCommand;
 import com.example.alexeyglushkov.quizletservice.tasks.QuizletSetsTask;
+import com.example.alexeyglushkov.service.CachableHttpLoadTask;
 
 import java.io.Serializable;
 
@@ -19,9 +20,9 @@ public class QuizletServiceTaskProvider extends ServiceTaskProvider implements Q
     }
 
     @Override
-    public QuizletSetsCommand getLoadSetsCommand(String server, String userId, boolean useCache) {
+    public QuizletSetsCommand getLoadSetsCommand(String server, String userId, CachableHttpLoadTask.CacheMode cacheMode) {
         QuizletSetsTask task = new QuizletSetsTask(server, userId);
-        task.setOnlyStoreInCache(!useCache);
+        task.setCacheMode(cacheMode);
         task.setCache(cacheProvider);
 
         return task;

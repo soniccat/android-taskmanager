@@ -13,7 +13,7 @@ public class CardProgress implements Parcelable {
 
     // TODO: move it in tool lib
     private int MIN = 60000;
-    private int HOUR = 25*MIN;
+    private int HOUR = 60*MIN;
     private int DAY = 24*HOUR;
 
     // progress, next lesson time interval

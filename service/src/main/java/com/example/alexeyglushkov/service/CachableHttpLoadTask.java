@@ -110,13 +110,14 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
     private byte[] getCachedBytes() {
         String cacheKey = getCacheKey();
         CacheMetadata metadata = cache.getMetadata(cacheKey);
-        long currentTime = System.currentTimeMillis() / 1000L;
 
         byte[] bytes = null;
-        if (currentTime < metadata.getExpireTime()) {
-            bytes = (byte[]) cache.getValue(cacheKey);
+        if (metadata != null) {
+            long currentTime = System.currentTimeMillis() / 1000L;
+            if (currentTime < metadata.getExpireTime()) {
+                bytes = (byte[]) cache.getValue(cacheKey);
 
-            if (deleteIfExpired) {
+            } else if (deleteIfExpired) {
                 cache.remove(cacheKey);
             }
         }
@@ -142,6 +143,7 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
     @Override
     public void setError(Error error) {
         if (cacheMode == CacheMode.LOAD_IF_ERROR_THEN_CHECK_CACHE) {
+            needStore = false;
             applyCacheContent();
         }
 

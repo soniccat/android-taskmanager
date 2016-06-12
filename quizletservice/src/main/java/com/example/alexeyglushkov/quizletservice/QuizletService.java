@@ -8,6 +8,7 @@ import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProxy;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthCredentials;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
+import com.example.alexeyglushkov.service.CachableHttpLoadTask;
 import com.example.alexeyglushkov.service.SimpleService;
 
 import java.util.ArrayList;
@@ -28,8 +29,8 @@ public class QuizletService extends SimpleService {
         setServiceCommandRunner(commandRunner);
     }
 
-    public void loadSets(final CommandCallback callback, boolean useCache) {
-        runCommand(createSetsCommandProxy(callback, useCache), true, createAuthCompletion(callback));
+    public void loadSets(final CommandCallback callback, CachableHttpLoadTask.CacheMode cacheMode) {
+        runCommand(createSetsCommandProxy(callback, cacheMode), true, createAuthCompletion(callback));
     }
 
     public List<QuizletSet> getSets() {
@@ -37,18 +38,18 @@ public class QuizletService extends SimpleService {
     }
 
     @NonNull
-    private ServiceCommandProxy createSetsCommandProxy(final CommandCallback callback, final boolean useCache) {
+    private ServiceCommandProxy createSetsCommandProxy(final CommandCallback callback, final CachableHttpLoadTask.CacheMode cacheMode) {
         return new ServiceCommandProxy() {
             @Override
             public ServiceCommand getServiceCommand() {
-                return createSetsCommand(callback, useCache);
+                return createSetsCommand(callback, cacheMode);
             }
         };
     }
 
     @NonNull
-    private QuizletSetsCommand createSetsCommand(final CommandCallback callback, boolean useCache) {
-        final QuizletSetsCommand command = getQuizletCommandProvider().getLoadSetsCommand(server, getOAuthCredentials().getUserId(), useCache);
+    private QuizletSetsCommand createSetsCommand(final CommandCallback callback, CachableHttpLoadTask.CacheMode cacheMode) {
+        final QuizletSetsCommand command = getQuizletCommandProvider().getLoadSetsCommand(server, getOAuthCredentials().getUserId(), cacheMode);
         command.setServiceCommandCallback(new ServiceCommand.Callback() {
             @Override
             public void onCompleted() {
