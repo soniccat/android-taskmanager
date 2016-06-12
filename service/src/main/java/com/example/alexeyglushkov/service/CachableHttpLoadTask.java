@@ -1,8 +1,7 @@
 package com.example.alexeyglushkov.service;
 
-import com.example.alexeyglushkov.authorization.service.Service;
-import com.example.alexeyglushkov.cachemanager.CacheMetadata;
-import com.example.alexeyglushkov.cachemanager.CacheProvider;
+import com.example.alexeyglushkov.cachemanager.StorageMetadata;
+import com.example.alexeyglushkov.cachemanager.StorageProvider;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionBytesReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpBytesLoadTask;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpURLConnectionProvider;
@@ -19,7 +18,7 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
         ONLY_STORE_TO_CACHE
     }
 
-    protected CacheProvider cache;
+    protected StorageProvider cache;
     private boolean needStore = false;
     private boolean deleteIfExpired = true;
     private CacheMode cacheMode = CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD;
@@ -28,12 +27,12 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
         super(provider, handler);
     }
 
-    public CachableHttpLoadTask(HttpURLConnectionProvider provider, HTTPConnectionBytesReader handler, CacheProvider cache) {
+    public CachableHttpLoadTask(HttpURLConnectionProvider provider, HTTPConnectionBytesReader handler, StorageProvider cache) {
         super(provider, handler);
         this.cache = cache;
     }
 
-    public void setCache(CacheProvider cache) {
+    public void setCache(StorageProvider cache) {
         this.cache = cache;
     }
 
@@ -109,7 +108,7 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
 
     private byte[] getCachedBytes() {
         String cacheKey = getCacheKey();
-        CacheMetadata metadata = cache.getMetadata(cacheKey);
+        StorageMetadata metadata = cache.getMetadata(cacheKey);
 
         byte[] bytes = null;
         if (metadata != null) {
@@ -129,7 +128,7 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
         super.setHandledData(handledData);
 
         if (needStore && cache != null) {
-            CacheMetadata metadata = cache.createMetadata();
+            StorageMetadata metadata = cache.createMetadata();
 
             if (cacheStoreDuration() != 0) {
                 // TODO: create a separate tools lib

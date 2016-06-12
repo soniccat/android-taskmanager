@@ -7,12 +7,10 @@ import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
-import com.example.alexeyglushkov.cachemanager.CacheCleaner;
-import com.example.alexeyglushkov.cachemanager.CacheProvider;
-import com.example.alexeyglushkov.cachemanager.DiskCacheCleaner;
-import com.example.alexeyglushkov.cachemanager.DiskCacheMetadata;
-import com.example.alexeyglushkov.cachemanager.DiskCacheProvider;
-import com.example.alexeyglushkov.quizletservice.QuizletCommandProvider;
+import com.example.alexeyglushkov.cachemanager.StorageCleaner;
+import com.example.alexeyglushkov.cachemanager.StorageProvider;
+import com.example.alexeyglushkov.cachemanager.DiskStorageCleaner;
+import com.example.alexeyglushkov.cachemanager.DiskStorageProvider;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.tasks.QuizletServiceTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
@@ -36,7 +34,7 @@ public class MainApplication extends Application {
     private TaskManager taskManager;
     private RssStorage rssStorage;
 
-    private CacheProvider cacheProvider;
+    private StorageProvider storageProvider;
 
     public static MainApplication instance;
 
@@ -54,7 +52,7 @@ public class MainApplication extends Application {
         rssStorage = new RssStorage("RssStorage");
 
         File cacheDir = getDir("ServiceCache", MODE_PRIVATE);
-        cacheProvider = new DiskCacheProvider(cacheDir);
+        storageProvider = new DiskStorageProvider(cacheDir);
 
         cleanCache();
         loadAccountStore();
@@ -76,8 +74,8 @@ public class MainApplication extends Application {
         return authWebClient;
     }
 
-    public CacheProvider getCacheProvider() {
-        return cacheProvider;
+    public StorageProvider getStorageProvider() {
+        return storageProvider;
     }
 
     public QuizletService getQuizletService() {
@@ -88,8 +86,8 @@ public class MainApplication extends Application {
         final Task cleanTask = new SimpleTask() {
             @Override
             public void startTask() {
-                CacheCleaner cleaner = new DiskCacheCleaner();
-                cleaner.clean(getCacheProvider());
+                StorageCleaner cleaner = new DiskStorageCleaner();
+                cleaner.clean(getStorageProvider());
 
                 getPrivate().handleTaskCompletion();
             }
@@ -136,7 +134,7 @@ public class MainApplication extends Application {
 
     private void createQuizletService() {
         Account quizletAccount = Networks.getAccount(Networks.Network.Quizlet.ordinal());
-        QuizletServiceTaskProvider quizletCommandProvider = new QuizletServiceTaskProvider(getCacheProvider());
+        QuizletServiceTaskProvider quizletCommandProvider = new QuizletServiceTaskProvider(getStorageProvider());
 
         String id = Integer.toString(quizletAccount.getServiceType());
         ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);

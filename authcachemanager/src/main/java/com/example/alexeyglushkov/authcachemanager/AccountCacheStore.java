@@ -2,8 +2,8 @@ package com.example.alexeyglushkov.authcachemanager;
 
 import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
-import com.example.alexeyglushkov.cachemanager.CacheEntry;
-import com.example.alexeyglushkov.cachemanager.DiskCacheProvider;
+import com.example.alexeyglushkov.cachemanager.StorageEntry;
+import com.example.alexeyglushkov.cachemanager.DiskStorageProvider;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by alexeyglushkov on 07.11.15.
  */
-public class AccountCacheStore extends DiskCacheProvider implements AccountStore {
+public class AccountCacheStore extends DiskStorageProvider implements AccountStore {
 
     private boolean isLoaded = false;
     List<Account> accounts = new ArrayList<>();
@@ -76,10 +76,10 @@ public class AccountCacheStore extends DiskCacheProvider implements AccountStore
 
     @Override
     public void load() {
-        List<CacheEntry> entries = getEntries();
+        List<StorageEntry> entries = getEntries();
         List<Account> accounts = new ArrayList<>();
 
-        for (CacheEntry entry : entries) {
+        for (StorageEntry entry : entries) {
             Account account = (Account)entry.getObject();
             account.setAuthCredentialStore(this);
 

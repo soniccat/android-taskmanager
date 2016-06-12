@@ -1,32 +1,30 @@
 package model;
 
-import com.example.alexeyglushkov.cachemanager.CacheEntry;
-import com.example.alexeyglushkov.cachemanager.DiskCacheEntry;
-import com.example.alexeyglushkov.cachemanager.DiskCacheProvider;
+import com.example.alexeyglushkov.cachemanager.StorageEntry;
+import com.example.alexeyglushkov.cachemanager.DiskStorageEntry;
+import com.example.alexeyglushkov.cachemanager.DiskStorageProvider;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import main.MainApplication;
-
 /**
  * Created by alexeyglushkov on 07.05.16.
  */
 public class CourseHolder {
-    private DiskCacheProvider diskProvider;
+    private DiskStorageProvider diskProvider;
     private ArrayList<Course> courses = new ArrayList<>();
 
     public CourseHolder(File directory) {
-        diskProvider = new DiskCacheProvider(directory);
+        diskProvider = new DiskStorageProvider(directory);
         diskProvider.setSerializer(new CourseSerializer(), Course.class);
     }
 
     public void loadCourses() {
-        List<CacheEntry> entries = diskProvider.getEntries();
-        for (CacheEntry entry : entries) {
-            DiskCacheEntry diskEntry = (DiskCacheEntry)entry;
+        List<StorageEntry> entries = diskProvider.getEntries();
+        for (StorageEntry entry : entries) {
+            DiskStorageEntry diskEntry = (DiskStorageEntry)entry;
             Course course = (Course)diskEntry.getObject();
             if (course != null) {
                 courses.add(course);

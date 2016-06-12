@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Created by alexeyglushkov on 02.05.16.
  */
-public interface CacheMetadata extends Serializable {
+public interface StorageMetadata extends Serializable {
     void setCreateTime(long createTime);
     long getCreateTime();
 

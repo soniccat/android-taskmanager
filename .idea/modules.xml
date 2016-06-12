@@ -7,11 +7,11 @@
       <module fileurl="file://$PROJECT_DIR$/authcachemanager/authcachemanager.iml" filepath="$PROJECT_DIR$/authcachemanager/authcachemanager.iml" />
       <module fileurl="file://$PROJECT_DIR$/authorization/authorization.iml" filepath="$PROJECT_DIR$/authorization/authorization.iml" />
       <module fileurl="file://$PROJECT_DIR$/authtaskmanager/authtaskmanager.iml" filepath="$PROJECT_DIR$/authtaskmanager/authtaskmanager.iml" />
-      <module fileurl="file://$PROJECT_DIR$/cachemanager/cachemanager.iml" filepath="$PROJECT_DIR$/cachemanager/cachemanager.iml" />
       <module fileurl="file://$PROJECT_DIR$/jacksonlib/jacksonlib.iml" filepath="$PROJECT_DIR$/jacksonlib/jacksonlib.iml" />
       <module fileurl="file://$PROJECT_DIR$/quizletservice/quizletservice.iml" filepath="$PROJECT_DIR$/quizletservice/quizletservice.iml" />
       <module fileurl="file://$PROJECT_DIR$/scribeauthorization/scribeauthorization.iml" filepath="$PROJECT_DIR$/scribeauthorization/scribeauthorization.iml" />
       <module fileurl="file://$PROJECT_DIR$/service/service.iml" filepath="$PROJECT_DIR$/service/service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/storagemanager/cachemanager.iml" filepath="$PROJECT_DIR$/storagemanager/cachemanager.iml" />
       <module fileurl="file://$PROJECT_DIR$/streamlib/streamlib.iml" filepath="$PROJECT_DIR$/streamlib/streamlib.iml" />
       <module fileurl="file://$PROJECT_DIR$/taskmanager/taskmanager.iml" filepath="$PROJECT_DIR$/taskmanager/taskmanager.iml" />
       <module fileurl="file://$PROJECT_DIR$/testsupport/testsupport.iml" filepath="$PROJECT_DIR$/testsupport/testsupport.iml" />

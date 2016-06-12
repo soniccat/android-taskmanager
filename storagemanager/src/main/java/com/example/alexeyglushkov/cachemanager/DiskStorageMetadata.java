@@ -15,7 +15,7 @@ import java.util.HashMap;
 /**
  * Created by alexeyglushkov on 04.10.15.
  */
-public class DiskCacheMetadata extends HashMap<String, Object> implements CacheMetadata
+public class DiskStorageMetadata extends HashMap<String, Object> implements StorageMetadata
 {
     private static final long serialVersionUID = -3043981628125337011L;
     private static final String createTimeKey = "metadataCreateTime";
@@ -30,7 +30,7 @@ public class DiskCacheMetadata extends HashMap<String, Object> implements CacheM
         return new ObjectSerializer();
     }
 
-    public DiskCacheMetadata() {
+    public DiskStorageMetadata() {
     }
 
     public File getFile() {
@@ -101,15 +101,15 @@ public class DiskCacheMetadata extends HashMap<String, Object> implements CacheM
         return error;
     }
 
-    public static DiskCacheMetadata load(File file) {
+    public static DiskStorageMetadata load(File file) {
         Error error = null;
         InputStream fis = null;
-        DiskCacheMetadata result = null;
+        DiskStorageMetadata result = null;
 
         try {
             fis = new BufferedInputStream(new FileInputStream(file));
             ObjectSerializer serializer = createSerializer();
-            result = (DiskCacheMetadata)serializer.read(fis);
+            result = (DiskStorageMetadata)serializer.read(fis);
             result.setFile(file);
 
         } catch (Exception ex) {

@@ -9,18 +9,17 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
 
 /**
  * Created by alexeyglushkov on 27.09.15.
  */
-public class DiskCacheEntry implements CacheEntry {
+public class DiskStorageEntry implements StorageEntry {
     private File file;
     private Object object;
     private Serializer serializer;
-    private DiskCacheMetadata metadata;
+    private DiskStorageMetadata metadata;
 
-    public DiskCacheEntry(File file, Object object, DiskCacheMetadata metadata, Serializer serializer) {
+    public DiskStorageEntry(File file, Object object, DiskStorageMetadata metadata, Serializer serializer) {
         this.file = file;
         this.object = object;
         this.metadata = metadata;
@@ -94,14 +93,14 @@ public class DiskCacheEntry implements CacheEntry {
         }
 
         if (error == null) {
-            error = DiskCacheMetadata.delete(metadata.getFile());
+            error = DiskStorageMetadata.delete(metadata.getFile());
         }
 
         return error;
     }
 
     @Override
-    public DiskCacheMetadata getMetadata() {
+    public DiskStorageMetadata getMetadata() {
         return metadata;
     }
 }

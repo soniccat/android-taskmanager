@@ -8,15 +8,15 @@ import java.io.File;
 /**
  * Created by alexeyglushkov on 10.10.15.
  */
-public class DiskCacheCleanerTest extends InstrumentationTestCase {
-    DiskCacheProvider cacheProvider;
+public class DiskStorageCleanerTest extends InstrumentationTestCase {
+    DiskStorageProvider cacheProvider;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
         File testDir = getInstrumentation().getContext().getDir("testDir", Context.MODE_PRIVATE);
-        cacheProvider = new DiskCacheProvider(testDir);
+        cacheProvider = new DiskStorageProvider(testDir);
     }
 
     @Override
@@ -33,14 +33,14 @@ public class DiskCacheCleanerTest extends InstrumentationTestCase {
 
         assertEquals(3, cacheProvider.getEntries().size());
 
-        DiskCacheCleaner cleaner = new DiskCacheCleaner();
+        DiskStorageCleaner cleaner = new DiskStorageCleaner();
         cleaner.clean(cacheProvider);
 
         assertEquals(1, cacheProvider.getEntries().size());
     }
 
-    private void createEntry(DiskCacheProvider cacheProvider, String key, String value, long timeOffset) {
-        DiskCacheMetadata metadata = new DiskCacheMetadata();
+    private void createEntry(DiskStorageProvider cacheProvider, String key, String value, long timeOffset) {
+        DiskStorageMetadata metadata = new DiskStorageMetadata();
         metadata.setExpireTime(System.currentTimeMillis() / 1000L + timeOffset);
         Error error = cacheProvider.put(key, value, metadata);
         assertNull(error);

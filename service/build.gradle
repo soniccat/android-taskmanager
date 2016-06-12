@@ -23,6 +23,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.2.1'
     compile project(':authorization')
-    compile project(':cachemanager')
+    compile project(':storagemanager')
     compile project(':taskmanager')
 }

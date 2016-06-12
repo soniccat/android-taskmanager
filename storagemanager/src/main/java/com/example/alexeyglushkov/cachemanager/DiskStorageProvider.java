@@ -1,7 +1,6 @@
 package com.example.alexeyglushkov.cachemanager;
 
 import android.util.Log;
-import android.util.SparseArray;
 
 import com.example.alexeyglushkov.streamlib.serializers.ObjectSerializer;
 import com.example.alexeyglushkov.streamlib.serializers.Serializer;
@@ -19,16 +18,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.Lock;
 
 /**
  * Created by alexeyglushkov on 26.09.15.
  */
 
 // TODO: check synchronization
-public class DiskCacheProvider implements CacheProvider {
+public class DiskStorageProvider implements StorageProvider {
     private static String ERROR_TAG = "DiskCacheProvider error";
     private static String METADATA_PREFIX = "_metadata";
 
@@ -38,7 +34,7 @@ public class DiskCacheProvider implements CacheProvider {
 
     private Map<String, WeakReference<Object>> lockMap = new HashMap<>();
 
-    public DiskCacheProvider(File directory) {
+    public DiskStorageProvider(File directory) {
         this.directory = directory;
         this.serializerMap = new HashMap<>();
     }
@@ -48,10 +44,10 @@ public class DiskCacheProvider implements CacheProvider {
     }
 
     @Override
-    public Error put(String key, Object entry, CacheMetadata metadata) {
+    public Error put(String key, Object entry, StorageMetadata metadata) {
         Error error = prepareDirectory();
         if (error == null) {
-            error = write(key, entry, (DiskCacheMetadata) metadata);
+            error = write(key, entry, (DiskStorageMetadata) metadata);
             setLastError(error);
         }
 
@@ -96,7 +92,7 @@ public class DiskCacheProvider implements CacheProvider {
         return file.getName().endsWith(METADATA_PREFIX);
     }
 
-    private Error write(String fileName, Object object, DiskCacheMetadata metadata) {
+    private Error write(String fileName, Object object, DiskStorageMetadata metadata) {
         Error error = null;
         String key = getKeyName(fileName);
         Object lockObject = getLockObject(key);
@@ -144,7 +140,7 @@ public class DiskCacheProvider implements CacheProvider {
         return lockObject;
     }
 
-    private Error writeByKey(String key, Object object, DiskCacheMetadata metadata) {
+    private Error writeByKey(String key, Object object, DiskStorageMetadata metadata) {
         Error error = null;
 
         File file = getKeyFile(key);
@@ -168,7 +164,7 @@ public class DiskCacheProvider implements CacheProvider {
             Serializer serializer = getSerializer(object.getClass());
             Assert.assertTrue("Can't find a serializer for " + object.getClass(), serializer != null);
 
-            DiskCacheEntry entry = new DiskCacheEntry(file, object, metadata, serializer);
+            DiskStorageEntry entry = new DiskStorageEntry(file, object, metadata, serializer);
             error = entry.write();
             setLastError(error);
         }
@@ -204,7 +200,7 @@ public class DiskCacheProvider implements CacheProvider {
     @Override
     public Object getValue(String key) {
         Object result = null;
-        DiskCacheEntry entry = (DiskCacheEntry)getEntry(key);
+        DiskStorageEntry entry = (DiskStorageEntry)getEntry(key);
 
         if (entry != null) {
             result = entry.getObject();
@@ -214,13 +210,13 @@ public class DiskCacheProvider implements CacheProvider {
     }
 
     @Override
-    public DiskCacheMetadata createMetadata() {
-        return new DiskCacheMetadata();
+    public DiskStorageMetadata createMetadata() {
+        return new DiskStorageMetadata();
     }
 
-    public CacheMetadata getMetadata(String key) {
-        CacheMetadata result = null;
-        CacheEntry entry = getEntry(key);
+    public StorageMetadata getMetadata(String key) {
+        StorageMetadata result = null;
+        StorageEntry entry = getEntry(key);
         if (entry != null) {
             result = entry.getMetadata();
         }
@@ -228,8 +224,8 @@ public class DiskCacheProvider implements CacheProvider {
     }
 
     @Override
-    public CacheEntry getEntry(String fileName) {
-        CacheEntry entry = null;
+    public StorageEntry getEntry(String fileName) {
+        StorageEntry entry = null;
         String key = getKeyName(fileName);
         Object lockObject = getLockObject(key);
         synchronized (lockObject) {
@@ -239,8 +235,8 @@ public class DiskCacheProvider implements CacheProvider {
         return entry;
     }
 
-    private CacheEntry getEntryByKey(String key) {
-        DiskCacheEntry entry = null;
+    private StorageEntry getEntryByKey(String key) {
+        DiskStorageEntry entry = null;
         File file = getKeyFile(key);
         Error error = null;
 
@@ -249,15 +245,15 @@ public class DiskCacheProvider implements CacheProvider {
         }
 
         if (error == null) {
-            DiskCacheMetadata metadata = null;
+            DiskStorageMetadata metadata = null;
             File metadataFile = getKeyMetadataFile(key);
             if (metadataFile.exists()) {
-                metadata = DiskCacheMetadata.load(metadataFile);
+                metadata = DiskStorageMetadata.load(metadataFile);
 
                 Serializer serializer = getSerializer(metadata.getEntryClass());
-                assert serializer != null;
+                Assert.assertTrue(serializer != null);
 
-                entry = new DiskCacheEntry(file, null, metadata, serializer);
+                entry = new DiskStorageEntry(file, null, metadata, serializer);
             } else {
                 error = new Error("DiskCacheProvider.getEntryByKey() exists(): metadata doesn't exist");
                 setLastError(error);
@@ -272,7 +268,7 @@ public class DiskCacheProvider implements CacheProvider {
         Error error = null;
         Object lockObject = getLockObject(key);
         synchronized (lockObject) {
-            CacheEntry entry = getEntry(key);
+            StorageEntry entry = getEntry(key);
             if (entry != null) {
                 error = entry.delete();
                 setLastError(error);
@@ -287,8 +283,8 @@ public class DiskCacheProvider implements CacheProvider {
     }
 
     @Override
-    public List<CacheEntry> getEntries() {
-        List<CacheEntry> entries = new ArrayList<>();
+    public List<StorageEntry> getEntries() {
+        List<StorageEntry> entries = new ArrayList<>();
         if (!directory.exists()) {
             return entries;
         }
@@ -300,7 +296,7 @@ public class DiskCacheProvider implements CacheProvider {
                 String key = file.getName();
                 Object lockObject = getLockObject(key);
                 synchronized (lockObject) {
-                    CacheEntry entry = getEntryByKey(key);
+                    StorageEntry entry = getEntryByKey(key);
                     if (entry != null) {
                         entries.add(entry);
                     }
@@ -326,9 +322,9 @@ public class DiskCacheProvider implements CacheProvider {
 
     public Error removeAll() {
         Error error = null;
-        List<CacheEntry> entries = getEntries();
-        for (CacheEntry file : entries) {
-            DiskCacheEntry diskCacheEntry = (DiskCacheEntry)file;
+        List<StorageEntry> entries = getEntries();
+        for (StorageEntry file : entries) {
+            DiskStorageEntry diskCacheEntry = (DiskStorageEntry)file;
             String key = diskCacheEntry.getFileName();
             Object lockObject = getLockObject(key);
             synchronized (lockObject) {

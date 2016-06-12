@@ -19,8 +19,8 @@ import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnection
 import com.example.alexeyglushkov.authtaskmanager.ServiceTask;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
-import com.example.alexeyglushkov.cachemanager.CacheProvider;
-import com.example.alexeyglushkov.cachemanager.DiskCacheProvider;
+import com.example.alexeyglushkov.cachemanager.StorageProvider;
+import com.example.alexeyglushkov.cachemanager.DiskStorageProvider;
 import com.example.alexeyglushkov.service.CachableHttpLoadTask;
 import com.example.alexeyglushkov.service.SimpleService;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
@@ -36,7 +36,7 @@ import java.util.List;
 public class MainActivity extends BaseActivity {
     private static final String TAG = "MainActivity";
     private SimpleService service;
-    private CacheProvider cacheProvider;
+    private StorageProvider storageProvider;
 
     private MainApplication getMainApplication() {
         return (MainApplication)getApplication();
@@ -115,7 +115,7 @@ public class MainActivity extends BaseActivity {
         builder.setUrl("https://api.foursquare.com/v2/users/self?v=20140806&m=foursquare");
 
         final ServiceTask cmd = new ServiceTask();
-        cmd.setCache(cacheProvider);
+        cmd.setCache(storageProvider);
         cmd.setConnectionBuilder(builder);
         cmd.setServiceCommandCallback(new ServiceCommand.Callback() {
             @Override
@@ -144,12 +144,12 @@ public class MainActivity extends BaseActivity {
         service.setServiceCommandProvider(new ServiceTaskProvider());
         service.setServiceCommandRunner(new ServiceTaskRunner(getTaskManager(), "31234"));
 
-        cacheProvider = getServiceCache();
+        storageProvider = getServiceCache();
     }
 
-    private CacheProvider getServiceCache() {
+    private StorageProvider getServiceCache() {
         File cacheDir = getDir("ServiceCache", MODE_PRIVATE);
-        return new DiskCacheProvider(cacheDir);
+        return new DiskStorageProvider(cacheDir);
     }
 
     private void clearCache() {

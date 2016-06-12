@@ -1,29 +1,26 @@
 package com.example.alexeyglushkov.quizletservice.tasks;
 
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider;
-import com.example.alexeyglushkov.cachemanager.CacheProvider;
+import com.example.alexeyglushkov.cachemanager.StorageProvider;
 import com.example.alexeyglushkov.quizletservice.QuizletCommandProvider;
 import com.example.alexeyglushkov.quizletservice.QuizletSetsCommand;
-import com.example.alexeyglushkov.quizletservice.tasks.QuizletSetsTask;
 import com.example.alexeyglushkov.service.CachableHttpLoadTask;
-
-import java.io.Serializable;
 
 /**
  * Created by alexeyglushkov on 03.04.16.
  */
 public class QuizletServiceTaskProvider extends ServiceTaskProvider implements QuizletCommandProvider {
-    private CacheProvider cacheProvider;
+    private StorageProvider storageProvider;
 
-    public QuizletServiceTaskProvider(CacheProvider aCacheProvider) {
-        this.cacheProvider = aCacheProvider;
+    public QuizletServiceTaskProvider(StorageProvider aStorageProvider) {
+        this.storageProvider = aStorageProvider;
     }
 
     @Override
     public QuizletSetsCommand getLoadSetsCommand(String server, String userId, CachableHttpLoadTask.CacheMode cacheMode) {
         QuizletSetsTask task = new QuizletSetsTask(server, userId);
         task.setCacheMode(cacheMode);
-        task.setCache(cacheProvider);
+        task.setCache(storageProvider);
 
         return task;
     }
