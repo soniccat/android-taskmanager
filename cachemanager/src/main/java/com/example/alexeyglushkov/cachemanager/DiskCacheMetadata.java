@@ -45,7 +45,7 @@ public class DiskCacheMetadata extends HashMap<String, Object> implements CacheM
         put(fileSizeKey, file.length());
     }
 
-    public long getFileSize() {
+    public long getContentSize() {
         return (long)get(fileSizeKey);
     }
 

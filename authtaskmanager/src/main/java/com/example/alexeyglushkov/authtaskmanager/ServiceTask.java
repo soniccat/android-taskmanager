@@ -2,18 +2,12 @@ package com.example.alexeyglushkov.authtaskmanager;
 
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
-import com.example.alexeyglushkov.cachemanager.CacheProvider;
-import com.example.alexeyglushkov.service.CachedHttpLoadTask;
+import com.example.alexeyglushkov.service.CachableHttpLoadTask;
 import com.example.alexeyglushkov.streamlib.convertors.BytesStringConvertor;
 import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
-import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
-import com.example.alexeyglushkov.streamlib.readersandwriters.StringReader;
-import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionBytesReader;
-import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionStreamReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpURLConnectionProvider;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -21,7 +15,7 @@ import java.net.URL;
 /**
  * Created by alexeyglushkov on 04.11.15.
  */
-public class ServiceTask extends CachedHttpLoadTask implements ServiceCommand {
+public class ServiceTask extends CachableHttpLoadTask implements ServiceCommand {
 
     private HttpUrlConnectionBuilder connectionBuilder = new HttpUrlConnectionBuilder();
 

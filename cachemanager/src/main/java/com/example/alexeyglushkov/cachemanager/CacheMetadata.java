@@ -7,7 +7,14 @@ import java.io.Serializable;
  */
 public interface CacheMetadata extends Serializable {
     void setCreateTime(long createTime);
+    long getCreateTime();
+
     void setExpireTime(long expireTime);
+    long getExpireTime();
+
     void setContentSize(long size);
+    long getContentSize();
+
     void setEntryClass(Class cl);
+    Class getEntryClass();
 }
