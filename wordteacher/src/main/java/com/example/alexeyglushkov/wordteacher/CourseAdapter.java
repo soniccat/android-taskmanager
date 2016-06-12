@@ -23,6 +23,7 @@ import model.Course;
  */
 public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder> {
 
+    // TODO: convert to list
     private ArrayList<Course> courses = new ArrayList<>();
     private Listener listener;
 

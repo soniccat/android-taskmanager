@@ -24,14 +24,14 @@ import model.Course;
 public class CourseFragment extends Fragment {
 
     enum ViewType {
-        Course,
+        Courses,
         Cards
     }
 
     private Course parentCourse;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
-    private ViewType viewType = ViewType.Course;
+    private ViewType viewType = ViewType.Courses;
     private Listener listener;
 
     @Override
@@ -108,7 +108,7 @@ public class CourseFragment extends Fragment {
 
     private void restoreAdapter(@Nullable Bundle savedInstanceState) {
         Parcelable parcelable = savedInstanceState.getParcelable("adapter");
-        if (viewType == ViewType.Course) {
+        if (viewType == ViewType.Courses) {
             getCourseAdapter().onRestoreInstanceState(parcelable);
         } else {
             getCardAdapter().onRestoreInstanceState(parcelable);
@@ -126,7 +126,7 @@ public class CourseFragment extends Fragment {
 
     private void saveAdapterState(Bundle outState) {
         Parcelable parcelable;
-        if (viewType == ViewType.Course) {
+        if (viewType == ViewType.Courses) {
             parcelable = getCourseAdapter().onSaveInstanceState();
         } else {
             parcelable = getCardAdapter().onSaveInstanceState();
@@ -140,7 +140,7 @@ public class CourseFragment extends Fragment {
     }
 
     public void setCourses(ArrayList<Course> courses) {
-        if (viewType == ViewType.Course) {
+        if (viewType == ViewType.Courses) {
             getCourseAdapter().setCourses(courses);
         } else {
             getCardAdapter().updateCards(getCards(courses));
@@ -204,7 +204,7 @@ public class CourseFragment extends Fragment {
     }
 
     private void recreateAdapter() {
-        if (viewType == ViewType.Course) {
+        if (viewType == ViewType.Courses) {
             adapter = createCourseAdapter();
         } else {
             adapter = createCardAdapter();
@@ -268,8 +268,8 @@ public class CourseFragment extends Fragment {
     }
 
     public interface Listener {
-        void onCourseClicked(Course set);
-        void onCourseMenuClicked(Course set, View view);
+        void onCourseClicked(Course course);
+        void onCourseMenuClicked(Course course, View view);
         void onCardClicked(Card card);
         void onCardMenuClicked(Card card, View view);
     }

@@ -40,7 +40,7 @@ import model.Course;
 import model.CourseHolder;
 
 // TODO: consider moving content to fragment
-public class MainActivity extends BaseActivity implements MainPageAdapter.Listener, QuizletStackFragment.Listener, CourseFragment.Listener {
+public class MainActivity extends BaseActivity implements MainPageAdapter.Listener, QuizletStackFragment.Listener, CourseStackFragment.Listener {
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager pager;
@@ -193,10 +193,10 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
             QuizletCardsFragment quizletFragment = (QuizletCardsFragment) fragment;
             quizletFragment.setListener(this);
 
-        } /*else if (fragment instanceof CourseFragment) {
-            CourseFragment quizletFragment = (CourseFragment) fragment;
-            quizletFragment.setListener(this);
-        }*/
+        } else if (fragment instanceof CourseStackFragment) {
+            CourseStackFragment courseFragment = (CourseStackFragment) fragment;
+            courseFragment.setListener(this);
+        }
     }
 
     private void onViewReady() {
@@ -267,18 +267,18 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     @Override
     public void onBackPressed() {
         final Fragment frag = getCurrentFragment();
-        if (frag.isVisible() && frag instanceof StackContainer) {
-            StackContainer stackContainer = (StackContainer)frag;
-            if (stackContainer.getBackStackSize() > 0) {
-                stackContainer.popFragment(new StackContainer.TransactionCallback() {
+        if (frag.isVisible() && frag instanceof StackFragment) {
+            StackFragment stackFragment = (StackFragment)frag;
+            if (stackFragment.getBackStackSize() > 0) {
+                stackFragment.popFragment(new StackFragment.TransactionCallback() {
                     @Override
                     public void onFinished() {
-                        if (frag == getCardQuizletFragment()) {
+                        /*if (frag == getQuizletStackFragment()) {
                             onQuizletSetFragmentBackStackChanged();
 
-                        } else if (frag == getCourseStackContainer()) {
+                        } else if (frag == getCourseStackFragment()) {
                             onCourseFragmentBackStackChanged();
-                        }
+                        }*/
                     }
                 });
                 return;
@@ -288,6 +288,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         super.onBackPressed();
     }
 
+    /*
     private void onQuizletSetFragmentBackStackChanged() {
         updateToolbarBackButton();
     }
@@ -295,13 +296,14 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     private void onCourseFragmentBackStackChanged() {
         updateToolbarBackButton();
     }
+    */
 
     private void updateToolbarBackButton() {
-        StackContainer stackContainer = getStackContainer(pager.getCurrentItem());
+        StackFragment stackFragment = getStackContainer(pager.getCurrentItem());
 
         boolean needShowBackButton = false;
-        if (stackContainer != null) {
-            needShowBackButton = stackContainer.getBackStackSize() > 0;
+        if (stackFragment != null) {
+            needShowBackButton = stackFragment.getBackStackSize() > 0;
         }
 
         if (needShowBackButton) {
@@ -330,7 +332,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     @Override
     public int getFragmentCount() {
-        return 2;
+        return 3;
     }
 
     @Override
@@ -341,7 +343,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         } else if (index == 1) {
             fragment = createQuzletCardsFragment();
         } else {
-            fragment = createQuizletStackFragment();
+            fragment = createCourseStackFragment();
         }
 
         return fragment;
@@ -355,25 +357,41 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         return fragment;
     }
 
+    @NonNull
     private QuizletCardsFragment createQuzletCardsFragment() {
         QuizletCardsFragment fragment = new QuizletCardsFragment();
         fragment.setListener(this);
         return fragment;
     }
 
+    @NonNull
+    private CourseStackFragment createCourseStackFragment() {
+        CourseStackFragment fragment = new CourseStackFragment();
+        fragment.setListener(this);
+
+        return fragment;
+    }
+
     @Override
-    public String getTitleAtIndex(int index) {
+    public String getTitleAtIndex(int index, boolean isDefault) {
         String title = null;
         if (index == 0) {
             QuizletStackFragment quizletStackFragment = getQuizletStackFragment();
             if (quizletStackFragment != null) {
-                title = getQuizletStackFragment().getTitle();
-            } else {
-                title = "";
+                title = quizletStackFragment.getTitle();
+            } else if (isDefault) {
+                title = QuizletStackFragment.DEFAULT_TITLE;
             }
 
         } else if (index == 1) {
             title = "Cards";
+        } else {
+            CourseStackFragment courseStackFragment = getCourseStackFragment();
+            if (courseStackFragment != null) {
+                title = courseStackFragment.getTitle();
+            } else if (isDefault) {
+                title = CourseStackFragment.DEFAULT_TITLE;
+            }
         }
 
         return title;
@@ -434,7 +452,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     private CourseFragment getCourseFragment() {
         CourseFragment result = null;
-        StackContainer container = getCourseStackContainer();
+        StackFragment container = getCourseStackFragment();
         if (container != null) {
             result = (CourseFragment)container.getFragment();
         }
@@ -445,16 +463,16 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         return (QuizletStackFragment)getStackContainer(0);
     }
 
-    private StackContainer getCourseStackContainer() {
-        return getStackContainer(2);
+    private CourseStackFragment getCourseStackFragment() {
+        return (CourseStackFragment)getStackContainer(2);
     }
 
-    private StackContainer getStackContainer(int position) {
-        StackContainer result = null;
+    private StackFragment getStackContainer(int position) {
+        StackFragment result = null;
 
         Fragment fragment = getFragment(position);
-        if (fragment instanceof StackContainer) {
-            result = (StackContainer)fragment;
+        if (fragment instanceof StackFragment) {
+            result = (StackFragment)fragment;
         }
 
         return result;
@@ -554,19 +572,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     private void showCourseContent(Course course) {
-        CourseFragment fragment = new CourseFragment();
-        fragment.setParentCourse(course);
-        fragment.setCards(course.getCards());
-
-        /*
-        getCourseStackContainer().showFragment(fragment, new StackContainer.TransactionCallback() {
-            @Override
-            public void onFinished(boolean isCompleted) {
-                if (isCompleted) {
-                    updateToolbarBackButton();
-                }
-            }
-        });*/
+        getCourseStackFragment().showCardsFragment(course);
     }
 
     private void deleteCourseWithConfirmation(final Course course) {
@@ -622,7 +628,6 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     @Override
     public void onSetClicked(QuizletSet set) {
-        // showWordFragment(set);
         // implemented in QuizletStackCardsFragment
     }
 

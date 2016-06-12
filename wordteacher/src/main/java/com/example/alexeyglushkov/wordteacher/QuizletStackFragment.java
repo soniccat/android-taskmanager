@@ -14,7 +14,9 @@ import java.util.List;
 /**
  * Created by alexeyglushkov on 11.06.16.
  */
-public class QuizletStackFragment extends StackContainer implements QuizletCardsFragment.Listener {
+public class QuizletStackFragment extends StackFragment implements QuizletCardsFragment.Listener {
+
+    public static final String DEFAULT_TITLE = "Sets";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -29,7 +31,7 @@ public class QuizletStackFragment extends StackContainer implements QuizletCards
             showSetFragment();
         } else {
             restoreListeners();
-            onBackStackChanged();
+            //onBackStackChanged();
         }
     }
 
@@ -90,10 +92,6 @@ public class QuizletStackFragment extends StackContainer implements QuizletCards
         return list != null && list.size() > 1 ? (QuizletCardsFragment)list.get(1) : null;
     }
 
-    public void setListener(Listener listener) {
-        super.setListener(listener);
-    }
-
     private Listener getStackListener() {
         return (Listener)this.listener;
     }
@@ -103,7 +101,7 @@ public class QuizletStackFragment extends StackContainer implements QuizletCards
         if (getBackStackSize() > 0) {
             title = getCardsFragment().getParentSet().getTitle();
         } else {
-            title = "Sets";
+            title = DEFAULT_TITLE;
         }
 
         return title;
@@ -131,6 +129,6 @@ public class QuizletStackFragment extends StackContainer implements QuizletCards
         getStackListener().onTermMenuClicked(card, view);
     }
 
-    public interface Listener extends QuizletCardsFragment.Listener, StackContainer.Listener {
+    public interface Listener extends QuizletCardsFragment.Listener, StackFragment.Listener {
     }
 }

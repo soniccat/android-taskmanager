@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 /**
  * Created by alexeyglushkov on 03.05.16.
  */
-public class StackContainer extends Fragment implements FragmentManager.OnBackStackChangedListener {
+public class StackFragment extends Fragment implements FragmentManager.OnBackStackChangedListener {
 
     protected Listener listener;
 
@@ -52,7 +52,7 @@ public class StackContainer extends Fragment implements FragmentManager.OnBackSt
                     if (callback != null) {
                         callback.onFinished();
                     }
-                    StackContainer.this.onBackStackChanged();
+                    StackFragment.this.onBackStackChanged();
                 }
             });
             transaction.addToBackStack("currentState");
@@ -65,7 +65,7 @@ public class StackContainer extends Fragment implements FragmentManager.OnBackSt
             getChildFragmentManager().executePendingTransactions();
             if (callback != null) {
                 callback.onFinished();
-                StackContainer.this.onBackStackChanged();
+                StackFragment.this.onBackStackChanged();
             }
         }
     }
@@ -79,7 +79,7 @@ public class StackContainer extends Fragment implements FragmentManager.OnBackSt
                     callback.onFinished();
                 }
 
-                StackContainer.this.onBackStackChanged();
+                StackFragment.this.onBackStackChanged();
             }
         });
 

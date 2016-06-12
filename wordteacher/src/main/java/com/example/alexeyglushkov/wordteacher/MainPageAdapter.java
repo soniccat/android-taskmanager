@@ -2,16 +2,13 @@ package com.example.alexeyglushkov.wordteacher;
 
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.SparseArray;
-import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 
-import java.util.HashMap;
+import tools.Tools;
 
 /**
  * Created by alexeyglushkov on 02.05.16.
@@ -36,22 +33,8 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
         return listener.getFragmentCount();
     }
 
-    /*private boolean isStackContainer(int position) {
-        return position == 0 || position == 2;
-    }*/
-
     @Override
     public Fragment getItem(final int position) {
-        /*Fragment result = null;
-        if (position == 1) {
-            QuizletCardsFragment quizletFragment = createQuizletFragment(position);
-            result = quizletFragment;
-
-        } else if (isStackContainer(position)) {
-            final StackContainer stackContainer = new StackContainer();
-            result = stackContainer;
-        }*/
-
         return listener.getFragmentAtIndex(position);
     }
 
@@ -68,145 +51,27 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
         fragments.remove(position);
     }
 
-    /*
-    // must be called from onAttach
-    public void updateStackContainerListener(final StackContainer stackContainer) {
-        if (stackContainer.getListener() == null) {
-            stackContainer.setListener(new StackContainer.Listener() {
-                @Override
-                public void onViewCreated(Bundle savedInstanceState) {
-                    final int position = getFragmentIndex(stackContainer);
-                    // fill stackContainer.fragment
-                    onStackContainerReady(stackContainer, position, savedInstanceState);
-                    onFragmentReady(stackContainer.getFragment(), position);
-
-                    final View view = stackContainer.getView();
-                    view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                        @Override
-                        public boolean onPreDraw() {
-                            view.getViewTreeObserver().removeOnPreDrawListener(this);
-                            notifyDataSetChanged();
-                            return false;
-                        }
-                    });
-                }
-
-                @Override
-                public void onBackStackChanged() {
-                    final int position = getFragmentIndex(stackContainer);
-                    onFragmentReady(stackContainer.getFragment(), position);
-                    notifyDataSetChanged();
-                }
-            });
-        }
-    }
-    */
-
-    /*
-    private void onFragmentReady(Fragment fragment, int position) {
-        listener.onStackFragmentReady(fragment, position);
-    }
-    */
-
-    /*
-    public void onStackContainerReady(StackContainer container, int position, Bundle savedInstanceState) {
-        Fragment result;
-        if (savedInstanceState == null) {
-            if (position == 0) {
-                result = createQuizletFragment(position);
-            } else {
-                result = new CourseFragment();
-            }
-
-            container.showFragment(result, null);
-        }
-    }
-    */
-
-    /*
-    @NonNull
-    private QuizletCardsFragment createQuizletFragment(int position) {
-        QuizletCardsFragment quizletFragment = new QuizletCardsFragment();
-        QuizletCardsFragment.ViewType viewType = getQuizletFragmentType(position);
-        quizletFragment.setViewType(viewType);
-        return quizletFragment;
-    }
-    */
-
-    /*
-    @NonNull
-    private QuizletCardsFragment.ViewType getQuizletFragmentType(int position) {
-        return position == 0 ? QuizletCardsFragment.ViewType.Sets : QuizletCardsFragment.ViewType.Cards;
-    }*/
-
     @Override
     public CharSequence getPageTitle(int position) {
-        /*
-        String result = "";
-        if (isStackContainer(position)) {
-            if (getStackContainer(position) != null) {
-                result = getStackContainerTitle(position);
-            } else {
-                result = titles.get(position, "");
-            }
-
-            if (result.length() == 0) {
-                result = getDefaultStackTitle(position);
-            }
-
-        } else {
-            result = "Cards";
-        }
-
-        titles.put(position, result);
-        */
-
-        String title = listener.getTitleAtIndex(position);
+        // to show a valid title even when a fragment isn't in the memory
+        String title = listener.getTitleAtIndex(position, false);
         if (title != null) {
             titles.put(position, title);
         } else {
             title = titles.get(position);
+
+            if (title == null) {
+                title = listener.getTitleAtIndex(position, true);
+            }
         }
 
         return title;
     }
 
-    /*
-    // It's not good that we assume here which fragment will be showed in stackContainer
-    private String getStackContainerTitle(int position) {
-        String result = "";
-        StackContainer stackContainer = getStackContainer(position);
-        if (stackContainer.getBackStackSize() > 0) {
-            if (position == 0) {
-                QuizletCardsFragment cardsFragment = (QuizletCardsFragment) stackContainer.getFragment();
-                if (cardsFragment.getParentSet() != null) {
-                    result = cardsFragment.getParentSet().getTitle();
-                }
-            } else if (position == 2) {
-                CourseFragment cardsFragment = (CourseFragment) stackContainer.getFragment();
-                if (cardsFragment.getParentCourse() != null) {
-                    result = cardsFragment.getParentCourse().getTitle();
-                }
-            }
-        }
-        return result;
-    }
-
-    @NonNull
-    private String getDefaultStackTitle(int position) {
-        String result;
-        if (position == 0) {
-            result = "Sets";
-        } else {
-            result = "Courses";
-        }
-        return result;
-    }*/
-
     @Override
     public Parcelable saveState() {
         Bundle bundle = (Bundle)super.saveState();
-        storeSparceArray(titles, bundle);
+        Tools.storeSparceArray(titles, bundle, 0);
         return bundle;
     }
 
@@ -214,34 +79,8 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
     public void restoreState(Parcelable state, ClassLoader loader) {
         super.restoreState(state, loader);
         Bundle bundle = (Bundle)state;
-        titles = readSparceArray(bundle);
+        titles = Tools.readSparceArray(bundle, 0);
     }
-
-    private void storeSparceArray(SparseArray<String> array, Bundle bundle) {
-        int size = array != null ? array.size() : 0;
-        bundle.putInt("sparceArrayLength", size);
-        for (int i = 0; i < array.size(); i++) {
-            bundle.putInt("sparceArrayKey" + i, array.keyAt(i));
-            bundle.putString("sparceArrayValue" + i, array.valueAt(i));
-        }
-    }
-
-    private SparseArray<String> readSparceArray(Bundle bundle) {
-        SparseArray<String> result = new SparseArray<>();
-        int len = bundle.getInt("sparceArrayLength");
-        for (int i=0; i<len; ++i) {
-            int key = bundle.getInt("sparceArrayKey" + i);
-            String value = bundle.getString("sparceArrayValue" + i);
-            result.put(key, value);
-        }
-
-        return result;
-    }
-
-    /*
-    private StackContainer getStackContainer(int position) {
-        return (StackContainer)fragments.get(position);
-    }*/
 
     public Fragment getFragment(int i) {
         return fragments.get(i);
@@ -252,9 +91,8 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
     }
 
     public interface Listener {
-        //void onStackFragmentReady(Fragment fragment, int position);
         int getFragmentCount();
         Fragment getFragmentAtIndex(int index);
-        String getTitleAtIndex(int index);
+        String getTitleAtIndex(int index, boolean isDefault);
     }
 }
