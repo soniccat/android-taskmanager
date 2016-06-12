@@ -18,6 +18,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.authorization.service.Service;
@@ -334,6 +336,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     @NonNull
     private QuizletCardsFragment createQuzletCardsFragment() {
         QuizletCardsFragment fragment = new QuizletCardsFragment();
+        fragment.setViewType(QuizletCardsFragment.ViewType.Cards);
         fragment.setListener(this);
         return fragment;
     }
@@ -609,11 +612,15 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     public void onSetMenuClicked(final QuizletSet set, View v) {
         PopupMenu popupMenu = new PopupMenu(this, v);
         popupMenu.getMenu().add(Menu.NONE, R.id.create_set, 0, R.string.menu_create_course);
+        popupMenu.getMenu().add(Menu.NONE, R.id.add_to_course, 0, R.string.menu_add_to_course);
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.create_set) {
                     onCreateCourseFromSet(set);
+
+                } else if (item.getItemId() == R.id.add_to_course) {
+                    showAddFromSetDialog(set);
                 }
 
                 return false;
@@ -665,6 +672,49 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         }
 
         createCourse(set.getTitle(), cards);
+    }
+
+    private void showAddFromSetDialog(final QuizletSet set) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        List<String> rows = new ArrayList<>();
+        final ArrayList<Course> courses = getCourseHolder().getCourses();
+        for (Course course : courses) {
+            rows.add(course.getTitle());
+        }
+
+        ListAdapter adapter = new ArrayAdapter<String>(this, R.layout.row_text_view, rows);
+        builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Course course = courses.get(which);
+                addCardsToCourse(course, set.getTerms());
+            }
+        });
+
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+
+        String title = getString(R.string.dialog_choose_course);
+        builder.setTitle(title);
+        builder.show();
+    }
+
+    private void addCardsToCourse(Course course, List<QuizletTerm> terms) {
+        List<Card> cards = new ArrayList<>();
+        for (QuizletTerm term : terms) {
+            Card card = createCard(term);
+            cards.add(card);
+        }
+
+        if (getCourseHolder().addNewCards(course, cards)) {
+            CourseFragment fragment = getCourseFragment();
+            if (fragment != null) {
+                fragment.reloadData();
+            }
+        }
     }
 
     @Override

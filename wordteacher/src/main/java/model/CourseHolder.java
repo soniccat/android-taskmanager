@@ -44,6 +44,46 @@ public class CourseHolder {
         return error;
     }
 
+    public boolean addNewCards(Course course, List<Card> cards) {
+        boolean isAdded = true;
+        ArrayList<Card> cardsCopy = new ArrayList<>(course.getCards());
+
+        ArrayList<Card> newCards = getNewCards(course, cards);
+        course.addCards(newCards);
+        Error error = storeCourse(course);
+        if (error != null) {
+            course.setCards(cardsCopy);
+            isAdded = false;
+        }
+
+        return isAdded;
+    }
+
+    public ArrayList<Card> getNewCards(Course course, List<Card> cards) {
+        ArrayList<Card> result = new ArrayList<>(cards);
+        List<Card> courseCards = course.getCards();
+        for (Card courseCard : courseCards) {
+            int i = getCardIndex(courseCard.getTerm(), result);
+            if (i != -1) {
+                result.remove(i);
+            }
+        }
+
+        return result;
+    }
+
+    public int getCardIndex(String title, List<Card> cards) {
+        int resultIndex = -1;
+        for (int i=0; i<cards.size(); ++i) {
+            if (cards.get(i).getTerm().equals(title)) {
+                resultIndex = i;
+                break;
+            }
+        }
+
+        return resultIndex;
+    }
+
     public Course getCourse(UUID courseId) {
         Course course = null;
         for (Course c : getCourses()) {

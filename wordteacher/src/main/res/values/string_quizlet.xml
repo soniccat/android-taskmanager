@@ -6,6 +6,7 @@
     <string name="cell_course_no_waiting_words">nothing to revise</string>
 
     <string name="menu_create_course">Create new course</string>
+    <string name="menu_add_to_course">Add to course</string>
     <string name="menu_course_learn_only_ready_words">Learn only ready words</string>
     <string name="menu_course_learn_only_new_words">Learn only new words</string>
     <string name="menu_course_show_cards">Show cards</string>
@@ -14,6 +15,7 @@
 
     <string name="dialog_rename_hint">Course title</string>
     <string name="dialog_delete_confirmation">Really delete?</string>
+    <string name="dialog_choose_course">Course course</string>
 
     <string name="learning_giveUp">Give Up</string>
     <string name="learning_check">Check</string>
