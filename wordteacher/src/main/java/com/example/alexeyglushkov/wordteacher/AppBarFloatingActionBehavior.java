@@ -13,10 +13,10 @@ import android.view.View;
 /**
  * Created by alexeyglushkov on 13.06.16.
  */
-public class ToolbarFloatingActionBehavior extends FloatingActionButton.Behavior {
+public class AppBarFloatingActionBehavior extends FloatingActionButton.Behavior {
     private int prevTop = -1;
 
-    public ToolbarFloatingActionBehavior(Context context, AttributeSet attributeSet){
+    public AppBarFloatingActionBehavior(Context context, AttributeSet attributeSet){
         super();
     }
 
@@ -31,14 +31,20 @@ public class ToolbarFloatingActionBehavior extends FloatingActionButton.Behavior
         boolean result = super.onDependentViewChanged(parent, child, dependency);
         if (dependency instanceof AppBarLayout) {
             handleAppBarChanges(child, dependency);
-         }
+        }
 
         return result;
     }
 
     private void handleAppBarChanges(FloatingActionButton child, View dependency) {
         if (prevTop == -1) {
-            prevTop = dependency.getTop();
+            if (dependency.getTop() < 0) {
+                // to hide
+                prevTop = dependency.getTop() + 1;
+            } else {
+                // to show
+                prevTop = dependency.getTop();
+            }
         }
 
         if (dependency.getTop() < prevTop) {

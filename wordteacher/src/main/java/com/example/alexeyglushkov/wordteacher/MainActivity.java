@@ -719,10 +719,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         }
 
         if (getCourseHolder().addNewCards(course, cards)) {
-            CourseFragment fragment = getCourseFragment();
-            if (fragment != null) {
-                fragment.reloadData();
-            }
+            reloadCourseFragment();
         }
     }
 
@@ -738,6 +735,13 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == LearnActivity.ACTIVITY_RESULT) {
+            reloadCourseFragment();
+        }
+    }
+
+    private void reloadCourseFragment() {
+        CourseFragment courseFragment = getCourseFragment();
+        if (courseFragment != null) {
             getCourseFragment().reloadData();
         }
     }
