@@ -14,8 +14,6 @@ import android.view.View;
  * Created by alexeyglushkov on 13.06.16.
  */
 public class ToolbarFloatingActionBehavior extends FloatingActionButton.Behavior {
-    //private Toolbar toolbar;
-    //private int top;
     private int prevTop = -1;
 
     public ToolbarFloatingActionBehavior(Context context, AttributeSet attributeSet){
@@ -32,12 +30,6 @@ public class ToolbarFloatingActionBehavior extends FloatingActionButton.Behavior
     public boolean onDependentViewChanged(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
         boolean result = super.onDependentViewChanged(parent, child, dependency);
         if (dependency instanceof AppBarLayout) {
-            /*if (toolbar == null) {
-                toolbar = (Toolbar) dependency.findViewById(R.id.main_toolbar);
-                top = dependency.getTop();
-                prevTop = dependency.getTop();
-            }*/
-
             if (prevTop == -1) {
                 prevTop = dependency.getTop();
             }
@@ -49,13 +41,8 @@ public class ToolbarFloatingActionBehavior extends FloatingActionButton.Behavior
             }
 
             prevTop = dependency.getTop();
-            //int dy = top - dependency.getTop();
-            //float ratio = (float)dy / (float)toolbar.getHeight();
-            //Log.d("TOOLBAR", "" + dependency.getHeight() + " " + dependency.getTop() + " " + toolbar.getHeight() + " " + dy + " " + ratio);
-        }
+         }
 
         return result;
     }
-
-
 }
