@@ -30,19 +30,23 @@ public class ToolbarFloatingActionBehavior extends FloatingActionButton.Behavior
     public boolean onDependentViewChanged(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
         boolean result = super.onDependentViewChanged(parent, child, dependency);
         if (dependency instanceof AppBarLayout) {
-            if (prevTop == -1) {
-                prevTop = dependency.getTop();
-            }
-
-            if (dependency.getTop() < prevTop) {
-                child.hide();
-            } else {
-                child.show();
-            }
-
-            prevTop = dependency.getTop();
+            handleAppBarChanges(child, dependency);
          }
 
         return result;
+    }
+
+    private void handleAppBarChanges(FloatingActionButton child, View dependency) {
+        if (prevTop == -1) {
+            prevTop = dependency.getTop();
+        }
+
+        if (dependency.getTop() < prevTop) {
+            child.hide();
+        } else {
+            child.show();
+        }
+
+        prevTop = dependency.getTop();
     }
 }
