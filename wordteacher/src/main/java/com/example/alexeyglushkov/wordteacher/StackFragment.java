@@ -145,7 +145,6 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
     }
 
     public interface Listener {
-        //void onViewCreated(Bundle savedInstanceState);
         void onBackStackChanged();
     }
 

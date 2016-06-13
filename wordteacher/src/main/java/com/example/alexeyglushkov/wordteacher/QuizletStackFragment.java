@@ -1,26 +1,67 @@
 package com.example.alexeyglushkov.wordteacher;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
-import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import main.MainApplication;
+import model.Course;
+import model.CourseHolder;
+
 /**
  * Created by alexeyglushkov on 11.06.16.
  */
-public class QuizletStackFragment extends StackFragment implements QuizletCardsFragment.Listener {
+public class QuizletStackFragment extends StackFragment {
 
     public static final String DEFAULT_TITLE = "Sets";
+
+    public void setListener(Listener listener) {
+        this.listener = listener;
+    }
+
+    private MainApplication getMainApplication() {
+        return MainApplication.instance;
+    }
+
+    public CourseHolder getCourseHolder() {
+        return getMainApplication().getCourseHolder();
+    }
+
+    private QuizletStackFragment.Listener getQuizletListener() {
+        return (QuizletStackFragment.Listener)this.listener;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @NonNull
+    private QuizletFragmentMenuListener getMenuListener() {
+        return new QuizletFragmentMenuListener(getContext(), getCourseHolder(), new QuizletFragmentMenuListener.Listener() {
+            @Override
+            public void onSetClicked(QuizletSet set) {
+                showWordFragment(set);
+            }
+
+            @Override
+            public void onCourseChanged(Course course) {
+                getQuizletListener().onCourseChanged(course);
+            }
+
+            @Override
+            public ViewGroup getViewGroup() {
+                return (ViewGroup) getFragment().getView();
+            }
+        });
     }
 
     @Override
@@ -31,7 +72,6 @@ public class QuizletStackFragment extends StackFragment implements QuizletCardsF
             showSetFragment();
         } else {
             restoreListeners();
-            //onBackStackChanged();
         }
     }
 
@@ -43,14 +83,14 @@ public class QuizletStackFragment extends StackFragment implements QuizletCardsF
     private void showSetFragment() {
         QuizletCardsFragment setFragment = new QuizletCardsFragment();
         setFragment.setViewType(QuizletCardsFragment.ViewType.Sets);
-        setFragment.setListener(this);
+        setFragment.setListener(getMenuListener());
 
         addFragment(setFragment, null);
     }
 
     private void showWordFragment(QuizletSet set) {
         QuizletCardsFragment fragment = new QuizletCardsFragment();
-        fragment.setListener(this);
+        fragment.setListener(getMenuListener());
         fragment.setViewType(QuizletCardsFragment.ViewType.Cards);
 
         ArrayList<QuizletSet> list = new ArrayList<>();
@@ -69,12 +109,12 @@ public class QuizletStackFragment extends StackFragment implements QuizletCardsF
     private void restoreListeners() {
         QuizletCardsFragment setFragment = getSetFragment();
         if (setFragment != null) {
-            setFragment.setListener(this);
+            setFragment.setListener(getMenuListener());
         }
 
         QuizletCardsFragment cardsFragment = getCardsFragment();
         if (cardsFragment != null) {
-            cardsFragment.setListener(this);
+            cardsFragment.setListener(getMenuListener());
         }
     }
 
@@ -88,10 +128,6 @@ public class QuizletStackFragment extends StackFragment implements QuizletCardsF
         return list != null && list.size() > 1 ? (QuizletCardsFragment)list.get(1) : null;
     }
 
-    private Listener getStackListener() {
-        return (Listener)this.listener;
-    }
-
     public String getTitle() {
         String title = null;
         if (getBackStackSize() > 0) {
@@ -103,28 +139,7 @@ public class QuizletStackFragment extends StackFragment implements QuizletCardsF
         return title;
     }
 
-    // QuizletCardsFragment.Listener
-
-    @Override
-    public void onSetClicked(QuizletSet set) {
-        showWordFragment(set);
-    }
-
-    @Override
-    public void onSetMenuClicked(QuizletSet set, View view) {
-        getStackListener().onSetMenuClicked(set, view);
-    }
-
-    @Override
-    public void onTermClicked(QuizletTerm card) {
-        getStackListener().onTermClicked(card);
-    }
-
-    @Override
-    public void onTermMenuClicked(QuizletTerm card, View view) {
-        getStackListener().onTermMenuClicked(card, view);
-    }
-
-    public interface Listener extends QuizletCardsFragment.Listener, StackFragment.Listener {
+    public interface Listener extends StackFragment.Listener {
+        void onCourseChanged(Course course);
     }
 }

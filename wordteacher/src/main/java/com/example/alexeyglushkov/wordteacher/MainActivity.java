@@ -188,12 +188,31 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
         } else if (fragment instanceof QuizletCardsFragment) {
             QuizletCardsFragment quizletFragment = (QuizletCardsFragment) fragment;
-            quizletFragment.setListener(this);
+            quizletFragment.setListener(getMenuListener());
 
         } else if (fragment instanceof CourseStackFragment) {
             CourseStackFragment courseFragment = (CourseStackFragment) fragment;
             courseFragment.setListener(this);
         }
+    }
+
+    @NonNull
+    private QuizletFragmentMenuListener getMenuListener() {
+        return new QuizletFragmentMenuListener(this, getCourseHolder(), new QuizletFragmentMenuListener.Listener() {
+            @Override
+            public void onSetClicked(QuizletSet set) {
+            }
+
+            @Override
+            public void onCourseChanged(Course course) {
+                MainActivity.this.onCourseChanged(course);
+            }
+
+            @Override
+            public ViewGroup getViewGroup() {
+                return (ViewGroup) getCourseFragment().getView();
+            }
+        });
     }
 
     private void onViewReady() {
@@ -338,7 +357,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     private QuizletCardsFragment createQuzletCardsFragment() {
         QuizletCardsFragment fragment = new QuizletCardsFragment();
         fragment.setViewType(QuizletCardsFragment.ViewType.Cards);
-        fragment.setListener(this);
+        fragment.setListener(getMenuListener());
         return fragment;
     }
 
@@ -508,34 +527,6 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     }
 
-    private void createCourseFromCard(QuizletTerm quizletTerm, String name) {
-        Card card = createCard(quizletTerm);
-        ArrayList<Card> cards = new ArrayList<>();
-        cards.add(card);
-
-        createCourse(name, cards);
-    }
-
-    @NonNull
-    private Card createCard(QuizletTerm term) {
-        Card card = new Card();
-        card.setTerm(term.getTerm());
-        card.setDefinition(term.getDefinition());
-        card.setQuizletTerm(term);
-        return card;
-    }
-
-    private void createCourse(String title, ArrayList<Card> cards) {
-        Course course = new Course();
-        course.setTitle(title);
-        course.addCards(cards);
-
-        Error error = getCourseHolder().addCourse(course);
-        if (error != null) {
-            updateCourses();
-        }
-    }
-
     private void updateCourses() {
         CourseFragment courseFragment = getCourseFragment();
         if (courseFragment != null) {
@@ -638,124 +629,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     // Callbacks
 
     @Override
-    public void onSetClicked(QuizletSet set) {
-        // implemented in QuizletStackCardsFragment
-    }
+    public void onCourseChanged(Course course) {
 
-    @Override
-    public void onSetMenuClicked(final QuizletSet set, View v) {
-        PopupMenu popupMenu = new PopupMenu(this, v);
-        popupMenu.getMenu().add(Menu.NONE, R.id.create_set, 0, R.string.menu_create_course);
-        if (getCourseHolder().getCourses().size() > 0) {
-            popupMenu.getMenu().add(Menu.NONE, R.id.add_to_course, 0, R.string.menu_add_to_course);
-        }
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == R.id.create_set) {
-                    onCreateCourseFromSet(set);
-
-                } else if (item.getItemId() == R.id.add_to_course) {
-                    showAddFromSetDialog(set.getTerms());
-                }
-
-                return false;
-            }
-        });
-
-        popupMenu.show();
-    }
-
-    @Override
-    public void onTermClicked(QuizletTerm card) {
-
-    }
-
-    @Override
-    public void onTermMenuClicked(final QuizletTerm term, View v) {
-        PopupMenu popupMenu = new PopupMenu(this, v);
-        popupMenu.getMenu().add(Menu.NONE, R.id.create_set, 0, R.string.menu_create_course);
-        if (getCourseHolder().getCourses().size() > 0) {
-            popupMenu.getMenu().add(Menu.NONE, R.id.add_to_course, 0, R.string.menu_add_to_course);
-        }
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == R.id.create_set) {
-                    onCreateCourseFromCard(term);
-
-                } else if (item.getItemId() == R.id.add_to_course) {
-                    ArrayList<QuizletTerm> terms = new ArrayList<QuizletTerm>();
-                    terms.add(term);
-                    showAddFromSetDialog(terms);
-                }
-
-                return false;
-            }
-        });
-
-        popupMenu.show();
-    }
-
-    private void onCreateCourseFromCard(final QuizletTerm card) {
-        final RenameAlert renameAlert = new RenameAlert();
-        renameAlert.setPositiveButtonListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createCourseFromCard(card, renameAlert.getName());
-            }
-        });
-        renameAlert.show(this, (ViewGroup) getWindow().getDecorView());
-    }
-
-    private void onCreateCourseFromSet(QuizletSet set) {
-        ArrayList<Card> cards = new ArrayList<>();
-        for (QuizletTerm term : set.getTerms()) {
-            Card card = createCard(term);
-            cards.add(card);
-        }
-
-        createCourse(set.getTitle(), cards);
-    }
-
-    private void showAddFromSetDialog(final List<QuizletTerm> terms) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        List<String> rows = new ArrayList<>();
-        final ArrayList<Course> courses = getCourseHolder().getCourses();
-        for (Course course : courses) {
-            rows.add(course.getTitle());
-        }
-
-        ListAdapter adapter = new ArrayAdapter<String>(this, R.layout.row_text_view, rows);
-        builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Course course = courses.get(which);
-                addCardsToCourse(course, terms);
-            }
-        });
-
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
-        });
-
-        String title = getString(R.string.dialog_choose_course);
-        builder.setTitle(title);
-        builder.show();
-    }
-
-    private void addCardsToCourse(Course course, List<QuizletTerm> terms) {
-        List<Card> cards = new ArrayList<>();
-        for (QuizletTerm term : terms) {
-            Card card = createCard(term);
-            cards.add(card);
-        }
-
-        if (getCourseHolder().addNewCards(course, cards)) {
-            updateCourses();
-        }
     }
 
     @Override
