@@ -10,19 +10,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
-import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
-
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
+import tools.DeleteTouchHelper;
 import model.Course;
 
 /**
  * Created by alexeyglushkov on 08.05.16.
  */
-public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder> {
+public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder> implements DeleteTouchHelper.Listener {
 
     // TODO: convert to list
     private ArrayList<Course> courses = new ArrayList<>();
@@ -31,7 +28,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
 
     public CourseAdapter(Listener listener) {
         this.listener = listener;
-        this.deleteTouchHelper = new ItemTouchHelper(new TouchCallback());
+        this.deleteTouchHelper = new ItemTouchHelper(new DeleteTouchHelper(this));
     }
 
     @Override
@@ -138,46 +135,12 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
         return courses.size();
     }
 
-    private void onItemDeleted(RecyclerView.ViewHolder holder, int index, int position) {
+    public void onItemDeleted(RecyclerView.ViewHolder holder, int index, int position) {
         Course course = courses.get(index);
         boolean isRemoved = listener.onCourseDeleted(holder.itemView, course);
         if (isRemoved) {
             deleteCourseAtIndex(index);
             notifyItemRemoved(position);
-        };
-    }
-
-    // ItemTouchHelper.Callback
-
-    private class TouchCallback extends ItemTouchHelper.Callback {
-        private RecyclerView recyclerView;
-
-        @Override
-        public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-            this.recyclerView = recyclerView;
-            return makeFlag(ItemTouchHelper.ACTION_STATE_SWIPE, ItemTouchHelper.LEFT);
-        }
-
-        @Override
-        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-            return false;
-        }
-
-        @Override
-        public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-            int index = recyclerView.getChildAdapterPosition(viewHolder.itemView);
-            int position = recyclerView.getChildLayoutPosition(viewHolder.itemView);
-            CourseAdapter.this.onItemDeleted(viewHolder, index, position);
-        }
-
-        @Override
-        public boolean isLongPressDragEnabled() {
-            return false;
-        }
-
-        @Override
-        public boolean isItemViewSwipeEnabled() {
-            return true;
         }
     }
 

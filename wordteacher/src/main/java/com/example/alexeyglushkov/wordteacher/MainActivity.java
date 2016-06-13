@@ -551,8 +551,68 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         }
     }
 
+    private void updateCourseCards() {
+        updateCourses();
+    }
+
     private void showCourseContent(Course course) {
         getCourseStackFragment().showCardsFragment(course);
+    }
+
+    private void deleteCourseWithSnackbar(final Course course) {
+        dismissSnackbar();
+        snackBarNeedDeleteCourse = true;
+
+        String undoString = getString(R.string.snackbar_undo_deletion);
+        currentSnackbar = Snackbar.make(getCurrentFragmentView(), undoString, Snackbar.LENGTH_LONG);
+        currentSnackbar.setAction(android.R.string.cancel, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                snackBarNeedDeleteCourse = false;
+                updateCourses();
+            }
+        });
+        currentSnackbar.setCallback(new Snackbar.Callback() {
+            @Override
+            public void onDismissed(Snackbar snackbar, int event) {
+                super.onDismissed(snackbar, event);
+                if (snackBarNeedDeleteCourse) {
+                    getCourseHolder().removeCourse(course);
+                    updateCourses();
+                }
+
+                currentSnackbar = null;
+            }
+        });
+        currentSnackbar.show();
+    }
+
+    private void deleteCardWithConfirmation(final Card card) {
+        dismissSnackbar();
+        snackBarNeedDeleteCourse = true;
+
+        String undoString = getString(R.string.snackbar_undo_deletion);
+        currentSnackbar = Snackbar.make(getCurrentFragmentView(), undoString, Snackbar.LENGTH_LONG);
+        currentSnackbar.setAction(android.R.string.cancel, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                snackBarNeedDeleteCourse = false;
+                updateCourseCards();
+            }
+        });
+        currentSnackbar.setCallback(new Snackbar.Callback() {
+            @Override
+            public void onDismissed(Snackbar snackbar, int event) {
+                super.onDismissed(snackbar, event);
+                if (snackBarNeedDeleteCourse) {
+                    getCourseHolder().removeCard(card);
+                    updateCourseCards();
+                }
+
+                currentSnackbar = null;
+            }
+        });
+        currentSnackbar.show();
     }
 
     private void deleteCard(Card card) {
@@ -562,6 +622,17 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
                 courseFragment.deleteCard(card);
             }
         }
+    }
+
+    private void dismissSnackbar() {
+        if (currentSnackbar != null) {
+            currentSnackbar.dismiss();
+            currentSnackbar = null;
+        }
+    }
+
+    private View getCurrentFragmentView() {
+        return pagerAdapter.getFragment(pager.getCurrentItem()).getView();
     }
 
     // Callbacks
@@ -744,46 +815,6 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         return true;
     }
 
-    private void deleteCourseWithSnackbar(final Course course) {
-        dismissSnackbar();
-
-        snackBarNeedDeleteCourse = true;
-
-        String undoString = getString(R.string.snackbar_undo_deletion);
-        currentSnackbar = Snackbar.make(getCurrentFragmentView(), undoString, Snackbar.LENGTH_LONG);
-        currentSnackbar.setAction(android.R.string.cancel, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                snackBarNeedDeleteCourse = false;
-                updateCourses();
-            }
-        });
-        currentSnackbar.setCallback(new Snackbar.Callback() {
-            @Override
-            public void onDismissed(Snackbar snackbar, int event) {
-                super.onDismissed(snackbar, event);
-                if (snackBarNeedDeleteCourse) {
-                    getCourseHolder().removeCourse(course);
-                    updateCourses();
-                }
-
-                currentSnackbar = null;
-            }
-        });
-        currentSnackbar.show();
-    }
-
-    private void dismissSnackbar() {
-        if (currentSnackbar != null) {
-            currentSnackbar.dismiss();
-            currentSnackbar = null;
-        }
-    }
-
-    private View getCurrentFragmentView() {
-        return pagerAdapter.getFragment(pager.getCurrentItem()).getView();
-    }
-
     @Override
     public void onCardClicked(Card card) {
 
@@ -797,7 +828,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.delete_card) {
-                    deleteCardWithConfirmation(card);
+                    getCourseFragment().deleteCard(card);
+                    onCardDeleted(card);
                 }
 
                 return false;
@@ -805,5 +837,10 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         });
 
         popupMenu.show();
+    }
+
+    public boolean onCardDeleted(Card card) {
+        deleteCardWithConfirmation(card);
+        return true;
     }
 }

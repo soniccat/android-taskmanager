@@ -131,6 +131,10 @@ public class CourseStackFragment extends StackFragment implements CourseFragment
         getStackListener().onCardMenuClicked(card, view);
     }
 
+    public boolean onCardDeleted(Card card) {
+        return getStackListener().onCardDeleted(card);
+    }
+
     public interface Listener extends CourseFragment.Listener, StackFragment.Listener {
     }
 }

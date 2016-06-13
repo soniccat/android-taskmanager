@@ -187,6 +187,10 @@ public class CourseFragment extends Fragment {
         }
     }
 
+    public ViewType getViewType() {
+        return viewType;
+    }
+
     public void setListener(Listener listener) {
         this.listener = listener;
     }
@@ -247,6 +251,11 @@ public class CourseFragment extends Fragment {
             public void onMenuClicked(View view, Card card) {
                 CourseFragment.this.onCardMenuClicked(view, card);
             }
+
+            @Override
+            public boolean onCardDeleted(View view, Card card) {
+                return CourseFragment.this.onCardDeleted(card);
+            }
         });
 
         return adapter;
@@ -272,11 +281,16 @@ public class CourseFragment extends Fragment {
         listener.onCardMenuClicked(card, v);
     }
 
+    private boolean onCardDeleted(Card card) {
+        return listener.onCardDeleted(card);
+    }
+
     public interface Listener {
         void onCourseClicked(Course course);
         void onCourseMenuClicked(Course course, View view);
         boolean onCourseDeleted(Course course);
         void onCardClicked(Card card);
         void onCardMenuClicked(Card card, View view);
+        boolean onCardDeleted(Card card);
     }
 }

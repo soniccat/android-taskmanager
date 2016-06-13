@@ -71,7 +71,9 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
     @Override
     public Parcelable saveState() {
         Bundle bundle = (Bundle)super.saveState();
-        Tools.storeSparceArray(titles, bundle, 0);
+        if (bundle != null) {
+            Tools.storeSparceArray(titles, bundle, 0);
+        }
         return bundle;
     }
 

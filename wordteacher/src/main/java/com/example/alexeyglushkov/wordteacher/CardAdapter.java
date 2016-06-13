@@ -3,6 +3,7 @@ package com.example.alexeyglushkov.wordteacher;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,17 +13,26 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import tools.DeleteTouchHelper;
 import model.Card;
 
 /**
  * Created by alexeyglushkov on 03.05.16.
  */
-public class CardAdapter extends RecyclerView.Adapter<CardAdapter.Holder> {
-    ArrayList<Card> cards = new ArrayList<>();
-    Listener listener;
+public class CardAdapter extends RecyclerView.Adapter<CardAdapter.Holder> implements DeleteTouchHelper.Listener {
+    private ArrayList<Card> cards = new ArrayList<>();
+    private Listener listener;
+    private ItemTouchHelper deleteTouchHelper;
 
     public CardAdapter(Listener listener) {
         this.listener = listener;
+        this.deleteTouchHelper = new ItemTouchHelper(new DeleteTouchHelper(this));
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        deleteTouchHelper.attachToRecyclerView(recyclerView);
     }
 
     public Parcelable onSaveInstanceState() {
@@ -89,6 +99,15 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.Holder> {
         return cards.size();
     }
 
+    public void onItemDeleted(RecyclerView.ViewHolder holder, int index, int position) {
+        Card course = cards.get(index);
+        boolean isRemoved = listener.onCardDeleted(holder.itemView, course);
+        if (isRemoved) {
+            deleteCardAtIndex(index);
+            notifyItemRemoved(position);
+        }
+    }
+
     public class Holder extends RecyclerView.ViewHolder {
         public View cardView;
         public TextView nameTextview;
@@ -107,5 +126,6 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.Holder> {
     public interface Listener {
         void onCardClicked(View view, Card card);
         void onMenuClicked(View view, Card card);
+        boolean onCardDeleted(View view, Card course);
     }
 }
