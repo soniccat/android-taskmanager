@@ -50,9 +50,6 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     private ViewPager pager;
     private MainPageAdapter pagerAdapter;
 
-    private boolean snackBarNeedDeleteCourse;
-    private Snackbar currentSnackbar;
-
     private MainApplication getMainApplication() {
         return (MainApplication)getApplication();
     }
@@ -204,12 +201,17 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
             }
 
             @Override
-            public void onCourseChanged(Course course) {
+            public void onCourseCreated(Course course) {
                 MainActivity.this.onCourseChanged(course);
             }
 
             @Override
-            public ViewGroup getViewGroup() {
+            public void onCardsAdded(Course course) {
+                MainActivity.this.onCourseChanged(course);
+            }
+
+            @Override
+            public ViewGroup getDialogContainer() {
                 return (ViewGroup) getCourseFragment().getView();
             }
         });
@@ -528,82 +530,14 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     private void updateCourses() {
-        CourseFragment courseFragment = getCourseFragment();
-        if (courseFragment != null) {
-            ArrayList<Course> courses = getCourseHolder().getCourses();
-            Collections.sort(courses, new Comparator<Course>() {
-                @Override
-                public int compare(Course lhs, Course rhs) {
-                    return rhs.getCreateDate().compareTo(lhs.getCreateDate());
-                }
-            });
-
-            courseFragment.setCourses(courses);
+        CourseStackFragment stackFragment = getCourseStackFragment();
+        if (stackFragment != null) {
+            stackFragment.updateCourses();
         }
     }
 
     private void updateCourseCards() {
-        updateCourses();
-    }
-
-    private void showCourseContent(Course course) {
-        getCourseStackFragment().showCardsFragment(course);
-    }
-
-    private void deleteCourseWithSnackbar(final Course course) {
-        //dismissSnackbar();
-        snackBarNeedDeleteCourse = true;
-
-        String undoString = getString(R.string.snackbar_undo_deletion);
-        currentSnackbar = Snackbar.make(getCurrentFragmentView(), undoString, Snackbar.LENGTH_LONG);
-        currentSnackbar.setAction(android.R.string.cancel, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                snackBarNeedDeleteCourse = false;
-                updateCourses();
-            }
-        });
-        currentSnackbar.setCallback(new Snackbar.Callback() {
-            @Override
-            public void onDismissed(Snackbar snackbar, int event) {
-                super.onDismissed(snackbar, event);
-                if (snackBarNeedDeleteCourse) {
-                    getCourseHolder().removeCourse(course);
-                    updateCourses();
-                }
-
-                currentSnackbar = null;
-            }
-        });
-        currentSnackbar.show();
-    }
-
-    private void deleteCardWithConfirmation(final Card card) {
-        //dismissSnackbar();
-        snackBarNeedDeleteCourse = true;
-
-        String undoString = getString(R.string.snackbar_undo_deletion);
-        currentSnackbar = Snackbar.make(getCurrentFragmentView(), undoString, Snackbar.LENGTH_LONG);
-        currentSnackbar.setAction(android.R.string.cancel, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                snackBarNeedDeleteCourse = false;
-                updateCourseCards();
-            }
-        });
-        currentSnackbar.setCallback(new Snackbar.Callback() {
-            @Override
-            public void onDismissed(Snackbar snackbar, int event) {
-                super.onDismissed(snackbar, event);
-                if (snackBarNeedDeleteCourse) {
-                    getCourseHolder().removeCard(card);
-                    updateCourseCards();
-                }
-
-                currentSnackbar = null;
-            }
-        });
-        currentSnackbar.show();
+        //updateCourses();
     }
 
     private void deleteCard(Card card) {
@@ -616,28 +550,21 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     private void dismissSnackbar() {
-        if (currentSnackbar != null) {
+        /*if (currentSnackbar != null) {
             currentSnackbar.dismiss();
             currentSnackbar = null;
-        }
+        }*/
     }
 
     private View getCurrentFragmentView() {
         return pagerAdapter.getFragment(pager.getCurrentItem()).getView();
     }
 
-    // Callbacks
+    // QuizletStackFragment.Listener
 
     @Override
     public void onCourseChanged(Course course) {
-
-    }
-
-    @Override
-    public void onCourseClicked(Course course) {
-        if (course.getCards().size() > 0) {
-            startLearnActivity(course);
-        }
+        updateCourses();
     }
 
     @Override
@@ -649,73 +576,20 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         }
     }
 
+    // CourseStackFragment.Listener
+
     @Override
-    public void onCourseMenuClicked(final Course course, View v) {
-        PopupMenu popupMenu = new PopupMenu(this, v);
-        if (course.getReadyToLearnCards().size() > 0) {
-            popupMenu.getMenu().add(Menu.NONE, R.id.learn_ready_words, 0, R.string.menu_course_learn_only_ready_words);
-        }
-        if (course.getNotStartedCards().size() > 0) {
-            popupMenu.getMenu().add(Menu.NONE, R.id.learn_new_words, 0, R.string.menu_course_learn_only_new_words);
-        }
-        popupMenu.getMenu().add(Menu.NONE, R.id.edit_course, 0, R.string.menu_course_show_cards);
-        popupMenu.getMenu().add(Menu.NONE, R.id.delete_course, 0, R.string.menu_course_delete);
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == R.id.learn_ready_words) {
-                    startLearnReadyWords(course);
-
-                } else if (item.getItemId() == R.id.learn_new_words) {
-                    startLearnNewWords(course);
-
-                } else if (item.getItemId() == R.id.edit_course) {
-                    showCourseContent(course);
-
-                } else if (item.getItemId() == R.id.delete_course) {
-                    getCourseFragment().deleteCourse(course);
-                    onCourseDeleted(course);
-                }
-
-                return false;
-            }
-        });
-
-        popupMenu.show();
+    public void onCourseClicked(Course course) {
+        startLearnActivity(course);
     }
 
     @Override
-    public boolean onCourseDeleted(final Course course) {
-        deleteCourseWithSnackbar(course);
-        return true;
+    public void onLearnReadyWordsClick(Course course) {
+        startLearnReadyWords(course);
     }
 
     @Override
-    public void onCardClicked(Card card) {
-
-    }
-
-    @Override
-    public void onCardMenuClicked(final Card card, View view) {
-        PopupMenu popupMenu = new PopupMenu(this, view);
-        popupMenu.getMenu().add(Menu.NONE, R.id.delete_card, 0, R.string.menu_card_delete);
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == R.id.delete_card) {
-                    getCourseFragment().deleteCard(card);
-                    onCardDeleted(card);
-                }
-
-                return false;
-            }
-        });
-
-        popupMenu.show();
-    }
-
-    public boolean onCardDeleted(Card card) {
-        deleteCardWithConfirmation(card);
-        return true;
+    public void onLearnNewWordsClick(Course course) {
+        startLearnNewWords(course);
     }
 }

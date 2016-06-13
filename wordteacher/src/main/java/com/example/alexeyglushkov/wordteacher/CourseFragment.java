@@ -65,6 +65,10 @@ public class CourseFragment extends Fragment {
         applyAdapter();
     }
 
+    public void reloadData() {
+        adapter.notifyDataSetChanged();
+    }
+
     public void deleteCard(Card card) {
         CardAdapter adapter = getCardAdapter();
         int index = adapter.getCardIndex(card);

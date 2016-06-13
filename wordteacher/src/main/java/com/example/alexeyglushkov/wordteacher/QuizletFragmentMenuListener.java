@@ -80,15 +80,6 @@ public class QuizletFragmentMenuListener implements QuizletCardsFragment.Listene
         createCourse(name, cards);
     }
 
-    @NonNull
-    private Card createCard(QuizletTerm term) {
-        Card card = new Card();
-        card.setTerm(term.getTerm());
-        card.setDefinition(term.getDefinition());
-        card.setQuizletTerm(term);
-        return card;
-    }
-
     private void createCourse(String title, ArrayList<Card> cards) {
         Course course = new Course();
         course.setTitle(title);
@@ -96,7 +87,7 @@ public class QuizletFragmentMenuListener implements QuizletCardsFragment.Listene
 
         Error error = getCourseHolder().addCourse(course);
         if (error != null) {
-            listener.onCourseChanged(course);
+            listener.onCourseCreated(course);
         }
     }
 
@@ -108,8 +99,38 @@ public class QuizletFragmentMenuListener implements QuizletCardsFragment.Listene
         }
 
         if (getCourseHolder().addNewCards(course, cards)) {
-            listener.onCourseChanged(course);
+            listener.onCardsAdded(course);
         }
+    }
+
+    private void onCreateCourseFromCard(final QuizletTerm card) {
+        final RenameAlert renameAlert = new RenameAlert();
+        renameAlert.setPositiveButtonListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createCourseFromCard(card, renameAlert.getName());
+            }
+        });
+        renameAlert.show(getContext(), listener.getDialogContainer());
+    }
+
+    private void onCreateCourseFromSet(QuizletSet set) {
+        ArrayList<Card> cards = new ArrayList<>();
+        for (QuizletTerm term : set.getTerms()) {
+            Card card = createCard(term);
+            cards.add(card);
+        }
+
+        createCourse(set.getTitle(), cards);
+    }
+
+    @NonNull
+    private Card createCard(QuizletTerm term) {
+        Card card = new Card();
+        card.setTerm(term.getTerm());
+        card.setDefinition(term.getDefinition());
+        card.setQuizletTerm(term);
+        return card;
     }
 
     // QuizletCardsFragment.Listener
@@ -174,30 +195,10 @@ public class QuizletFragmentMenuListener implements QuizletCardsFragment.Listene
         popupMenu.show();
     }
 
-    private void onCreateCourseFromCard(final QuizletTerm card) {
-        final RenameAlert renameAlert = new RenameAlert();
-        renameAlert.setPositiveButtonListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createCourseFromCard(card, renameAlert.getName());
-            }
-        });
-        renameAlert.show(getContext(), listener.getViewGroup());
-    }
-
-    private void onCreateCourseFromSet(QuizletSet set) {
-        ArrayList<Card> cards = new ArrayList<>();
-        for (QuizletTerm term : set.getTerms()) {
-            Card card = createCard(term);
-            cards.add(card);
-        }
-
-        createCourse(set.getTitle(), cards);
-    }
-
     public interface Listener {
         void onSetClicked(QuizletSet set);
-        void onCourseChanged(Course course);
-        ViewGroup getViewGroup();
+        void onCourseCreated(Course course);
+        void onCardsAdded(Course course);
+        ViewGroup getDialogContainer();
     }
 }

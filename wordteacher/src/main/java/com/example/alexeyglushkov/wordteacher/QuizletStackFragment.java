@@ -53,12 +53,17 @@ public class QuizletStackFragment extends StackFragment {
             }
 
             @Override
-            public void onCourseChanged(Course course) {
+            public void onCourseCreated(Course course) {
                 getQuizletListener().onCourseChanged(course);
             }
 
             @Override
-            public ViewGroup getViewGroup() {
+            public void onCardsAdded(Course course) {
+                getQuizletListener().onCourseChanged(course);
+            }
+
+            @Override
+            public ViewGroup getDialogContainer() {
                 return (ViewGroup) getFragment().getView();
             }
         });
