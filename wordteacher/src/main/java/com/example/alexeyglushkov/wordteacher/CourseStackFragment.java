@@ -168,7 +168,7 @@ public class CourseStackFragment extends StackFragment {
 
             @Override
             public void onCourseDeletionCancelled(Course course) {
-                getCourseFragment().reloadData();
+                updateCourses();
             }
 
             @Override
