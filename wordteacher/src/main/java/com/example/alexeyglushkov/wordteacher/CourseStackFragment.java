@@ -117,6 +117,11 @@ public class CourseStackFragment extends StackFragment implements CourseFragment
     }
 
     @Override
+    public boolean onCourseDeleted(Course course) {
+        return getStackListener().onCourseDeleted(course);
+    }
+
+    @Override
     public void onCardClicked(Card card) {
         getStackListener().onCardClicked(card);
     }

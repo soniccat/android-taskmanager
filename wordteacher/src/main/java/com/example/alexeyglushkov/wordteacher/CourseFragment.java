@@ -135,10 +135,6 @@ public class CourseFragment extends Fragment {
         outState.putParcelable("adapter", parcelable);
     }
 
-    public void reloadData() {
-        getCourseAdapter().notifyDataSetChanged();
-    }
-
     public void setCourses(ArrayList<Course> courses) {
         if (viewType == ViewType.Courses) {
             getCourseAdapter().setCourses(courses);
@@ -230,6 +226,11 @@ public class CourseFragment extends Fragment {
             public void onCourseMenuClicked(View view, Course course) {
                 CourseFragment.this.onCourseMenuClicked(view, course);
             }
+
+            @Override
+            public boolean onCourseDeleted(View view, Course course) {
+                return CourseFragment.this.onCourseDeleted(course);
+            }
         });
 
         return adapter;
@@ -259,6 +260,10 @@ public class CourseFragment extends Fragment {
         listener.onCourseMenuClicked(course, v);
     }
 
+    private boolean onCourseDeleted(Course course) {
+        return listener.onCourseDeleted(course);
+    }
+
     private void onCardClicked(View v, Card card) {
         listener.onCardClicked(card);
     }
@@ -270,6 +275,7 @@ public class CourseFragment extends Fragment {
     public interface Listener {
         void onCourseClicked(Course course);
         void onCourseMenuClicked(Course course, View view);
+        boolean onCourseDeleted(Course course);
         void onCardClicked(Card card);
         void onCardMenuClicked(Card card, View view);
     }

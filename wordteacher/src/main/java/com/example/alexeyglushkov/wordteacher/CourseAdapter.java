@@ -3,6 +3,7 @@ package com.example.alexeyglushkov.wordteacher;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,9 +27,17 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
     // TODO: convert to list
     private ArrayList<Course> courses = new ArrayList<>();
     private Listener listener;
+    private ItemTouchHelper deleteTouchHelper;
 
     public CourseAdapter(Listener listener) {
         this.listener = listener;
+        this.deleteTouchHelper = new ItemTouchHelper(new TouchCallback());
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        deleteTouchHelper.attachToRecyclerView(recyclerView);
     }
 
     public Parcelable onSaveInstanceState() {
@@ -129,6 +138,49 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
         return courses.size();
     }
 
+    private void onItemDeleted(RecyclerView.ViewHolder holder, int index, int position) {
+        Course course = courses.get(index);
+        boolean isRemoved = listener.onCourseDeleted(holder.itemView, course);
+        if (isRemoved) {
+            deleteCourseAtIndex(index);
+            notifyItemRemoved(position);
+        };
+    }
+
+    // ItemTouchHelper.Callback
+
+    private class TouchCallback extends ItemTouchHelper.Callback {
+        private RecyclerView recyclerView;
+
+        @Override
+        public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+            this.recyclerView = recyclerView;
+            return makeFlag(ItemTouchHelper.ACTION_STATE_SWIPE, ItemTouchHelper.LEFT);
+        }
+
+        @Override
+        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+            int index = recyclerView.getChildAdapterPosition(viewHolder.itemView);
+            int position = recyclerView.getChildLayoutPosition(viewHolder.itemView);
+            CourseAdapter.this.onItemDeleted(viewHolder, index, position);
+        }
+
+        @Override
+        public boolean isLongPressDragEnabled() {
+            return false;
+        }
+
+        @Override
+        public boolean isItemViewSwipeEnabled() {
+            return true;
+        }
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         public View cardView;
         public TextView nameTextview;
@@ -149,5 +201,6 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
     public interface Listener {
         void onCourseClicked(View view, Course card);
         void onCourseMenuClicked(View view, Course card);
+        boolean onCourseDeleted(View view, Course course);
     }
 }

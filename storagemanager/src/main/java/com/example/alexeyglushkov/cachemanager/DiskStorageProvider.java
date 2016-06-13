@@ -140,6 +140,7 @@ public class DiskStorageProvider implements StorageProvider {
         return lockObject;
     }
 
+    // TODO: need to refactor
     private Error writeByKey(String key, Object object, DiskStorageMetadata metadata) {
         Error error = null;
 
@@ -282,6 +283,7 @@ public class DiskStorageProvider implements StorageProvider {
         return lastError;
     }
 
+    // TODO: think about returning interface instead
     @Override
     public List<StorageEntry> getEntries() {
         List<StorageEntry> entries = new ArrayList<>();

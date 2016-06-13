@@ -50,6 +50,9 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     private ViewPager pager;
     private MainPageAdapter pagerAdapter;
 
+    private boolean snackBarNeedDeleteCourse;
+    private Snackbar currentSnackbar;
+
     private MainApplication getMainApplication() {
         return (MainApplication)getApplication();
     }
@@ -136,11 +139,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     private void onPagerPageChanged() {
-        CourseFragment course = getCourseFragment();
-        if (course != null) {
-            updateCourses(course);
-        }
-
+        dismissSnackbar();
+        updateCourses();
         updateToolbarBackButton();
     }
 
@@ -474,7 +474,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
             errorString = getString(R.string.error_load_error);
         }
 
-        Snackbar.make(pager.getChildAt(pager.getCurrentItem()), errorString, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(getCurrentFragmentView(), errorString, Snackbar.LENGTH_LONG).show();
     }
 
     private void startLearnActivity(Course course) {
@@ -532,67 +532,27 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
         Error error = getCourseHolder().addCourse(course);
         if (error != null) {
-            CourseFragment courseFragment = getCourseFragment();
-            if (courseFragment != null) {
-                updateCourses(courseFragment);
-            }
+            updateCourses();
         }
     }
 
-    private void updateCourses(CourseFragment courseFragment) {
-        ArrayList<Course> courses = getCourseHolder().getCourses();
-        Collections.sort(courses, new Comparator<Course>() {
-            @Override
-            public int compare(Course lhs, Course rhs) {
-                return rhs.getCreateDate().compareTo(lhs.getCreateDate());
-            }
-        });
+    private void updateCourses() {
+        CourseFragment courseFragment = getCourseFragment();
+        if (courseFragment != null) {
+            ArrayList<Course> courses = getCourseHolder().getCourses();
+            Collections.sort(courses, new Comparator<Course>() {
+                @Override
+                public int compare(Course lhs, Course rhs) {
+                    return rhs.getCreateDate().compareTo(lhs.getCreateDate());
+                }
+            });
 
-        courseFragment.setCourses(courses);
+            courseFragment.setCourses(courses);
+        }
     }
 
     private void showCourseContent(Course course) {
         getCourseStackFragment().showCardsFragment(course);
-    }
-
-    private void deleteCourseWithConfirmation(final Course course) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.dialog_delete_confirmation);
-        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                deleteCourse(course);
-            }
-        });
-
-        builder.show();
-    }
-
-    private void deleteCardWithConfirmation(final Card card) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.dialog_delete_confirmation);
-        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                deleteCard(card);
-            }
-        });
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
-        });
-
-        builder.show();
-    }
-
-    private void deleteCourse(Course course) {
-        CourseFragment courseFragment = getCourseFragment();
-        if (getCourseHolder().removeCourse(course) == null) {
-            if (courseFragment != null) {
-                courseFragment.deleteCourse(course);
-            }
-        }
     }
 
     private void deleteCard(Card card) {
@@ -615,7 +575,9 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     public void onSetMenuClicked(final QuizletSet set, View v) {
         PopupMenu popupMenu = new PopupMenu(this, v);
         popupMenu.getMenu().add(Menu.NONE, R.id.create_set, 0, R.string.menu_create_course);
-        popupMenu.getMenu().add(Menu.NONE, R.id.add_to_course, 0, R.string.menu_add_to_course);
+        if (getCourseHolder().getCourses().size() > 0) {
+            popupMenu.getMenu().add(Menu.NONE, R.id.add_to_course, 0, R.string.menu_add_to_course);
+        }
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -642,7 +604,9 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     public void onTermMenuClicked(final QuizletTerm term, View v) {
         PopupMenu popupMenu = new PopupMenu(this, v);
         popupMenu.getMenu().add(Menu.NONE, R.id.create_set, 0, R.string.menu_create_course);
-        popupMenu.getMenu().add(Menu.NONE, R.id.add_to_course, 0, R.string.menu_add_to_course);
+        if (getCourseHolder().getCourses().size() > 0) {
+            popupMenu.getMenu().add(Menu.NONE, R.id.add_to_course, 0, R.string.menu_add_to_course);
+        }
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -719,7 +683,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         }
 
         if (getCourseHolder().addNewCards(course, cards)) {
-            reloadCourseFragment();
+            updateCourses();
         }
     }
 
@@ -735,14 +699,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == LearnActivity.ACTIVITY_RESULT) {
-            reloadCourseFragment();
-        }
-    }
-
-    private void reloadCourseFragment() {
-        CourseFragment courseFragment = getCourseFragment();
-        if (courseFragment != null) {
-            getCourseFragment().reloadData();
+            updateCourses();
         }
     }
 
@@ -770,8 +727,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
                     showCourseContent(course);
 
                 } else if (item.getItemId() == R.id.delete_course) {
-                    deleteCourseWithConfirmation(course);
-
+                    getCourseFragment().deleteCourse(course);
+                    onCourseDeleted(course);
                 }
 
                 return false;
@@ -779,6 +736,52 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         });
 
         popupMenu.show();
+    }
+
+    @Override
+    public boolean onCourseDeleted(final Course course) {
+        deleteCourseWithSnackbar(course);
+        return true;
+    }
+
+    private void deleteCourseWithSnackbar(final Course course) {
+        dismissSnackbar();
+
+        snackBarNeedDeleteCourse = true;
+
+        String undoString = getString(R.string.snackbar_undo_deletion);
+        currentSnackbar = Snackbar.make(getCurrentFragmentView(), undoString, Snackbar.LENGTH_LONG);
+        currentSnackbar.setAction(android.R.string.cancel, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                snackBarNeedDeleteCourse = false;
+                updateCourses();
+            }
+        });
+        currentSnackbar.setCallback(new Snackbar.Callback() {
+            @Override
+            public void onDismissed(Snackbar snackbar, int event) {
+                super.onDismissed(snackbar, event);
+                if (snackBarNeedDeleteCourse) {
+                    getCourseHolder().removeCourse(course);
+                    updateCourses();
+                }
+
+                currentSnackbar = null;
+            }
+        });
+        currentSnackbar.show();
+    }
+
+    private void dismissSnackbar() {
+        if (currentSnackbar != null) {
+            currentSnackbar.dismiss();
+            currentSnackbar = null;
+        }
+    }
+
+    private View getCurrentFragmentView() {
+        return pagerAdapter.getFragment(pager.getCurrentItem()).getView();
     }
 
     @Override
