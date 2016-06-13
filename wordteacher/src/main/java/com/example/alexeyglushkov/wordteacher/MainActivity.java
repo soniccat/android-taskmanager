@@ -560,7 +560,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     private void deleteCourseWithSnackbar(final Course course) {
-        dismissSnackbar();
+        //dismissSnackbar();
         snackBarNeedDeleteCourse = true;
 
         String undoString = getString(R.string.snackbar_undo_deletion);
@@ -588,7 +588,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     private void deleteCardWithConfirmation(final Card card) {
-        dismissSnackbar();
+        //dismissSnackbar();
         snackBarNeedDeleteCourse = true;
 
         String undoString = getString(R.string.snackbar_undo_deletion);
