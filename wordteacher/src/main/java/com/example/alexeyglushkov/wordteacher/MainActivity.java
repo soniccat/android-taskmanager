@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -76,7 +77,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
 
         initPager();
@@ -198,7 +199,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     private void onViewReady() {
         if (getQuizletService() != null && getQuizletService().getAccount() != null && getQuizletService().getAccount().isAuthorized()) {
             Log.d("load","start load quizlet sets");
-            loadQuizletSets();
+            loadQuizletSets(false);
         } else {
             Log.d("quizlet status", "");
         }
@@ -383,16 +384,18 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     //// Other
 
     private void onFabPressed() {
-        loadQuizletSets();
+        loadQuizletSets(true);
     }
 
-    private void loadQuizletSets() {
+    private void loadQuizletSets(boolean forceLoad) {
+        CachableHttpLoadTask.CacheMode cacheMode = forceLoad ? CachableHttpLoadTask.CacheMode.LOAD_IF_ERROR_THEN_CHECK_CACHE : CachableHttpLoadTask.CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD;
+
         getQuizletService().loadSets(new SimpleService.CommandCallback() {
             @Override
             public void onCompleted(Error error) {
                 onQuizletSetsLoaded(error);
             }
-        }, CachableHttpLoadTask.CacheMode.LOAD_IF_ERROR_THEN_CHECK_CACHE);
+        }, cacheMode);
     }
 
     private void onQuizletSetsLoaded(Error error) {
