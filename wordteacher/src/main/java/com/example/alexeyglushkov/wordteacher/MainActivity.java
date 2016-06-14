@@ -542,7 +542,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     private void deleteCard(Card card) {
         CourseFragment courseFragment = getCourseFragment();
-        if (getCourseHolder().removeCard(card)) {
+        if (getCourseHolder().removeCard(card) == null) {
             if (courseFragment != null) {
                 courseFragment.deleteCard(card);
             }
@@ -580,7 +580,9 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     @Override
     public void onCourseClicked(Course course) {
-        startLearnActivity(course);
+        if (course.getCards().size() > 0) {
+            startLearnActivity(course);
+        }
     }
 
     @Override

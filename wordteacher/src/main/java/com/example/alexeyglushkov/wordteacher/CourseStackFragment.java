@@ -50,15 +50,11 @@ public class CourseStackFragment extends StackFragment {
         }
     }
 
+    /*
     public void updateCourses(ArrayList<Course> courses) {
         CourseFragment courseFragment = getCourseFragment();
         courseFragment.setCourses(courses);
-    }
-
-    public void updateCards(ArrayList<Card> cards) {
-        CourseFragment cardsFragment = getCardsFragment();
-        cardsFragment.setCards(cards);
-    }
+    }*/
 
     private void showCourseFragment() {
         CourseFragment courseFragment = new CourseFragment();
@@ -123,6 +119,14 @@ public class CourseStackFragment extends StackFragment {
         }
     }
 
+    public void updateCards() {
+        CourseFragment cardsFragment = getCardsFragment();
+        if (cardsFragment != null) {
+            Course course = cardsFragment.getParentCourse();
+            cardsFragment.setCards(course.getCards());
+        }
+    }
+
     public String getTitle() {
         String title = null;
         if (getBackStackSize() > 0) {
@@ -173,7 +177,15 @@ public class CourseStackFragment extends StackFragment {
 
             @Override
             public void onCourseDeleted(Course course) {
-                updateCourses();
+            }
+
+            @Override
+            public void onCardDeletionCancelled(Card card) {
+                updateCards();
+            }
+
+            @Override
+            public void onCardDeleted(Card card) {
             }
 
             @Override

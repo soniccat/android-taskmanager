@@ -53,8 +53,12 @@ public class CourseFragmentMenuListener implements CourseFragment.Listener {
             public void onDismissed(Snackbar snackbar, int event) {
                 super.onDismissed(snackbar, event);
                 if (snackBarNeedDeleteCourse) {
-                    getCourseHolder().removeCourse(course);
-                    listener.onCourseDeleted(course);
+                    Error error = getCourseHolder().removeCourse(course);
+                    if (error != null) {
+                        listener.onCourseDeletionCancelled(course);
+                    } else {
+                        listener.onCourseDeleted(course);
+                    }
                 }
             }
         });
@@ -62,7 +66,6 @@ public class CourseFragmentMenuListener implements CourseFragment.Listener {
     }
 
     private void deleteCardWithConfirmation(final Card card) {
-        /*
         snackBarNeedDeleteCard = true;
 
         String undoString = getContext().getString(R.string.snackbar_undo_deletion);
@@ -71,7 +74,7 @@ public class CourseFragmentMenuListener implements CourseFragment.Listener {
             @Override
             public void onClick(View v) {
                 snackBarNeedDeleteCard = false;
-                updateCourseCards();
+                listener.onCardDeletionCancelled(card);
             }
         });
         snackbar.setCallback(new Snackbar.Callback() {
@@ -79,13 +82,16 @@ public class CourseFragmentMenuListener implements CourseFragment.Listener {
             public void onDismissed(Snackbar snackbar, int event) {
                 super.onDismissed(snackbar, event);
                 if (snackBarNeedDeleteCard) {
-                    getCourseHolder().removeCard(card);
-                    updateCourseCards();
+                    Error error = getCourseHolder().removeCard(card);
+                    if (error != null) {
+                        listener.onCardDeletionCancelled(card);
+                    } else {
+                        listener.onCardDeleted(card);
+                    }
                 }
             }
         });
         snackbar.show();
-        */
     }
 
     // CourseFragment.Listener
@@ -134,9 +140,6 @@ public class CourseFragmentMenuListener implements CourseFragment.Listener {
 
     @Override
     public void onCourseClicked(Course course) {
-        /*if (course.getCards().size() > 0) {
-            startLearnActivity(course);
-        }*/
         listener.onCourseClicked(course);
     }
 
@@ -181,6 +184,8 @@ public class CourseFragmentMenuListener implements CourseFragment.Listener {
 
         void onCourseDeletionCancelled(Course course);
         void onCourseDeleted(Course course);
+        void onCardDeletionCancelled(Card card);
+        void onCardDeleted(Card card);
 
         View getSnackBarViewContainer();
     }

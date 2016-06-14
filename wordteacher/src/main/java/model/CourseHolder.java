@@ -133,25 +133,23 @@ public class CourseHolder {
         return error;
     }
 
-    public boolean removeCard(Card card) {
-        boolean isRemoved = false;
+    public Error removeCard(Card card) {
+        Error error = null;
         Course course = getCourse(card.getCourseId());
         if (course != null) {
             int index = course.getCardIndex(card);
             if (index != -1) {
                 course.removeCard(card);
 
-                Error error = storeCourse(course);
+                error = storeCourse(course);
                 if (error != null) {
                     // rollback
                     course.addCard(index, card);
-                } else {
-                    isRemoved = true;
                 }
             }
         }
 
-        return isRemoved;
+        return error;
     }
 
     public void countRighAnswer(Card card) {
