@@ -495,10 +495,6 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         startLearnActivity(course.getCards());
     }
 
-    private void startLearnReadyWords(Course course) {
-        startLearnActivity(course.getReadyToLearnCards());
-    }
-
     private void startLearnNewWords(Course course) {
         startLearnActivity(course.getNotStartedCards());
     }
@@ -573,14 +569,12 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     @Override
     public void onCourseClicked(Course course) {
-        if (course.getCards().size() > 0) {
-            startLearnActivity(course);
+        List<Card> cards = course.getReadyToLearnCards();
+        if (cards.size() > 0) {
+            startLearnActivity(cards);
+        } else if (course.getCards().size() > 0){
+            startLearnActivity(course.getCards());
         }
-    }
-
-    @Override
-    public void onLearnReadyWordsClick(Course course) {
-        startLearnReadyWords(course);
     }
 
     @Override

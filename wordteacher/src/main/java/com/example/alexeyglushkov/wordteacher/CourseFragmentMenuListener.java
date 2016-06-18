@@ -99,9 +99,6 @@ public class CourseFragmentMenuListener implements CourseFragment.Listener {
     @Override
     public void onCourseMenuClicked(final Course course, View v) {
         PopupMenu popupMenu = new PopupMenu(getContext(), v);
-        if (course.getReadyToLearnCards().size() > 0) {
-            popupMenu.getMenu().add(Menu.NONE, R.id.learn_ready_words, 0, R.string.menu_course_learn_only_ready_words);
-        }
         if (course.getNotStartedCards().size() > 0) {
             popupMenu.getMenu().add(Menu.NONE, R.id.learn_new_words, 0, R.string.menu_course_learn_only_new_words);
         }
@@ -110,10 +107,7 @@ public class CourseFragmentMenuListener implements CourseFragment.Listener {
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == R.id.learn_ready_words) {
-                    listener.onLearnReadyWordsClick(course);
-
-                } else if (item.getItemId() == R.id.learn_new_words) {
+                if (item.getItemId() == R.id.learn_new_words) {
                     listener.onLearnNewWordsClick(course);
 
                 } else if (item.getItemId() == R.id.edit_course) {
@@ -171,7 +165,6 @@ public class CourseFragmentMenuListener implements CourseFragment.Listener {
 
     public interface Listener {
         void onCourseClicked(Course course);
-        void onLearnReadyWordsClick(Course course);
         void onLearnNewWordsClick(Course course);
         void onShowCourseContentClicked(Course course);
 

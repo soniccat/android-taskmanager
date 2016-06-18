@@ -28,12 +28,6 @@ public class QuizletSetsTask extends ServiceTask implements QuizletSetsCommand {
         build(server, userId);
     }
 
-    @Override
-    protected long cacheStoreDuration() {
-        // TODO: move to a tool constant
-        return 60 * 60 * 24;
-    }
-
     private void build(String server, String userId) {
         HttpUrlConnectionBuilder requestBuilder = new HttpUrlConnectionBuilder();
 

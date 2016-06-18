@@ -2,7 +2,6 @@
 <resources>
     <item type="id" name="create_set"/>
     <item type="id" name="add_to_course"/>
-    <item type="id" name="learn_ready_words"/>
     <item type="id" name="learn_new_words"/>
     <item type="id" name="edit_course"/>
     <item type="id" name="delete_course"/>

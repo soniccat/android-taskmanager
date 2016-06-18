@@ -161,11 +161,6 @@ public class CourseStackFragment extends StackFragment {
             }
 
             @Override
-            public void onLearnReadyWordsClick(Course course) {
-                CourseStackFragment.this.getCourseListener().onLearnReadyWordsClick(course);
-            }
-
-            @Override
             public void onLearnNewWordsClick(Course course) {
                 CourseStackFragment.this.getCourseListener().onLearnNewWordsClick(course);
             }
@@ -186,7 +181,9 @@ public class CourseStackFragment extends StackFragment {
 
             @Override
             public void onCardDeleted(Card card) {
-                // TODO: need to update courses if they are here
+                if (getBackStackSize() == 0) {
+                    updateCourses();
+                }
             }
 
             @Override
@@ -200,7 +197,6 @@ public class CourseStackFragment extends StackFragment {
 
     public interface Listener extends StackFragment.Listener {
         void onCourseClicked(Course course);
-        void onLearnReadyWordsClick(Course course);
         void onLearnNewWordsClick(Course course);
     }
 }

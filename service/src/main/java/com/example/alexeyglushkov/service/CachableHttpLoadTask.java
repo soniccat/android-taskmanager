@@ -113,7 +113,7 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
         byte[] bytes = null;
         if (metadata != null) {
             long currentTime = System.currentTimeMillis() / 1000L;
-            if (currentTime < metadata.getExpireTime()) {
+            if (metadata.getExpireTime() != 0 && currentTime < metadata.getExpireTime()) {
                 bytes = (byte[]) cache.getValue(cacheKey);
 
             } else if (deleteIfExpired) {
