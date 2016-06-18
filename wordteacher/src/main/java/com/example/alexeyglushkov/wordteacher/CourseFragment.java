@@ -69,7 +69,7 @@ public class CourseFragment extends Fragment {
         adapter.notifyDataSetChanged();
     }
 
-    public void deleteCard(Card card) {
+    public void deleteCardView(Card card) {
         CardAdapter adapter = getCardAdapter();
         int index = adapter.getCardIndex(card);
         if (index != -1) {
@@ -82,7 +82,7 @@ public class CourseFragment extends Fragment {
         }
     }
 
-    public void deleteCourse(Course course) {
+    public void deleteCourseView(Course course) {
         CourseAdapter adapter = getCourseAdapter();
         int index = adapter.getCourseIndex(course);
         if (index != -1) {
@@ -236,8 +236,8 @@ public class CourseFragment extends Fragment {
             }
 
             @Override
-            public boolean onCourseDeleted(View view, Course course) {
-                return CourseFragment.this.onCourseDeleted(course);
+            public void onCourseViewDeleted(View view, Course course) {
+                CourseFragment.this.onCourseViewDeleted(course);
             }
         });
 
@@ -257,8 +257,8 @@ public class CourseFragment extends Fragment {
             }
 
             @Override
-            public boolean onCardDeleted(View view, Card card) {
-                return CourseFragment.this.onCardDeleted(card);
+            public void onCardViewDeleted(View view, Card card) {
+                CourseFragment.this.onCardViewDeleted(card);
             }
         });
 
@@ -273,8 +273,8 @@ public class CourseFragment extends Fragment {
         listener.onCourseMenuClicked(course, v);
     }
 
-    private boolean onCourseDeleted(Course course) {
-        return listener.onCourseDeleted(course);
+    private void onCourseViewDeleted(Course course) {
+        listener.onCourseViewDeleted(course);
     }
 
     private void onCardClicked(View v, Card card) {
@@ -285,16 +285,16 @@ public class CourseFragment extends Fragment {
         listener.onCardMenuClicked(card, v);
     }
 
-    private boolean onCardDeleted(Card card) {
-        return listener.onCardDeleted(card);
+    private void onCardViewDeleted(Card card) {
+        listener.onCardViewDeleted(card);
     }
 
     public interface Listener {
         void onCourseClicked(Course course);
         void onCourseMenuClicked(Course course, View view);
-        boolean onCourseDeleted(Course course);
+        void onCourseViewDeleted(Course course);
         void onCardClicked(Card card);
         void onCardMenuClicked(Card card, View view);
-        boolean onCardDeleted(Card card);
+        void onCardViewDeleted(Card card);
     }
 }

@@ -137,11 +137,9 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
 
     public void onItemDeleted(RecyclerView.ViewHolder holder, int index, int position) {
         Course course = courses.get(index);
-        boolean isRemoved = listener.onCourseDeleted(holder.itemView, course);
-        if (isRemoved) {
-            deleteCourseAtIndex(index);
-            notifyItemRemoved(position);
-        }
+        listener.onCourseViewDeleted(holder.itemView, course);
+        deleteCourseAtIndex(index);
+        notifyItemRemoved(position);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -164,6 +162,6 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
     public interface Listener {
         void onCourseClicked(View view, Course card);
         void onCourseMenuClicked(View view, Course card);
-        boolean onCourseDeleted(View view, Course course);
+        void onCourseViewDeleted(View view, Course course);
     }
 }

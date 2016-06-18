@@ -142,12 +142,12 @@ public class CourseStackFragment extends StackFragment {
         return new CourseFragmentMenuListener(getContext(), getCourseHolder(), new CourseFragmentMenuListener.Listener() {
             @Override
             public void onCourseDeleteClicked(Course course) {
-                getCourseFragment().deleteCourse(course);
+                getCourseFragment().deleteCourseView(course);
             }
 
             @Override
             public void onCardDeleteClicked(Card card) {
-                getCardsFragment().deleteCard(card);
+                getCardsFragment().deleteCardView(card);
             }
 
             @Override
@@ -186,6 +186,7 @@ public class CourseStackFragment extends StackFragment {
 
             @Override
             public void onCardDeleted(Card card) {
+                // TODO: need to update courses if they are here
             }
 
             @Override

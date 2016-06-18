@@ -101,11 +101,9 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.Holder> implem
 
     public void onItemDeleted(RecyclerView.ViewHolder holder, int index, int position) {
         Card course = cards.get(index);
-        boolean isRemoved = listener.onCardDeleted(holder.itemView, course);
-        if (isRemoved) {
-            deleteCardAtIndex(index);
-            notifyItemRemoved(position);
-        }
+        listener.onCardViewDeleted(holder.itemView, course);
+        deleteCardAtIndex(index);
+        notifyItemRemoved(position);
     }
 
     public class Holder extends RecyclerView.ViewHolder {
@@ -126,6 +124,6 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.Holder> implem
     public interface Listener {
         void onCardClicked(View view, Card card);
         void onMenuClicked(View view, Card card);
-        boolean onCardDeleted(View view, Card course);
+        void onCardViewDeleted(View view, Card course);
     }
 }
