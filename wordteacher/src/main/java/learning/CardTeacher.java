@@ -121,7 +121,7 @@ public class CardTeacher implements Parcelable {
     }
 
     public void onWrongInput() {
-        if (checkCount > 2) {
+        if (checkCount > 1) {
             countWronAnswer();
         }
     }

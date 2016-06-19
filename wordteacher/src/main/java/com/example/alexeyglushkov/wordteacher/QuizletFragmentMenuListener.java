@@ -154,7 +154,13 @@ public class QuizletFragmentMenuListener implements QuizletCardsFragment.Listene
                     onCreateCourseFromSet(set);
 
                 } else if (item.getItemId() == R.id.add_to_course) {
-                    showAddFromSetDialog(set.getTerms());
+                    ArrayList<Course> courses = getCourseHolder().getCourses();
+                    if (courses.size() > 1) {
+                        showAddFromSetDialog(set.getTerms());
+                    } else {
+                        Course course = courses.get(0);
+                        addCardsToCourse(course, set.getTerms());
+                    }
                 }
 
                 return false;
@@ -198,6 +204,7 @@ public class QuizletFragmentMenuListener implements QuizletCardsFragment.Listene
     public interface Listener {
         void onSetClicked(QuizletSet set);
         void onCourseCreated(Course course);
+        void onCourseChanged(Course course);
         void onCardsAdded(Course course);
         ViewGroup getDialogContainer();
     }

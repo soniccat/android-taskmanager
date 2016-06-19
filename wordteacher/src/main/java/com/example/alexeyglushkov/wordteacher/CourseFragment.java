@@ -179,7 +179,7 @@ public class CourseFragment extends Fragment {
         Collections.sort(cards, new Comparator<Card>() {
             @Override
             public int compare(Card lhs, Card rhs) {
-                return lhs.getTerm().compareTo(rhs.getTerm());
+                return lhs.getTerm().compareToIgnoreCase(rhs.getTerm());
             }
         });
     }
