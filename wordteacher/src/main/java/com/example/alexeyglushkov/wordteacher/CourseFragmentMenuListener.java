@@ -18,6 +18,7 @@ public class CourseFragmentMenuListener implements CourseFragment.Listener {
     private Context context;
     private CourseHolder courseHolder;
     private Listener listener;
+    private Snackbar currentSnackbar;
 
     private boolean snackBarNeedDeleteCourse;
     private boolean snackBarNeedDeleteCard;
@@ -40,15 +41,15 @@ public class CourseFragmentMenuListener implements CourseFragment.Listener {
         snackBarNeedDeleteCourse = true;
 
         String undoString = getContext().getString(R.string.snackbar_undo_deletion);
-        Snackbar snackbar = Snackbar.make(listener.getSnackBarViewContainer(), undoString, Snackbar.LENGTH_LONG);
-        snackbar.setAction(android.R.string.cancel, new View.OnClickListener() {
+        currentSnackbar = Snackbar.make(listener.getSnackBarViewContainer(), undoString, Snackbar.LENGTH_LONG);
+        currentSnackbar.setAction(android.R.string.cancel, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 snackBarNeedDeleteCourse = false;
                 listener.onCourseDeletionCancelled(course);
             }
         });
-        snackbar.setCallback(new Snackbar.Callback() {
+        currentSnackbar.setCallback(new Snackbar.Callback() {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
                 super.onDismissed(snackbar, event);
@@ -60,24 +61,26 @@ public class CourseFragmentMenuListener implements CourseFragment.Listener {
                         listener.onCourseDeleted(course);
                     }
                 }
+
+                currentSnackbar = null;
             }
         });
-        snackbar.show();
+        currentSnackbar.show();
     }
 
     private void deleteCardWithConfirmation(final Card card) {
         snackBarNeedDeleteCard = true;
 
         String undoString = getContext().getString(R.string.snackbar_undo_deletion);
-        Snackbar snackbar = Snackbar.make(listener.getSnackBarViewContainer(), undoString, Snackbar.LENGTH_LONG);
-        snackbar.setAction(android.R.string.cancel, new View.OnClickListener() {
+        currentSnackbar = Snackbar.make(listener.getSnackBarViewContainer(), undoString, Snackbar.LENGTH_LONG);
+        currentSnackbar.setAction(android.R.string.cancel, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 snackBarNeedDeleteCard = false;
                 listener.onCardDeletionCancelled(card);
             }
         });
-        snackbar.setCallback(new Snackbar.Callback() {
+        currentSnackbar.setCallback(new Snackbar.Callback() {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
                 super.onDismissed(snackbar, event);
@@ -89,9 +92,17 @@ public class CourseFragmentMenuListener implements CourseFragment.Listener {
                         listener.onCardDeleted(card);
                     }
                 }
+
+                currentSnackbar = null;
             }
         });
-        snackbar.show();
+        currentSnackbar.show();
+    }
+
+    public void applyPendingOperation() {
+        if (currentSnackbar != null) {
+            currentSnackbar.dismiss();
+        }
     }
 
     // CourseFragment.Listener
@@ -137,7 +148,6 @@ public class CourseFragmentMenuListener implements CourseFragment.Listener {
 
     @Override
     public void onCardClicked(Card card) {
-
     }
 
     @Override

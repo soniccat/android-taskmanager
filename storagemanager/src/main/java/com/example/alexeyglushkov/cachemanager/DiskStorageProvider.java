@@ -144,15 +144,17 @@ public class DiskStorageProvider implements StorageProvider {
     private Error writeByKey(String key, Object object, DiskStorageMetadata metadata) {
         Error error = null;
 
-        File file = getKeyFile(key);
+        // TODO: consider removing it or putting at the bottom, now if we have crash in serialization a file will be just removed
+        /*File file = getKeyFile(key);
         if (file.exists()) {
             if (!file.delete()) {
                 error = new Error("DiskCacheProvider.writeByKey() delete: can't delete cache file");
                 setLastError(error);
             }
-        }
+        }*/
 
-        if (error == null) {
+        File file = getKeyFile(key);
+        if (!file.exists()) {
             try {
                 file.createNewFile();
             } catch (IOException ex) {

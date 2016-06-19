@@ -11,10 +11,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
+import model.Card;
+import model.CardProgress;
 import tools.DeleteTouchHelper;
 import model.Course;
+import tools.Tools;
 
 /**
  * Created by alexeyglushkov on 08.05.16.
@@ -92,14 +97,23 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
         if (inProgressCount > 0 && inProgressCount == course.getCards().size()) {
             holder.inProgressTextView.setVisibility(View.VISIBLE);
 
-            int waitingCardCount = course.getReadyToLearnCards().size();
+            List<Card> waitingCards = course.getReadyToLearnCards();
+            int waitingCardCount = waitingCards.size();
             if (waitingCardCount != 0) {
                 String waitingFormat = holder.itemView.getContext().getResources().getString(R.string.cell_course_waiting_words);
                 String inProgressString = String.format(Locale.US, waitingFormat, waitingCardCount);
                 holder.inProgressTextView.setText(inProgressString);
 
             } else {
-                holder.inProgressTextView.setText(R.string.cell_course_no_waiting_words);
+                Date date = getEarliestWaitCard(course.getCards());
+                if (date != null) {
+                    long duration = date.getTime() - new Date().getTime();
+                    String format = holder.itemView.getContext().getString(R.string.cell_course_revise_time);
+                    String timeString = String.format(Locale.US, format, Tools.getDurationString(duration));
+                    holder.inProgressTextView.setText(timeString);
+                } else {
+                    holder.inProgressTextView.setText(R.string.cell_course_no_waiting_words);
+                }
             }
 
         } else if (inProgressCount > 0) {
@@ -112,6 +126,23 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
             holder.inProgressTextView.setText(null);
             holder.inProgressTextView.setVisibility(View.INVISIBLE);
         }
+    }
+
+    private Date getEarliestWaitCard(List<Card> waitingCards) {
+        Date result = null;
+        for (Card card : waitingCards) {
+            CardProgress progress = card.getProgress();
+            if (progress != null) {
+                Date lessonDate = progress.getNextLessonDate();
+                if (result != null) {
+                    result = lessonDate.compareTo(result) == -1 ? lessonDate : result;
+                } else {
+                    result = lessonDate;
+                }
+            }
+        }
+
+        return result;
     }
 
     private void bindListener(ViewHolder holder, final Course course) {

@@ -129,7 +129,6 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     private void onPagerPageChanged() {
-        dismissSnackbar();
         updateCourses();
         updateToolbarBackButton();
     }
@@ -514,35 +513,11 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         startActivityForResult(activityIntent, LearnActivity.ACTIVITY_RESULT);
     }
 
-    private void startLearnCourse(Course course) {
-
-    }
-
     private void updateCourses() {
         CourseStackFragment stackFragment = getCourseStackFragment();
         if (stackFragment != null) {
             stackFragment.updateCourses();
         }
-    }
-
-    private void updateCourseCards() {
-        //updateCourses();
-    }
-
-    private void deleteCard(Card card) {
-        CourseFragment courseFragment = getCourseFragment();
-        if (getCourseHolder().removeCard(card) == null) {
-            if (courseFragment != null) {
-                courseFragment.deleteCardView(card);
-            }
-        }
-    }
-
-    private void dismissSnackbar() {
-        /*if (currentSnackbar != null) {
-            currentSnackbar.dismiss();
-            currentSnackbar = null;
-        }*/
     }
 
     private View getCurrentFragmentView() {

@@ -63,10 +63,19 @@ public class CardProgress implements Parcelable {
 
     public boolean needHaveLesson() {
         boolean result = true;
+        Date newLessonDate = getNextLessonDate();
+        if (newLessonDate != null) {
+            result = new Date().compareTo(newLessonDate) >= 0;
+        }
+
+        return result;
+    }
+
+    public Date getNextLessonDate() {
+        Date result = null;
         if (lastLessonDate != null) {
             int interval = getNextLessonInterval(rightAnswerCount);
-            Date newLessonDate = new Date(lastLessonDate.getTime() + interval);
-            result = new Date().compareTo(newLessonDate) >= 0;
+            result = new Date(lastLessonDate.getTime() + interval);
         }
 
         return result;
@@ -91,6 +100,8 @@ public class CardProgress implements Parcelable {
                     rightAnswerCount--;
                 }
             }
+
+            updateLastLessonDate();
         }
     }
 

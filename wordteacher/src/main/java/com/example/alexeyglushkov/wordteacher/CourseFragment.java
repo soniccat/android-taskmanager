@@ -199,6 +199,10 @@ public class CourseFragment extends Fragment {
         this.listener = listener;
     }
 
+    public Listener getListener() {
+        return listener;
+    }
+
     private CourseAdapter getCourseAdapter() {
         return (CourseAdapter)adapter;
     }

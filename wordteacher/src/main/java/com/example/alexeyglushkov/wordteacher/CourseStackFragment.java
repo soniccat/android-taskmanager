@@ -107,6 +107,7 @@ public class CourseStackFragment extends StackFragment {
     public void updateCourses() {
         CourseFragment courseFragment = getCourseFragment();
         if (courseFragment != null) {
+            applyPendingOperation(courseFragment);
             ArrayList<Course> courses = getCourseHolder().getCourses();
             Collections.sort(courses, new Comparator<Course>() {
                 @Override
@@ -117,6 +118,11 @@ public class CourseStackFragment extends StackFragment {
 
             courseFragment.setCourses(courses);
         }
+    }
+
+    public void applyPendingOperation(CourseFragment fragment) {
+        CourseFragmentMenuListener listener = (CourseFragmentMenuListener)fragment.getListener();
+        listener.applyPendingOperation();
     }
 
     public void updateCards() {

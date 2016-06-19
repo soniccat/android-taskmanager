@@ -4,6 +4,7 @@
     <string name="cell_course_in_progress">%d in progress</string>
     <string name="cell_course_waiting_words">%d are ready to revise</string>
     <string name="cell_course_no_waiting_words">nothing to revise</string>
+    <string name="cell_course_revise_time">%s until revise</string>
 
     <string name="menu_create_course">Create new course</string>
     <string name="menu_add_to_course">Add to course</string>
