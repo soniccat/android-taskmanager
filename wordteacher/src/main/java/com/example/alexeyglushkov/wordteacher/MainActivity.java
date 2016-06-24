@@ -206,6 +206,11 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
             public ViewGroup getDialogContainer() {
                 return (ViewGroup) getCourseFragment().getView();
             }
+
+            @Override
+            public void onCourseChanged(Course course) {
+
+            }
         });
     }
 

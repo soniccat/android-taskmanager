@@ -66,6 +66,11 @@ public class QuizletStackFragment extends StackFragment {
             public ViewGroup getDialogContainer() {
                 return (ViewGroup) getFragment().getView();
             }
+
+            @Override
+            public void onCourseChanged(Course course) {
+
+            }
         });
     }
 
