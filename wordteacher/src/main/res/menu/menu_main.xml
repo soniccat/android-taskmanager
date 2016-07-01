@@ -8,8 +8,31 @@
         android:title="@string/menu_course_learn_only_ready_words"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/sort_group"
+        android:title="@string/menu_sort"
         android:orderInCategory="101"
+        android:icon="@drawable/ic_sort_white_24dp"
+        app:showAsAction="ifRoom">
+        <menu>
+            <group android:checkableBehavior="single">
+            <item
+                android:id="@+id/sort_by_create_date"
+                android:orderInCategory="1"
+                android:title="@string/menu_sort_by_create_date"/>
+            <item
+                android:id="@+id/sort_by_modify_date"
+                android:orderInCategory="2"
+                android:title="@string/menu_sort_by_modify_date"/>
+            <item
+                android:id="@+id/sort_by_publish_date"
+                android:orderInCategory="3"
+                android:title="@string/menu_sort_by_publish_date"/>
+            </group>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="102"
         android:title="@string/action_settings"
         app:showAsAction="never" />
 </menu>

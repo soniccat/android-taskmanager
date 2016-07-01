@@ -1,6 +1,7 @@
 package com.example.alexeyglushkov.wordteacher;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -32,6 +33,7 @@ import java.util.List;
 import learning.LearnActivity;
 import main.BaseActivity;
 import main.MainApplication;
+import main.Preferences;
 import model.Card;
 import model.Course;
 import model.CourseHolder;
@@ -242,11 +244,39 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem item = menu.getItem(0);
+        MenuItem learnMenuItem = menu.findItem(R.id.learn_ready_words);
         List<Card> cards = getReadyCards();
-        item.setVisible(cards.size() > 0);
+        learnMenuItem.setVisible(cards.size() > 0);
+
+        MenuItem sortByCreateDate = menu.findItem(R.id.sort_by_create_date);
+        MenuItem sortByModifyDate = menu.findItem(R.id.sort_by_modify_date);
+        MenuItem sortByPublishDate = menu.findItem(R.id.sort_by_publish_date);
+
+        if (isSortByCreateDate()) {
+            sortByCreateDate.setChecked(true);
+        }
+
+        if (isSortByModifyDate()) {
+            sortByModifyDate.setChecked(true);
+        }
+
+        if (isSortByPublishDate()) {
+            sortByPublishDate.setChecked(true);
+        }
 
         return super.onPrepareOptionsMenu(menu);
+    }
+
+    private boolean isSortByCreateDate() {
+        return Preferences.getSortOrder() == Preferences.SortOrder.BY_CREATE_DATE;
+    }
+
+    private boolean isSortByModifyDate() {
+        return Preferences.getSortOrder() == Preferences.SortOrder.BY_MODIFY_DATE;
+    }
+
+    private boolean isSortByPublishDate() {
+        return Preferences.getSortOrder() == Preferences.SortOrder.BY_PUBLISH_DATE;
     }
 
     @Override
