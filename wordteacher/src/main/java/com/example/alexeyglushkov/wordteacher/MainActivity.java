@@ -488,6 +488,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     public void onBackStackChanged() {
         updateToolbarBackButton();
         updateTabs();
+        supportInvalidateOptionsMenu();
     }
 
     //// Other

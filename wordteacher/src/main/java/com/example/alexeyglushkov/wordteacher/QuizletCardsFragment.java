@@ -37,12 +37,18 @@ public class QuizletCardsFragment extends Fragment {
     private ViewType viewType = ViewType.Sets;
     private Listener listener;
 
-    private Preferences.SortOrder sortOrder = Preferences.SortOrder.BY_NAME;
+    private Preferences.SortOrder sortOrder = Preferences.getQuizletSetSortOrder();
 
     public QuizletCardsFragment() {
     }
 
     public void setSortOrder(Preferences.SortOrder sortOrder) {
+        if (viewType == ViewType.Sets) {
+            Preferences.setQuizletSetSortOrder(sortOrder);
+        } else {
+            Preferences.setQuizletTermSortOrder(sortOrder);
+        }
+
         this.sortOrder = sortOrder;
         updateAdapter();
     }
@@ -211,6 +217,7 @@ public class QuizletCardsFragment extends Fragment {
     public void setViewType(ViewType aViewType) {
         if (viewType != aViewType) {
             viewType = aViewType;
+            sortOrder = viewType == ViewType.Sets ? Preferences.getQuizletSetSortOrder() : Preferences.getQuizletTermSortOrder();
             recreateAdapter();
         }
     }

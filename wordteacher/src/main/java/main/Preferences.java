@@ -11,8 +11,8 @@ public class Preferences {
         BY_NAME,
         BY_NAME_INV,
         BY_CREATE_DATE,
-        BY_MODIFY_DATE,
         BY_CREATE_DATE_INV,
+        BY_MODIFY_DATE,
         BY_MODIFY_DATE_INV,
         BY_PUBLISH_DATE,
         BY_PUBLISH_DATE_INV;
@@ -33,12 +33,24 @@ public class Preferences {
         }
     }
 
-    public static SortOrder getSortOrder() {
-        return SortOrder.values()[getReadPreference().getInt("sortOrder", 1)];
+    public static SortOrder getQuizletSetSortOrder() {
+        return SortOrder.values()[getReadPreference().getInt("quizletSetSortOrder", 0)];
     }
 
-    public static void setSortOrder(SortOrder order) {
-        getWritePreference().putInt("sortOrder", order.ordinal());
+    public static void setQuizletSetSortOrder(SortOrder order) {
+        SharedPreferences.Editor editor = getWritePreference();
+        editor.putInt("quizletSetSortOrder", order.ordinal());
+        editor.commit();
+    }
+
+    public static SortOrder getQuizletTermSortOrder() {
+        return SortOrder.values()[getReadPreference().getInt("quizletTermSortOrder", 2)];
+    }
+
+    public static void setQuizletTermSortOrder(SortOrder order) {
+        SharedPreferences.Editor editor = getWritePreference();
+        editor.putInt("quizletTermSortOrder", order.ordinal());
+        editor.commit();
     }
 
     private static SharedPreferences.Editor getWritePreference() {
