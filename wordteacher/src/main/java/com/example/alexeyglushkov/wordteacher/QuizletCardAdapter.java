@@ -38,9 +38,13 @@ public class QuizletCardAdapter extends RecyclerView.Adapter<QuizletCardAdapter.
     }
 
     public void updateCards(List<QuizletTerm> newCards) {
-        cards.clear();
+        cards = new ArrayList<>();
         cards.addAll(newCards);
         notifyDataSetChanged();
+    }
+
+    public ArrayList<QuizletTerm> getCards() {
+        return cards;
     }
 
     @Override

@@ -18,6 +18,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import main.Preferences;
+
 /**
  * A placeholder fragment containing a simple view.
  */
@@ -35,7 +37,18 @@ public class QuizletCardsFragment extends Fragment {
     private ViewType viewType = ViewType.Sets;
     private Listener listener;
 
+    private Preferences.SortOrder sortOrder = Preferences.SortOrder.BY_NAME;
+
     public QuizletCardsFragment() {
+    }
+
+    public void setSortOrder(Preferences.SortOrder sortOrder) {
+        this.sortOrder = sortOrder;
+        updateAdapter();
+    }
+
+    public Preferences.SortOrder getSortOrder() {
+        return sortOrder;
     }
 
     public void setListener(Listener listener) {
@@ -79,6 +92,7 @@ public class QuizletCardsFragment extends Fragment {
         int intViewType = savedInstanceState.getInt("viewType");
         viewType = ViewType.values()[intViewType];
         parentSet = savedInstanceState.getParcelable("parentSet");
+        sortOrder = Preferences.SortOrder.values()[savedInstanceState.getInt("sortOrder")];
         recreateAdapter();
         restoreAdapter(savedInstanceState);
     }
@@ -98,6 +112,7 @@ public class QuizletCardsFragment extends Fragment {
 
         outState.putInt("viewType", viewType.ordinal());
         outState.putParcelable("parentSet", parentSet);
+        outState.putInt("sortOrder", sortOrder.ordinal());
         saveAdapterState(outState);
     }
 
@@ -122,10 +137,48 @@ public class QuizletCardsFragment extends Fragment {
 
     public void updateSets(List<QuizletSet> sets) {
         if (viewType == ViewType.Sets) {
-            getSetAdapter().updateSets(sets);
+            getSetAdapter().updateSets(sortSets(sets));
         } else {
-            getWordAdapter().updateCards(getCards(sets));
+            getWordAdapter().updateCards(sortCards(getCards(sets)));
         }
+    }
+
+    private void updateAdapter() {
+        if (viewType == ViewType.Sets) {
+            getSetAdapter().updateSets(sortSets(getSetAdapter().getSets()));
+        } else {
+            getWordAdapter().updateCards(sortCards(getWordAdapter().getCards()));
+        }
+    }
+
+    private List<QuizletSet> sortSets(List<QuizletSet> sets) {
+        Collections.sort(sets, new Comparator<QuizletSet>() {
+            @Override
+            public int compare(QuizletSet lhs, QuizletSet rhs) {
+                return compareSets(lhs, rhs);
+            }
+        });
+
+        return sets;
+    }
+
+    private int compareSets(QuizletSet lhs, QuizletSet rhs) {
+        switch (sortOrder) {
+            case BY_NAME: return lhs.getTitle().compareToIgnoreCase(rhs.getTitle());
+            case BY_NAME_INV: return rhs.getTitle().compareToIgnoreCase(lhs.getTitle());
+            case BY_CREATE_DATE: return compare(lhs.getCreateDate(), rhs.getCreateDate());
+            case BY_CREATE_DATE_INV: return compare(rhs.getCreateDate(), lhs.getCreateDate());
+        }
+
+        return reverseLongCompare(lhs.getCreateDate(), rhs.getCreateDate());
+    }
+
+    public static int compare(long lhs, long rhs) {
+        return lhs < rhs ? -1 : (lhs == rhs ? 0 : 1);
+    }
+
+    public static int reverseLongCompare(long lhs, long rhs) {
+        return lhs < rhs ? 1 : (lhs == rhs ? 0 : -1);
     }
 
     public List<QuizletTerm> getCards(List<QuizletSet> sets) {
@@ -134,14 +187,29 @@ public class QuizletCardsFragment extends Fragment {
             cards.addAll(set.getTerms());
         }
 
+        return cards;
+    }
+
+    private List<QuizletTerm> sortCards(List<QuizletTerm> cards) {
         Collections.sort(cards, new Comparator<QuizletTerm>() {
             @Override
             public int compare(QuizletTerm lhs, QuizletTerm rhs) {
-                return lhs.getTerm().compareToIgnoreCase(rhs.getTerm());
+                return compareQuizletTerms(lhs, rhs);
             }
         });
 
         return cards;
+    }
+
+    private int compareQuizletTerms(QuizletTerm lhs, QuizletTerm rhs) {
+        switch (sortOrder) {
+            case BY_NAME: return lhs.getTerm().compareToIgnoreCase(rhs.getTerm());
+            case BY_NAME_INV: return rhs.getTerm().compareToIgnoreCase(lhs.getTerm());
+            //case BY_CREATE_DATE: return compare(lhs.get(), rhs.getCreateDate());
+            //case BY_CREATE_DATE_INV: return compare(rhs.getCreateDate(), lhs.getCreateDate());
+        }
+
+        return lhs.getTerm().compareToIgnoreCase(rhs.getTerm());
     }
 
     public void setViewType(ViewType aViewType) {

@@ -14,6 +14,7 @@
     <string name="menu_course_delete">Delete</string>
     <string name="menu_card_delete">Delete</string>
     <string name="menu_sort">Sort&#8230;</string>
+    <string name="menu_sort_by_name">By name</string>
     <string name="menu_sort_by_create_date">By create date</string>
     <string name="menu_sort_by_modify_date">By modify date</string>
     <string name="menu_sort_by_publish_date">By publish date</string>

@@ -8,11 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
+import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import main.MainApplication;
+import main.Preferences;
 import model.Course;
 import model.CourseHolder;
 
@@ -126,6 +128,23 @@ public class QuizletStackFragment extends StackFragment {
         if (cardsFragment != null) {
             cardsFragment.setListener(getMenuListener());
         }
+    }
+
+    public void setSortOrder(Preferences.SortOrder sortOrder) {
+        QuizletCardsFragment fragment = (QuizletCardsFragment)getFragment();
+        if (fragment != null) {
+            fragment.setSortOrder(sortOrder);
+        }
+    }
+
+    public Preferences.SortOrder getSortOrder() {
+        QuizletCardsFragment fragment = (QuizletCardsFragment)getFragment();
+        Preferences.SortOrder sortOrder = Preferences.SortOrder.BY_NAME;
+        if (fragment != null) {
+            sortOrder = fragment.getSortOrder();
+        }
+
+        return sortOrder;
     }
 
     private QuizletCardsFragment getSetFragment() {

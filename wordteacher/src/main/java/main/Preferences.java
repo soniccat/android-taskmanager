@@ -9,9 +9,28 @@ import android.content.SharedPreferences;
 public class Preferences {
     public enum SortOrder{
         BY_NAME,
+        BY_NAME_INV,
         BY_CREATE_DATE,
         BY_MODIFY_DATE,
-        BY_PUBLISH_DATE
+        BY_CREATE_DATE_INV,
+        BY_MODIFY_DATE_INV,
+        BY_PUBLISH_DATE,
+        BY_PUBLISH_DATE_INV;
+
+        public SortOrder getInverse() {
+            switch (this) {
+                case BY_NAME: return BY_NAME_INV;
+                case BY_NAME_INV: return BY_NAME;
+                case BY_CREATE_DATE: return BY_CREATE_DATE_INV;
+                case BY_CREATE_DATE_INV: return BY_CREATE_DATE;
+                case BY_MODIFY_DATE: return BY_MODIFY_DATE_INV;
+                case BY_MODIFY_DATE_INV: return BY_MODIFY_DATE;
+                case BY_PUBLISH_DATE: return BY_PUBLISH_DATE_INV;
+                case BY_PUBLISH_DATE_INV: return BY_PUBLISH_DATE;
+                default:
+                    return BY_NAME;
+            }
+        }
     }
 
     public static SortOrder getSortOrder() {

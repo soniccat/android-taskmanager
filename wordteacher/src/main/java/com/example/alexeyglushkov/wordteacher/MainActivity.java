@@ -243,40 +243,82 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     @Override
+    protected boolean onPrepareOptionsPanel(View view, Menu menu) {
+        return super.onPrepareOptionsPanel(view, menu);
+    }
+
+    @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem learnMenuItem = menu.findItem(R.id.learn_ready_words);
         List<Card> cards = getReadyCards();
         learnMenuItem.setVisible(cards.size() > 0);
 
+        MenuItem sortByCreateName = menu.findItem(R.id.sort_by_name);
         MenuItem sortByCreateDate = menu.findItem(R.id.sort_by_create_date);
         MenuItem sortByModifyDate = menu.findItem(R.id.sort_by_modify_date);
         MenuItem sortByPublishDate = menu.findItem(R.id.sort_by_publish_date);
 
-        if (isSortByCreateDate()) {
+        Preferences.SortOrder sortOrder = getCurrentSortOrder();
+        if (isSortByName(sortOrder)) {
+            sortByCreateName.setChecked(true);
+        }
+
+        if (isSortByCreateDate(sortOrder)) {
             sortByCreateDate.setChecked(true);
         }
 
-        if (isSortByModifyDate()) {
+        if (isSortByModifyDate(sortOrder)) {
             sortByModifyDate.setChecked(true);
         }
 
-        if (isSortByPublishDate()) {
+        if (isSortByPublishDate(sortOrder)) {
             sortByPublishDate.setChecked(true);
         }
 
         return super.onPrepareOptionsMenu(menu);
     }
 
-    private boolean isSortByCreateDate() {
-        return Preferences.getSortOrder() == Preferences.SortOrder.BY_CREATE_DATE;
+    private boolean isSortByName(Preferences.SortOrder sortOrder) {
+        return sortOrder == Preferences.SortOrder.BY_NAME || sortOrder == Preferences.SortOrder.BY_NAME_INV;
     }
 
-    private boolean isSortByModifyDate() {
-        return Preferences.getSortOrder() == Preferences.SortOrder.BY_MODIFY_DATE;
+    private boolean isSortByCreateDate(Preferences.SortOrder sortOrder) {
+        return sortOrder == Preferences.SortOrder.BY_CREATE_DATE || sortOrder == Preferences.SortOrder.BY_CREATE_DATE_INV;
     }
 
-    private boolean isSortByPublishDate() {
-        return Preferences.getSortOrder() == Preferences.SortOrder.BY_PUBLISH_DATE;
+    private boolean isSortByModifyDate(Preferences.SortOrder sortOrder) {
+        return sortOrder == Preferences.SortOrder.BY_MODIFY_DATE || sortOrder == Preferences.SortOrder.BY_MODIFY_DATE_INV;
+    }
+
+    private boolean isSortByPublishDate(Preferences.SortOrder sortOrder) {
+        return sortOrder == Preferences.SortOrder.BY_PUBLISH_DATE || sortOrder == Preferences.SortOrder.BY_PUBLISH_DATE_INV;
+    }
+
+    private Preferences.SortOrder getCurrentSortOrder() {
+        Preferences.SortOrder sortOrder = Preferences.SortOrder.BY_NAME;
+        Fragment fragment = getCurrentFragment();
+        if (fragment instanceof QuizletCardsFragment) {
+            QuizletCardsFragment quizletFragment = (QuizletCardsFragment)fragment;
+            sortOrder = quizletFragment.getSortOrder();
+
+        } else if (fragment instanceof QuizletStackFragment) {
+            QuizletStackFragment stackFragment = (QuizletStackFragment)fragment;
+            sortOrder = stackFragment.getSortOrder();
+        }
+
+        return sortOrder;
+    }
+
+    private void setSortOrder(Preferences.SortOrder sortOrder) {
+        Fragment fragment = getCurrentFragment();
+        if (fragment instanceof QuizletCardsFragment) {
+            QuizletCardsFragment quizletFragment = (QuizletCardsFragment)fragment;
+            quizletFragment.setSortOrder(sortOrder);
+
+        } else if (fragment instanceof QuizletStackFragment) {
+            QuizletStackFragment stackFragment = (QuizletStackFragment)fragment;
+            stackFragment.setSortOrder(sortOrder);
+        }
     }
 
     @Override
@@ -293,9 +335,27 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         } else if (id == R.id.learn_ready_words) {
             startLearnActivity(getReadyCards());
             return true;
+
+        } else if (id == R.id.sort_by_name) {
+            applySortOrder(Preferences.SortOrder.BY_NAME);
+        } else if (id == R.id.sort_by_create_date) {
+            applySortOrder(Preferences.SortOrder.BY_CREATE_DATE_INV);
+        } else if (id == R.id.sort_by_publish_date) {
+            applySortOrder(Preferences.SortOrder.BY_PUBLISH_DATE);
+        } else if (id == R.id.sort_by_modify_date) {
+            applySortOrder(Preferences.SortOrder.BY_MODIFY_DATE);
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void applySortOrder(Preferences.SortOrder order) {
+        if (getCurrentSortOrder() == order) {
+            order = order.getInverse();
+        }
+
+        setSortOrder(order);
+        supportInvalidateOptionsMenu();
     }
 
     private List<Card> getReadyCards() {
@@ -455,27 +515,9 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     private void handleLoadedQuizletSets() {
-        List<QuizletSet> sets = getSortedSets();
-        Log.d("load", "handleLoadedQuizletSets " + sets.size());
-
+        List<QuizletSet> sets = getQuizletService().getSets();
         getQuizletStackFragment().updateSets(sets);
         getCardQuizletFragment().updateSets(sets);
-    }
-
-    private List<QuizletSet> getSortedSets() {
-        List<QuizletSet> sets = getQuizletService().getSets();
-        Collections.sort(sets, new Comparator<QuizletSet>() {
-            @Override
-            public int compare(QuizletSet lhs, QuizletSet rhs) {
-                return reverseLongCompare(lhs.getCreateDate(), rhs.getCreateDate());
-            }
-        });
-
-        return sets;
-    }
-
-    public static int reverseLongCompare(long lhs, long rhs) {
-        return lhs < rhs ? 1 : (lhs == rhs ? 0 : -1);
     }
 
     private CourseFragment getCourseFragment() {
