@@ -255,8 +255,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
         MenuItem sortByCreateName = menu.findItem(R.id.sort_by_name);
         MenuItem sortByCreateDate = menu.findItem(R.id.sort_by_create_date);
-        MenuItem sortByModifyDate = menu.findItem(R.id.sort_by_modify_date);
-        MenuItem sortByPublishDate = menu.findItem(R.id.sort_by_publish_date);
+        //MenuItem sortByModifyDate = menu.findItem(R.id.sort_by_modify_date);
+        //MenuItem sortByPublishDate = menu.findItem(R.id.sort_by_publish_date);
 
         Preferences.SortOrder sortOrder = getCurrentSortOrder();
         if (isSortByName(sortOrder)) {
@@ -267,13 +267,14 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
             sortByCreateDate.setChecked(true);
         }
 
+        /*
         if (isSortByModifyDate(sortOrder)) {
             sortByModifyDate.setChecked(true);
         }
 
         if (isSortByPublishDate(sortOrder)) {
             sortByPublishDate.setChecked(true);
-        }
+        }*/
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -340,11 +341,11 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
             applySortOrder(Preferences.SortOrder.BY_NAME);
         } else if (id == R.id.sort_by_create_date) {
             applySortOrder(Preferences.SortOrder.BY_CREATE_DATE_INV);
-        } else if (id == R.id.sort_by_publish_date) {
+        } /*else if (id == R.id.sort_by_publish_date) {
             applySortOrder(Preferences.SortOrder.BY_PUBLISH_DATE);
         } else if (id == R.id.sort_by_modify_date) {
             applySortOrder(Preferences.SortOrder.BY_MODIFY_DATE);
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }

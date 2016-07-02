@@ -170,15 +170,11 @@ public class QuizletCardsFragment extends Fragment {
             case BY_CREATE_DATE_INV: return compare(rhs.getCreateDate(), lhs.getCreateDate());
         }
 
-        return reverseLongCompare(lhs.getCreateDate(), rhs.getCreateDate());
+        return lhs.getTitle().compareToIgnoreCase(rhs.getTitle());
     }
 
     public static int compare(long lhs, long rhs) {
         return lhs < rhs ? -1 : (lhs == rhs ? 0 : 1);
-    }
-
-    public static int reverseLongCompare(long lhs, long rhs) {
-        return lhs < rhs ? 1 : (lhs == rhs ? 0 : -1);
     }
 
     public List<QuizletTerm> getCards(List<QuizletSet> sets) {
@@ -205,8 +201,8 @@ public class QuizletCardsFragment extends Fragment {
         switch (sortOrder) {
             case BY_NAME: return lhs.getTerm().compareToIgnoreCase(rhs.getTerm());
             case BY_NAME_INV: return rhs.getTerm().compareToIgnoreCase(lhs.getTerm());
-            //case BY_CREATE_DATE: return compare(lhs.get(), rhs.getCreateDate());
-            //case BY_CREATE_DATE_INV: return compare(rhs.getCreateDate(), lhs.getCreateDate());
+            case BY_CREATE_DATE: return compare(lhs.getRank(), rhs.getRank());
+            case BY_CREATE_DATE_INV: return compare(rhs.getRank(), lhs.getRank());
         }
 
         return lhs.getTerm().compareToIgnoreCase(rhs.getTerm());
