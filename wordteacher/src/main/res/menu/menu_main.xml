@@ -5,8 +5,9 @@
     <item
         android:id="@+id/learn_ready_words"
         android:orderInCategory="100"
+        android:icon="@drawable/ic_play_arrow_white_24dp"
         android:title="@string/menu_course_learn_only_ready_words"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/sort_group"
         android:title="@string/menu_sort"
