@@ -110,4 +110,8 @@ public class LearnSession implements Parcelable {
     public SessionCardResult getCardResult(int i) {
         return results.get(i);
     }
+
+    public ArrayList<SessionCardResult> getResults() {
+        return results;
+    }
 }

@@ -11,6 +11,9 @@ import com.example.alexeyglushkov.wordteacher.R;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import model.Card;
@@ -20,10 +23,28 @@ import model.Card;
  */
 public class SessionResultAdapter extends RecyclerView.Adapter<SessionResultAdapter.ViewHolder> {
     private LearnSession session;
+    private List<SessionCardResult> results;
 
     public void setSession(LearnSession aSession) {
         this.session = aSession;
+
+        List<SessionCardResult> resultCopy = new ArrayList<>(aSession.getResults());
+        results = sortResults(resultCopy);
         notifyDataSetChanged();
+    }
+
+    private List<SessionCardResult> sortResults(List<SessionCardResult> results) {
+        Collections.sort(results, new Comparator<SessionCardResult>() {
+            @Override
+            public int compare(SessionCardResult lhs, SessionCardResult rhs) {
+                return SessionResultAdapter.compare(lhs.isRight, rhs.isRight);
+            }
+        });
+        return results;
+    }
+
+    public static int compare(boolean lhs, boolean rhs) {
+        return lhs == rhs ? 0 : lhs ? 1 : -1;
     }
 
     @Override
@@ -34,8 +55,10 @@ public class SessionResultAdapter extends RecyclerView.Adapter<SessionResultAdap
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Card card = session.getCard(position);
-        SessionCardResult result = session.getCardResult(position);
+        SessionCardResult result = results.get(position);
+        int cardPosition = session.getResults().indexOf(result);
+
+        Card card = session.getCard(cardPosition);
 
         holder.termTextView.setText(card.getTerm());
         holder.definitionTextView.setText(card.getDefinition());
