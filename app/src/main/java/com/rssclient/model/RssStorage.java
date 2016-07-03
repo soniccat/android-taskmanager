@@ -5,8 +5,6 @@ import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
-import org.apache.http.util.ByteArrayBuffer;
-
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -167,11 +165,6 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
             setLoadStatus(Task.Status.Finished);
             processingTask = null;
         }
-    }
-
-    private ByteArrayBuffer getData() {
-        //TODO:
-        return null;
     }
 
     public Task.Status keepStatus() {

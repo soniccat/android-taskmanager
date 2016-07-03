@@ -34,7 +34,7 @@ public class Preferences {
     }
 
     public static SortOrder getQuizletSetSortOrder() {
-        return SortOrder.values()[getReadPreference().getInt("quizletSetSortOrder", SortOrder.BY_NAME.ordinal())];
+        return SortOrder.values()[getReadPreference().getInt("quizletSetSortOrder", SortOrder.BY_CREATE_DATE_INV.ordinal())];
     }
 
     public static void setQuizletSetSortOrder(SortOrder order) {
@@ -44,7 +44,7 @@ public class Preferences {
     }
 
     public static SortOrder getQuizletTermSortOrder() {
-        return SortOrder.values()[getReadPreference().getInt("quizletTermSortOrder", SortOrder.BY_CREATE_DATE.ordinal())];
+        return SortOrder.values()[getReadPreference().getInt("quizletTermSortOrder", SortOrder.BY_NAME.ordinal())];
     }
 
     public static void setQuizletTermSortOrder(SortOrder order) {

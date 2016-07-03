@@ -31,6 +31,7 @@ public class LearnSession implements Parcelable {
     public LearnSession(Parcel parcel) {
         parcel.readTypedList(cards, Card.CREATOR);
         parcel.readTypedList(results, SessionCardResult.CREATOR);
+        currentIndex = parcel.readInt();
     }
 
     @Override

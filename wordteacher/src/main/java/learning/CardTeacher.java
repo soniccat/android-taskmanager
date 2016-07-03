@@ -36,7 +36,7 @@ public class CardTeacher implements Parcelable {
         currentSession = parcel.readParcelable(LearnSession.class.getClassLoader());
         checkCount = parcel.readInt();
         hintShowCount = parcel.readInt();
-        isWrongAnswerCounted = parcel.readInt() > 0 ? true : false;
+        isWrongAnswerCounted = parcel.readInt() > 0;
     }
 
     @Override
