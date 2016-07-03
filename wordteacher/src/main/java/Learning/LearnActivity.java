@@ -8,9 +8,12 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.PopupMenu;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -120,6 +123,19 @@ public class LearnActivity extends BaseActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 LearnActivity.this.onTextChanged();
+            }
+        });
+
+        inputLayout.getEditText().setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handed = false;
+                if (actionId == EditorInfo.IME_ACTION_GO) {
+                    checkInput();
+                    handed = true;
+                }
+
+                return handed;
             }
         });
 
