@@ -3,7 +3,6 @@ package model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -14,18 +13,20 @@ public class CardProgress implements Parcelable {
     // TODO: move it in tool lib
     private int MIN = 60000;
     private int HOUR = 60*MIN;
-    private int DAY = 24*HOUR;
+    private int LEARN_SPAN = 8*HOUR;
 
     // progress, next lesson time interval
     private int[][] LEARN_TABLE = new int[][] {
             { 0,     0},
             { 5,     0},
-            {20,   DAY},
-            {30,   DAY},
-            {50, 2*DAY},
-            {70, 2*DAY},
-            {90, 3*DAY}
+            {20, LEARN_SPAN},
+            {30, LEARN_SPAN},
+            {50, 2* LEARN_SPAN},
+            {70, 2* LEARN_SPAN},
+            {90, 3* LEARN_SPAN}
     };
+
+    private final int lastLevel = 7;
 
     //private ArrayList<CardLesson> rightLessons = new ArrayList<>();
     private int rightAnswerCount = 0;
@@ -63,9 +64,13 @@ public class CardProgress implements Parcelable {
 
     public boolean needHaveLesson() {
         boolean result = true;
-        Date newLessonDate = getNextLessonDate();
-        if (newLessonDate != null) {
-            result = new Date().compareTo(newLessonDate) >= 0;
+        if (isCompleted()) {
+            result = false;
+        } else {
+            Date newLessonDate = getNextLessonDate();
+            if (newLessonDate != null) {
+                result = new Date().compareTo(newLessonDate) >= 0;
+            }
         }
 
         return result;
@@ -79,6 +84,10 @@ public class CardProgress implements Parcelable {
         }
 
         return result;
+    }
+
+    public boolean isCompleted() {
+        return rightAnswerCount >= lastLevel;
     }
 
     public void countRightAnswer() {
@@ -115,6 +124,11 @@ public class CardProgress implements Parcelable {
 
     private void updateLastLessonDate() {
         lastLessonDate = new Date();
+
+        long time = lastLessonDate.getTime();
+        Date date = new Date(time);
+        int i=0;
+        ++i;
     }
 
     public static final Parcelable.Creator<CardProgress> CREATOR = new Parcelable.Creator<CardProgress>() {

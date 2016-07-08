@@ -132,7 +132,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
         Date result = null;
         for (Card card : waitingCards) {
             CardProgress progress = card.getProgress();
-            if (progress != null) {
+            if (progress != null && !progress.isCompleted()) {
                 Date lessonDate = progress.getNextLessonDate();
                 if (result != null) {
                     result = lessonDate.compareTo(result) == -1 ? lessonDate : result;
