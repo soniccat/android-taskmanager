@@ -67,7 +67,7 @@ public class SimpleAccount implements Account, Serializable {
     public void authorize(final Authorizer.AuthorizerCompletion completion) {
         authorizer.authorize(new Authorizer.AuthorizerCompletion() {
             @Override
-            public void onFinished(AuthCredentials credentials, Error error) {
+            public void onFinished(AuthCredentials credentials, Authorizer.AuthError error) {
                 if (credentials != null) {
                     updateCredentials(credentials);
                 }

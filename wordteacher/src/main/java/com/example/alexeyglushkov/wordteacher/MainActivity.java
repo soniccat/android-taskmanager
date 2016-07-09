@@ -18,6 +18,8 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
+import com.example.alexeyglushkov.authorization.Auth.Authorizer;
+import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.service.Service;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
@@ -500,7 +502,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     private void loadQuizletSets(boolean forceLoad) {
         CachableHttpLoadTask.CacheMode cacheMode = forceLoad ? CachableHttpLoadTask.CacheMode.LOAD_IF_ERROR_THEN_CHECK_CACHE : CachableHttpLoadTask.CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD;
 
-        getQuizletService().loadSets(new SimpleService.CommandCallback() {
+        getQuizletService().loadSets(new ServiceCommand.CommandCallback() {
             @Override
             public void onCompleted(Error error) {
                 onQuizletSetsLoaded(error);
@@ -510,7 +512,13 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     private void onQuizletSetsLoaded(Error error) {
         if (error != null) {
-            showErrorSnackBar(error);
+            boolean isCancelled = false;
+            if (error instanceof Authorizer.AuthError) {
+                isCancelled = ((Authorizer.AuthError)error).getReason() == Authorizer.AuthError.Reason.Cancelled;
+            }
+            if (!isCancelled) {
+                showErrorSnackBar(error);
+            }
         } else {
             handleLoadedQuizletSets();
         }
@@ -560,7 +568,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     private void showErrorSnackBar(Error error) {
         String errorString = "";
-        if (error instanceof Service.AuthError) {
+        if (error instanceof Authorizer.AuthError) {
             errorString = getString(R.string.error_auth_error);
         } else {
             errorString = getString(R.string.error_load_error);

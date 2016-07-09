@@ -3,6 +3,7 @@ package com.example.alexeyglushkov.quizletservice;
 import android.support.annotation.NonNull;
 
 import com.example.alexeyglushkov.authorization.Auth.Account;
+import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProxy;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
@@ -29,8 +30,8 @@ public class QuizletService extends SimpleService {
         setServiceCommandRunner(commandRunner);
     }
 
-    public void loadSets(final CommandCallback callback, CachableHttpLoadTask.CacheMode cacheMode) {
-        runCommand(createSetsCommandProxy(callback, cacheMode), true, createAuthCompletion(callback));
+    public void loadSets(final ServiceCommand.CommandCallback callback, CachableHttpLoadTask.CacheMode cacheMode) {
+        runCommand(createSetsCommandProxy(callback, cacheMode), true, callback);
     }
 
     public List<QuizletSet> getSets() {
@@ -38,7 +39,7 @@ public class QuizletService extends SimpleService {
     }
 
     @NonNull
-    private ServiceCommandProxy createSetsCommandProxy(final CommandCallback callback, final CachableHttpLoadTask.CacheMode cacheMode) {
+    private ServiceCommandProxy createSetsCommandProxy(final ServiceCommand.CommandCallback callback, final CachableHttpLoadTask.CacheMode cacheMode) {
         return new ServiceCommandProxy() {
             @Override
             public ServiceCommand getServiceCommand() {
@@ -48,39 +49,27 @@ public class QuizletService extends SimpleService {
     }
 
     @NonNull
-    private QuizletSetsCommand createSetsCommand(final CommandCallback callback, final CachableHttpLoadTask.CacheMode cacheMode) {
+    private QuizletSetsCommand createSetsCommand(final ServiceCommand.CommandCallback callback, final CachableHttpLoadTask.CacheMode cacheMode) {
         final QuizletSetsCommand command = getQuizletCommandProvider().getLoadSetsCommand(server, getOAuthCredentials().getUserId(), cacheMode);
-        command.setServiceCommandCallback(new ServiceCommand.Callback() {
+        command.setServiceCommandCallback(new ServiceCommand.CommandCallback() {
             @Override
-            public void onCompleted() {
+            public void onCompleted(Error error) {
                 if (command.getResponseCode() == 401) {
-                    authorizeAndRun(createSetsCommand(callback, cacheMode), createAuthCompletion(callback));
+                    authorizeAndRun(createSetsCommand(callback, cacheMode), callback);
 
                 } else {
-                    if (command.getCommandError() == null) {
+                    if (error == null) {
                         sets.clear();
                         sets.addAll(new ArrayList<>(Arrays.asList(command.getSets())));
                     }
 
                     if (callback != null) {
-                        callback.onCompleted(command.getCommandError());
+                        callback.onCompleted(error);
                     }
                 }
             }
         });
         return command;
-    }
-
-    @NonNull
-    private AuthCompletion createAuthCompletion(final CommandCallback callback) {
-        return new AuthCompletion() {
-            @Override
-            public void onFinished(ServiceCommand command, AuthError error) {
-                if (callback != null) {
-                    callback.onCompleted(error);
-                }
-            }
-        };
     }
 
     private OAuthCredentials getOAuthCredentials() {

@@ -20,10 +20,9 @@ public interface ServiceCommand extends ServiceCommandProxy{
 
     Error getCommandError();
     boolean isCancelled();
-    void setServiceCommandCallback(Callback callback);
+    void setServiceCommandCallback(CommandCallback callback);
 
-    // TODO: need to pass an error or a way to get it
-    interface Callback {
-        void onCompleted();
+    interface CommandCallback {
+        void onCompleted(Error error);
     }
 }

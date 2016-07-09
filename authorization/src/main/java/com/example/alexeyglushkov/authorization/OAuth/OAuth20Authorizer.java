@@ -33,6 +33,6 @@ public interface OAuth20Authorizer extends Authorizer
   void setWebClient(OAuthWebClient webClient);
 
   interface OAuthCompletion {
-    void onCompleted(ServiceCommand command);
+    void onCompleted(ServiceCommand command, AuthError error);
   }
 }

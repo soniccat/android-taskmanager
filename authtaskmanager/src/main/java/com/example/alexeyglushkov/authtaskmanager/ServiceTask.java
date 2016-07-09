@@ -78,11 +78,11 @@ public class ServiceTask extends CachableHttpLoadTask implements ServiceCommand 
     }
 
     @Override
-    public void setServiceCommandCallback(final ServiceCommand.Callback callback) {
+    public void setServiceCommandCallback(final ServiceCommand.CommandCallback callback) {
         setTaskCallback(new Task.Callback() {
             @Override
             public void onCompleted(boolean cancelled) {
-                callback.onCompleted();
+                callback.onCompleted(getCommandError());
             }
         });
     }

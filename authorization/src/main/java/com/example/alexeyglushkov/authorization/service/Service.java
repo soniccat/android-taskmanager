@@ -17,35 +17,11 @@ public interface Service {
     void setServiceCommandProvider(ServiceCommandProvider provider);
     void setServiceCommandRunner(ServiceCommandRunner runner);
 
-    void setAuthCompletion(AuthCompletion authCompletion);
+    // for cases when auth failed and a command isn't created
+    void setAuthCompletion(ServiceCommand.CommandCallback authCompletion);
 
     // pass a ServiceCommandProxy to create the command after authorization
     void runCommand(ServiceCommandProxy proxy);
     void runCommand(ServiceCommandProxy proxy, boolean canSignIn);
-    void runCommand(ServiceCommandProxy proxy, boolean canSignIn, AuthCompletion authCompletion);
-
-    interface AuthCompletion {
-        void onFinished(ServiceCommand command, AuthError error);
-    }
-
-    class AuthError extends Error {
-        private static final long serialVersionUID = 6206983256074915330L;
-
-        public enum Reason {
-            InnerError,
-            Cancelled,
-            NotAuthorized
-        }
-
-        protected Reason reason;
-
-        protected void setReason(Reason arReason) {
-            reason = arReason;
-        }
-
-        public AuthError(Reason reason, Throwable throwable) {
-            super(throwable);
-            this.reason = reason;
-        }
-    }
+    void runCommand(ServiceCommandProxy proxy, boolean canSignIn, ServiceCommand.CommandCallback authCompletion);
 }

@@ -19,7 +19,7 @@ public class SimpleService implements Service {
     private Account account;
     protected ServiceCommandProvider commandProvider;
     protected ServiceCommandRunner commandRunner;
-    protected AuthCompletion authCompletion;
+    protected ServiceCommand.CommandCallback authCompletion;
 
     // to run authorization
     private HandlerThread authThread;
@@ -49,7 +49,7 @@ public class SimpleService implements Service {
     }
 
     @Override
-    public void setAuthCompletion(AuthCompletion anAuthCompletion) {
+    public void setAuthCompletion(ServiceCommand.CommandCallback anAuthCompletion) {
         authCompletion = anAuthCompletion;
     }
 
@@ -63,13 +63,13 @@ public class SimpleService implements Service {
     }
 
     @Override
-    public void runCommand(final ServiceCommandProxy proxy, final boolean canSignIn, AuthCompletion anAuthCompletion) {
+    public void runCommand(final ServiceCommandProxy proxy, final boolean canSignIn, ServiceCommand.CommandCallback anAuthCompletion) {
         if (!account.isAuthorized()) {
             if (canSignIn) {
                 authorizeAndRun(proxy, anAuthCompletion);
 
             } else if (anAuthCompletion != null) {
-                anAuthCompletion.onFinished(proxy.getServiceCommand(), new AuthError(AuthError.Reason.NotAuthorized, null));
+                anAuthCompletion.onCompleted(new Authorizer.AuthError(Authorizer.AuthError.Reason.NotAuthorized, null));
             }
 
         } else {
@@ -79,15 +79,15 @@ public class SimpleService implements Service {
         }
     }
 
-    protected void authorizeAndRun(final ServiceCommandProxy proxy, final AuthCompletion anAuthCompletion) {
+    protected void authorizeAndRun(final ServiceCommandProxy proxy, final ServiceCommand.CommandCallback anAuthCompletion) {
         authorize(new Authorizer.AuthorizerCompletion() {
             @Override
-            public void onFinished(AuthCredentials credentials, Error error) {
+            public void onFinished(AuthCredentials credentials, Authorizer.AuthError error) {
                 if (error == null) {
                     runCommand(proxy, false);
 
                 } else if (anAuthCompletion != null) {
-                    anAuthCompletion.onFinished(null, new AuthError(AuthError.Reason.InnerError, error));
+                    anAuthCompletion.onCompleted(error);
                 }
             }
         });
@@ -118,9 +118,5 @@ public class SimpleService implements Service {
 
     private void runAsync(Runnable runnable) {
         Tools.runOnHandlerThread(getAuthHandler(), runnable);
-    }
-
-    public interface CommandCallback {
-        void onCompleted(Error error);
     }
 }
