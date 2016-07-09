@@ -48,18 +48,23 @@ public class QuizletService extends SimpleService {
     }
 
     @NonNull
-    private QuizletSetsCommand createSetsCommand(final CommandCallback callback, CachableHttpLoadTask.CacheMode cacheMode) {
+    private QuizletSetsCommand createSetsCommand(final CommandCallback callback, final CachableHttpLoadTask.CacheMode cacheMode) {
         final QuizletSetsCommand command = getQuizletCommandProvider().getLoadSetsCommand(server, getOAuthCredentials().getUserId(), cacheMode);
         command.setServiceCommandCallback(new ServiceCommand.Callback() {
             @Override
             public void onCompleted() {
-                if (command.getCommandError() == null) {
-                    sets.clear();
-                    sets.addAll(new ArrayList<>(Arrays.asList(command.getSets())));
-                }
+                if (command.getResponseCode() == 401) {
+                    authorizeAndRun(createSetsCommand(callback, cacheMode), createAuthCompletion(callback));
 
-                if (callback != null) {
-                    callback.onCompleted(command.getCommandError());
+                } else {
+                    if (command.getCommandError() == null) {
+                        sets.clear();
+                        sets.addAll(new ArrayList<>(Arrays.asList(command.getSets())));
+                    }
+
+                    if (callback != null) {
+                        callback.onCompleted(command.getCommandError());
+                    }
                 }
             }
         });

@@ -21,6 +21,7 @@ public class HttpLoadTask extends SimpleTask {
     protected int contentLength;
     protected HTTPConnectionStreamReader handler;
     protected Object handledData;
+    protected int responseCode;
 
     public HttpLoadTask(HttpURLConnectionProvider provider, HTTPConnectionStreamReader handler) {
         super();
@@ -64,8 +65,8 @@ public class HttpLoadTask extends SimpleTask {
                 setContentLength(length);
             }
 
-            int response = connection.getResponseCode();
-            Log.d("HttpLoadTask", "HttpLoadingContext: The response is: " + response + "\n");
+            responseCode = connection.getResponseCode();
+            Log.d("HttpLoadTask", "HttpLoadingContext: The response is: " + responseCode + "\n");
 
             handler.setProgressUpdater(getPrivate().createProgressUpdater(contentLength));
             handler.handleConnectionResponse(connection);
@@ -133,5 +134,9 @@ public class HttpLoadTask extends SimpleTask {
 
     public void setHandledData(Object handledData) {
         this.handledData = handledData;
+    }
+
+    public int getResponseCode() {
+        return responseCode;
     }
 }

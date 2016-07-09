@@ -11,7 +11,7 @@ public class SimpleAccount implements Account, Serializable {
 
     private static final long serialVersionUID = -6196365168677255570L;
 
-    private int id;
+    private int id = 0;
     private int serviceType;
 
     private AuthCredentials credentials;
@@ -81,7 +81,10 @@ public class SimpleAccount implements Account, Serializable {
 
     private void updateCredentials(AuthCredentials creds) {
         credentials = creds;
-        id = accountStore.getMaxAccountId() + 1;
+
+        if (id == 0) { // for a new account
+            id = accountStore.getMaxAccountId() + 1;
+        }
 
         accountStore.putAccount(this);
     }

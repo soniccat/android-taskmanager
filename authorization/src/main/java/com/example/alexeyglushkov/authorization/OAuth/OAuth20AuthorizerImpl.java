@@ -107,6 +107,7 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
     }
   }
 
+  // TODO: return error and provide custom auth error
   private String webAuthorization() {
     String url = getAuthorizationUrl();
 

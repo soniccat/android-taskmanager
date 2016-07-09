@@ -16,6 +16,7 @@ import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnection
 public interface ServiceCommand extends ServiceCommandProxy{
     HttpUrlConnectionBuilder getConnectionBulder();
     String getResponse();
+    int getResponseCode();
 
     Error getCommandError();
     boolean isCancelled();

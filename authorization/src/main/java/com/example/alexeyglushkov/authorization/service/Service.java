@@ -33,6 +33,7 @@ public interface Service {
 
         public enum Reason {
             InnerError,
+            Cancelled,
             NotAuthorized
         }
 

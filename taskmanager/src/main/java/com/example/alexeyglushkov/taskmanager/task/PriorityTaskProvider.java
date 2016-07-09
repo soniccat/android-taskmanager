@@ -144,7 +144,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
     @Override
     public void addTask(final Task task) {
         if (!Tasks.isTaskReadyToStart(task)) {
-            Log.d(TAG, "Can't put task " + task.getClass().toString() + " because it's already started " + task.getTaskStatus().toString());
+            Log.e(TAG, "Can't put task " + task.getClass().toString() + " because it's already started " + task.getTaskStatus().toString());
             return;
         }
 
