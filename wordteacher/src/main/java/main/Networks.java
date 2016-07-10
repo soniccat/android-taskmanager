@@ -171,7 +171,7 @@ public class Networks {
         DropboxAuthorizer authorizer = new DropboxAuthorizer(session, new ContextProvider() {
             @Override
             public Context getContext() {
-                return MainApplication.instance.getApplicationContext();
+                return MainApplication.instance.getCurrentContext();
             }
         });
 

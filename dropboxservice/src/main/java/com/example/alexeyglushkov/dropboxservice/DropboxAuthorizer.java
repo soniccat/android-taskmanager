@@ -26,6 +26,10 @@ public class DropboxAuthorizer implements Authorizer {
         this.contextProvider = contextProvider;
     }
 
+    public AndroidAuthSession getSession() {
+        return session;
+    }
+
     @Override
     public void authorize(AuthorizerCompletion completion) {
         this.completion = completion;

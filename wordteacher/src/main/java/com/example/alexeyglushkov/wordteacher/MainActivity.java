@@ -334,6 +334,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        } else if (id == R.id.action_sync_with_dropbox) {
+            syncWithDropbox();
 
         } else if (id == R.id.learn_ready_words) {
             startLearnActivity(getReadyCards());
@@ -350,6 +352,15 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         }*/
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void syncWithDropbox() {
+        getMainApplication().getDropboxService().runCommand(null, true, new ServiceCommand.CommandCallback() {
+            @Override
+            public void onCompleted(Error error) {
+
+            }
+        });
     }
 
     private void applySortOrder(Preferences.SortOrder order) {

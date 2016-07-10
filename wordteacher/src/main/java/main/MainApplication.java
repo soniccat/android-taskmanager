@@ -13,6 +13,8 @@ import com.example.alexeyglushkov.cachemanager.StorageCleaner;
 import com.example.alexeyglushkov.cachemanager.StorageProvider;
 import com.example.alexeyglushkov.cachemanager.DiskStorageCleaner;
 import com.example.alexeyglushkov.cachemanager.DiskStorageProvider;
+import com.example.alexeyglushkov.dropboxservice.DropboxAccount;
+import com.example.alexeyglushkov.dropboxservice.DropboxService;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.tasks.QuizletServiceTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
@@ -30,6 +32,7 @@ public class MainApplication extends Application {
     private OAuthWebClient authWebClient;
 
     private QuizletService quizletService;
+    private DropboxService dropboxService;
     private CourseHolder courseHolder;
     private TaskManager taskManager;
 
@@ -81,6 +84,14 @@ public class MainApplication extends Application {
         return quizletService;
     }
 
+    public DropboxService getDropboxService() {
+        return dropboxService;
+    }
+
+    public Context getCurrentContext() {
+        return ((AuthActivityProxy)authWebClient).getCurrentActivity();
+    }
+
     public void cleanCache() {
         final Task cleanTask = new SimpleTask() {
             @Override
@@ -129,6 +140,7 @@ public class MainApplication extends Application {
 
     private void onAccountStoreLoaded() {
         createQuizletService();
+        createDropboxService();
     }
 
     private void createQuizletService() {
@@ -139,6 +151,16 @@ public class MainApplication extends Application {
         ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
 
         quizletService = new QuizletService(quizletAccount, quizletCommandProvider, serviceCommandRunner);
+    }
+
+    private void createDropboxService() {
+        DropboxAccount dropboxAccount = (DropboxAccount)Networks.getAccount(Networks.Network.Dropbox);
+        //QuizletServiceTaskProvider quizletCommandProvider = new QuizletServiceTaskProvider(getStorageProvider());
+
+        //String id = Integer.toString(dropboxAccount.getServiceType());
+        //ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
+
+        dropboxService = new DropboxService(dropboxAccount/*, quizletCommandProvider, serviceCommandRunner*/);
     }
 
     private void loadCourseHolder() {

@@ -10,5 +10,10 @@ import com.example.alexeyglushkov.service.SimpleService;
 public class DropboxService extends SimpleService {
     private DropboxAPI<AndroidAuthSession> api;
 
+    public DropboxService(DropboxAccount account) {
+        setAccount(account);
+        this.api = new DropboxAPI<AndroidAuthSession>(account.getSession());
+    }
+
 
 }

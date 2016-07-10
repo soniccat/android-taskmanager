@@ -7,19 +7,21 @@ import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient;
 
 import junit.framework.Assert;
 
+import java.lang.ref.WeakReference;
+
 /**
  * Created by alexeyglushkov on 25.11.15.
  */
 public class AuthActivityProxy implements OAuthWebClient {
-    private static Activity currentActivity;
+    private static WeakReference<Activity> currentActivity;
     private static Callback currentCallback;
 
     public static Activity getCurrentActivity() {
-        return currentActivity;
+        return currentActivity != null ? currentActivity.get() : null;
     }
 
     public static void setCurrentActivity(Activity currentActivity) {
-        AuthActivityProxy.currentActivity = currentActivity;
+        AuthActivityProxy.currentActivity = new WeakReference<Activity>(currentActivity);
     }
 
     public static Callback getCurrentCallback() {

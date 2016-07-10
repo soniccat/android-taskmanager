@@ -38,8 +38,13 @@
         </menu>
     </item>
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_sync_with_dropbox"
         android:orderInCategory="102"
+        android:title="@string/action_dropbox_sync"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="103"
         android:title="@string/action_settings"
         app:showAsAction="never" />
 </menu>
