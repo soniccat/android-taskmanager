@@ -1,0 +1,22 @@
+package com.example.alexeyglushkov.dropboxservice;
+
+import com.example.alexeyglushkov.authorization.Auth.Account;
+import com.example.alexeyglushkov.authorization.Auth.Authorizer;
+import com.example.alexeyglushkov.authorization.Auth.SimpleAccount;
+
+/**
+ * Created by alexeyglushkov on 10.07.16.
+ */
+public class DropboxAccount extends SimpleAccount {
+    private static final long serialVersionUID = 2583651658110836477L;
+
+    public DropboxAccount(int serviceType) {
+        super(serviceType);
+    }
+
+    // need to be called outside to finish authorization
+    public void onResume() {
+        DropboxAuthorizer authorizer = (DropboxAuthorizer)getAuthorizer();
+        authorizer.onResume();
+    }
+}
