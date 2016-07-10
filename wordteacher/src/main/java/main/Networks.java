@@ -1,9 +1,16 @@
 package main;
 
+import android.content.Context;
+import android.os.DropBoxManager;
 import android.support.annotation.NonNull;
 
+import com.dropbox.client2.android.AndroidAuthSession;
+import com.dropbox.client2.session.AppKeyPair;
 import com.example.alexeyglushkov.authorization.Api.Foursquare2Api;
-import com.example.alexeyglushkov.authorization.Api.QuizletApi2;
+import com.example.alexeyglushkov.dropboxservice.ContextProvider;
+import com.example.alexeyglushkov.dropboxservice.DropboxAccount;
+import com.example.alexeyglushkov.dropboxservice.DropboxAuthorizer;
+import com.example.alexeyglushkov.quizletservice.auth.QuizletApi2;
 import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
@@ -31,7 +38,8 @@ public class Networks {
     public enum Network {
         None,
         Foursquare,
-        Quizlet;
+        Quizlet,
+        Dropbox;
 
         public static Network fromInt(int i) {
             return values()[i];
@@ -70,6 +78,9 @@ public class Networks {
 
         } else if (acc.getServiceType() == Network.Quizlet.ordinal()) {
             acc.setAuthorizer(Networks.getQuizletAuthorizer());
+
+        } else if (acc.getServiceType() == Network.Dropbox.ordinal()) {
+            acc.setAuthorizer(Networks.getDropboxAuthorizer());
         }
     }
 
@@ -80,6 +91,9 @@ public class Networks {
 
         } else if (network == Network.Quizlet) {
             return createQuizletAccount();
+
+        } else if (network == Network.Dropbox) {
+            return createDropboxAccount();
         }
 
         Assert.assertTrue(false);
@@ -134,6 +148,32 @@ public class Networks {
         authorizer.setServiceCommandProvider(new ServiceTaskProvider());
         authorizer.setServiceCommandRunner(new ServiceTaskRunner(getTaskManager(), "authorizerId"));
         authorizer.setWebClient(getAuthWebClient());
+
+        return authorizer;
+    }
+
+    public static Account createDropboxAccount() {
+        Authorizer authorizer = getDropboxAuthorizer();
+        DropboxAccount account = new DropboxAccount(Network.Dropbox.ordinal());
+        account.setAuthorizer(authorizer);
+        account.setAuthCredentialStore(getAccountStore());
+
+        // put account to be able to call onResume
+        getAccountStore().putAccount(account);
+
+        return account;
+    }
+
+    public static Authorizer getDropboxAuthorizer() {
+        AppKeyPair appKeyPair = new AppKeyPair("0zq9vxe6h5u32vv", "6wbv48j08mz5aa9");
+        AndroidAuthSession session = new AndroidAuthSession(appKeyPair);
+
+        DropboxAuthorizer authorizer = new DropboxAuthorizer(session, new ContextProvider() {
+            @Override
+            public Context getContext() {
+                return MainApplication.instance.getApplicationContext();
+            }
+        });
 
         return authorizer;
     }

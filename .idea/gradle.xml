@@ -14,6 +14,7 @@
             <option value="$PROJECT_DIR$/authcachemanager" />
             <option value="$PROJECT_DIR$/authorization" />
             <option value="$PROJECT_DIR$/authtaskmanager" />
+            <option value="$PROJECT_DIR$/dropboxservice" />
             <option value="$PROJECT_DIR$/jacksonlib" />
             <option value="$PROJECT_DIR$/quizletservice" />
             <option value="$PROJECT_DIR$/scribeauthorization" />
@@ -32,6 +33,7 @@
             <option value="$PROJECT_DIR$/authcachemanager" />
             <option value="$PROJECT_DIR$/authorization" />
             <option value="$PROJECT_DIR$/authtaskmanager" />
+            <option value="$PROJECT_DIR$/dropboxservice" />
             <option value="$PROJECT_DIR$/jacksonlib" />
             <option value="$PROJECT_DIR$/quizletservice" />
             <option value="$PROJECT_DIR$/scribeauthorization" />

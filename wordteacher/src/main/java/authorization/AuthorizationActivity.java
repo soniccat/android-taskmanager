@@ -21,6 +21,8 @@ public class AuthorizationActivity extends AppCompatActivity implements OAuthWeb
     public static final String LOAD_URL = "LOAD_URL";
 
     private WebView webView;
+
+    // TODO: think about pending intent or something else
     private OAuthWebClient.Callback webCallback;
 
     @Override

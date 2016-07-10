@@ -3,7 +3,7 @@ package com.main;
 import android.support.annotation.NonNull;
 
 import com.example.alexeyglushkov.authorization.Api.Foursquare2Api;
-import com.example.alexeyglushkov.authorization.Api.QuizletApi2;
+import com.example.alexeyglushkov.quizletservice.auth.QuizletApi2;
 import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;

@@ -122,15 +122,11 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
     }
 
 	private void webAuthorization(final WebAuthCallback authCallback) {
-		String url = getAuthorizationUrl();
-		//final Semaphore waitSemaphore = new Semaphore(0);
-
 		OAuthWebClient.Callback callback = new OAuthWebClient.Callback() {
 			@Override
 			public void onReceivedError(Error error) {
 				AuthError authError = new AuthError(AuthError.Reason.InnerError, error);
                 onFinished(null, authError);
-				//waitSemaphore.release();
 			}
 
 			@Override
@@ -150,7 +146,6 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
                 }
 
                 onFinished(code, error);
-				//waitSemaphore.release();
 			}
 
             private void onFinished(String code, AuthError error) {
@@ -158,14 +153,8 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
             }
 		};
 
+        String url = getAuthorizationUrl();
 		getWebClient().loadUrl(url, callback);
-
-        /*
-		try {
-			waitSemaphore.acquire();
-		} catch (InterruptedException e) {
-		}
-		*/
 	}
 
 	private String getCode(Uri uri) {

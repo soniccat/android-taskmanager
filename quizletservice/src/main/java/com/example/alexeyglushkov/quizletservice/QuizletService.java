@@ -54,6 +54,8 @@ public class QuizletService extends SimpleService {
         command.setServiceCommandCallback(new ServiceCommand.CommandCallback() {
             @Override
             public void onCompleted(Error error) {
+
+                // TODO: try to put this logic in SimpleService with option
                 if (command.getResponseCode() == 401) {
                     authorizeAndRun(createSetsCommand(callback, cacheMode), callback);
 
