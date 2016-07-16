@@ -24,13 +24,13 @@ public class ServiceTaskRunner implements ServiceCommandRunner {
 
     @Override
     public void run(ServiceCommand command) {
-        ServiceTask serviceTask = (ServiceTask)command;
+        IServiceTask serviceTask = (IServiceTask)command;
         taskProvider.addTask(serviceTask);
     }
 
     @Override
     public void cancel(ServiceCommand command) {
-        ServiceTask serviceTask = (ServiceTask)command;
+        IServiceTask serviceTask = (IServiceTask)command;
         taskManager.cancel(serviceTask, null);
     }
 }

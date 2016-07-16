@@ -369,7 +369,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
                 int i=0;
                 ++i;
             }
-        }));
+        });
     }
 
     private void applySortOrder(Preferences.SortOrder order) {

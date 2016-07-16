@@ -97,7 +97,7 @@ public class CourseHolder {
     }
 
     public File getCourseFile(Course course) {
-        diskProvider.getKeyFile(getKey(course));
+        return diskProvider.getKeyFile(getKey(course));
     }
 
     private String getKey(Course course) {

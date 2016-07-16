@@ -25,7 +25,7 @@ import java.util.Set;
 
 // TODO: check synchronization
 public class DiskStorageProvider implements StorageProvider {
-    private static String ERROR_TAG = "DiskCacheProvider error";
+    private static String ERROR_TAG = "DiskStorageProvider error";
     private static String METADATA_PREFIX = "_metadata";
 
     private File directory;
@@ -68,12 +68,7 @@ public class DiskStorageProvider implements StorageProvider {
     private Error prepareDirectory() {
         Error error = null;
         if (!directory.exists()) {
-            try {
-                directory.createNewFile();
-            } catch (IOException ex) {
-                error = new Error("DiskCacheProvider.prepareDirectory() createNewFile exception:" + ex.getMessage());
-                setLastError(error);
-            }
+            directory.mkdir();
         }
 
         return error;
@@ -148,7 +143,7 @@ public class DiskStorageProvider implements StorageProvider {
             try {
                 file.createNewFile();
             } catch (IOException ex) {
-                error = new Error("DiskCacheProvider.write() createNewFile exception:" + ex.getMessage());
+                error = new Error("DiskStorageProvider.write() createNewFile exception:" + ex.getMessage());
                 setLastError(error);
             }
         }
@@ -234,7 +229,7 @@ public class DiskStorageProvider implements StorageProvider {
         Error error = null;
 
         if (!file.exists()) {
-            error = new Error("DiskCacheProvider.getEntryByKey() exists(): file doesn't exist");
+            error = new Error("DiskStorageProvider.getEntryByKey() exists(): file doesn't exist");
         }
 
         if (error == null) {
@@ -248,7 +243,7 @@ public class DiskStorageProvider implements StorageProvider {
 
                 entry = new DiskStorageEntry(file, null, metadata, serializer);
             } else {
-                error = new Error("DiskCacheProvider.getEntryByKey() exists(): metadata doesn't exist");
+                error = new Error("DiskStorageProvider.getEntryByKey() exists(): metadata doesn't exist");
                 setLastError(error);
             }
         }
@@ -285,14 +280,16 @@ public class DiskStorageProvider implements StorageProvider {
 
         File[] files = directory.listFiles();
 
-        for (File file : files) {
-            if (!isMetadataFile(file)) {
-                String key = file.getName();
-                Object lockObject = getLockObject(key);
-                synchronized (lockObject) {
-                    StorageEntry entry = getEntryByKey(key);
-                    if (entry != null) {
-                        entries.add(entry);
+        if (files != null) {
+            for (File file : files) {
+                if (!isMetadataFile(file)) {
+                    String key = file.getName();
+                    Object lockObject = getLockObject(key);
+                    synchronized (lockObject) {
+                        StorageEntry entry = getEntryByKey(key);
+                        if (entry != null) {
+                            entries.add(entry);
+                        }
                     }
                 }
             }
@@ -332,7 +329,7 @@ public class DiskStorageProvider implements StorageProvider {
 
         if (error == null) {
             if (!directory.delete()) {
-                error = new Error("DiskCacheProvider.removeAll() delete(): remove directory error");
+                error = new Error("DiskStorageProvider.removeAll() delete(): remove directory error");
                 setLastError(error);
             }
         }

@@ -82,6 +82,10 @@ public class SimpleAccount implements Account, Serializable {
     private void updateCredentials(AuthCredentials creds) {
         credentials = creds;
 
+        store();
+    }
+
+    public void store() {
         if (id == 0) { // for a new account
             id = accountStore.getMaxAccountId() + 1;
         }

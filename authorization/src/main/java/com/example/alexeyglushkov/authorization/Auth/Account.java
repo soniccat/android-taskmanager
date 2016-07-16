@@ -14,6 +14,7 @@ public interface Account {
     void setAuthorizer(Authorizer authorizer);
     Authorizer getAuthorizer();
     void setAuthCredentialStore(AccountStore store);
+    void store();
 
     // Method should be called not on main thread to be able show auth activity for OAuth20AuthorizerImpl
     void authorize(final Authorizer.AuthorizerCompletion completion);

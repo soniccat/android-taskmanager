@@ -159,7 +159,7 @@ public class Networks {
         account.setAuthCredentialStore(getAccountStore());
 
         // put account to be able to call onResume
-        getAccountStore().putAccount(account);
+        account.store();
 
         return account;
     }

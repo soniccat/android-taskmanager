@@ -11,6 +11,7 @@ import com.dropbox.client2.exception.DropboxServerException;
 import com.dropbox.client2.exception.DropboxUnlinkedException;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
+import com.example.alexeyglushkov.authtaskmanager.IServiceTask;
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
@@ -24,7 +25,7 @@ import java.io.FileNotFoundException;
 /**
  * Created by alexeyglushkov on 10.07.16.
  */
-public class UploadCommand extends SimpleTask implements ServiceCommand {
+public class UploadCommand extends SimpleTask implements IServiceTask {
     private DropboxAPI<?> api;
     private String path;
     private File file;

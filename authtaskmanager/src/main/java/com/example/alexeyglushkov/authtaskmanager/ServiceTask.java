@@ -15,7 +15,7 @@ import java.net.URL;
 /**
  * Created by alexeyglushkov on 04.11.15.
  */
-public class ServiceTask extends CachableHttpLoadTask implements ServiceCommand {
+public class ServiceTask extends CachableHttpLoadTask implements IServiceTask {
 
     private HttpUrlConnectionBuilder connectionBuilder = new HttpUrlConnectionBuilder();
 
