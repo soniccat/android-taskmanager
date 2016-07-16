@@ -6,10 +6,21 @@ package com.example.alexeyglushkov.taskmanager.task;
 
 public abstract class SimpleTask implements Task {
 
-    final protected TaskImpl impl = new TaskImpl(this);
+    protected TaskImpl impl;
 
     public SimpleTask() {
         super();
+        impl = new TaskImpl(this);
+    }
+
+    public SimpleTask(TaskImpl impl) {
+        super();
+        this.impl = impl;
+    }
+
+    // to be able to subclass TaskPrivate methods
+    public void setImpl(TaskImpl impl) {
+        this.impl = impl;
     }
 
     @Override
@@ -145,8 +156,5 @@ public abstract class SimpleTask implements Task {
     @Override
     public TaskPrivate getPrivate() {
         return impl;
-    }
-
-    protected void onTaskCancelled() {
     }
 }

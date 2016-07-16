@@ -14,6 +14,8 @@ import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnection
 
     //TODO: implement simple subclass
 public interface ServiceCommand extends ServiceCommandProxy{
+
+    // TODO: it seems these 3 methods could be not necessary (see dropbox upload command)
     HttpUrlConnectionBuilder getConnectionBulder();
     String getResponse();
     int getResponseCode();

@@ -3,6 +3,8 @@ package com.example.alexeyglushkov.streamlib.progress;
 /**
  * Created by alexeyglushkov on 25.01.15.
  */
+
+// TODO: implement calling listeners depending on how much time passed
 public class ProgressUpdater implements ProgressInfo {
     private float contentSize;
     private float progressMinChange; // from 0 to 1

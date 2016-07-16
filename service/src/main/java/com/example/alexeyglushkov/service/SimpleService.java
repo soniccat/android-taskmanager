@@ -17,6 +17,8 @@ import com.example.alexeyglushkov.authorization.service.Service;
  */
 public class SimpleService implements Service {
     private Account account;
+
+    // TODO: could be not neccesarry
     protected ServiceCommandProvider commandProvider;
     protected ServiceCommandRunner commandRunner;
     protected ServiceCommand.CommandCallback authCompletion;

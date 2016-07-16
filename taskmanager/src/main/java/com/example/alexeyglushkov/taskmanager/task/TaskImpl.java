@@ -23,7 +23,7 @@ public class TaskImpl implements Task, TaskPrivate {
     protected Object taskUserData;
     protected boolean needCancelTask;
     protected boolean isCancelled; // is set in subclasses when task is really cancelled
-    protected float progressMinChange;
+    protected float progressMinChange = 0.1f;
     protected Error error;
     protected String taskId;
     protected LoadPolicy loadPolicy = LoadPolicy.SkipIfAdded;

@@ -62,6 +62,7 @@ public class ServiceTask extends CachableHttpLoadTask implements ServiceCommand 
         return connectionBuilder;
     }
 
+    //TODO: consider to create a servicetaskimpl (subclass of TaskImpl) to remove duplication
     @Override
     public String getResponse() {
         return (String)getHandledData();
