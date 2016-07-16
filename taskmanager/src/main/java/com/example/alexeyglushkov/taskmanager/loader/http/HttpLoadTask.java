@@ -23,10 +23,10 @@ public class HttpLoadTask extends SimpleTask {
     protected Object handledData;
     protected int responseCode;
 
-    public HttpLoadTask(HttpURLConnectionProvider provider, HTTPConnectionStreamReader handler) {
+    public HttpLoadTask(HttpURLConnectionProvider provider, HTTPConnectionStreamReader streamReader) {
         super();
         setProvider(provider);
-        setHandler(handler);
+        setStreamReader(streamReader);
     }
 
     protected void setProvider(HttpURLConnectionProvider provider) {
@@ -37,7 +37,7 @@ public class HttpLoadTask extends SimpleTask {
         }
     }
 
-    protected void setHandler(HTTPConnectionStreamReader handler) {
+    protected void setStreamReader(HTTPConnectionStreamReader handler) {
         this.handler = handler;
     }
 
