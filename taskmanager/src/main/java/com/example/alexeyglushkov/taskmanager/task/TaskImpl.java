@@ -294,7 +294,7 @@ public class TaskImpl implements Task, TaskPrivate {
         }
     }
 
-    private void triggerProgressListeners(final ProgressInfo progressInfo) {
+    public void triggerProgressListeners(final ProgressInfo progressInfo) {
         if (progressListeners.size() > 0) {
             Tools.runOnMainThread(new Runnable() {
                 @Override

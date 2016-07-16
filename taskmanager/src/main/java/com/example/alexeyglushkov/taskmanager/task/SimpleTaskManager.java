@@ -283,7 +283,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
     @Override
     public void setHandler(Handler handler) {
-        /*if (this.handler != null) {
+        /*if (this.streamReader != null) {
             checkHandlerThread();
         }*/
 

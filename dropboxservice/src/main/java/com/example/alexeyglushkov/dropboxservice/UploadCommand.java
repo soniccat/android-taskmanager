@@ -11,6 +11,7 @@ import com.dropbox.client2.exception.DropboxServerException;
 import com.dropbox.client2.exception.DropboxUnlinkedException;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
+import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 
 import java.io.File;
@@ -101,6 +102,24 @@ public class UploadCommand extends SimpleTask implements ServiceCommand {
         }
 
         //getPrivate().handleTaskCompletion();
+    }
+
+
+    private ProgressUpdater createProgressUpdater(float contentSize) {
+        ProgressUpdater updater = new ProgressUpdater(contentSize, getTaskProgressMinChange(), new ProgressUpdater.ProgressUpdaterListener() {
+            @Override
+            public void onProgressUpdated(ProgressUpdater updater) {
+                getPrivate().triggerProgressListeners(updater);
+            }
+
+            @Override
+            public void onProgressCancelled(ProgressUpdater updater, Object info) {
+
+
+                getPrivate().cancelTask(info);
+            }
+        });
+        return updater;
     }
 
 

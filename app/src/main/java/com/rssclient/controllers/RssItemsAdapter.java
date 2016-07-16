@@ -169,7 +169,7 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
             }
         }
 
-        //TODO: it should be done via api without direct access to getHandler
+        //TODO: it should be done via api without direct access to getStreamReader
         com.example.alexeyglushkov.taskmanager.task.Tools.runOnHandlerThread(taskProvider.getHandler(), new Runnable() {
             @Override
             public void run() {

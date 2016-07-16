@@ -1,5 +1,6 @@
 package com.example.alexeyglushkov.taskmanager.task;
 
+import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 
 import java.util.Date;
@@ -10,7 +11,7 @@ import java.util.Date;
 
 // Contains methods being used only by TaskManager, TaskPool or in a Task
 
-public interface TaskPrivate extends Task{
+public interface TaskPrivate extends Task {
 
     // Marks the task that it should be cancelled
     // it will have Cancelled state if the task is started and successfully cancelled
@@ -64,6 +65,12 @@ public interface TaskPrivate extends Task{
     // Caller: Task
     //
     ProgressUpdater createProgressUpdater(float contentSize);
+
+    // Notify all progress listeners
+    //
+    // Caller: Task
+    //
+    void triggerProgressListeners(final ProgressInfo progressInfo);
 
     // Call the start callback
     //

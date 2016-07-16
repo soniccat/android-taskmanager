@@ -12,14 +12,14 @@ import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
 import com.example.alexeyglushkov.streamlib.readersandwriters.StringReader;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 
-// Reader - object which converts a stream to an object of another data type and then delegates it to its handler or just return it if handler is empty
+// Reader - object which converts a stream to an object of another data type and then delegates it to its streamReader or just return it if streamReader is empty
 // Handler - object which converts a stream or other input type to an object of another data type and return it, after that it is stored in handledData
 // Reader is an extended Handler
 
 public class HttpLoadTask extends SimpleTask {
     protected HttpURLConnectionProvider provider;
     protected int contentLength;
-    protected HTTPConnectionStreamReader handler;
+    protected HTTPConnectionStreamReader streamReader;
     protected Object handledData;
     protected int responseCode;
 
@@ -38,11 +38,11 @@ public class HttpLoadTask extends SimpleTask {
     }
 
     protected void setStreamReader(HTTPConnectionStreamReader handler) {
-        this.handler = handler;
+        this.streamReader = handler;
     }
 
-    public InputStreamReader getHandler() {
-        return handler;
+    public InputStreamReader getStreamReader() {
+        return streamReader;
     }
 
     public int getContentLength() {
@@ -68,8 +68,8 @@ public class HttpLoadTask extends SimpleTask {
             responseCode = connection.getResponseCode();
             Log.d("HttpLoadTask", "HttpLoadingContext: The response is: " + responseCode + "\n");
 
-            handler.setProgressUpdater(getPrivate().createProgressUpdater(contentLength));
-            handler.handleConnectionResponse(connection);
+            streamReader.setProgressUpdater(getPrivate().createProgressUpdater(contentLength));
+            streamReader.handleConnectionResponse(connection);
 
             //TODO: handle cancellation well
             stream = new BufferedInputStream(connection.getInputStream());
@@ -121,7 +121,7 @@ public class HttpLoadTask extends SimpleTask {
     }
 
     protected Object handleStream(InputStream stream) {
-        return handler.readStream(stream);
+        return streamReader.readStream(stream);
     }
 
     public Object getHandledData() {

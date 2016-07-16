@@ -146,4 +146,7 @@ public abstract class SimpleTask implements Task {
     public TaskPrivate getPrivate() {
         return impl;
     }
+
+    protected void onTaskCancelled() {
+    }
 }
