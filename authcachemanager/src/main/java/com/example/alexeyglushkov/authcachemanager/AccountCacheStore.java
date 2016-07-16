@@ -23,7 +23,12 @@ public class AccountCacheStore extends DiskStorageProvider implements AccountSto
 
     @Override
     public Error putAccount(Account account) {
-        return put(Integer.toString(account.getId()), account, null);
+        Error error = put(Integer.toString(account.getId()), account, null);
+        if (error == null) {
+            accounts.add(account);
+        }
+
+        return error;
     }
 
     @Override
