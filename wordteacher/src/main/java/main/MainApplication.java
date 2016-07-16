@@ -14,7 +14,9 @@ import com.example.alexeyglushkov.cachemanager.StorageProvider;
 import com.example.alexeyglushkov.cachemanager.DiskStorageCleaner;
 import com.example.alexeyglushkov.cachemanager.DiskStorageProvider;
 import com.example.alexeyglushkov.dropboxservice.DropboxAccount;
+import com.example.alexeyglushkov.dropboxservice.DropboxCommandProvider;
 import com.example.alexeyglushkov.dropboxservice.DropboxService;
+import com.example.alexeyglushkov.dropboxservice.DropboxServiceTaskProvider;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.tasks.QuizletServiceTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
@@ -155,12 +157,12 @@ public class MainApplication extends Application {
 
     private void createDropboxService() {
         DropboxAccount dropboxAccount = (DropboxAccount)Networks.getAccount(Networks.Network.Dropbox);
-        //QuizletServiceTaskProvider quizletCommandProvider = new QuizletServiceTaskProvider(getStorageProvider());
+        DropboxCommandProvider commandProvider = new DropboxServiceTaskProvider();
 
-        //String id = Integer.toString(dropboxAccount.getServiceType());
-        //ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
+        String id = Integer.toString(dropboxAccount.getServiceType());
+        ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
 
-        dropboxService = new DropboxService(dropboxAccount/*, quizletCommandProvider, serviceCommandRunner*/);
+        dropboxService = new DropboxService("/Courses/", dropboxAccount, commandProvider, serviceCommandRunner);
     }
 
     private void loadCourseHolder() {

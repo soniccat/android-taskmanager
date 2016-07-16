@@ -96,6 +96,14 @@ public class CourseHolder {
         return course;
     }
 
+    public File getCourseFile(Course course) {
+        diskProvider.getKeyFile(getKey(course));
+    }
+
+    private String getKey(Course course) {
+        return course.getId().toString();
+    }
+
     public Card getCard(UUID cardId) {
         Card resultCard = null;
         for (Course course : getCourses()) {
@@ -115,7 +123,7 @@ public class CourseHolder {
     }
 
     private Error storeCourse(Course course) {
-        Error error = diskProvider.put(course.getId().toString(), course, null);
+        Error error = diskProvider.put(getKey(course), course, null);
         return error;
     }
 
@@ -125,7 +133,7 @@ public class CourseHolder {
     }
 
     public Error removeCourse(Course course) {
-        Error error = diskProvider.remove(course.getId().toString());
+        Error error = diskProvider.remove(getKey(course));
         if (error == null) {
             courses.remove(course);
         }

@@ -79,7 +79,7 @@ public class DiskStorageProvider implements StorageProvider {
         return error;
     }
 
-    private File getKeyFile(String key) {
+    public File getKeyFile(String key) {
         return new File(directory.getPath() + File.separator + key);
     }
 
@@ -143,16 +143,6 @@ public class DiskStorageProvider implements StorageProvider {
     // TODO: need to refactor
     private Error writeByKey(String key, Object object, DiskStorageMetadata metadata) {
         Error error = null;
-
-        // TODO: consider removing it or putting at the bottom, now if we have crash in serialization a file will be just removed
-        /*File file = getKeyFile(key);
-        if (file.exists()) {
-            if (!file.delete()) {
-                error = new Error("DiskCacheProvider.writeByKey() delete: can't delete cache file");
-                setLastError(error);
-            }
-        }*/
-
         File file = getKeyFile(key);
         if (!file.exists()) {
             try {

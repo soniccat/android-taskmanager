@@ -27,6 +27,7 @@ import com.example.alexeyglushkov.service.CachableHttpLoadTask;
 import com.example.alexeyglushkov.service.SimpleService;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -355,12 +356,20 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     private void syncWithDropbox() {
-        getMainApplication().getDropboxService().runCommand(null, true, new ServiceCommand.CommandCallback() {
+        ArrayList<Course> courses = getCourseHolder().getCourses();
+        if (courses.size() == 0) {
+            return;
+        }
+
+        File file = getCourseHolder().getCourseFile(courses.get(0));
+
+        getMainApplication().getDropboxService().uploadFile(file, new ServiceCommand.CommandCallback() {
             @Override
             public void onCompleted(Error error) {
-
+                int i=0;
+                ++i;
             }
-        });
+        }));
     }
 
     private void applySortOrder(Preferences.SortOrder order) {
