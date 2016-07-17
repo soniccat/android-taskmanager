@@ -14,9 +14,7 @@ import java.util.Date;
 /**
  * Created by alexeyglushkov on 23.07.15.
  */
-public class TaskImpl implements Task, TaskPrivate {
-    private WeakReference<Task> outerTask;
-
+public abstract class TaskImpl implements Task, TaskPrivate {
     protected Task.Callback startCallback;
     protected Object cancellationInfo;
     protected Task.Status taskStatus = Task.Status.NotStarted;
@@ -39,18 +37,12 @@ public class TaskImpl implements Task, TaskPrivate {
     protected ArrayList<StatusListener> statusListeners;
     protected ArrayList<ProgressListener> progressListeners;
 
-    public TaskImpl(Task outerTask) {
+    public TaskImpl() {
         super();
 
-        this.outerTask = new WeakReference<Task>(outerTask);
         blockedByTasks = new WeakRefList<Task>();
         statusListeners = new ArrayList<StatusListener>();
         progressListeners = new ArrayList<ProgressListener>();
-    }
-
-    @Override
-    public void startTask() {
-        // it must be implemented in the outerTask
     }
 
     @Override
@@ -288,7 +280,7 @@ public class TaskImpl implements Task, TaskPrivate {
         if (oldStatus != newStatus) {
             for (StatusListener l : statusListeners) {
                 if (l != null) {
-                    l.onTaskStatusChanged(getOuterTask(), oldStatus, newStatus);
+                    l.onTaskStatusChanged(TaskImpl.this, oldStatus, newStatus);
                 }
             }
         }
@@ -301,7 +293,7 @@ public class TaskImpl implements Task, TaskPrivate {
                 public void run() {
                     for (ProgressListener l : progressListeners) {
                         if (l != null) {
-                            l.onTaskProgressChanged(getOuterTask(), progressInfo);
+                            l.onTaskProgressChanged(TaskImpl.this, progressInfo);
                         }
                     }
                 }
@@ -323,9 +315,5 @@ public class TaskImpl implements Task, TaskPrivate {
 
     private void checkMainThread() {
         Assert.assertEquals(Looper.getMainLooper().getThread(), Thread.currentThread());
-    }
-
-    public Task getOuterTask() {
-        return outerTask.get();
     }
 }

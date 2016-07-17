@@ -1,14 +1,6 @@
 package com.example.alexeyglushkov.dropboxservice;
 
 import com.dropbox.client2.DropboxAPI;
-import com.dropbox.client2.ProgressListener;
-import com.dropbox.client2.exception.DropboxException;
-import com.dropbox.client2.exception.DropboxFileSizeException;
-import com.dropbox.client2.exception.DropboxIOException;
-import com.dropbox.client2.exception.DropboxParseException;
-import com.dropbox.client2.exception.DropboxPartialFileException;
-import com.dropbox.client2.exception.DropboxServerException;
-import com.dropbox.client2.exception.DropboxUnlinkedException;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
 import com.example.alexeyglushkov.authtaskmanager.IServiceTask;
@@ -34,17 +26,6 @@ public class UploadCommand extends SimpleTask implements IServiceTask {
 
     public UploadCommand(DropboxAPI<?> api, String dropboxPath, File file) {
         super();
-
-        TaskImpl impl = new TaskImpl(this) {
-            @Override
-            public void cancelTask(Object info) {
-                super.cancelTask(info);
-
-                UploadCommand.this.onTaskCancelled();
-            }
-        };
-
-        setImpl(impl);
 
         this.api = api;
         this.path = dropboxPath;
@@ -99,7 +80,9 @@ public class UploadCommand extends SimpleTask implements IServiceTask {
         getPrivate().triggerProgressListeners(info);
     }
 
-    private void onTaskCancelled() {
+    @Override
+    public void cancelTask(Object info) {
+        super.cancelTask(info);
         request.abort();
     }
 
