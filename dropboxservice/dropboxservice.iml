@@ -107,8 +107,8 @@
     <orderEntry type="library" exported="" name="dexmaker-mockito-1.2" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="junit-4.12" level="project" />
     <orderEntry type="library" exported="" name="hamcrest-core-1.1" level="project" />
-    <orderEntry type="library" exported="" name="mockito-core-1.9.5" level="project" />
     <orderEntry type="library" exported="" name="guava-18.0" level="project" />
+    <orderEntry type="library" exported="" name="mockito-core-1.9.5" level="project" />
     <orderEntry type="library" exported="" name="dropbox-android-sdk-1.6.3" level="project" />
     <orderEntry type="library" exported="" name="animated-vector-drawable-23.2.1" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-23.2.1" level="project" />
@@ -117,7 +117,7 @@
     <orderEntry type="library" exported="" name="appcompat-v7-23.2.1" level="project" />
     <orderEntry type="library" exported="" name="dexmaker-1.2" level="project" />
     <orderEntry type="module" module-name="authorization" exported="" />
-    <orderEntry type="module" module-name="authtaskmanager" exported="" />
     <orderEntry type="module" module-name="service" exported="" />
+    <orderEntry type="module" module-name="servicetaskmanager" exported="" />
   </component>
 </module>

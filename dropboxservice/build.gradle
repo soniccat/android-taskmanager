@@ -26,5 +26,5 @@ dependencies {
     compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
     compile project(path: ':service')
     compile project(path: ':authorization')
-    compile project(path: ':authtaskmanager')
+    compile project(path: ':servicetaskmanager')
 }
