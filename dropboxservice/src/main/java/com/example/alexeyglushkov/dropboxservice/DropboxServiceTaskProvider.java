@@ -19,7 +19,11 @@ public class DropboxServiceTaskProvider implements DropboxCommandProvider {
         this.api = api;
     }
 
-    public UploadCommand getUploadCommand(String dropBoxPath, File file) {
-        return new UploadCommand(api, dropBoxPath, file);
+    public UploadCommand getUploadCommand(String srcPath, String dstPath) {
+        return new UploadCommand(api, srcPath, dstPath);
+    }
+
+    public DownloadCommand getDownloadCommand(String srcPath, String dstPath) {
+        return new DownloadCommand(api, srcPath, dstPath);
     }
 }

@@ -21,6 +21,10 @@ public class CourseHolder {
         diskProvider.setSerializer(new CourseSerializer(), Course.class);
     }
 
+    public File getDirectory() {
+        return diskProvider.getDirectory();
+    }
+
     public void loadCourses() {
         List<StorageEntry> entries = diskProvider.getEntries();
         for (StorageEntry entry : entries) {

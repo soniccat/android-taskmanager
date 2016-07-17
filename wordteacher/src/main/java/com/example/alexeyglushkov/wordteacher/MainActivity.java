@@ -1,7 +1,6 @@
 package com.example.alexeyglushkov.wordteacher;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -20,17 +19,12 @@ import android.view.ViewTreeObserver;
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
-import com.example.alexeyglushkov.authorization.service.Service;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.service.CachableHttpLoadTask;
-import com.example.alexeyglushkov.service.SimpleService;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import learning.LearnActivity;
@@ -356,20 +350,24 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     private void syncWithDropbox() {
-        ArrayList<Course> courses = getCourseHolder().getCourses();
-        if (courses.size() == 0) {
-            return;
+        boolean hasCourses = getCourseHolder().getCourses().size() > 0;
+        if (hasCourses) {
+            getMainApplication().getDropboxService().upload(getCourseHolder().getDirectory().getPath(), "/Courses/", new ServiceCommand.CommandCallback() {
+                @Override
+                public void onCompleted(Error error) {
+                    int i = 0;
+                    ++i;
+                }
+            });
+        } else {
+            getMainApplication().getDropboxService().download("/Courses/", getCourseHolder().getDirectory().getPath(), new ServiceCommand.CommandCallback() {
+                @Override
+                public void onCompleted(Error error) {
+                    int i = 0;
+                    ++i;
+                }
+            });
         }
-
-        File file = getCourseHolder().getCourseFile(courses.get(0));
-
-        getMainApplication().getDropboxService().uploadFile(file, new ServiceCommand.CommandCallback() {
-            @Override
-            public void onCompleted(Error error) {
-                int i=0;
-                ++i;
-            }
-        });
     }
 
     private void applySortOrder(Preferences.SortOrder order) {

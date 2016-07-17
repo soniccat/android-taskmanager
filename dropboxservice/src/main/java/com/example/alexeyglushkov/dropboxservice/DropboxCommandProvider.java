@@ -13,5 +13,7 @@ import java.io.File;
 public interface DropboxCommandProvider {
     void setApi(DropboxAPI<AndroidAuthSession> api);
 
-    UploadCommand getUploadCommand(String dropBoxPath, File file);
+    //TODO: make interfaces for commands
+    UploadCommand getUploadCommand(String srcPath, String dstPath);
+    DownloadCommand getDownloadCommand(String srcPath, String dstPath);
 }

@@ -20,27 +20,56 @@ import java.io.FileNotFoundException;
  */
 public class UploadCommand extends ServiceTask implements IServiceTask {
     private DropboxAPI<?> api;
-    private String path;
-    private File file;
+    private String srcPath;
+    private String dstPath;
 
     private DropboxAPI.UploadRequest request;
 
-    public UploadCommand(DropboxAPI<?> api, String dropboxPath, File file) {
+    public UploadCommand(DropboxAPI<?> api, String srcPath, String dstPath) {
         super();
 
         this.api = api;
-        this.path = dropboxPath;
-        this.file = file;
+        this.srcPath = srcPath;
+        this.dstPath = dstPath;
     }
 
     @Override
     public void startTask() {
+        // TODO: read whole bytes needed to upload to show progress
+        uploadFileOrDirectory(this.srcPath, this.dstPath);
+        getPrivate().handleTaskCompletion();
+    }
+
+    private void uploadFileOrDirectory(String srcPath, String dstPath) {
+        File srcFile = new File(srcPath);
+        if (srcFile.isDirectory()) {
+            String resultDstPath = addPathName(dstPath, srcFile.getName());
+            File[] files = srcFile.listFiles();
+            for (File f : files) {
+                uploadFileOrDirectory(f.getPath(), addPathName(resultDstPath, f.getName()));
+            }
+        } else {
+            uploadFile(srcPath, dstPath);
+        }
+    }
+
+    private String addPathName(String path, String name) {
+        if (!path.endsWith(File.separator)) {
+            path = path + File.separator;
+        }
+
+        path = path + name;
+        return path;
+    }
+
+    private void uploadFile(String srcPath, String dstPath) {
         try {
             // By creating a request, we get a handle to the putFile operation,
             // so we can cancel it later if we want to
+            File file = new File(srcPath);
             FileInputStream fis = new FileInputStream(file);
-            String path = this.path + file.getName();
-            request = api.putFileOverwriteRequest(path, fis, file.length(),
+
+            request = api.putFileOverwriteRequest(dstPath, fis, file.length(),
                     new com.dropbox.client2.ProgressListener() {
                         @Override
                         public long progressInterval() {
@@ -59,10 +88,9 @@ public class UploadCommand extends ServiceTask implements IServiceTask {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             getPrivate().setTaskError(new Error(e));
         }
-
-        getPrivate().handleTaskCompletion();
     }
 
     private void triggerProgressListeners(final long bytes, final long total) {

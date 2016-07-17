@@ -39,6 +39,10 @@ public class DiskStorageProvider implements StorageProvider {
         this.serializerMap = new HashMap<>();
     }
 
+    public File getDirectory() {
+        return directory;
+    }
+
     public void setSerializer(Serializer serializer, Class cl) {
         serializerMap.put(cl, serializer);
     }

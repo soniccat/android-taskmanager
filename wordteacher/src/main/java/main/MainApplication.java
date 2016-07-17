@@ -162,14 +162,14 @@ public class MainApplication extends Application {
         String id = Integer.toString(dropboxAccount.getServiceType());
         ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
 
-        dropboxService = new DropboxService("/Courses/", dropboxAccount, commandProvider, serviceCommandRunner);
+        dropboxService = new DropboxService(dropboxAccount, commandProvider, serviceCommandRunner);
     }
 
     private void loadCourseHolder() {
         final Task loadCourseHolderTask = new SimpleTask() {
             @Override
             public void startTask() {
-                File authDir = getDir("CourseHolder", Context.MODE_PRIVATE);
+                File authDir = getDir("CourseHolder2", Context.MODE_PRIVATE);
                 CourseHolder store = new CourseHolder(authDir);
                 store.loadCourses();
 

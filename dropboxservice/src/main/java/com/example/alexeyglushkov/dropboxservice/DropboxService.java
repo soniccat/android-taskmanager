@@ -14,10 +14,8 @@ import java.io.File;
 public class DropboxService extends SimpleService {
     private DropboxCommandProvider commandProvider;
     private DropboxAPI<AndroidAuthSession> api;
-    private String appPath;
 
-    public DropboxService(String appPath, DropboxAccount account, DropboxCommandProvider commandProvider, ServiceCommandRunner commandRunner) {
-        this.appPath = appPath;
+    public DropboxService(DropboxAccount account, DropboxCommandProvider commandProvider, ServiceCommandRunner commandRunner) {
         setAccount(account);
         this.commandProvider = commandProvider;
         setServiceCommandRunner(commandRunner);
@@ -26,8 +24,15 @@ public class DropboxService extends SimpleService {
         this.commandProvider.setApi(this.api);
     }
 
-    public void uploadFile(File file, final ServiceCommand.CommandCallback callback) {
-        UploadCommand cmd = commandProvider.getUploadCommand(appPath, file);
+    public void upload(String srcPath, String dstPath, final ServiceCommand.CommandCallback callback) {
+        //TODO: handle 401 error
+        UploadCommand cmd = commandProvider.getUploadCommand(srcPath, dstPath);
+        cmd.setServiceCommandCallback(callback);
+        runCommand(cmd, true, callback);
+    }
+
+    public void download(String srcPath, String dstPath, final ServiceCommand.CommandCallback callback) {
+        DownloadCommand cmd = commandProvider.getDownloadCommand(srcPath, dstPath);
         cmd.setServiceCommandCallback(callback);
         runCommand(cmd, true, callback);
     }
