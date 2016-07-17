@@ -16,7 +16,7 @@ import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
-import com.example.alexeyglushkov.authtaskmanager.ServiceTask;
+import com.example.alexeyglushkov.authtaskmanager.HttpServiceTask;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
 import com.example.alexeyglushkov.cachemanager.StorageProvider;
@@ -114,7 +114,7 @@ public class MainActivity extends BaseActivity {
         HttpUrlConnectionBuilder builder = new HttpUrlConnectionBuilder();
         builder.setUrl("https://api.foursquare.com/v2/users/self?v=20140806&m=foursquare");
 
-        final ServiceTask cmd = new ServiceTask();
+        final HttpServiceTask cmd = new HttpServiceTask();
         cmd.setCache(storageProvider);
         cmd.setConnectionBuilder(builder);
         cmd.setServiceCommandCallback(new ServiceCommand.Callback() {

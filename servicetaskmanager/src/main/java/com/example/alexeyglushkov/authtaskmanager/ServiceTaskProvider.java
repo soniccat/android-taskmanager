@@ -10,8 +10,8 @@ import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnection
 public class ServiceTaskProvider implements ServiceCommandProvider {
     @Override
     public ServiceCommand getServiceCommand(HttpUrlConnectionBuilder builder) {
-        ServiceTask serviceTask = new ServiceTask();
-        serviceTask.setConnectionBuilder(builder);
-        return serviceTask;
+        HttpServiceTask httpServiceTask = new HttpServiceTask();
+        httpServiceTask.setConnectionBuilder(builder);
+        return httpServiceTask;
     }
 }

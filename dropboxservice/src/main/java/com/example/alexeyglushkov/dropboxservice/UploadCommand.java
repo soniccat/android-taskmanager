@@ -4,6 +4,7 @@ import com.dropbox.client2.DropboxAPI;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
 import com.example.alexeyglushkov.authtaskmanager.IServiceTask;
+import com.example.alexeyglushkov.authtaskmanager.ServiceTask;
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
@@ -17,7 +18,7 @@ import java.io.FileNotFoundException;
 /**
  * Created by alexeyglushkov on 10.07.16.
  */
-public class UploadCommand extends SimpleTask implements IServiceTask {
+public class UploadCommand extends ServiceTask implements IServiceTask {
     private DropboxAPI<?> api;
     private String path;
     private File file;
@@ -84,47 +85,5 @@ public class UploadCommand extends SimpleTask implements IServiceTask {
     public void cancelTask(Object info) {
         super.cancelTask(info);
         request.abort();
-    }
-
-    //TODO: consider to create a servicetaskimpl (subclass of TaskImpl) to remove duplication
-
-    @Override
-    public HttpUrlConnectionBuilder getConnectionBulder() {
-        return null;
-    }
-
-    @Override
-    public String getResponse() {
-        return null;
-    }
-
-    @Override
-    public int getResponseCode() {
-        return 0;
-    }
-
-    @Override
-    public Error getCommandError() {
-        return getTaskError();
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return getTaskStatus() == Status.Cancelled;
-    }
-
-    @Override
-    public void setServiceCommandCallback(final CommandCallback callback) {
-        setTaskCallback(new Task.Callback() {
-            @Override
-            public void onCompleted(boolean cancelled) {
-                callback.onCompleted(getCommandError());
-            }
-        });
-    }
-
-    @Override
-    public ServiceCommand getServiceCommand() {
-        return this;
     }
 }

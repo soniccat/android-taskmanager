@@ -2,70 +2,27 @@ package com.example.alexeyglushkov.authtaskmanager;
 
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
-import com.example.alexeyglushkov.service.CachableHttpLoadTask;
-import com.example.alexeyglushkov.streamlib.convertors.BytesStringConvertor;
-import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
-import com.example.alexeyglushkov.taskmanager.loader.http.HttpURLConnectionProvider;
+import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-
 /**
- * Created by alexeyglushkov on 04.11.15.
+ * Created by alexeyglushkov on 17.07.16.
  */
-public class ServiceTask extends CachableHttpLoadTask implements IServiceTask {
-
-    private HttpUrlConnectionBuilder connectionBuilder = new HttpUrlConnectionBuilder();
-
-    public ServiceTask() {
-        //TODO: we pass null and lose HTTPConnectionHandler handling (HTTPConnectionResponseReaderAdaptor)
-        super(null, null);
-        setProvider(getProvider());
-        byteArrayReader.setByteArrayHandler(getReader());
-        this.connectionBuilder = new HttpUrlConnectionBuilder();
-    }
-
-    public void setConnectionBuilder(HttpUrlConnectionBuilder connectionBuilder) {
-        this.connectionBuilder = connectionBuilder;
-        setTaskId(connectionBuilder.getStringUrl());
-    }
-
-    protected HttpURLConnectionProvider getProvider() {
-        return new HttpURLConnectionProvider() {
-            @Override
-            public HttpURLConnection getUrlConnection() {
-                return getConnectionBulder().build();
-            }
-
-            @Override
-            public URL getURL() {
-                URL url = null;
-                try {
-                    //TODO: return URL from builder
-                    url = new URL(connectionBuilder.getStringUrl());
-                } catch (MalformedURLException ex) {
-                }
-
-                return url;
-            }
-        };
-    }
-
-    protected ByteArrayHandler getReader() {
-        return new BytesStringConvertor(null);
-    }
+public abstract class ServiceTask extends SimpleTask implements IServiceTask {
 
     @Override
     public HttpUrlConnectionBuilder getConnectionBulder() {
-        return connectionBuilder;
+        return null;
     }
 
-    //TODO: consider to create a servicetaskimpl (subclass of TaskImpl) to remove duplication
     @Override
     public String getResponse() {
-        return (String)getHandledData();
+        return null;
+    }
+
+    @Override
+    public int getResponseCode() {
+        return 0;
     }
 
     @Override
@@ -79,7 +36,7 @@ public class ServiceTask extends CachableHttpLoadTask implements IServiceTask {
     }
 
     @Override
-    public void setServiceCommandCallback(final ServiceCommand.CommandCallback callback) {
+    public void setServiceCommandCallback(final CommandCallback callback) {
         setTaskCallback(new Task.Callback() {
             @Override
             public void onCompleted(boolean cancelled) {
