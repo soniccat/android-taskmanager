@@ -544,8 +544,16 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     private void handleLoadedQuizletSets() {
         List<QuizletSet> sets = getQuizletService().getSets();
-        getQuizletStackFragment().updateSets(sets);
-        getCardQuizletFragment().updateSets(sets);
+
+        QuizletStackFragment fragment = getQuizletStackFragment();
+        if (fragment != null) {
+            fragment.updateSets(sets);
+        }
+
+        QuizletCardsFragment cardFragment = getCardQuizletFragment();
+        if (cardFragment != null) {
+            cardFragment.updateSets(sets);
+        }
     }
 
     private CourseFragment getCourseFragment() {

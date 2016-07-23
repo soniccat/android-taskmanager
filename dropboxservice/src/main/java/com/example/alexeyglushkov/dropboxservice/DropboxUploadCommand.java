@@ -1,31 +1,24 @@
 package com.example.alexeyglushkov.dropboxservice;
 
 import com.dropbox.client2.DropboxAPI;
-import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
-import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
 import com.example.alexeyglushkov.authtaskmanager.IServiceTask;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTask;
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
-import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
-import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
-import com.example.alexeyglushkov.taskmanager.task.Task;
-import com.example.alexeyglushkov.taskmanager.task.TaskImpl;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 
 /**
  * Created by alexeyglushkov on 10.07.16.
  */
-public class UploadCommand extends ServiceTask implements IServiceTask {
+public class DropboxUploadCommand extends ServiceTask implements IServiceTask {
     private DropboxAPI<?> api;
     private String srcPath;
     private String dstPath;
 
     private DropboxAPI.UploadRequest request;
 
-    public UploadCommand(DropboxAPI<?> api, String srcPath, String dstPath) {
+    public DropboxUploadCommand(DropboxAPI<?> api, String srcPath, String dstPath) {
         super();
 
         this.api = api;
@@ -43,10 +36,9 @@ public class UploadCommand extends ServiceTask implements IServiceTask {
     private void uploadFileOrDirectory(String srcPath, String dstPath) {
         File srcFile = new File(srcPath);
         if (srcFile.isDirectory()) {
-            String resultDstPath = addPathName(dstPath, srcFile.getName());
             File[] files = srcFile.listFiles();
             for (File f : files) {
-                uploadFileOrDirectory(f.getPath(), addPathName(resultDstPath, f.getName()));
+                uploadFileOrDirectory(f.getPath(), addPathName(dstPath, f.getName()));
             }
         } else {
             uploadFile(srcPath, dstPath);
@@ -79,7 +71,7 @@ public class UploadCommand extends ServiceTask implements IServiceTask {
 
                         @Override
                         public void onProgress(long bytes, long total) {
-                            UploadCommand.this.triggerProgressListeners(bytes, total);
+                            DropboxUploadCommand.this.triggerProgressListeners(bytes, total);
                         }
                     });
 

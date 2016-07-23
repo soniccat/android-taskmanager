@@ -1,9 +1,6 @@
 package com.example.alexeyglushkov.dropboxservice;
 
 import com.dropbox.client2.DropboxAPI;
-import com.dropbox.client2.ProgressListener;
-import com.dropbox.client2.exception.DropboxException;
-import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTask;
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
 
@@ -13,12 +10,12 @@ import java.io.FileOutputStream;
 /**
  * Created by alexeyglushkov on 17.07.16.
  */
-public class DownloadCommand extends ServiceTask {
+public class DropboxDownloadCommand extends ServiceTask {
     private DropboxAPI<?> api;
     private String srcPath;
     private String destPath;
 
-    public DownloadCommand(DropboxAPI<?> api, String srcPath, String destPath) {
+    public DropboxDownloadCommand(DropboxAPI<?> api, String srcPath, String destPath) {
         this.api = api;
         this.srcPath = srcPath;
         this.destPath = destPath;
@@ -35,8 +32,10 @@ public class DownloadCommand extends ServiceTask {
         try {
             DropboxAPI.Entry entry = api.metadata(srcPath, 0, null, true, null);
             if (entry.isDir) {
-                File f = new File(addPathName(destPath, entry.fileName()));
-                f.mkdir();
+                File f = new File(destPath);
+                if (!f.exists()) {
+                    f.mkdir();
+                }
 
                 for (DropboxAPI.Entry e : entry.contents) {
                     downloadFileOrDir(e.path, addPathName(f.getPath(), e.fileName()));
@@ -48,7 +47,7 @@ public class DownloadCommand extends ServiceTask {
                 api.getFile(srcPath, null, outputStream, new com.dropbox.client2.ProgressListener() {
                     @Override
                     public void onProgress(long bytes, long total) {
-                        DownloadCommand.this.triggerProgressListeners(bytes, total);
+                        DropboxDownloadCommand.this.triggerProgressListeners(bytes, total);
                     }
                 });
             }

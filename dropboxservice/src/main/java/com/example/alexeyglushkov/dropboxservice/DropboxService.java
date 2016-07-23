@@ -6,8 +6,6 @@ import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.service.SimpleService;
 
-import java.io.File;
-
 /**
  * Created by alexeyglushkov on 10.07.16.
  */
@@ -26,13 +24,13 @@ public class DropboxService extends SimpleService {
 
     public void upload(String srcPath, String dstPath, final ServiceCommand.CommandCallback callback) {
         //TODO: handle 401 error
-        UploadCommand cmd = commandProvider.getUploadCommand(srcPath, dstPath);
+        DropboxUploadCommand cmd = commandProvider.getUploadCommand(srcPath, dstPath);
         cmd.setServiceCommandCallback(callback);
         runCommand(cmd, true, callback);
     }
 
     public void download(String srcPath, String dstPath, final ServiceCommand.CommandCallback callback) {
-        DownloadCommand cmd = commandProvider.getDownloadCommand(srcPath, dstPath);
+        DropboxDownloadCommand cmd = commandProvider.getDownloadCommand(srcPath, dstPath);
         cmd.setServiceCommandCallback(callback);
         runCommand(cmd, true, callback);
     }
