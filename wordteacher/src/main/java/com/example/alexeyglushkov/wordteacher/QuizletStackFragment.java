@@ -92,6 +92,11 @@ public class QuizletStackFragment extends StackFragment {
         setFragment.updateSets(sets);
     }
 
+    public boolean hasData() {
+        QuizletCardsFragment setFragment = getSetFragment();
+        return setFragment.hasSets();
+    }
+
     private void showSetFragment() {
         QuizletCardsFragment setFragment = new QuizletCardsFragment();
         setFragment.setViewType(QuizletCardsFragment.ViewType.Sets);

@@ -21,6 +21,7 @@ import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
+import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.service.CachableHttpLoadTask;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
@@ -128,6 +129,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     private void onPagerPageChanged() {
+        updateSets();
         updateCourses();
         updateToolbarBackButton();
     }
@@ -543,17 +545,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     private void handleLoadedQuizletSets() {
-        List<QuizletSet> sets = getQuizletService().getSets();
-
-        QuizletStackFragment fragment = getQuizletStackFragment();
-        if (fragment != null) {
-            fragment.updateSets(sets);
-        }
-
-        QuizletCardsFragment cardFragment = getCardQuizletFragment();
-        if (cardFragment != null) {
-            cardFragment.updateSets(sets);
-        }
+        updateSets();
     }
 
     private CourseFragment getCourseFragment() {
@@ -624,6 +616,21 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         activityIntent.putExtra(LearnActivity.EXTRA_DEFINITION_TO_TERM, true);
 
         startActivityForResult(activityIntent, LearnActivity.ACTIVITY_RESULT);
+    }
+
+    private void updateSets() {
+        List<QuizletSet> sets = getQuizletService().getSets();
+        boolean hasSets = sets.size() > 0;
+
+        QuizletStackFragment stackFragment = getQuizletStackFragment();
+        if (stackFragment != null && stackFragment.hasData() != hasSets) {
+            stackFragment.updateSets(sets);
+        }
+
+        QuizletCardsFragment cardFragment = getCardQuizletFragment();
+        if (cardFragment != null && cardFragment.hasCards() != hasSets) {
+            cardFragment.updateSets(sets);
+        }
     }
 
     private void updateCourses() {

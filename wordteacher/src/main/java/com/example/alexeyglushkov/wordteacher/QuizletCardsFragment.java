@@ -157,6 +157,36 @@ public class QuizletCardsFragment extends Fragment {
         }
     }
 
+    public boolean hasSets() {
+        List<QuizletSet> sets = getSets();
+        int count = sets != null ? sets.size() : 0;
+        return count > 0;
+    }
+
+    public List<QuizletSet> getSets() {
+        List<QuizletSet> sets = null;
+        if (viewType == ViewType.Sets) {
+            sets = getSetAdapter().getSets();
+        }
+
+        return sets;
+    }
+
+    public boolean hasCards() {
+        List<QuizletTerm> cards = getCards();
+        int count = cards != null ? cards.size() : 0;
+        return count > 0;
+    }
+
+    public ArrayList<QuizletTerm> getCards() {
+        ArrayList<QuizletTerm> cards = null;
+        if (viewType == ViewType.Cards) {
+            cards = getWordAdapter().getCards();
+        }
+
+        return cards;
+    }
+
     private List<QuizletSet> sortSets(List<QuizletSet> sets) {
         Collections.sort(sets, new Comparator<QuizletSet>() {
             @Override
