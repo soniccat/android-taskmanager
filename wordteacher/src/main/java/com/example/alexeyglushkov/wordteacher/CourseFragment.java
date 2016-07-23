@@ -26,6 +26,7 @@ import model.Course;
  */
 public class CourseFragment extends Fragment {
 
+    // think about dividing into 2 fragments with base
     enum ViewType {
         Courses,
         Cards
