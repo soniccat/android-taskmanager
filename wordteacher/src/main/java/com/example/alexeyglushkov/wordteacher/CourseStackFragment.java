@@ -58,14 +58,14 @@ public class CourseStackFragment extends StackFragment {
 
     private void showCourseFragment() {
         CourseFragment courseFragment = new CourseFragment();
-        courseFragment.setViewType(CourseFragment.ViewType.Courses);
+        //courseFragment.setViewType(CourseFragment.ViewType.Courses);
         courseFragment.setListener(getMenuListener());
 
         addFragment(courseFragment, null);
     }
 
     public void showCardsFragment(Course course) {
-        CourseFragment fragment = new CourseFragment();
+        /*CourseFragment fragment = new CourseFragment();
         fragment.setListener(getMenuListener());
         fragment.setViewType(CourseFragment.ViewType.Cards);
 
@@ -79,7 +79,7 @@ public class CourseStackFragment extends StackFragment {
             @Override
             public void onFinished() {
             }
-        });
+        });*/
     }
 
     private void restoreListeners() {
@@ -119,17 +119,17 @@ public class CourseStackFragment extends StackFragment {
     }
 
     public void updateCards() {
-        CourseFragment cardsFragment = getCardsFragment();
+        /*CourseFragment cardsFragment = getCardsFragment();
         if (cardsFragment != null) {
             Course course = cardsFragment.getParentCourse();
             cardsFragment.setCards(course.getCards());
-        }
+        }*/
     }
 
     public String getTitle() {
         String title = null;
         if (getBackStackSize() > 0) {
-            title = getCardsFragment().getParentCourse().getTitle();
+            //title = getCardsFragment().getParentCourse().getTitle();
         } else {
             title = DEFAULT_TITLE;
         }
@@ -141,13 +141,14 @@ public class CourseStackFragment extends StackFragment {
         return new CourseFragmentMenuListener(getContext(), getCourseHolder(), new CourseFragmentMenuListener.Listener() {
             @Override
             public void onCourseDeleteClicked(Course course) {
-                getCourseFragment().deleteCourseView(course);
+                getCourseFragment().deleteView(course);
             }
 
+            /*
             @Override
             public void onCardDeleteClicked(Card card) {
                 getCardsFragment().deleteCardView(card);
-            }
+            }*/
 
             @Override
             public void onShowCourseContentClicked(Course course) {
@@ -155,7 +156,7 @@ public class CourseStackFragment extends StackFragment {
             }
 
             @Override
-            public void onCourseClicked(Course course) {
+            public void onDataClicked(Course course) {
                 CourseStackFragment.this.getCourseListener().onCourseClicked(course);
             }
 
@@ -165,14 +166,15 @@ public class CourseStackFragment extends StackFragment {
             }
 
             @Override
-            public void onCourseDeletionCancelled(Course course) {
+            public void onDataDeletionCancelled(Course course) {
                 updateCourses();
             }
 
             @Override
-            public void onCourseDeleted(Course course) {
+            public void onDataDeleted(Course course) {
             }
 
+            /*
             @Override
             public void onCardDeletionCancelled(Card card) {
                 updateCards();
@@ -183,7 +185,7 @@ public class CourseStackFragment extends StackFragment {
                 if (getBackStackSize() == 0) {
                     updateCourses();
                 }
-            }
+            }*/
 
             @Override
             public View getSnackBarViewContainer() {

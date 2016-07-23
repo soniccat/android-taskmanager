@@ -24,7 +24,7 @@ import tools.Tools;
 /**
  * Created by alexeyglushkov on 08.05.16.
  */
-public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder> implements DeleteTouchHelper.Listener {
+public class CourseAdapter extends BaseListAdaptor<CourseAdapter.ViewHolder, Course> implements DeleteTouchHelper.Listener {
 
     // TODO: convert to list
     private ArrayList<Course> courses = new ArrayList<>();
@@ -175,6 +175,16 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
         listener.onCourseViewDeleted(holder.itemView, course);
         deleteCourseAtIndex(index);
         notifyItemRemoved(position);
+    }
+
+    @Override
+    protected int getDataIndex(Course data) {
+        return getCourseIndex(data);
+    }
+
+    @Override
+    void deleteDataAtIndex(int index) {
+        deleteCourseAtIndex(index);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

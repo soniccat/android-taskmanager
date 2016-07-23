@@ -24,28 +24,15 @@ import model.Course;
 /**
  * Created by alexeyglushkov on 08.05.16.
  */
-public class CourseFragment extends Fragment {
+public class CourseFragment extends BaseListFragment<Course> {
 
     // think about dividing into 2 fragments with base
-    enum ViewType {
+    /*enum ViewType {
         Courses,
         Cards
-    }
+    }*/
 
-    private Course parentCourse;
-    private RecyclerView recyclerView;
-    private RecyclerView.Adapter adapter;
-    private ViewType viewType = ViewType.Courses;
-    private Listener listener;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (savedInstanceState != null) {
-            restore(savedInstanceState);
-        }
-    }
+    //private Course parentCourse;
 
     @Nullable
     @Override
@@ -53,26 +40,7 @@ public class CourseFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_quizlet_cards, container, false);
     }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        recyclerView = (RecyclerView)view.findViewById(R.id.recyclerView);
-
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(layoutManager);
-
-        if (adapter == null) {
-            recreateAdapter();
-        }
-
-        applyAdapter();
-    }
-
-    public void reloadData() {
-        adapter.notifyDataSetChanged();
-    }
-
+    /*
     public void deleteCardView(Card card) {
         CardAdapter adapter = getCardAdapter();
         int index = adapter.getCardIndex(card);
@@ -84,8 +52,9 @@ public class CourseFragment extends Fragment {
                 adapter.notifyItemRemoved(position);
             }
         }
-    }
+    }*/
 
+    /*
     public void deleteCourseView(Course course) {
         CourseAdapter adapter = getCourseAdapter();
         int index = adapter.getCourseIndex(course);
@@ -97,58 +66,52 @@ public class CourseFragment extends Fragment {
                 adapter.notifyItemRemoved(position);
             }
         }
+    }*/
+
+    protected void restore(@Nullable Bundle savedInstanceState) {
+        //parentCourse = savedInstanceState.getParcelable("parentCourse");
     }
 
-    private View getCourseView(int index) {
-        RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(index);
-        View view = holder.itemView;
-
-        return view;
-    }
-
-    private void restore(@Nullable Bundle savedInstanceState) {
-        int intViewType = savedInstanceState.getInt("viewType");
-        viewType = ViewType.values()[intViewType];
-        parentCourse = savedInstanceState.getParcelable("parentCourse");
-        recreateAdapter();
-        restoreAdapter(savedInstanceState);
-    }
-
-    private void restoreAdapter(@Nullable Bundle savedInstanceState) {
+    protected void restoreAdapter(@Nullable Bundle savedInstanceState) {
         Parcelable parcelable = savedInstanceState.getParcelable("adapter");
+        getCourseAdapter().onRestoreInstanceState(parcelable);
+
+        /*
         if (viewType == ViewType.Courses) {
-            getCourseAdapter().onRestoreInstanceState(parcelable);
+
         } else {
             getCardAdapter().onRestoreInstanceState(parcelable);
         }
+        */
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putInt("viewType", viewType.ordinal());
-        outState.putParcelable("parentCourse", parentCourse);
+        //outState.putParcelable("parentCourse", parentCourse);
         saveAdapterState(outState);
     }
 
     private void saveAdapterState(Bundle outState) {
         Parcelable parcelable;
-        if (viewType == ViewType.Courses) {
+        /*if (viewType == ViewType.Courses) {
             parcelable = getCourseAdapter().onSaveInstanceState();
         } else {
             parcelable = getCardAdapter().onSaveInstanceState();
-        }
+        }*/
+        parcelable = getCourseAdapter().onSaveInstanceState();
 
         outState.putParcelable("adapter", parcelable);
     }
 
     public void setCourses(ArrayList<Course> courses) {
-        if (viewType == ViewType.Courses) {
+        getCourseAdapter().setCourses(sortCourses(courses));
+        /*if (viewType == ViewType.Courses) {
             getCourseAdapter().setCourses(sortCourses(courses));
         } else {
             getCardAdapter().updateCards(sortCards(getCards(courses)));
-        }
+        }*/
     }
 
 
@@ -160,14 +123,10 @@ public class CourseFragment extends Fragment {
     }
 
     public List<Course> getCourses() {
-        List<Course> courses = null;
-        if (viewType == ViewType.Courses) {
-            courses = getCourseAdapter().getCourses();
-        }
-
-        return courses;
+        return getCourseAdapter().getCourses();
     }
 
+    /*
     public boolean hasCards() {
         List<Card> cards = getCards();
         int count = cards != null ? cards.size() : 0;
@@ -181,8 +140,9 @@ public class CourseFragment extends Fragment {
         }
 
         return cards;
-    }
+    }*/
 
+    /*
     public void setParentCourse(Course parentCourse) {
         this.parentCourse = parentCourse;
     }
@@ -219,7 +179,7 @@ public class CourseFragment extends Fragment {
         });
 
         return cards;
-    }
+    }*/
 
     private ArrayList<Course> sortCourses(ArrayList<Course> courses) {
         Collections.sort(courses, new Comparator<Course>() {
@@ -232,6 +192,7 @@ public class CourseFragment extends Fragment {
         return courses;
     }
 
+    /*
     public void setViewType(ViewType aViewType) {
         if (viewType != aViewType) {
             viewType = aViewType;
@@ -241,24 +202,23 @@ public class CourseFragment extends Fragment {
 
     public ViewType getViewType() {
         return viewType;
-    }
-
-    public void setListener(Listener listener) {
-        this.listener = listener;
-    }
-
-    public Listener getListener() {
-        return listener;
-    }
+    }*/
 
     private CourseAdapter getCourseAdapter() {
         return (CourseAdapter)adapter;
     }
 
+    /*
     private CardAdapter getCardAdapter() {
         return (CardAdapter)adapter;
+    }*/
+
+    @Override
+    protected BaseListAdaptor createAdapter() {
+        return createCourseAdapter();
     }
 
+    /*
     private void recreateAdapter() {
         if (viewType == ViewType.Courses) {
             adapter = createCourseAdapter();
@@ -269,33 +229,30 @@ public class CourseFragment extends Fragment {
         if (recyclerView != null) {
             applyAdapter();
         }
-    }
-
-    private void applyAdapter() {
-        recyclerView.setAdapter(adapter);
-    }
+    }*/
 
     private CourseAdapter createCourseAdapter() {
         CourseAdapter adapter = new CourseAdapter(new CourseAdapter.Listener() {
             @Override
             public void onCourseClicked(View view, Course course) {
-                CourseFragment.this.onCourseClicked(view, course);
+                CourseFragment.this.getListener().onRowClicked(course);
             }
 
             @Override
             public void onCourseMenuClicked(View view, Course course) {
-                CourseFragment.this.onCourseMenuClicked(view, course);
+                CourseFragment.this.getListener().onRowMenuClicked(course, view);
             }
 
             @Override
             public void onCourseViewDeleted(View view, Course course) {
-                CourseFragment.this.onCourseViewDeleted(course);
+                CourseFragment.this.getListener().onRowViewDeleted(course);
             }
         });
 
         return adapter;
     }
 
+    /*
     private CardAdapter createCardAdapter() {
         CardAdapter adapter = new CardAdapter(new CardAdapter.Listener() {
             @Override
@@ -315,8 +272,9 @@ public class CourseFragment extends Fragment {
         });
 
         return adapter;
-    }
+    }*/
 
+    /*
     private void onCourseClicked(View v, Course course) {
         listener.onCourseClicked(course);
     }
@@ -339,14 +297,5 @@ public class CourseFragment extends Fragment {
 
     private void onCardViewDeleted(Card card) {
         listener.onCardViewDeleted(card);
-    }
-
-    public interface Listener {
-        void onCourseClicked(Course course);
-        void onCourseMenuClicked(Course course, View view);
-        void onCourseViewDeleted(Course course);
-        void onCardClicked(Card card);
-        void onCardMenuClicked(Card card, View view);
-        void onCardViewDeleted(Card card);
-    }
+    }*/
 }
