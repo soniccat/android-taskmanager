@@ -109,13 +109,6 @@ public class CourseStackFragment extends StackFragment {
         if (courseFragment != null) {
             applyPendingOperation(courseFragment);
             ArrayList<Course> courses = getCourseHolder().getCourses();
-            Collections.sort(courses, new Comparator<Course>() {
-                @Override
-                public int compare(Course lhs, Course rhs) {
-                    return rhs.getCreateDate().compareTo(lhs.getCreateDate());
-                }
-            });
-
             courseFragment.setCourses(courses);
         }
     }

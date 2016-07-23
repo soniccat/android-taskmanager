@@ -24,6 +24,10 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.Holder> implem
     private Listener listener;
     private ItemTouchHelper deleteTouchHelper;
 
+    public ArrayList<Card> getCards() {
+        return cards;
+    }
+
     public CardAdapter(Listener listener) {
         this.listener = listener;
         this.deleteTouchHelper = new ItemTouchHelper(new DeleteTouchHelper(this));

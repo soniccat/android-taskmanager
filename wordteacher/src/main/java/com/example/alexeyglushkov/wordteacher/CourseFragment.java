@@ -10,6 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
+import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -141,10 +144,42 @@ public class CourseFragment extends Fragment {
 
     public void setCourses(ArrayList<Course> courses) {
         if (viewType == ViewType.Courses) {
-            getCourseAdapter().setCourses(courses);
+            getCourseAdapter().setCourses(sortCourses(courses));
         } else {
-            getCardAdapter().updateCards(getCards(courses));
+            getCardAdapter().updateCards(sortCards(getCards(courses)));
         }
+    }
+
+
+
+    public boolean hasCourses() {
+        List<Course> courses = getCourses();
+        int count = courses != null ? courses.size() : 0;
+        return count > 0;
+    }
+
+    public List<Course> getCourses() {
+        List<Course> courses = null;
+        if (viewType == ViewType.Courses) {
+            courses = getCourseAdapter().getCourses();
+        }
+
+        return courses;
+    }
+
+    public boolean hasCards() {
+        List<Card> cards = getCards();
+        int count = cards != null ? cards.size() : 0;
+        return count > 0;
+    }
+
+    public ArrayList<Card> getCards() {
+        ArrayList<Card> cards = null;
+        if (viewType == ViewType.Cards) {
+            cards = getCardAdapter().getCards();
+        }
+
+        return cards;
     }
 
     public void setParentCourse(Course parentCourse) {
@@ -171,17 +206,29 @@ public class CourseFragment extends Fragment {
             cards.addAll(set.getCards());
         }
 
-        sortCards(cards);
         return cards;
     }
 
-    private void sortCards(List<Card> cards) {
+    private List<Card> sortCards(List<Card> cards) {
         Collections.sort(cards, new Comparator<Card>() {
             @Override
             public int compare(Card lhs, Card rhs) {
                 return lhs.getTerm().compareToIgnoreCase(rhs.getTerm());
             }
         });
+
+        return cards;
+    }
+
+    private ArrayList<Course> sortCourses(ArrayList<Course> courses) {
+        Collections.sort(courses, new Comparator<Course>() {
+            @Override
+            public int compare(Course lhs, Course rhs) {
+                return rhs.getCreateDate().compareTo(lhs.getCreateDate());
+            }
+        });
+
+        return courses;
     }
 
     public void setViewType(ViewType aViewType) {

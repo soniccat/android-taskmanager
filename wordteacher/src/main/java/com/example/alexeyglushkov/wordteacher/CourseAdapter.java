@@ -31,6 +31,10 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
     private Listener listener;
     private ItemTouchHelper deleteTouchHelper;
 
+    public ArrayList<Course> getCourses() {
+        return courses;
+    }
+
     public CourseAdapter(Listener listener) {
         this.listener = listener;
         this.deleteTouchHelper = new ItemTouchHelper(new DeleteTouchHelper(this));
