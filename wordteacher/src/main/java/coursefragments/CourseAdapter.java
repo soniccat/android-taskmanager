@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.wordteacher;
+package coursefragments;
 
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -10,11 +10,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.alexeyglushkov.wordteacher.R;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import listfragment.BaseListAdaptor;
 import model.Card;
 import model.CardProgress;
 import tools.DeleteTouchHelper;
@@ -178,12 +181,12 @@ public class CourseAdapter extends BaseListAdaptor<CourseAdapter.ViewHolder, Cou
     }
 
     @Override
-    protected int getDataIndex(Course data) {
+    public int getDataIndex(Course data) {
         return getCourseIndex(data);
     }
 
     @Override
-    void deleteDataAtIndex(int index) {
+    public void deleteDataAtIndex(int index) {
         deleteCourseAtIndex(index);
     }
 

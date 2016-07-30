@@ -1,11 +1,10 @@
-package com.example.alexeyglushkov.wordteacher;
+package listfragment;
 
 import android.content.Context;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 
-import model.Course;
-import model.CourseHolder;
+import com.example.alexeyglushkov.wordteacher.R;
 
 /**
  * Created by alexeyglushkov on 24.07.16.

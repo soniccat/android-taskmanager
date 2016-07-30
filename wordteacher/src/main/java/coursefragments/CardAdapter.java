@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.wordteacher;
+package coursefragments;
 
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -10,16 +10,20 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.alexeyglushkov.wordteacher.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import listfragment.BaseListAdaptor;
+import model.Course;
 import tools.DeleteTouchHelper;
 import model.Card;
 
 /**
  * Created by alexeyglushkov on 03.05.16.
  */
-public class CardAdapter extends RecyclerView.Adapter<CardAdapter.Holder> implements DeleteTouchHelper.Listener {
+public class CardAdapter extends BaseListAdaptor<CardAdapter.Holder, Card> implements DeleteTouchHelper.Listener {
     private ArrayList<Card> cards = new ArrayList<>();
     private Listener listener;
     private ItemTouchHelper deleteTouchHelper;
@@ -55,6 +59,16 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.Holder> implem
         cards.clear();
         cards.addAll(newCards);
         notifyDataSetChanged();
+    }
+
+    @Override
+    public int getDataIndex(Card data) {
+        return getCardIndex(data);
+    }
+
+    @Override
+    public void deleteDataAtIndex(int index) {
+        deleteCardAtIndex(index);
     }
 
     public int getCardIndex(Card card) {

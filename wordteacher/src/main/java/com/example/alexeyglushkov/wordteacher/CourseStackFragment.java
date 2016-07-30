@@ -6,12 +6,11 @@ import android.support.v4.app.Fragment;
 import android.view.View;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
+import coursefragments.CourseFragment;
+import coursefragments.CourseFragmentMenuListener;
 import main.MainApplication;
-import model.Card;
 import model.Course;
 import model.CourseHolder;
 

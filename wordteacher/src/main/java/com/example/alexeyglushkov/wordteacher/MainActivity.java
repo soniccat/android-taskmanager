@@ -21,13 +21,13 @@ import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
-import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.service.CachableHttpLoadTask;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import coursefragments.CourseFragment;
 import learning.LearnActivity;
 import main.BaseActivity;
 import main.MainApplication;

@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.wordteacher;
+package listfragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,8 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import model.Card;
-import model.Course;
+import com.example.alexeyglushkov.wordteacher.R;
 
 /**
  * Created by alexeyglushkov on 23.07.16.

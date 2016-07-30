@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.wordteacher;
+package coursefragments;
 
 import android.content.Context;
 import android.support.v7.widget.PopupMenu;
@@ -6,6 +6,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.example.alexeyglushkov.wordteacher.R;
+
+import listfragment.DeleteMenuListener;
 import model.Course;
 import model.CourseHolder;
 
