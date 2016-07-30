@@ -1,0 +1,83 @@
+package coursefragments;
+
+import android.content.Context;
+import android.support.v7.widget.PopupMenu;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+
+import com.example.alexeyglushkov.wordteacher.R;
+
+import listfragment.DeleteMenuListener;
+import model.Card;
+import model.Course;
+import model.CourseHolder;
+
+/**
+ * Created by alexeyglushkov on 31.07.16.
+ */
+public class CardFragmentMenuListener extends DeleteMenuListener<Card> {
+    private CourseHolder courseHolder;
+
+    public CardFragmentMenuListener(Context context, CourseHolder courseHolder, Listener listener) {
+        super(context, listener);
+        this.courseHolder = courseHolder;
+    }
+
+    public void onCardMenuClicked(final Card card, View view) {
+        PopupMenu popupMenu = new PopupMenu(context, view);
+        popupMenu.getMenu().add(Menu.NONE, R.id.delete_card, 0, R.string.menu_card_delete);
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.delete_card) {
+                    getListener().onCardDeleteClicked(card);
+                    onCardViewDeleted(card);
+                }
+
+                return false;
+            }
+        });
+
+        popupMenu.show();
+    }
+
+    public void onCardViewDeleted(Card card) {
+        deleteDataWithSnackbar(card);
+    }
+
+    public void onCardClicked(Card card) {
+        listener.onDataClicked(card);
+    }
+
+    @Override
+    public void onRowClicked(Card data) {
+        onCardClicked(data);
+    }
+
+    @Override
+    public void onRowMenuClicked(Card data, View view) {
+        onCardMenuClicked(data, view);
+    }
+
+    @Override
+    public void onRowViewDeleted(Card data) {
+        onCardViewDeleted(data);
+    }
+
+    @Override
+    protected Error deleteData(Card data) {
+        return courseHolder.removeCard(data);
+    }
+
+    public Listener getListener() {
+        return (Listener)this.listener;
+    }
+
+    public interface Listener extends DeleteMenuListener.Listener<Card> {
+        void onCardDeleteClicked(Card data); // expect row deletion from ui
+
+        //void onLearnNewWordsClick(Card course);
+        //void onShowCourseContentClicked(Card course);
+    }
+}

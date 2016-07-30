@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import coursefragments.CourseFragment;
+import coursefragments.CourseStackFragment;
 import learning.LearnActivity;
 import main.BaseActivity;
 import main.MainApplication;

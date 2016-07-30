@@ -100,28 +100,7 @@ public class CourseFragmentMenuListener extends DeleteMenuListener<Course> {
     public void onCardClicked(Card card) {
     }
 
-    @Override
-    public void onCardMenuClicked(final Card card, View view) {
-        PopupMenu popupMenu = new PopupMenu(getContext(), view);
-        popupMenu.getMenu().add(Menu.NONE, R.id.delete_card, 0, R.string.menu_card_delete);
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == R.id.delete_card) {
-                    listener.onCardDeleteClicked(card);
-                    onCardViewDeleted(card);
-                }
-
-                return false;
-            }
-        });
-
-        popupMenu.show();
-    }
-
-    public void onCardViewDeleted(Card card) {
-        deleteCardWithConfirmation(card);
-    }*/
+    */
 
     @Override
     public void onRowClicked(Course data) {
