@@ -25,6 +25,8 @@ import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import authorization.AuthActivityProxy;
 import model.CourseHolder;
@@ -41,6 +43,8 @@ public class MainApplication extends Application {
     private StorageProvider storageProvider;
 
     public static MainApplication instance;
+
+    private List<CourseHolderListener> holderListeners = new ArrayList<>();
 
     public MainApplication() {
         super();
@@ -190,6 +194,22 @@ public class MainApplication extends Application {
     }
 
     private void onCourseHolderLoaded() {
+        for (CourseHolderListener listener : holderListeners) {
+            listener.onLoaded();
+        }
 
+        holderListeners.clear();
+    }
+
+    public void addHolderListener(CourseHolderListener listener) {
+        if (courseHolder != null) {
+            listener.onLoaded();
+        } else {
+            holderListeners.add(listener);
+        }
+    }
+
+    public interface CourseHolderListener {
+        void onLoaded();
     }
 }

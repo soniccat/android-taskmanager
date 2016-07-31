@@ -50,11 +50,10 @@ public class CourseStackFragment extends StackFragment {
         }
     }
 
-    /*
     public void updateCourses(ArrayList<Course> courses) {
         CourseFragment courseFragment = getCourseFragment();
         courseFragment.setCourses(courses);
-    }*/
+    }
 
     private void showCourseFragment() {
         CourseFragment courseFragment = new CourseFragment();
@@ -67,11 +66,12 @@ public class CourseStackFragment extends StackFragment {
         CardFragment fragment = new CardFragment();
         fragment.setListener(getMenuCardsListener());
 
-        ArrayList<Course> list = new ArrayList<>();
-        list.add(course);
+        //ArrayList<Course> list = new ArrayList<>();
+        //list.add(course);
 
-        fragment.setParentCourse(course);
-        fragment.setCourses(list);
+        Bundle arg = new Bundle();
+        arg.putString(CardFragment.ARG_PARENT_COURSE_ID, course.getId().toString());
+        fragment.setArguments(arg);
 
         addFragment(fragment, new TransactionCallback() {
             @Override
@@ -117,17 +117,20 @@ public class CourseStackFragment extends StackFragment {
     }
 
     public void updateCards() {
-        /*CourseFragment cardsFragment = getCardsFragment();
+        CardFragment cardsFragment = getCardsFragment();
         if (cardsFragment != null) {
             Course course = cardsFragment.getParentCourse();
             cardsFragment.setCards(course.getCards());
-        }*/
+        }
     }
 
     public String getTitle() {
         String title = null;
         if (getBackStackSize() > 0) {
-            title = getCardsFragment().getParentCourse().getTitle();
+            Course course = getCardsFragment().getParentCourse();
+            if (course != null) {
+                title = course.getTitle();
+            }
         } else {
             title = DEFAULT_TITLE;
         }

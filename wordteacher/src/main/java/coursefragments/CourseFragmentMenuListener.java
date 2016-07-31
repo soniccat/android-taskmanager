@@ -22,41 +22,6 @@ public class CourseFragmentMenuListener extends DeleteMenuListener<Course> {
         this.courseHolder = courseHolder;
     }
 
-    /*
-    private void deleteCardWithConfirmation(final Card card) {
-        snackBarNeedDeleteCard = true;
-
-        String undoString = getContext().getString(R.string.snackbar_undo_deletion);
-        currentSnackbar = Snackbar.make(listener.getSnackBarViewContainer(), undoString, Snackbar.LENGTH_LONG);
-        currentSnackbar.setAction(android.R.string.cancel, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                snackBarNeedDeleteCard = false;
-                listener.onCardDeletionCancelled(card);
-            }
-        });
-        currentSnackbar.setCallback(new Snackbar.Callback() {
-            @Override
-            public void onDismissed(Snackbar snackbar, int event) {
-                super.onDismissed(snackbar, event);
-                if (snackBarNeedDeleteCard) {
-                    Error error = getCourseHolder().removeCard(card);
-                    if (error != null) {
-                        listener.onCardDeletionCancelled(card);
-                    } else {
-                        listener.onCardDeleted(card);
-                    }
-                }
-
-                currentSnackbar = null;
-            }
-        });
-        currentSnackbar.show();
-    }
-*/
-
-    // CourseFragment.Listener
-
     protected void fillMenu(final Course course, PopupMenu popupMenu) {
         if (course.getNotStartedCards().size() > 0) {
             popupMenu.getMenu().add(Menu.NONE, R.id.learn_new_words, 0, R.string.menu_course_learn_only_new_words);
@@ -106,23 +71,4 @@ public class CourseFragmentMenuListener extends DeleteMenuListener<Course> {
         void onLearnNewWordsClick(Course course);
         void onShowCourseContentClicked(Course course);
     }
-
-    /*
-    public interface Listener {
-        void onCourseClicked(Course course);
-        void onLearnNewWordsClick(Course course);
-        void onShowCourseContentClicked(Course course);
-
-        // expect ui updating
-        void onCourseDeleteClicked(Course course);
-        //void onCardDeleteClicked(Card card);
-        void onCourseDeletionCancelled(Course course);
-        //void onCardDeletionCancelled(Card card);
-
-        void onCourseDeleted(Course course);
-        //void onCardDeleted(Card card);
-
-        View getSnackBarViewContainer();
-    }
-    */
 }

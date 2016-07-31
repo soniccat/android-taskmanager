@@ -21,9 +21,7 @@ public abstract class BaseListFragment<T> extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            restore(savedInstanceState);
-        }
+        adapter = createAdapter();
     }
 
     @Override
@@ -35,14 +33,7 @@ public abstract class BaseListFragment<T> extends Fragment {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
 
-        recreateAdapter();
-    }
-
-    protected void recreateAdapter() {
-        adapter = createAdapter();
-        if (recyclerView != null) {
-            applyAdapter();
-        }
+        applyAdapter();
     }
 
     private void applyAdapter() {
@@ -55,11 +46,6 @@ public abstract class BaseListFragment<T> extends Fragment {
 
     public Listener getListener() {
         return listener;
-    }
-
-    protected void restore(@Nullable Bundle savedInstanceState) {
-        recreateAdapter();
-        restoreAdapter(savedInstanceState);
     }
 
     public void deleteView(T data) {
@@ -81,7 +67,7 @@ public abstract class BaseListFragment<T> extends Fragment {
     }
 
     protected abstract BaseListAdaptor createAdapter();
-    protected abstract void restoreAdapter(Bundle savedInstanceState);
+    //protected abstract void restoreAdapter(Bundle savedInstanceState);
 
     public interface Listener<T> {
         void onRowClicked(T data);

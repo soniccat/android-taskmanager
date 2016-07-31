@@ -57,21 +57,24 @@ public class CourseFragment extends BaseListFragment<Course> {
         }
     }*/
 
+    /*
     protected void restoreAdapter(@Nullable Bundle savedInstanceState) {
         Parcelable parcelable = savedInstanceState.getParcelable("adapter");
         getCourseAdapter().onRestoreInstanceState(parcelable);
     }
+    */
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        saveAdapterState(outState);
+        //saveAdapterState(outState);
     }
 
+    /*
     private void saveAdapterState(Bundle outState) {
         Parcelable parcelable = getCourseAdapter().onSaveInstanceState();
         outState.putParcelable("adapter", parcelable);
-    }
+    }*/
 
     public void setCourses(ArrayList<Course> courses) {
         getCourseAdapter().setCourses(sortCourses(courses));
