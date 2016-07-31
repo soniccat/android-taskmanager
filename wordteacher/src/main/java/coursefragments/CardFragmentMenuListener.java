@@ -4,13 +4,11 @@ import android.content.Context;
 import android.support.v7.widget.PopupMenu;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.example.alexeyglushkov.wordteacher.R;
 
 import listfragment.DeleteMenuListener;
 import model.Card;
-import model.Course;
 import model.CourseHolder;
 
 /**
@@ -24,8 +22,7 @@ public class CardFragmentMenuListener extends DeleteMenuListener<Card> {
         this.courseHolder = courseHolder;
     }
 
-    public void onCardMenuClicked(final Card card, View view) {
-        PopupMenu popupMenu = new PopupMenu(context, view);
+    protected void fillMenu(final Card card, PopupMenu popupMenu) {
         popupMenu.getMenu().add(Menu.NONE, R.id.delete_card, 0, R.string.menu_card_delete);
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
@@ -38,26 +35,10 @@ public class CardFragmentMenuListener extends DeleteMenuListener<Card> {
                 return false;
             }
         });
-
-        popupMenu.show();
     }
 
     public void onCardViewDeleted(Card card) {
         deleteDataWithSnackbar(card);
-    }
-
-    public void onCardClicked(Card card) {
-        listener.onDataClicked(card);
-    }
-
-    @Override
-    public void onRowClicked(Card data) {
-        onCardClicked(data);
-    }
-
-    @Override
-    public void onRowMenuClicked(Card data, View view) {
-        onCardMenuClicked(data, view);
     }
 
     @Override
@@ -76,8 +57,5 @@ public class CardFragmentMenuListener extends DeleteMenuListener<Card> {
 
     public interface Listener extends DeleteMenuListener.Listener<Card> {
         void onCardDeleteClicked(Card data); // expect row deletion from ui
-
-        //void onLearnNewWordsClick(Card course);
-        //void onShowCourseContentClicked(Card course);
     }
 }

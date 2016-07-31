@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.v7.widget.PopupMenu;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.example.alexeyglushkov.wordteacher.R;
 
@@ -17,7 +16,6 @@ import model.CourseHolder;
  */
 public class CourseFragmentMenuListener extends DeleteMenuListener<Course> {
     private CourseHolder courseHolder;
-    //private boolean snackBarNeedDeleteCard;
 
     public CourseFragmentMenuListener(Context context, CourseHolder courseHolder, Listener listener) {
         super(context, listener);
@@ -59,8 +57,7 @@ public class CourseFragmentMenuListener extends DeleteMenuListener<Course> {
 
     // CourseFragment.Listener
 
-    public void onCourseMenuClicked(final Course course, View v) {
-        PopupMenu popupMenu = new PopupMenu(context, v);
+    protected void fillMenu(final Course course, PopupMenu popupMenu) {
         if (course.getNotStartedCards().size() > 0) {
             popupMenu.getMenu().add(Menu.NONE, R.id.learn_new_words, 0, R.string.menu_course_learn_only_new_words);
         }
@@ -83,33 +80,10 @@ public class CourseFragmentMenuListener extends DeleteMenuListener<Course> {
                 return false;
             }
         });
-
-        popupMenu.show();
     }
 
     public void onCourseViewDeleted(final Course course) {
         deleteDataWithSnackbar(course);
-    }
-
-    public void onCourseClicked(Course course) {
-        listener.onDataClicked(course);
-    }
-
-    /*
-    @Override
-    public void onCardClicked(Card card) {
-    }
-
-    */
-
-    @Override
-    public void onRowClicked(Course data) {
-        onCourseClicked(data);
-    }
-
-    @Override
-    public void onRowMenuClicked(Course data, View view) {
-        onCourseMenuClicked(data, view);
     }
 
     @Override

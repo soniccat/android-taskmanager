@@ -148,7 +148,7 @@ public class CourseStackFragment extends StackFragment {
             }
 
             @Override
-            public void onDataClicked(Course course) {
+            public void onRowClicked(Course course) {
                 CourseStackFragment.this.getCourseListener().onCourseClicked(course);
             }
 
@@ -181,7 +181,7 @@ public class CourseStackFragment extends StackFragment {
             }
 
             @Override
-            public void onDataClicked(Card data) {
+            public void onRowClicked(Card data) {
 
             }
 
