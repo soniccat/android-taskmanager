@@ -1,13 +1,14 @@
 package coursefragments;
 
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.wordteacher.R;
+
+import junit.framework.Assert;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,11 +26,11 @@ import model.CourseHolder;
 /**
  * Created by alexeyglushkov on 30.07.16.
  */
-public class CardFragment extends BaseListFragment<Card> {
-    public final static String ARG_PARENT_COURSE_ID = "PARENT_COURSE_ID";
-    public final static String ARG_CARDS = "PARENT_COURSE_ID";
+public class CardListFragment extends BaseListFragment<Card> {
+    public final static String ARG_PARENT_COURSE_ID = "ARG_PARENT_COURSE_ID";
+    //public final static String ARG_CARD_IDS = "ARG_CARD_IDS"; // TODO: add arbitrary cards support via another provider
 
-    private Course parentCourse;
+    private CardListProvider provider;
 
     private MainApplication getMainApplication() {
         return MainApplication.instance;
@@ -39,35 +40,10 @@ public class CardFragment extends BaseListFragment<Card> {
         return getMainApplication().getCourseHolder();
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (savedInstanceState != null) {
-            parentCourse = savedInstanceState.getParcelable("parentCourse");
-        }
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_quizlet_cards, container, false);
-    }
-
-    public void setParentCourse(Course parentCourse) {
-        this.parentCourse = parentCourse;
-    }
-
-    public Course getParentCourse() {
-        return parentCourse;
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putParcelable("parentCourse", parentCourse);
-        //saveAdapterState(outState);
     }
 
     @Override
@@ -84,49 +60,42 @@ public class CardFragment extends BaseListFragment<Card> {
     private void onHolderLoaded() {
         Bundle bundle = getArguments();
         String parentCourseIdStr = bundle.getString(ARG_PARENT_COURSE_ID);
+        Assert.assertNotNull("now only CourserCardsProvider is supported", parentCourseIdStr);
+
         if (parentCourseIdStr != null) {
-            UUID courseId = UUID.fromString(bundle.getString(ARG_PARENT_COURSE_ID));
-            parentCourse = getCourseHolder().getCourse(courseId);
-            setCards(parentCourse.getCards());
-
-        } else {
-
+            provider = createCourseProvider(parentCourseIdStr);
         }
+
+        reload();
     }
 
-    /*
-    private void saveAdapterState(Bundle outState) {
-        Parcelable parcelable = getCardAdapter().onSaveInstanceState();
-        outState.putParcelable("adapter", parcelable);
-    }*/
-
-    /*
-    @Override
-    protected void restoreAdapter(Bundle savedInstanceState) {
-        Parcelable parcelable = savedInstanceState.getParcelable("adapter");
-        getCardAdapter().onRestoreInstanceState(parcelable);
+    private CourseCardsProvider createCourseProvider(String courseIdStr) {
+        UUID courseId = UUID.fromString(courseIdStr);
+        Course parentCourse = getCourseHolder().getCourse(courseId);
+        CourseCardsProvider result = new CourseCardsProvider(parentCourse);
+        return result;
     }
-    */
 
-    public void setCards(List<Card> inCards) {
+    public Course getParentCourse() {
+        Course result = null;
+        if (provider instanceof CourseCardsProvider) {
+            CourseCardsProvider courseProvider = (CourseCardsProvider)provider;
+            result = courseProvider.getCourse();
+        }
+
+        return result;
+    }
+
+    public void reload() {
+        setCards(provider.getCards());
+    }
+
+    private void setCards(List<Card> inCards) {
         ArrayList<Card> cards = new ArrayList<>();
         cards.addAll(inCards);
 
         sortCards(cards);
         getCardAdapter().updateCards(cards);
-    }
-
-    public void setCourses(ArrayList<Course> courses) {
-        getCardAdapter().updateCards(sortCards(getCards(courses)));
-    }
-
-    public List<Card> getCards(List<Course> sets) {
-        List<Card> cards = new ArrayList<>();
-        for (Course set : sets) {
-            cards.addAll(set.getCards());
-        }
-
-        return cards;
     }
 
     private List<Card> sortCards(List<Card> cards) {
@@ -140,19 +109,14 @@ public class CardFragment extends BaseListFragment<Card> {
         return cards;
     }
 
-    private CardAdapter getCardAdapter() {
-        return (CardAdapter)adapter;
+    private CardListAdapter getCardAdapter() {
+        return (CardListAdapter)adapter;
     }
 
     public boolean hasCards() {
-        List<Card> cards = getCards();
+        List<Card> cards = provider.getCards();
         int count = cards != null ? cards.size() : 0;
         return count > 0;
-    }
-
-    public ArrayList<Card> getCards() {
-        ArrayList<Card> cards = getCardAdapter().getCards();
-        return cards;
     }
 
     @Override
@@ -160,21 +124,21 @@ public class CardFragment extends BaseListFragment<Card> {
         return createCardAdapter();
     }
 
-    private CardAdapter createCardAdapter() {
-        CardAdapter adapter = new CardAdapter(new CardAdapter.Listener() {
+    private CardListAdapter createCardAdapter() {
+        CardListAdapter adapter = new CardListAdapter(new CardListAdapter.Listener() {
             @Override
             public void onCardClicked(View view, Card card) {
-                CardFragment.this.getListener().onRowClicked(card);
+                CardListFragment.this.getListener().onRowClicked(card);
             }
 
             @Override
             public void onMenuClicked(View view, Card card) {
-                CardFragment.this.getListener().onRowMenuClicked(card, view);
+                CardListFragment.this.getListener().onRowMenuClicked(card, view);
             }
 
             @Override
             public void onCardViewDeleted(View view, Card card) {
-                CardFragment.this.getListener().onRowViewDeleted(card);
+                CardListFragment.this.getListener().onRowViewDeleted(card);
             }
         });
 

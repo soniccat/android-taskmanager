@@ -1,7 +1,5 @@
 package coursefragments;
 
-import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
@@ -16,14 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import listfragment.BaseListAdaptor;
-import model.Course;
 import tools.DeleteTouchHelper;
 import model.Card;
 
 /**
  * Created by alexeyglushkov on 03.05.16.
  */
-public class CardAdapter extends BaseListAdaptor<CardAdapter.Holder, Card> implements DeleteTouchHelper.Listener {
+public class CardListAdapter extends BaseListAdaptor<CardListAdapter.Holder, Card> implements DeleteTouchHelper.Listener {
     private ArrayList<Card> cards = new ArrayList<>();
     private Listener listener;
     private ItemTouchHelper deleteTouchHelper;
@@ -32,7 +29,7 @@ public class CardAdapter extends BaseListAdaptor<CardAdapter.Holder, Card> imple
         return cards;
     }
 
-    public CardAdapter(Listener listener) {
+    public CardListAdapter(Listener listener) {
         this.listener = listener;
         this.deleteTouchHelper = new ItemTouchHelper(new DeleteTouchHelper(this));
     }
@@ -41,18 +38,6 @@ public class CardAdapter extends BaseListAdaptor<CardAdapter.Holder, Card> imple
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         deleteTouchHelper.attachToRecyclerView(recyclerView);
-    }
-
-    public Parcelable onSaveInstanceState() {
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList("cards", cards);
-        return bundle;
-    }
-
-    public void onRestoreInstanceState (Parcelable state) {
-        Bundle bundle = (Bundle)state;
-        cards = bundle.getParcelableArrayList("cards");
-        notifyDataSetChanged();
     }
 
     public void updateCards(List<Card> newCards) {

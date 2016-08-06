@@ -62,15 +62,15 @@ public class CourseStackFragment extends StackFragment {
         addFragment(courseFragment, null);
     }
 
-    public void showCardsFragment(Course course) {
-        CardFragment fragment = new CardFragment();
+    public void showCardListFragment(Course course) {
+        CardListFragment fragment = new CardListFragment();
         fragment.setListener(getMenuCardsListener());
 
         //ArrayList<Course> list = new ArrayList<>();
         //list.add(course);
 
         Bundle arg = new Bundle();
-        arg.putString(CardFragment.ARG_PARENT_COURSE_ID, course.getId().toString());
+        arg.putString(CardListFragment.ARG_PARENT_COURSE_ID, course.getId().toString());
         fragment.setArguments(arg);
 
         addFragment(fragment, new TransactionCallback() {
@@ -86,9 +86,9 @@ public class CourseStackFragment extends StackFragment {
             setFragment.setListener(getMenuCourseListener());
         }
 
-        CardFragment cardsFragment = getCardsFragment();
-        if (cardsFragment != null) {
-            cardsFragment.setListener(getMenuCourseListener());
+        CardListFragment cardFragment = getCardListFragment();
+        if (cardFragment != null) {
+            cardFragment.setListener(getMenuCourseListener());
         }
     }
 
@@ -97,9 +97,9 @@ public class CourseStackFragment extends StackFragment {
         return list != null && list.size() > 0 ? (CourseFragment)list.get(0) : null;
     }
 
-    private CardFragment getCardsFragment() {
+    private CardListFragment getCardListFragment() {
         List<Fragment> list = getChildFragmentManager().getFragments();
-        return list != null && list.size() > 1 ? (CardFragment)list.get(1) : null;
+        return list != null && list.size() > 1 ? (CardListFragment)list.get(1) : null;
     }
 
     public void updateCourses() {
@@ -117,17 +117,16 @@ public class CourseStackFragment extends StackFragment {
     }
 
     public void updateCards() {
-        CardFragment cardsFragment = getCardsFragment();
-        if (cardsFragment != null) {
-            Course course = cardsFragment.getParentCourse();
-            cardsFragment.setCards(course.getCards());
+        CardListFragment cardFragment = getCardListFragment();
+        if (cardFragment != null) {
+            cardFragment.reload();
         }
     }
 
     public String getTitle() {
         String title = null;
         if (getBackStackSize() > 0) {
-            Course course = getCardsFragment().getParentCourse();
+            Course course = getCardListFragment().getParentCourse();
             if (course != null) {
                 title = course.getTitle();
             }
@@ -147,7 +146,7 @@ public class CourseStackFragment extends StackFragment {
 
             @Override
             public void onShowCourseContentClicked(Course course) {
-                showCardsFragment(course);
+                showCardListFragment(course);
             }
 
             @Override
@@ -180,7 +179,7 @@ public class CourseStackFragment extends StackFragment {
         return new CardFragmentMenuListener(getContext(), getCourseHolder(), new CardFragmentMenuListener.Listener() {
             @Override
             public void onCardDeleteClicked(Card data) {
-                getCardsFragment().deleteView(data);
+                getCardListFragment().deleteView(data);
             }
 
             @Override
