@@ -8,10 +8,10 @@ import model.Course;
 /**
  * Created by alexeyglushkov on 06.08.16.
  */
-public class CourseCardsProvider implements CardListProvider {
+public class CourseCardListProvider implements CardListProvider {
     private Course course;
 
-    public CourseCardsProvider(Course course) {
+    public CourseCardListProvider(Course course) {
         this.course = course;
     }
 

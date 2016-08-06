@@ -175,8 +175,8 @@ public class CourseStackFragment extends StackFragment {
         });
     }
 
-    private CardFragmentMenuListener getMenuCardsListener() {
-        return new CardFragmentMenuListener(getContext(), getCourseHolder(), new CardFragmentMenuListener.Listener() {
+    private CardListFragmentMenuListener getMenuCardsListener() {
+        return new CardListFragmentMenuListener(getContext(), getCourseHolder(), new CardListFragmentMenuListener.Listener() {
             @Override
             public void onCardDeleteClicked(Card data) {
                 getCardListFragment().deleteView(data);

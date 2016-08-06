@@ -69,17 +69,17 @@ public class CardListFragment extends BaseListFragment<Card> {
         reload();
     }
 
-    private CourseCardsProvider createCourseProvider(String courseIdStr) {
+    private CourseCardListProvider createCourseProvider(String courseIdStr) {
         UUID courseId = UUID.fromString(courseIdStr);
         Course parentCourse = getCourseHolder().getCourse(courseId);
-        CourseCardsProvider result = new CourseCardsProvider(parentCourse);
+        CourseCardListProvider result = new CourseCardListProvider(parentCourse);
         return result;
     }
 
     public Course getParentCourse() {
         Course result = null;
-        if (provider instanceof CourseCardsProvider) {
-            CourseCardsProvider courseProvider = (CourseCardsProvider)provider;
+        if (provider instanceof CourseCardListProvider) {
+            CourseCardListProvider courseProvider = (CourseCardListProvider)provider;
             result = courseProvider.getCourse();
         }
 
