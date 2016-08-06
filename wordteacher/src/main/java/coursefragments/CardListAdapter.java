@@ -21,11 +21,11 @@ import model.Card;
  * Created by alexeyglushkov on 03.05.16.
  */
 public class CardListAdapter extends BaseListAdaptor<CardListAdapter.Holder, Card> implements DeleteTouchHelper.Listener {
-    private ArrayList<Card> cards = new ArrayList<>();
+    private List<Card> cards = new ArrayList<>();
     private Listener listener;
     private ItemTouchHelper deleteTouchHelper;
 
-    public ArrayList<Card> getCards() {
+    public List<Card> getCards() {
         return cards;
     }
 

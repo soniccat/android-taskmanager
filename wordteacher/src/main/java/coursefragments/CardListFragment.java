@@ -60,17 +60,17 @@ public class CardListFragment extends BaseListFragment<Card> {
     private void onHolderLoaded() {
         Bundle bundle = getArguments();
         String parentCourseIdStr = bundle.getString(ARG_PARENT_COURSE_ID);
-        Assert.assertNotNull("now only CourserCardsProvider is supported", parentCourseIdStr);
+        UUID courseId = UUID.fromString(parentCourseIdStr);
+        Assert.assertNotNull("now only CourserCardsProvider is supported", courseId);
 
         if (parentCourseIdStr != null) {
-            provider = createCourseProvider(parentCourseIdStr);
+            provider = createCourseProvider(courseId);
         }
 
         reload();
     }
 
-    private CourseCardListProvider createCourseProvider(String courseIdStr) {
-        UUID courseId = UUID.fromString(courseIdStr);
+    private CourseCardListProvider createCourseProvider(UUID courseId) {
         Course parentCourse = getCourseHolder().getCourse(courseId);
         CourseCardListProvider result = new CourseCardListProvider(parentCourse);
         return result;

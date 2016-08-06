@@ -27,18 +27,17 @@ import tools.Tools;
 /**
  * Created by alexeyglushkov on 08.05.16.
  */
-public class CourseAdapter extends BaseListAdaptor<CourseAdapter.ViewHolder, Course> implements DeleteTouchHelper.Listener {
+public class CourseListAdapter extends BaseListAdaptor<CourseListAdapter.ViewHolder, Course> implements DeleteTouchHelper.Listener {
 
-    // TODO: convert to list
-    private ArrayList<Course> courses = new ArrayList<>();
+    private List<Course> courses = new ArrayList<>();
     private Listener listener;
     private ItemTouchHelper deleteTouchHelper;
 
-    public ArrayList<Course> getCourses() {
+    public List<Course> getCourses() {
         return courses;
     }
 
-    public CourseAdapter(Listener listener) {
+    public CourseListAdapter(Listener listener) {
         this.listener = listener;
         this.deleteTouchHelper = new ItemTouchHelper(new DeleteTouchHelper(this));
     }
@@ -49,18 +48,7 @@ public class CourseAdapter extends BaseListAdaptor<CourseAdapter.ViewHolder, Cou
         deleteTouchHelper.attachToRecyclerView(recyclerView);
     }
 
-    public Parcelable onSaveInstanceState() {
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList("courses", courses);
-        return bundle;
-    }
-
-    public void onRestoreInstanceState (Parcelable state) {
-        Bundle bundle = (Bundle)state;
-        courses = bundle.getParcelableArrayList("courses");
-    }
-
-    public void setCourses(ArrayList<Course> courses) {
+    public void setCourses(List<Course> courses) {
         this.courses.clear();
         this.courses.addAll(courses);
         notifyDataSetChanged();

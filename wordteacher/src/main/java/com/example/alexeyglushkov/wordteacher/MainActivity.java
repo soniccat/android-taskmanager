@@ -27,8 +27,8 @@ import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 import java.util.ArrayList;
 import java.util.List;
 
-import coursefragments.CourseFragment;
-import coursefragments.CourseStackFragment;
+import coursefragments.CourseListFragment;
+import coursefragments.CourseListStackFragment;
 import learning.LearnActivity;
 import main.BaseActivity;
 import main.MainApplication;
@@ -38,7 +38,7 @@ import model.Course;
 import model.CourseHolder;
 
 // TODO: consider moving content to fragment
-public class MainActivity extends BaseActivity implements MainPageAdapter.Listener, QuizletStackFragment.Listener, CourseStackFragment.Listener {
+public class MainActivity extends BaseActivity implements MainPageAdapter.Listener, QuizletStackFragment.Listener, CourseListStackFragment.Listener {
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager pager;
@@ -181,8 +181,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
             QuizletCardsFragment quizletFragment = (QuizletCardsFragment) fragment;
             quizletFragment.setListener(getMenuListener());
 
-        } else if (fragment instanceof CourseStackFragment) {
-            CourseStackFragment courseFragment = (CourseStackFragment) fragment;
+        } else if (fragment instanceof CourseListStackFragment) {
+            CourseListStackFragment courseFragment = (CourseListStackFragment) fragment;
             courseFragment.setListener(this);
         }
     }
@@ -475,8 +475,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     @NonNull
-    private CourseStackFragment createCourseStackFragment() {
-        CourseStackFragment fragment = new CourseStackFragment();
+    private CourseListStackFragment createCourseStackFragment() {
+        CourseListStackFragment fragment = new CourseListStackFragment();
         fragment.setListener(this);
 
         return fragment;
@@ -496,11 +496,11 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         } else if (index == 1) {
             title = "Cards";
         } else {
-            CourseStackFragment courseStackFragment = getCourseStackFragment();
-            if (courseStackFragment != null) {
-                title = courseStackFragment.getTitle();
+            CourseListStackFragment courseListStackFragment = getCourseStackFragment();
+            if (courseListStackFragment != null) {
+                title = courseListStackFragment.getTitle();
             } else if (isDefault) {
-                title = CourseStackFragment.DEFAULT_TITLE;
+                title = CourseListStackFragment.DEFAULT_TITLE;
             }
         }
 
@@ -549,11 +549,11 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         updateSets();
     }
 
-    private CourseFragment getCourseFragment() {
-        CourseFragment result = null;
+    private CourseListFragment getCourseFragment() {
+        CourseListFragment result = null;
         StackFragment container = getCourseStackFragment();
         if (container != null) {
-            result = (CourseFragment)container.getFragment();
+            result = (CourseListFragment)container.getFragment();
         }
         return result;
     }
@@ -562,8 +562,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         return (QuizletStackFragment)getStackContainer(0);
     }
 
-    private CourseStackFragment getCourseStackFragment() {
-        return (CourseStackFragment)getStackContainer(2);
+    private CourseListStackFragment getCourseStackFragment() {
+        return (CourseListStackFragment)getStackContainer(2);
     }
 
     private StackFragment getStackContainer(int position) {
@@ -621,7 +621,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     private void updateSets() {
         List<QuizletSet> sets = getQuizletService().getSets();
-        boolean hasSets = sets.size() > 0;
+        boolean hasSets = sets != null && sets.size() > 0;
 
         QuizletStackFragment stackFragment = getQuizletStackFragment();
         if (stackFragment != null && stackFragment.hasData() != hasSets) {
@@ -635,8 +635,11 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     private void updateCourses() {
-        CourseStackFragment stackFragment = getCourseStackFragment();
-        if (stackFragment != null) {
+        CourseListStackFragment stackFragment = getCourseStackFragment();
+        List<Course> courses = getCourseHolder().getCourses();
+        boolean hasCourses = courses != null && courses.size() > 0;
+
+        if (stackFragment != null && stackFragment.hasCourses() != hasCourses) {
             stackFragment.updateCourses();
         }
     }

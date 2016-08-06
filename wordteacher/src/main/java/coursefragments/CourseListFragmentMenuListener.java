@@ -14,10 +14,10 @@ import model.CourseHolder;
 /**
  * Created by alexeyglushkov on 13.06.16.
  */
-public class CourseFragmentMenuListener extends DeleteMenuListener<Course> {
+public class CourseListFragmentMenuListener extends DeleteMenuListener<Course> {
     private CourseHolder courseHolder;
 
-    public CourseFragmentMenuListener(Context context, CourseHolder courseHolder, Listener listener) {
+    public CourseListFragmentMenuListener(Context context, CourseHolder courseHolder, Listener listener) {
         super(context, listener);
         this.courseHolder = courseHolder;
     }

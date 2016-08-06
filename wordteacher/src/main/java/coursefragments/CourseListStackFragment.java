@@ -18,7 +18,7 @@ import model.CourseHolder;
 /**
  * Created by alexeyglushkov on 12.06.16.
  */
-public class CourseStackFragment extends StackFragment {
+public class CourseListStackFragment extends StackFragment {
 
     public static final String DEFAULT_TITLE = "Courses";
 
@@ -30,8 +30,8 @@ public class CourseStackFragment extends StackFragment {
         return getMainApplication().getCourseHolder();
     }
 
-    private CourseStackFragment.Listener getCourseListener() {
-        return (CourseStackFragment.Listener)listener;
+    private CourseListStackFragment.Listener getCourseListener() {
+        return (CourseListStackFragment.Listener)listener;
     }
 
     @Override
@@ -50,24 +50,16 @@ public class CourseStackFragment extends StackFragment {
         }
     }
 
-    public void updateCourses(ArrayList<Course> courses) {
-        CourseFragment courseFragment = getCourseFragment();
-        courseFragment.setCourses(courses);
-    }
-
     private void showCourseFragment() {
-        CourseFragment courseFragment = new CourseFragment();
-        courseFragment.setListener(getMenuCourseListener());
+        CourseListFragment courseListFragment = new CourseListFragment();
+        courseListFragment.setListener(getMenuCourseListener());
 
-        addFragment(courseFragment, null);
+        addFragment(courseListFragment, null);
     }
 
     public void showCardListFragment(Course course) {
         CardListFragment fragment = new CardListFragment();
         fragment.setListener(getMenuCardsListener());
-
-        //ArrayList<Course> list = new ArrayList<>();
-        //list.add(course);
 
         Bundle arg = new Bundle();
         arg.putString(CardListFragment.ARG_PARENT_COURSE_ID, course.getId().toString());
@@ -81,7 +73,7 @@ public class CourseStackFragment extends StackFragment {
     }
 
     private void restoreListeners() {
-        CourseFragment setFragment = getCourseFragment();
+        CourseListFragment setFragment = getCourseFragment();
         if (setFragment != null) {
             setFragment.setListener(getMenuCourseListener());
         }
@@ -92,9 +84,9 @@ public class CourseStackFragment extends StackFragment {
         }
     }
 
-    private CourseFragment getCourseFragment() {
+    private CourseListFragment getCourseFragment() {
         List<Fragment> list = getChildFragmentManager().getFragments();
-        return list != null && list.size() > 0 ? (CourseFragment)list.get(0) : null;
+        return list != null && list.size() > 0 ? (CourseListFragment)list.get(0) : null;
     }
 
     private CardListFragment getCardListFragment() {
@@ -103,16 +95,26 @@ public class CourseStackFragment extends StackFragment {
     }
 
     public void updateCourses() {
-        CourseFragment courseFragment = getCourseFragment();
-        if (courseFragment != null) {
-            applyPendingOperation(courseFragment);
+        CourseListFragment courseListFragment = getCourseFragment();
+        if (courseListFragment != null) {
+            applyPendingOperation(courseListFragment);
             ArrayList<Course> courses = getCourseHolder().getCourses();
-            courseFragment.setCourses(courses);
+            courseListFragment.setCourses(courses);
         }
     }
 
-    public void applyPendingOperation(CourseFragment fragment) {
-        CourseFragmentMenuListener listener = (CourseFragmentMenuListener)fragment.getListener();
+    public boolean hasCourses() {
+        boolean result = false;
+        CourseListFragment courseListFragment = getCourseFragment();
+        if (courseListFragment != null) {
+            result = courseListFragment.hasCourses();
+        }
+
+        return result;
+    }
+
+    public void applyPendingOperation(CourseListFragment fragment) {
+        CourseListFragmentMenuListener listener = (CourseListFragmentMenuListener)fragment.getListener();
         listener.applyPendingOperation();
     }
 
@@ -137,8 +139,8 @@ public class CourseStackFragment extends StackFragment {
         return title;
     }
 
-    private CourseFragmentMenuListener getMenuCourseListener() {
-        return new CourseFragmentMenuListener(getContext(), getCourseHolder(), new CourseFragmentMenuListener.Listener() {
+    private CourseListFragmentMenuListener getMenuCourseListener() {
+        return new CourseListFragmentMenuListener(getContext(), getCourseHolder(), new CourseListFragmentMenuListener.Listener() {
             @Override
             public void onCourseDeleteClicked(Course course) {
                 getCourseFragment().deleteView(course);
@@ -151,12 +153,12 @@ public class CourseStackFragment extends StackFragment {
 
             @Override
             public void onRowClicked(Course course) {
-                CourseStackFragment.this.getCourseListener().onCourseClicked(course);
+                CourseListStackFragment.this.getCourseListener().onCourseClicked(course);
             }
 
             @Override
             public void onLearnNewWordsClick(Course course) {
-                CourseStackFragment.this.getCourseListener().onLearnNewWordsClick(course);
+                CourseListStackFragment.this.getCourseListener().onLearnNewWordsClick(course);
             }
 
             @Override
