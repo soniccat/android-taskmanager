@@ -10,6 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
+import coursefragments.CourseListFragment;
+
 /**
  * Created by alexeyglushkov on 03.05.16.
  */
@@ -17,24 +21,9 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
 
     protected Listener listener;
 
-    /*public Listener getListener() {
-        return listener;
-    }*/
-
     public void setListener(Listener listener) {
         this.listener = listener;
     }
-
-    /*
-    public void showFragment(Fragment fragment, final TransactionCallback callback) {
-        if (isReadyToAddFragment()) {
-            addFragment(fragment, callback);
-        } else {
-            if (callback != null) {
-                callback.onFinished(false);
-            }
-        }
-    }*/
 
     private boolean isReadyToAddFragment() {
         return getActivity() != null && getView() != null;
@@ -107,7 +96,6 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
         super.onViewCreated(view, savedInstanceState);
 
         getChildFragmentManager().addOnBackStackChangedListener(this);
-        //listener.onViewCreated(savedInstanceState);
     }
 
     @Override
@@ -130,9 +118,10 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
         super.onSaveInstanceState(outState);
     }
 
-    public Fragment getFragment() {
+    public Fragment getTopFragment() {
         // calling findFragmentById when view is null is error prone
-        return isReadyToAddFragment() ? getAttachedFragment() : null;
+        int size = getBackStackSize();
+        return isReadyToAddFragment() && size > 0 ? getFragment(size - 1) : null;
     }
 
     public int getBackStackSize() {
@@ -142,6 +131,11 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
 
     private Fragment getAttachedFragment() {
         return isReadyToAddFragment() ? getChildFragmentManager().findFragmentById(R.id.container) : null;
+    }
+
+    protected Fragment getFragment(int index) {
+        List<Fragment> list = getChildFragmentManager().getFragments();
+        return list != null && index < list.size() ? list.get(index) : null;
     }
 
     public interface Listener {

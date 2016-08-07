@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
-import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +65,7 @@ public class QuizletStackFragment extends StackFragment {
 
             @Override
             public ViewGroup getDialogContainer() {
-                return (ViewGroup) getFragment().getView();
+                return (ViewGroup) getView();
             }
 
             @Override
@@ -136,14 +135,14 @@ public class QuizletStackFragment extends StackFragment {
     }
 
     public void setSortOrder(Preferences.SortOrder sortOrder) {
-        QuizletCardsFragment fragment = (QuizletCardsFragment)getFragment();
+        QuizletCardsFragment fragment = (QuizletCardsFragment) getTopFragment();
         if (fragment != null) {
             fragment.setSortOrder(sortOrder);
         }
     }
 
     public Preferences.SortOrder getSortOrder() {
-        QuizletCardsFragment fragment = (QuizletCardsFragment)getFragment();
+        QuizletCardsFragment fragment = (QuizletCardsFragment) getTopFragment();
         Preferences.SortOrder sortOrder = Preferences.SortOrder.BY_NAME;
         if (fragment != null) {
             sortOrder = fragment.getSortOrder();

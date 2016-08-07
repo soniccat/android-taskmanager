@@ -35,11 +35,6 @@ public class CourseListStackFragment extends StackFragment {
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
@@ -73,25 +68,30 @@ public class CourseListStackFragment extends StackFragment {
     }
 
     private void restoreListeners() {
-        CourseListFragment setFragment = getCourseFragment();
-        if (setFragment != null) {
-            setFragment.setListener(getMenuCourseListener());
-        }
+        restoreCourseListListener();
+        restoreCardListListener();
+    }
 
+    private void restoreCardListListener() {
         CardListFragment cardFragment = getCardListFragment();
         if (cardFragment != null) {
             cardFragment.setListener(getMenuCourseListener());
         }
     }
 
-    private CourseListFragment getCourseFragment() {
-        List<Fragment> list = getChildFragmentManager().getFragments();
-        return list != null && list.size() > 0 ? (CourseListFragment)list.get(0) : null;
+    private void restoreCourseListListener() {
+        CourseListFragment setFragment = getCourseFragment();
+        if (setFragment != null) {
+            setFragment.setListener(getMenuCourseListener());
+        }
     }
 
-    private CardListFragment getCardListFragment() {
-        List<Fragment> list = getChildFragmentManager().getFragments();
-        return list != null && list.size() > 1 ? (CardListFragment)list.get(1) : null;
+    public CourseListFragment getCourseFragment() {
+        return (CourseListFragment)getFragment(0);
+    }
+
+    public CardListFragment getCardListFragment() {
+        return (CardListFragment)getFragment(1);
     }
 
     public void updateCourses() {

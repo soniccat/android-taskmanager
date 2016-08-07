@@ -206,7 +206,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
             @Override
             public ViewGroup getDialogContainer() {
-                return (ViewGroup) getCourseFragment().getView();
+                return (ViewGroup) getCourseListStackFragment().getView();
             }
 
             @Override
@@ -496,7 +496,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         } else if (index == 1) {
             title = "Cards";
         } else {
-            CourseListStackFragment courseListStackFragment = getCourseStackFragment();
+            CourseListStackFragment courseListStackFragment = getCourseListStackFragment();
             if (courseListStackFragment != null) {
                 title = courseListStackFragment.getTitle();
             } else if (isDefault) {
@@ -549,20 +549,22 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         updateSets();
     }
 
-    private CourseListFragment getCourseFragment() {
+    /*
+    private CourseListFragment getCourseListFragment() {
         CourseListFragment result = null;
-        StackFragment container = getCourseStackFragment();
+        CourseListStackFragment container = getCourseListStackFragment();
         if (container != null) {
-            result = (CourseListFragment)container.getFragment();
+            result = container.getCour;
         }
         return result;
     }
+    */
 
     private QuizletStackFragment getQuizletStackFragment() {
         return (QuizletStackFragment)getStackContainer(0);
     }
 
-    private CourseListStackFragment getCourseStackFragment() {
+    private CourseListStackFragment getCourseListStackFragment() {
         return (CourseListStackFragment)getStackContainer(2);
     }
 
@@ -635,7 +637,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     private void updateCourses() {
-        CourseListStackFragment stackFragment = getCourseStackFragment();
+        CourseListStackFragment stackFragment = getCourseListStackFragment();
         List<Course> courses = getCourseHolder().getCourses();
         boolean hasCourses = courses != null && courses.size() > 0;
 
