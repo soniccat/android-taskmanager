@@ -33,6 +33,7 @@ public class Preferences {
         }
     }
 
+    // TODO: remove quizlet relation from here
     public static SortOrder getQuizletSetSortOrder() {
         return SortOrder.values()[getReadPreference().getInt("quizletSetSortOrder", SortOrder.BY_CREATE_DATE_INV.ordinal())];
     }

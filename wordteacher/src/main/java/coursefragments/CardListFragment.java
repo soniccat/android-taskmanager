@@ -49,9 +49,9 @@ public class CardListFragment extends BaseListFragment<Card> {
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        MainApplication.instance.addHolderListener(new MainApplication.CourseHolderListener() {
+        MainApplication.instance.addHolderListener(new MainApplication.ReadyListener() {
             @Override
-            public void onLoaded() {
+            public void onReady() {
                 onHolderLoaded();
             }
         });
@@ -87,10 +87,10 @@ public class CardListFragment extends BaseListFragment<Card> {
     }
 
     public void reload() {
-        setCards(provider.getCards());
+        setAdapterCards(provider.getCards());
     }
 
-    private void setCards(List<Card> inCards) {
+    private void setAdapterCards(List<Card> inCards) {
         ArrayList<Card> cards = new ArrayList<>();
         cards.addAll(inCards);
 

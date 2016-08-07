@@ -12,15 +12,19 @@ import android.widget.TextView;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.wordteacher.R;
 
+import junit.framework.Assert;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import listfragment.BaseListAdaptor;
+
 /**
  * Created by alexeyglushkov on 02.05.16.
  */
-public class QuizletSetAdapter extends RecyclerView.Adapter<QuizletSetAdapter.Holder>{
-    ArrayList<QuizletSet> sets = new ArrayList<>();
+public class QuizletSetAdapter extends BaseListAdaptor<QuizletSetAdapter.Holder, QuizletSet>{
+    List<QuizletSet> sets = new ArrayList<>();
     Listener listener;
 
     public List<QuizletSet> getSets() {
@@ -29,17 +33,6 @@ public class QuizletSetAdapter extends RecyclerView.Adapter<QuizletSetAdapter.Ho
 
     public QuizletSetAdapter(Listener listener) {
         this.listener = listener;
-    }
-
-    public Parcelable onSaveInstanceState() {
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList("sets", sets);
-        return bundle;
-    }
-
-    public void onRestoreInstanceState (Parcelable state) {
-        Bundle bundle = (Bundle)state;
-        sets = bundle.getParcelableArrayList("sets");
     }
 
     public void updateSets(List<QuizletSet> aSet) {
@@ -87,6 +80,16 @@ public class QuizletSetAdapter extends RecyclerView.Adapter<QuizletSetAdapter.Ho
     @Override
     public int getItemCount() {
         return sets.size();
+    }
+
+    @Override
+    public int getDataIndex(QuizletSet data) {
+        return sets.indexOf(data);
+    }
+
+    @Override
+    public void deleteDataAtIndex(int index) {
+        Assert.fail("Not supported");
     }
 
     public class Holder extends RecyclerView.ViewHolder {

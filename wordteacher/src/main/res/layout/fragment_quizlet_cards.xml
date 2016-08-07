@@ -3,7 +3,7 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="quizletfragments.QuizletCardsFragment">
+    tools:context="quizletfragments.QuizletTermListFragment">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"

@@ -34,6 +34,10 @@ public class QuizletService extends SimpleService {
         runCommand(createSetsCommandProxy(callback, cacheMode), true, callback);
     }
 
+    public void restore(final ServiceCommand.CommandCallback callback) {
+        runCommand(createSetsCommandProxy(callback, CachableHttpLoadTask.CacheMode.ONLY_LOAD_FROM_CACHE), false, callback);
+    }
+
     public List<QuizletSet> getSets() {
         return sets;
     }

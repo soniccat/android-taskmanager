@@ -88,27 +88,27 @@ public class QuizletStackFragment extends StackFragment {
     }
 
     public void updateSets(List<QuizletSet> sets) {
-        QuizletCardsFragment setFragment = getSetFragment();
+        QuizletTermListFragment setFragment = getSetFragment();
         setFragment.updateSets(sets);
     }
 
     public boolean hasData() {
-        QuizletCardsFragment setFragment = getSetFragment();
+        QuizletTermListFragment setFragment = getSetFragment();
         return setFragment.hasSets();
     }
 
     private void showSetFragment() {
-        QuizletCardsFragment setFragment = new QuizletCardsFragment();
-        setFragment.setViewType(QuizletCardsFragment.ViewType.Sets);
+        QuizletTermListFragment setFragment = new QuizletTermListFragment();
+        setFragment.setViewType(QuizletTermListFragment.ViewType.Sets);
         setFragment.setListener(getMenuListener());
 
         addFragment(setFragment, null);
     }
 
     private void showWordFragment(QuizletSet set) {
-        QuizletCardsFragment fragment = new QuizletCardsFragment();
+        QuizletTermListFragment fragment = new QuizletTermListFragment();
         fragment.setListener(getMenuListener());
-        fragment.setViewType(QuizletCardsFragment.ViewType.Cards);
+        fragment.setViewType(QuizletTermListFragment.ViewType.Cards);
 
         ArrayList<QuizletSet> list = new ArrayList<>();
         list.add(set);
@@ -124,26 +124,26 @@ public class QuizletStackFragment extends StackFragment {
     }
 
     private void restoreListeners() {
-        QuizletCardsFragment setFragment = getSetFragment();
+        QuizletTermListFragment setFragment = getSetFragment();
         if (setFragment != null) {
             setFragment.setListener(getMenuListener());
         }
 
-        QuizletCardsFragment cardsFragment = getCardsFragment();
+        QuizletTermListFragment cardsFragment = getCardsFragment();
         if (cardsFragment != null) {
             cardsFragment.setListener(getMenuListener());
         }
     }
 
     public void setSortOrder(Preferences.SortOrder sortOrder) {
-        QuizletCardsFragment fragment = (QuizletCardsFragment) getTopFragment();
+        QuizletTermListFragment fragment = (QuizletTermListFragment) getTopFragment();
         if (fragment != null) {
             fragment.setSortOrder(sortOrder);
         }
     }
 
     public Preferences.SortOrder getSortOrder() {
-        QuizletCardsFragment fragment = (QuizletCardsFragment) getTopFragment();
+        QuizletTermListFragment fragment = (QuizletTermListFragment) getTopFragment();
         Preferences.SortOrder sortOrder = Preferences.SortOrder.BY_NAME;
         if (fragment != null) {
             sortOrder = fragment.getSortOrder();
@@ -152,14 +152,14 @@ public class QuizletStackFragment extends StackFragment {
         return sortOrder;
     }
 
-    private QuizletCardsFragment getSetFragment() {
+    private QuizletTermListFragment getSetFragment() {
         List<Fragment> list = getChildFragmentManager().getFragments();
-        return list != null && list.size() > 0 ? (QuizletCardsFragment)list.get(0) : null;
+        return list != null && list.size() > 0 ? (QuizletTermListFragment)list.get(0) : null;
     }
 
-    private QuizletCardsFragment getCardsFragment() {
+    private QuizletTermListFragment getCardsFragment() {
         List<Fragment> list = getChildFragmentManager().getFragments();
-        return list != null && list.size() > 1 ? (QuizletCardsFragment)list.get(1) : null;
+        return list != null && list.size() > 1 ? (QuizletTermListFragment)list.get(1) : null;
     }
 
     public String getTitle() {

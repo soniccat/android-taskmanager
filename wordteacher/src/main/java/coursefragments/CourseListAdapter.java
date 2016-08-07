@@ -28,7 +28,6 @@ import tools.Tools;
  * Created by alexeyglushkov on 08.05.16.
  */
 public class CourseListAdapter extends BaseListAdaptor<CourseListAdapter.ViewHolder, Course> implements DeleteTouchHelper.Listener {
-
     private List<Course> courses = new ArrayList<>();
     private Listener listener;
     private ItemTouchHelper deleteTouchHelper;

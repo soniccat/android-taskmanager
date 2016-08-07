@@ -35,7 +35,7 @@ import main.Preferences;
 import model.Card;
 import model.Course;
 import model.CourseHolder;
-import quizletfragments.QuizletCardsFragment;
+import quizletfragments.QuizletTermListFragment;
 import quizletfragments.QuizletFragmentMenuListener;
 import quizletfragments.QuizletStackFragment;
 
@@ -179,8 +179,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
             QuizletStackFragment cardsFragment = (QuizletStackFragment)fragment;
             cardsFragment.setListener(this);
 
-        } else if (fragment instanceof QuizletCardsFragment) {
-            QuizletCardsFragment quizletFragment = (QuizletCardsFragment) fragment;
+        } else if (fragment instanceof QuizletTermListFragment) {
+            QuizletTermListFragment quizletFragment = (QuizletTermListFragment) fragment;
             quizletFragment.setListener(getMenuListener());
 
         } else if (fragment instanceof CourseListStackFragment) {
@@ -300,8 +300,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     private Preferences.SortOrder getCurrentSortOrder() {
         Preferences.SortOrder sortOrder = Preferences.SortOrder.BY_NAME;
         Fragment fragment = getCurrentFragment();
-        if (fragment instanceof QuizletCardsFragment) {
-            QuizletCardsFragment quizletFragment = (QuizletCardsFragment)fragment;
+        if (fragment instanceof QuizletTermListFragment) {
+            QuizletTermListFragment quizletFragment = (QuizletTermListFragment)fragment;
             sortOrder = quizletFragment.getSortOrder();
 
         } else if (fragment instanceof QuizletStackFragment) {
@@ -314,8 +314,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     private void setSortOrder(Preferences.SortOrder sortOrder) {
         Fragment fragment = getCurrentFragment();
-        if (fragment instanceof QuizletCardsFragment) {
-            QuizletCardsFragment quizletFragment = (QuizletCardsFragment)fragment;
+        if (fragment instanceof QuizletTermListFragment) {
+            QuizletTermListFragment quizletFragment = (QuizletTermListFragment)fragment;
             quizletFragment.setSortOrder(sortOrder);
 
         } else if (fragment instanceof QuizletStackFragment) {
@@ -469,9 +469,9 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     @NonNull
-    private QuizletCardsFragment createQuzletCardsFragment() {
-        QuizletCardsFragment fragment = new QuizletCardsFragment();
-        fragment.setViewType(QuizletCardsFragment.ViewType.Cards);
+    private QuizletTermListFragment createQuzletCardsFragment() {
+        QuizletTermListFragment fragment = new QuizletTermListFragment();
+        fragment.setViewType(QuizletTermListFragment.ViewType.Cards);
         fragment.setListener(getMenuListener());
         return fragment;
     }
@@ -581,8 +581,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         return result;
     }
 
-    private QuizletCardsFragment getCardQuizletFragment() {
-        return (QuizletCardsFragment)getFragment(1);
+    private QuizletTermListFragment getCardQuizletFragment() {
+        return (QuizletTermListFragment)getFragment(1);
     }
 
     private Fragment getFragment(int i) {
@@ -632,8 +632,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
             stackFragment.updateSets(sets);
         }
 
-        QuizletCardsFragment cardFragment = getCardQuizletFragment();
-        if (cardFragment != null && cardFragment.hasCards() != hasSets) {
+        QuizletTermListFragment cardFragment = getCardQuizletFragment();
+        if (cardFragment != null && cardFragment.hasTerms() != hasSets) {
             cardFragment.updateSets(sets);
         }
     }

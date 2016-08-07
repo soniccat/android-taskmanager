@@ -27,7 +27,7 @@ import model.CourseHolder;
 /**
  * Created by alexeyglushkov on 13.06.16.
  */
-public class QuizletFragmentMenuListener implements QuizletCardsFragment.Listener {
+public class QuizletFragmentMenuListener implements QuizletTermListFragment.Listener {
     private Context context;
     private CourseHolder courseHolder;
     private Listener listener;

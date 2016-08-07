@@ -44,7 +44,8 @@ public class MainApplication extends Application {
 
     public static MainApplication instance;
 
-    private List<CourseHolderListener> holderListeners = new ArrayList<>();
+    private List<ReadyListener> courseHolderListeners = new ArrayList<>();
+    private List<ReadyListener> quizletServiceListeners = new ArrayList<>();
 
     public MainApplication() {
         super();
@@ -157,6 +158,7 @@ public class MainApplication extends Application {
         ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
 
         quizletService = new QuizletService(quizletAccount, quizletCommandProvider, serviceCommandRunner);
+        quizletService.restore();
     }
 
     private void createDropboxService() {
@@ -194,22 +196,22 @@ public class MainApplication extends Application {
     }
 
     private void onCourseHolderLoaded() {
-        for (CourseHolderListener listener : holderListeners) {
-            listener.onLoaded();
+        for (ReadyListener listener : courseHolderListeners) {
+            listener.onReady();
         }
 
-        holderListeners.clear();
+        courseHolderListeners.clear();
     }
 
-    public void addHolderListener(CourseHolderListener listener) {
+    public void addHolderListener(ReadyListener listener) {
         if (courseHolder != null) {
-            listener.onLoaded();
+            listener.onReady();
         } else {
-            holderListeners.add(listener);
+            courseHolderListeners.add(listener);
         }
     }
 
-    public interface CourseHolderListener {
-        void onLoaded();
+    public interface ReadyListener {
+        void onReady();
     }
 }

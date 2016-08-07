@@ -30,6 +30,7 @@ public class HttpServiceTask extends CachableHttpLoadTask implements IServiceTas
     public void setConnectionBuilder(HttpUrlConnectionBuilder connectionBuilder) {
         this.connectionBuilder = connectionBuilder;
         setTaskId(connectionBuilder.getStringUrl());
+        setLoadPolicy(LoadPolicy.CancelAdded);
     }
 
     protected HttpURLConnectionProvider getProvider() {
