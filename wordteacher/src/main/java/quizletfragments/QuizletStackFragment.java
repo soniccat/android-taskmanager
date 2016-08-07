@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.wordteacher;
+package quizletfragments;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
+import com.example.alexeyglushkov.wordteacher.StackFragment;
 
 import java.util.ArrayList;
 import java.util.List;

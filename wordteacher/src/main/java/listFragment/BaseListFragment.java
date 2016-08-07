@@ -67,7 +67,6 @@ public abstract class BaseListFragment<T> extends Fragment {
     }
 
     protected abstract BaseListAdaptor createAdapter();
-    //protected abstract void restoreAdapter(Bundle savedInstanceState);
 
     public interface Listener<T> {
         void onRowClicked(T data);

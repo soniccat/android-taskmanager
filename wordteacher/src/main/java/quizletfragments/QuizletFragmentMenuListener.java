@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.wordteacher;
+package quizletfragments;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -14,6 +14,8 @@ import android.widget.ListAdapter;
 
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
+import com.example.alexeyglushkov.wordteacher.R;
+import com.example.alexeyglushkov.wordteacher.RenameAlert;
 
 import java.util.ArrayList;
 import java.util.List;

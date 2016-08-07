@@ -27,7 +27,6 @@ import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 import java.util.ArrayList;
 import java.util.List;
 
-import coursefragments.CourseListFragment;
 import coursefragments.CourseListStackFragment;
 import learning.LearnActivity;
 import main.BaseActivity;
@@ -36,6 +35,9 @@ import main.Preferences;
 import model.Card;
 import model.Course;
 import model.CourseHolder;
+import quizletfragments.QuizletCardsFragment;
+import quizletfragments.QuizletFragmentMenuListener;
+import quizletfragments.QuizletStackFragment;
 
 // TODO: consider moving content to fragment
 public class MainActivity extends BaseActivity implements MainPageAdapter.Listener, QuizletStackFragment.Listener, CourseListStackFragment.Listener {

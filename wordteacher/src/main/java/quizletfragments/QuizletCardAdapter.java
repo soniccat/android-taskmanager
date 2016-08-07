@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.wordteacher;
+package quizletfragments;
 
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -9,42 +9,43 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
+import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
+import com.example.alexeyglushkov.wordteacher.R;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 /**
- * Created by alexeyglushkov on 02.05.16.
+ * Created by alexeyglushkov on 03.05.16.
  */
-public class QuizletSetAdapter extends RecyclerView.Adapter<QuizletSetAdapter.Holder>{
-    ArrayList<QuizletSet> sets = new ArrayList<>();
+public class QuizletCardAdapter extends RecyclerView.Adapter<QuizletCardAdapter.Holder> {
+    ArrayList<QuizletTerm> cards = new ArrayList<>();
     Listener listener;
 
-    public List<QuizletSet> getSets() {
-        return sets;
-    }
-
-    public QuizletSetAdapter(Listener listener) {
+    public QuizletCardAdapter(Listener listener) {
         this.listener = listener;
     }
 
     public Parcelable onSaveInstanceState() {
         Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList("sets", sets);
+        bundle.putParcelableArrayList("cards", cards);
         return bundle;
     }
 
     public void onRestoreInstanceState (Parcelable state) {
         Bundle bundle = (Bundle)state;
-        sets = bundle.getParcelableArrayList("sets");
+        cards = bundle.getParcelableArrayList("cards");
+        notifyDataSetChanged();
     }
 
-    public void updateSets(List<QuizletSet> aSet) {
-        sets = new ArrayList<QuizletSet>();
-        sets.addAll(aSet);
+    public void updateCards(List<QuizletTerm> newCards) {
+        cards = new ArrayList<>();
+        cards.addAll(newCards);
         notifyDataSetChanged();
+    }
+
+    public ArrayList<QuizletTerm> getCards() {
+        return cards;
     }
 
     @Override
@@ -57,35 +58,32 @@ public class QuizletSetAdapter extends RecyclerView.Adapter<QuizletSetAdapter.Ho
 
     @Override
     public void onBindViewHolder(Holder holder, int position) {
-        final QuizletSet set = sets.get(position);
-        holder.nameTextview.setText(set.getTitle());
+        final QuizletTerm term = cards.get(position);
+        holder.nameTextview.setText(term.getTerm());
+        holder.wordCountTextView.setText(term.getDefinition());
 
-        String format = holder.itemView.getContext().getResources().getString(R.string.set_word_count_formant);
-        String description = String.format(Locale.US, format, set.getTerms().size());
-        holder.wordCountTextView.setText(description);
-
-        bindListener(holder, set);
+        bindListener(holder, term);
     }
 
-    private void bindListener(Holder holder, final QuizletSet set) {
+    private void bindListener(Holder holder, final QuizletTerm term) {
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onSetClicked(v, set);
+                listener.onCardClicked(v, term);
             }
         });
 
         holder.menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onMenuClicked(v, set);
+                listener.onMenuClicked(v, term);
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return sets.size();
+        return cards.size();
     }
 
     public class Holder extends RecyclerView.ViewHolder {
@@ -104,7 +102,7 @@ public class QuizletSetAdapter extends RecyclerView.Adapter<QuizletSetAdapter.Ho
     }
 
     public interface Listener {
-        void onSetClicked(View view, QuizletSet set);
-        void onMenuClicked(View view, QuizletSet set);
+        void onCardClicked(View view, QuizletTerm card);
+        void onMenuClicked(View view, QuizletTerm card);
     }
 }

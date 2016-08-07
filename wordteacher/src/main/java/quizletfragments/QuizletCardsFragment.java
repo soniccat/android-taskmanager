@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.wordteacher;
+package quizletfragments;
 
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
+import com.example.alexeyglushkov.wordteacher.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +26,7 @@ import main.Preferences;
  */
 public class QuizletCardsFragment extends Fragment {
 
-    enum ViewType {
+    public enum ViewType {
         Sets,
         Cards
     }
