@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import com.example.alexeyglushkov.wordteacher.R;
 
 import listfragment.DeleteMenuListener;
+import listfragment.ListMenuListener;
 import model.Card;
 import model.CourseHolder;
 
@@ -55,7 +56,7 @@ public class CardListFragmentMenuListener extends DeleteMenuListener<Card> {
         return (Listener)this.listener;
     }
 
-    public interface Listener extends DeleteMenuListener.Listener<Card> {
+    public interface Listener extends ListMenuListener.Listener<Card> {
         void onCardDeleteClicked(Card data); // expect row deletion from ui
     }
 }
