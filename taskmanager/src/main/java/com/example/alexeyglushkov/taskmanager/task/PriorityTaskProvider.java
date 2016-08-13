@@ -18,7 +18,7 @@ import java.util.List;
 
 // A task source for TaskManager
 
-public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.StatusListener {
+public class PriorityTaskProvider implements TaskProvider, TaskPool {
     static final String TAG = "PriorityTaskProvider";
 
     private String providerId;
@@ -37,7 +37,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
         setHandler(handler);
     }
 
-    private SortedList<Task> createQueueSet() {
+    private SortedList<Task> createQueue() {
         return new SortedList<Task>(new Comparator<Task>() {
             @Override
             public int compare(Task lhs, Task rhs) {
@@ -219,7 +219,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool, Task.Status
 
         SortedList<Task> queue = taskQueues.get(task.getTaskType());
         if (queue == null) {
-            queue = createQueueSet();
+            queue = createQueue();
             taskQueues.put(task.getTaskType(), queue);
         }
 

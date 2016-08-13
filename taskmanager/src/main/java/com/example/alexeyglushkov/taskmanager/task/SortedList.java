@@ -21,10 +21,13 @@ public class SortedList<T> extends ArrayList<T> {
         if (insertIndex < 0) {
             insertIndex = -insertIndex - 1;
         } else {
+            // put at the right position
             ++insertIndex;
             for (int i=insertIndex; i<size(); ++i) {
                 if (comparator.compare(get(i), elem) != 0) {
                     break;
+                } else {
+                    ++insertIndex;
                 }
             }
         }

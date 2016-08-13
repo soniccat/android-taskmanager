@@ -50,9 +50,7 @@ public class TestTasks {
         testTask.setTaskPriority(priority);
         testTask.setTaskType(type);
 
-        TaskImpl taskPrivate = (TaskImpl)Mockito.spy(testTask.getPrivate());
-        Mockito.when(testTask.getPrivate()).thenReturn(taskPrivate);
-        Mockito.when(taskPrivate.getOuterTask()).thenReturn(testTask);
+        Mockito.when(testTask.getPrivate()).thenReturn(testTask);
 
         return testTask;
     }

@@ -16,7 +16,7 @@ public class SimpleTaskPool implements TaskPool {
     static final String TAG = "SimpleTaskPool";
 
     //TODO: think about weakref
-    private List<TaskPoolListener> listeners;
+    protected List<TaskPoolListener> listeners;
     private Handler handler;
 
     //TODO: think about a map
@@ -65,10 +65,13 @@ public class SimpleTaskPool implements TaskPool {
     private void addTaskOnThread(Task task) {
         checkHandlerThread();
 
-
         task.addTaskStatusListener(this);
         tasks.add(task);
 
+        triggerOnTaskAdded(task);
+    }
+
+    protected void triggerOnTaskAdded(Task task) {
         for (TaskPoolListener listener : listeners) {
             listener.onTaskAdded(this,task);
         }
@@ -141,7 +144,7 @@ public class SimpleTaskPool implements TaskPool {
         listeners.remove(listener);
     }
 
-    private void checkHandlerThread() {
+    protected void checkHandlerThread() {
         Assert.assertEquals(Looper.myLooper(),handler.getLooper());
     }
 }

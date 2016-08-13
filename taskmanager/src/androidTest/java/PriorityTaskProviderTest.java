@@ -8,6 +8,8 @@ import com.example.alexeyglushkov.taskmanager.task.TaskProvider;
 
 import org.mockito.Mockito;
 
+import java.util.Arrays;
+
 /**
  * Created by alexeyglushkov on 09.08.15.
  */
@@ -59,6 +61,40 @@ public class PriorityTaskProviderTest extends AndroidTestCase {
         assertEquals("d", task.getTaskId());
     }
 
+    public void testTopTaskWithPriorityWithoutFilter() {
+
+        // Arrange
+        taskProvider.addTask(TestTasks.createTestTaskSpy("a", 1, 1));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("b", 2, 2));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("c", 1, 3));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("d", 2, 4));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("e", 1, 5));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("f", 2, 6));
+
+        // Act
+        Task task = taskProvider.getTopTask(null);
+
+        // Verify
+        assertEquals("f", task.getTaskId());
+    }
+
+    public void testGetTopTaskWithPriorityWithFilter() {
+
+        // Arrange
+        taskProvider.addTask(TestTasks.createTestTaskSpy("a", 1, 1));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("b", 2, 2));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("c", 3, 3));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("d", 2, 4));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("e", 1, 5));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("f", 3, 6));
+
+        // Act
+        Task task = taskProvider.getTopTask(Arrays.asList(new Integer[]{3}));
+
+        // Verify
+        assertEquals("e", task.getTaskId());
+    }
+
     public void testGetTopTaskWithBlockedTask() {
         providerTest.getTopTaskWithBlockedTask();
     }
@@ -81,20 +117,12 @@ public class PriorityTaskProviderTest extends AndroidTestCase {
         providerTest.getTopTaskWithoutFilter();
     }
 
-    public void testGetTopTaskWithPriorityWithoutFilter() {
-        providerTest.getTopTaskWithPriorityWithoutFilter();
+    public void testGetTopTaskWithFilter() {
+        providerTest.getTopTaskWithFilter();
     }
 
-    public void testGetTopTask() {
-        providerTest.getTopTask();
-    }
-
-    public void testGetTopTaskWithPriority() {
-        providerTest.getTopTaskWithPriority();
-    }
-
-    public void testTakeTopTask() {
-        providerTest.takeTopTask();
+    public void testTakeTopTaskWithFilter() {
+        providerTest.takeTopTaskWithFilter();
     }
 
     public void testRemoveTaskWithUnknownType() {

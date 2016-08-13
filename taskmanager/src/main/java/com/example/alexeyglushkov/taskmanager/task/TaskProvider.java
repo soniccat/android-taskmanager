@@ -10,6 +10,8 @@ import java.util.List;
 // A provider must remove a task from the pool in the takeTopTask method
 
 public interface TaskProvider extends TaskPool {
+
+    // TODO: maybe delete it and force to pass in a constructor
     void setTaskProviderId(String id);
     String getTaskProviderId();
 

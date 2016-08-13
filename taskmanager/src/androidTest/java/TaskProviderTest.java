@@ -5,6 +5,7 @@ import com.example.alexeyglushkov.taskmanager.task.TaskProvider;
 
 import org.mockito.Mockito;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static junit.framework.Assert.assertEquals;
@@ -54,24 +55,7 @@ public class TaskProviderTest {
         assertEquals("a", task.getTaskId());
     }
 
-    public void getTopTaskWithPriorityWithoutFilter() {
-
-        // Arrange
-        taskProvider.addTask(TestTasks.createTestTaskSpy("a", 1, 1));
-        taskProvider.addTask(TestTasks.createTestTaskSpy("b", 2, 2));
-        taskProvider.addTask(TestTasks.createTestTaskSpy("c", 1, 3));
-        taskProvider.addTask(TestTasks.createTestTaskSpy("d", 2, 4));
-        taskProvider.addTask(TestTasks.createTestTaskSpy("e", 1, 5));
-        taskProvider.addTask(TestTasks.createTestTaskSpy("f", 2, 6));
-
-        // Act
-        Task task = taskProvider.getTopTask(null);
-
-        // Verify
-        assertEquals("f", task.getTaskId());
-    }
-
-    public void getTopTask() {
+    public void getTopTaskWithFilter() {
 
         // Arrange
         taskProvider.addTask(TestTasks.createTestTaskSpy("a", 1));
@@ -88,81 +72,64 @@ public class TaskProviderTest {
         assertEquals("b", task.getTaskId());
     }
 
-    public void getTopTaskWithPriority() {
-
-        // Arrange
-        taskProvider.addTask(TestTasks.createTestTaskSpy("a", 1, 1));
-        taskProvider.addTask(TestTasks.createTestTaskSpy("b", 2, 2));
-        taskProvider.addTask(TestTasks.createTestTaskSpy("c", 3, 3));
-        taskProvider.addTask(TestTasks.createTestTaskSpy("d", 2, 4));
-        taskProvider.addTask(TestTasks.createTestTaskSpy("e", 1, 5));
-        taskProvider.addTask(TestTasks.createTestTaskSpy("f", 3, 6));
-
-        // Act
-        Task task = taskProvider.getTopTask(Arrays.asList(new Integer[]{3}));
-
-        // Verify
-        assertEquals("e", task.getTaskId());
-    }
-
     public void getTopTaskWithBlockedTask() {
 
         // Arrange
-        Task dTask = TestTasks.createTestTaskSpy("d", 0, 4);
-        Task blockedTask = TestTasks.createTestTaskSpy("e", 0, 5);
+        Task dTask = TestTasks.createTestTaskSpy("d", 0);
+        Task blockedTask = TestTasks.createTestTaskSpy("e", 0);
         blockedTask.addTaskDependency(dTask);
 
         // Act
-        taskProvider.addTask(TestTasks.createTestTaskSpy("a", 0, 1));
-        taskProvider.addTask(TestTasks.createTestTaskSpy("b", 0, 2));
-        taskProvider.addTask(TestTasks.createTestTaskSpy("c", 0, 3));
-        taskProvider.addTask(dTask);
         taskProvider.addTask(blockedTask);
+        taskProvider.addTask(dTask);
+        taskProvider.addTask(TestTasks.createTestTaskSpy("a", 0));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("b", 0));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("c", 0));
 
-        Task task = taskProvider.getTopTask(Arrays.asList(new Integer[]{1}));
+        Task task = taskProvider.getTopTask(null);
 
         // Verify
         assertEquals("d", task.getTaskId());
     }
 
-    public void takeTopTask() {
+    public void takeTopTaskWithFilter() {
         // Arrange
         TaskProvider.TaskPoolListener listener = Mockito.mock(TaskProvider.TaskPoolListener.class);
 
         taskProvider.addListener(listener);
-        taskProvider.addTask(TestTasks.createTestTaskSpy("a", 1, 1));
-        taskProvider.addTask(TestTasks.createTestTaskSpy("b", 2, 2));
-        taskProvider.addTask(TestTasks.createTestTaskSpy("c", 3, 3));
-        taskProvider.addTask(TestTasks.createTestTaskSpy("d", 2, 4));
-        taskProvider.addTask(TestTasks.createTestTaskSpy("e", 1, 5));
-        taskProvider.addTask(TestTasks.createTestTaskSpy("f", 3, 6));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("a", 1));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("b", 2));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("c", 3));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("d", 2));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("e", 1));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("f", 3));
 
         // Act
-        Task task = taskProvider.takeTopTask(Arrays.asList(new Integer[]{3}));
+        Task task = taskProvider.takeTopTask(Arrays.asList(new Integer[]{1}));
 
         // Verify
         Mockito.verify(listener).onTaskRemoved(taskProvider, task);
 
-        assertEquals("e", task.getTaskId());
+        assertEquals("b", task.getTaskId());
         assertEquals(5, taskProvider.getTaskCount());
-        assertEquals(null, taskProvider.getTask("e"));
+        assertEquals(null, taskProvider.getTask("b"));
     }
 
     public void takeTopTaskWithBlockedTask() {
 
         // Arrange
-        Task dTask = TestTasks.createTestTaskSpy("d", 0, 4);
-        Task blockedTask = TestTasks.createTestTaskSpy("e", 0, 5);
+        Task dTask = TestTasks.createTestTaskSpy("d", 0);
+        Task blockedTask = TestTasks.createTestTaskSpy("e", 0);
         blockedTask.addTaskDependency(dTask);
 
         // Act
-        taskProvider.addTask(TestTasks.createTestTaskSpy("a", 0, 1));
-        taskProvider.addTask(TestTasks.createTestTaskSpy("b", 0, 2));
-        taskProvider.addTask(TestTasks.createTestTaskSpy("c", 0, 3));
-        taskProvider.addTask(dTask);
         taskProvider.addTask(blockedTask);
+        taskProvider.addTask(dTask);
+        taskProvider.addTask(TestTasks.createTestTaskSpy("a", 0));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("b", 0));
+        taskProvider.addTask(TestTasks.createTestTaskSpy("c", 0));
 
-        Task task = taskProvider.takeTopTask(Arrays.asList(new Integer[]{1}));
+        Task task = taskProvider.takeTopTask(null);
 
         // Verify
         assertEquals("d", task.getTaskId());
