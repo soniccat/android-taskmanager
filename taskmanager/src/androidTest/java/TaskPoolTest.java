@@ -149,9 +149,9 @@ public class TaskPoolTest extends AndroidTestCase {
 
     public void getTaskCount2() {
         // Arrange
-        Task task1 = TestTasks.createTaskMock("taskId1", Task.Status.NotStarted, 0, 30);
-        Task task2 = TestTasks.createTaskMock("taskId2", Task.Status.NotStarted, 0, 10);
-        Task task3 = TestTasks.createTaskMock("taskId3", Task.Status.NotStarted, 0, 15);
+        Task task1 = TestTasks.createTaskMock("taskId1", Task.Status.NotStarted);
+        Task task2 = TestTasks.createTaskMock("taskId2", Task.Status.NotStarted);
+        Task task3 = TestTasks.createTaskMock("taskId3", Task.Status.NotStarted);
 
         // Act
         taskPool.addTask(task1);

@@ -95,6 +95,8 @@ public class PriorityTaskProviderTest extends AndroidTestCase {
         assertEquals("e", task.getTaskId());
     }
 
+    // ProviderTests
+
     public void testGetTopTaskWithBlockedTask() {
         providerTest.getTopTaskWithBlockedTask();
     }
@@ -102,8 +104,6 @@ public class PriorityTaskProviderTest extends AndroidTestCase {
     public void testTakeTopTaskWithBlockedTask() {
         providerTest.takeTopTaskWithBlockedTask();
     }
-
-    // ProviderTests
 
     public void testSetProviderId() {
         providerTest.setProviderId();
