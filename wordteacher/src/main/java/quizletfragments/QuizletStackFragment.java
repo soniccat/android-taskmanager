@@ -3,7 +3,6 @@ package quizletfragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -90,7 +89,7 @@ public class QuizletStackFragment extends StackFragment {
         return new QuizletTermFragmentMenuListener(getContext(), getCourseHolder(), new QuizletTermFragmentMenuListener.Listener<QuizletTerm>() {
             @Override
             public void onCourseCreated(Course course) {
-
+                getQuizletListener().onCourseChanged(course);
             }
 
             @Override
@@ -100,12 +99,12 @@ public class QuizletStackFragment extends StackFragment {
 
             @Override
             public void onCardsAdded(Course course) {
-
+                getQuizletListener().onCourseChanged(course);
             }
 
             @Override
             public ViewGroup getDialogContainer() {
-                return null;
+                return (ViewGroup) getView();
             }
 
             @Override
@@ -178,14 +177,14 @@ public class QuizletStackFragment extends StackFragment {
     }
 
     public void setSortOrder(Preferences.SortOrder sortOrder) {
-        QuizletTermListFragment fragment = (QuizletTermListFragment) getTopFragment();
+        QuizletSortable fragment = (QuizletSortable) getTopFragment();
         if (fragment != null) {
             fragment.setSortOrder(sortOrder);
         }
     }
 
     public Preferences.SortOrder getSortOrder() {
-        QuizletTermListFragment fragment = (QuizletTermListFragment) getTopFragment();
+        QuizletSortable fragment = (QuizletSortable) getTopFragment();
         Preferences.SortOrder sortOrder = Preferences.SortOrder.BY_NAME;
         if (fragment != null) {
             sortOrder = fragment.getSortOrder();

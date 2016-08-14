@@ -61,6 +61,8 @@ public class CourseListFragment extends BaseListFragment<Course> {
                     onHolderLoaded(savedInstanceState);
                 }
             });
+        } else {
+            reload();
         }
     }
 
@@ -129,9 +131,12 @@ public class CourseListFragment extends BaseListFragment<Course> {
 
     private void setAdapterCourses(List<Course> inCourses) {
         List<Course> courses = new ArrayList<>();
-        courses.addAll(inCourses);
 
-        sortCourses(courses);
+        if (inCourses != null) {
+            courses.addAll(inCourses);
+            sortCourses(courses);
+        }
+
         getCourseAdapter().setCourses(courses);
     }
 

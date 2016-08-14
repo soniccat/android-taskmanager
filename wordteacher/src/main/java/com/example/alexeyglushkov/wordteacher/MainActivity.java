@@ -35,6 +35,7 @@ import main.Preferences;
 import model.Card;
 import model.Course;
 import model.CourseHolder;
+import quizletfragments.QuizletSortable;
 import quizletfragments.QuizletTermListFragment;
 import quizletfragments.QuizletSetFragmentMenuListener;
 import quizletfragments.QuizletStackFragment;
@@ -179,7 +180,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
             QuizletStackFragment cardsFragment = (QuizletStackFragment)fragment;
             cardsFragment.setListener(this);
 
-        } else if (fragment instanceof QuizletTermListFragment) {
+        } else if (fragment instanceof QuizletSortable) {
             QuizletTermListFragment quizletFragment = (QuizletTermListFragment) fragment;
             quizletFragment.setListener(getMenuListener());
 
@@ -321,8 +322,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     private Preferences.SortOrder getCurrentSortOrder() {
         Preferences.SortOrder sortOrder = Preferences.SortOrder.BY_NAME;
         Fragment fragment = getCurrentFragment();
-        if (fragment instanceof QuizletTermListFragment) {
-            QuizletTermListFragment quizletFragment = (QuizletTermListFragment)fragment;
+        if (fragment instanceof QuizletSortable) {
+            QuizletSortable quizletFragment = (QuizletSortable)fragment;
             sortOrder = quizletFragment.getSortOrder();
 
         } else if (fragment instanceof QuizletStackFragment) {
@@ -335,8 +336,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     private void setSortOrder(Preferences.SortOrder sortOrder) {
         Fragment fragment = getCurrentFragment();
-        if (fragment instanceof QuizletTermListFragment) {
-            QuizletTermListFragment quizletFragment = (QuizletTermListFragment)fragment;
+        if (fragment instanceof QuizletSortable) {
+            QuizletSortable quizletFragment = (QuizletSortable)fragment;
             quizletFragment.setSortOrder(sortOrder);
 
         } else if (fragment instanceof QuizletStackFragment) {

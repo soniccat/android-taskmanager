@@ -27,7 +27,7 @@ import main.Preferences;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
+public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> implements QuizletSortable {
     public static final String PARENT_SET_ID = "PARENT_SET_ID";
     public static final String STORE_TERM_IDS = "STORE_TERM_IDS";
 
@@ -86,6 +86,8 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
                     onQuizletServiceLoaded(savedInstanceState);
                 }
             });
+        } else {
+            reload();
         }
     }
 
@@ -154,9 +156,11 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
 
     private void setAdapterTerms(List<QuizletTerm> inTerms) {
         List<QuizletTerm> terms = new ArrayList<>();
-        terms.addAll(inTerms);
+        if (inTerms != null) {
+            terms.addAll(inTerms);
+            sortTerms(terms);
+        }
 
-        sortTerms(terms);
         getTermAdapter().updateTerms(terms);
     }
 
@@ -235,6 +239,7 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
         return adapter;
     }
 
+    @Override
     public void setSortOrder(Preferences.SortOrder sortOrder) {
         Preferences.setQuizletTermSortOrder(sortOrder);
 
@@ -242,6 +247,7 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
         reload();
     }
 
+    @Override
     public Preferences.SortOrder getSortOrder() {
         return sortOrder;
     }

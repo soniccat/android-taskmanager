@@ -21,6 +21,6 @@ public class QuizletSetTermListProvider implements QuizletTermListProvider {
 
     @Override
     public List<QuizletTerm> getTerms() {
-        return this.getTerms();
+        return set.getTerms();
     }
 }

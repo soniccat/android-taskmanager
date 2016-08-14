@@ -27,7 +27,7 @@ import model.Course;
 /**
  * Created by alexeyglushkov on 07.08.16.
  */
-public class QuizletSetListFragment extends BaseListFragment<QuizletSet> {
+public class QuizletSetListFragment extends BaseListFragment<QuizletSet> implements QuizletSortable {
     public static final String STORE_SET_IDS = "STORE_SET_IDS";
 
     private Preferences.SortOrder sortOrder = Preferences.getQuizletSetSortOrder();
@@ -114,9 +114,11 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> {
 
     private void setAdapterTerms(List<QuizletSet> inSets) {
         List<QuizletSet> sets = new ArrayList<>();
-        sets.addAll(inSets);
+        if (inSets != null) {
+            sets.addAll(inSets);
+            sortSets(sets);
+        }
 
-        sortSets(sets);
         getSetAdapter().setSets(sets);
     }
 

@@ -49,6 +49,8 @@ public class CardListFragment extends BaseListFragment<Card> {
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
+
+        // TODO: use savedInstanceState instead of arguments
         MainApplication.instance.addCourseHolderListener(new MainApplication.ReadyListener() {
             @Override
             public void onReady() {
@@ -92,9 +94,12 @@ public class CardListFragment extends BaseListFragment<Card> {
 
     private void setAdapterCards(List<Card> inCards) {
         ArrayList<Card> cards = new ArrayList<>();
-        cards.addAll(inCards);
 
-        sortCards(cards);
+        if (inCards != null) {
+            cards.addAll(inCards);
+            sortCards(cards);
+        }
+
         getCardAdapter().setCards(cards);
     }
 
