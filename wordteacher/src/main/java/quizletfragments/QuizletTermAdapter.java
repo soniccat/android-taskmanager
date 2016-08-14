@@ -28,9 +28,9 @@ public class QuizletTermAdapter extends BaseListAdaptor<QuizletTermAdapter.Holde
         this.listener = listener;
     }
 
-    public void updateCards(List<QuizletTerm> newCards) {
+    public void updateTerms(List<QuizletTerm> newTerms) {
         terms = new ArrayList<>();
-        terms.addAll(newCards);
+        terms.addAll(newTerms);
         notifyDataSetChanged();
     }
 

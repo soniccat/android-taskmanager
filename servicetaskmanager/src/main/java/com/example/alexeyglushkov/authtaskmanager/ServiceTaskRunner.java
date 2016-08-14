@@ -5,6 +5,7 @@ import android.os.Handler;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.taskmanager.task.PriorityTaskProvider;
+import com.example.alexeyglushkov.taskmanager.task.StackTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 import com.example.alexeyglushkov.taskmanager.task.TaskPool;
 import com.example.alexeyglushkov.taskmanager.task.TaskProvider;
@@ -18,7 +19,7 @@ public class ServiceTaskRunner implements ServiceCommandRunner {
 
     public ServiceTaskRunner(TaskManager taskManager, String id) {
         this.taskManager = taskManager;
-        this.taskProvider = new PriorityTaskProvider(this.taskManager.getHandler(), id);
+        this.taskProvider = new StackTaskProvider(true, this.taskManager.getHandler(), id);
         this.taskManager.addTaskProvider(this.taskProvider);
     }
 

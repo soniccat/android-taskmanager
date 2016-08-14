@@ -55,7 +55,7 @@ public class CourseListFragment extends BaseListFragment<Course> {
         super.onViewStateRestored(savedInstanceState);
 
         if (savedInstanceState != null) {
-            getMainApplication().addHolderListener(new MainApplication.ReadyListener() {
+            getMainApplication().addCourseHolderListener(new MainApplication.ReadyListener() {
                 @Override
                 public void onReady() {
                     onHolderLoaded(savedInstanceState);

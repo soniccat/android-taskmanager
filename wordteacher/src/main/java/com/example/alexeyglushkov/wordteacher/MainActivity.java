@@ -452,7 +452,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         if (index == 0) {
             fragment = createQuizletStackFragment();
         } else if (index == 1) {
-            fragment = createQuzletCardsFragment();
+            fragment = createQuzletTermListFragment();
         } else {
             fragment = createCourseStackFragment();
         }
@@ -469,9 +469,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     @NonNull
-    private QuizletTermListFragment createQuzletCardsFragment() {
+    private QuizletTermListFragment createQuzletTermListFragment() {
         QuizletTermListFragment fragment = new QuizletTermListFragment();
-        fragment.setViewType(QuizletTermListFragment.ViewType.Cards);
         fragment.setListener(getMenuListener());
         return fragment;
     }

@@ -1,14 +1,18 @@
 package quizletfragments;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.wordteacher.R;
+
+import junit.framework.Assert;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +21,7 @@ import java.util.List;
 
 import listfragment.BaseListAdaptor;
 import listfragment.BaseListFragment;
+import main.MainApplication;
 import main.Preferences;
 
 /**
@@ -29,6 +34,14 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
     private QuizletTermListProvider provider;
     private Preferences.SortOrder sortOrder = Preferences.getQuizletSetSortOrder();
 
+    private MainApplication getMainApplication() {
+        return MainApplication.instance;
+    }
+
+    public QuizletService getQuizletService() {
+        return getMainApplication().getQuizletService();
+    }
+
     public void setSortOrder(Preferences.SortOrder sortOrder) {
         Preferences.setQuizletTermSortOrder(sortOrder);
 
@@ -38,15 +51,6 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
 
     public Preferences.SortOrder getSortOrder() {
         return sortOrder;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (savedInstanceState != null) {
-            restore(savedInstanceState);
-        }
     }
 
     @Override
@@ -72,25 +76,75 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
     }
 
     @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+    public void onViewStateRestored(@Nullable final Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
 
+        if (savedInstanceState != null) {
+            getMainApplication().addCourseHolderListener(new MainApplication.ReadyListener() {
+                @Override
+                public void onReady() {
+                    onQuizletServiceLoaded(savedInstanceState);
+                }
+            });
+        }
+    }
+
+    private void onQuizletServiceLoaded(Bundle savedInstanceState) {
+        if (savedInstanceState.containsKey(PARENT_SET_ID)) {
+            long setId = savedInstanceState.getLong(PARENT_SET_ID);
+            provider = createSetProvider(setId);
+
+        } else {
+
+        }
+    }
+
+    private QuizletTermListProvider createSetProvider(long setId) {
+        QuizletSet set = getQuizletService().getSet(setId);
+        Assert.assertNotNull(set);
+
+        return createSetProvider(set);
+    }
+
+    @NonNull
+    private QuizletTermListProvider createSetProvider(QuizletSet set) {
+        return new QuizletSetTermListProvider(set);
     }
 
     public void setParentSet(QuizletSet set) {
-        this.parentSet = set;
+        this.provider = createSetProvider(set);
     }
 
     public QuizletSet getParentSet() {
+        QuizletSet parentSet = null;
+        if (provider instanceof QuizletSetTermListProvider) {
+            QuizletSetTermListProvider setProvider = (QuizletSetTermListProvider)provider;
+            parentSet = setProvider.getSet();
+        }
+
         return parentSet;
     }
 
+    /*
     public void updateSets(List<QuizletSet> sets) {
         if (viewType == ViewType.Sets) {
             getSetAdapter().updateSets(sortSets(sets));
         } else {
-            getTermAdapter().updateCards(sortTerms(getTerms(sets)));
+            getTermAdapter().updateTerms(sortTerms(getTerms(sets)));
         }
+    }*/
+
+    public void setTermSet(QuizletSet set) {
+        provider = createSetProvider(set);
+        setAdapterTerms(provider.getQuizletTerms());
+    }
+
+    private void setAdapterTerms(List<QuizletTerm> inTerms) {
+        List<QuizletTerm> terms = new ArrayList<>();
+        terms.addAll(inTerms);
+
+        sortTerms(terms);
+        getTermAdapter().updateTerms(terms);
     }
 
     @Override
@@ -102,11 +156,11 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
         List<QuizletTerm> terms = new ArrayList<>();
         terms.addAll(sortTerms(inTerms));
 
-        getTermAdapter().updateCards(terms);
+        getTermAdapter().updateTerms(terms);
     }
 
     public void reload() {
-        setTerms(parentSet.getTerms());
+        setAdapterTerms(provider.getQuizletTerms());
     }
 
     /*
@@ -114,7 +168,7 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
         if (viewType == ViewType.Sets) {
             getSetAdapter().updateSets(sortSets(getSetAdapter().getSets()));
         } else {
-            getTermAdapter().updateCards(sortTerms(getTermAdapter().getTerms()));
+            getTermAdapter().updateTerms(sortTerms(getTermAdapter().getTerms()));
         }
     }
     */
@@ -126,7 +180,7 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
     }
 
     public List<QuizletTerm> getTerms() {
-        return parentSet.getTerms();
+        return provider.getQuizletTerms();
     }
 
     public static int compare(long lhs, long rhs) {

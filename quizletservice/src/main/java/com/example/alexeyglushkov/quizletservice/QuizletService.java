@@ -42,6 +42,19 @@ public class QuizletService extends SimpleService {
         return sets;
     }
 
+    public QuizletSet getSet(long id) {
+        QuizletSet result = null;
+
+        for (QuizletSet set : sets) {
+            if (set.getId() == id) {
+                result = set;
+                break;
+            }
+        }
+
+        return result;
+    }
+
     @NonNull
     private ServiceCommandProxy createSetsCommandProxy(final ServiceCommand.CommandCallback callback, final CachableHttpLoadTask.CacheMode cacheMode) {
         return new ServiceCommandProxy() {

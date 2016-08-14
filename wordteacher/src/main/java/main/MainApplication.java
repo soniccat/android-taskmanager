@@ -6,6 +6,7 @@ import android.content.Context;
 import com.example.alexeyglushkov.authcachemanager.AccountCacheStore;
 import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
+import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
@@ -157,8 +158,14 @@ public class MainApplication extends Application {
         String id = Integer.toString(quizletAccount.getServiceType());
         ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
 
-        quizletService = new QuizletService(quizletAccount, quizletCommandProvider, serviceCommandRunner);
-        quizletService.restore();
+        final QuizletService service = new QuizletService(quizletAccount, quizletCommandProvider, serviceCommandRunner);
+        service.restore(new ServiceCommand.CommandCallback() {
+            @Override
+            public void onCompleted(Error error) {
+                MainApplication.this.quizletService = service;
+                onQuizletServiceLoaded();
+            }
+        });
     }
 
     private void createDropboxService() {
@@ -203,11 +210,27 @@ public class MainApplication extends Application {
         courseHolderListeners.clear();
     }
 
-    public void addHolderListener(ReadyListener listener) {
+    public void addCourseHolderListener(ReadyListener listener) {
         if (courseHolder != null) {
             listener.onReady();
         } else {
             courseHolderListeners.add(listener);
+        }
+    }
+
+    private void onQuizletServiceLoaded() {
+        for (ReadyListener listener : quizletServiceListeners) {
+            listener.onReady();
+        }
+
+        quizletServiceListeners.clear();
+    }
+
+    public void addQuizletServiceListener(ReadyListener listener) {
+        if (quizletService != null) {
+            listener.onReady();
+        } else {
+            quizletServiceListeners.add(listener);
         }
     }
 

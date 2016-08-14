@@ -49,7 +49,7 @@ public class CardListFragment extends BaseListFragment<Card> {
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        MainApplication.instance.addHolderListener(new MainApplication.ReadyListener() {
+        MainApplication.instance.addCourseHolderListener(new MainApplication.ReadyListener() {
             @Override
             public void onReady() {
                 onHolderLoaded();
