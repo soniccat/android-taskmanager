@@ -20,6 +20,7 @@ import com.example.alexeyglushkov.wordteacher.RenameAlert;
 import java.util.ArrayList;
 import java.util.List;
 
+import listfragment.ListMenuListener;
 import model.Card;
 import model.Course;
 import model.CourseHolder;
@@ -27,15 +28,12 @@ import model.CourseHolder;
 /**
  * Created by alexeyglushkov on 13.06.16.
  */
-public class QuizletFragmentMenuListener implements QuizletTermListFragment.Listener {
-    private Context context;
+public class QuizletSetFragmentMenuListener extends ListMenuListener<QuizletSet> {
     private CourseHolder courseHolder;
-    private Listener listener;
 
-    public QuizletFragmentMenuListener(Context context, CourseHolder courseHolder, Listener listener) {
-        this.context = context;
+    public QuizletSetFragmentMenuListener(Context context, CourseHolder courseHolder, Listener listener) {
+        super(context, listener);
         this.courseHolder = courseHolder;
-        this.listener = listener;
     }
 
     private Context getContext() {
@@ -54,7 +52,7 @@ public class QuizletFragmentMenuListener implements QuizletTermListFragment.List
             rows.add(course.getTitle());
         }
 
-        ListAdapter adapter = new ArrayAdapter<String>(getContext(), R.layout.row_text_view, rows);
+        ListAdapter adapter = new ArrayAdapter<>(getContext(), R.layout.row_text_view, rows);
         builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -89,7 +87,7 @@ public class QuizletFragmentMenuListener implements QuizletTermListFragment.List
 
         Error error = getCourseHolder().addCourse(course);
         if (error != null) {
-            listener.onCourseCreated(course);
+            getListener().onCourseCreated(course);
         }
     }
 
@@ -101,10 +99,11 @@ public class QuizletFragmentMenuListener implements QuizletTermListFragment.List
         }
 
         if (getCourseHolder().addNewCards(course, cards)) {
-            listener.onCardsAdded(course);
+            getListener().onCardsAdded(course);
         }
     }
 
+    /*
     private void onCreateCourseFromCard(final QuizletTerm card) {
         final RenameAlert renameAlert = new RenameAlert();
         renameAlert.setPositiveButtonListener(new View.OnClickListener() {
@@ -113,8 +112,8 @@ public class QuizletFragmentMenuListener implements QuizletTermListFragment.List
                 createCourseFromCard(card, renameAlert.getName());
             }
         });
-        renameAlert.show(getContext(), listener.getDialogContainer());
-    }
+        renameAlert.show(getContext(), getListener().getDialogContainer());
+    }*/
 
     private void onCreateCourseFromSet(QuizletSet set) {
         ArrayList<Card> cards = new ArrayList<>();
@@ -137,19 +136,15 @@ public class QuizletFragmentMenuListener implements QuizletTermListFragment.List
 
     // QuizletCardsFragment.Listener
 
-    @Override
-    public void onSetClicked(QuizletSet set) {
-        listener.onSetClicked(set);
-    }
 
     @Override
-    public void onSetMenuClicked(final QuizletSet set, View v) {
-        PopupMenu popupMenu = new PopupMenu(this.getContext(), v);
-        popupMenu.getMenu().add(Menu.NONE, R.id.create_set, 0, R.string.menu_create_course);
+    protected void fillMenu(final QuizletSet set, PopupMenu menu) {
+        menu.getMenu().add(Menu.NONE, R.id.create_set, 0, R.string.menu_create_course);
         if (getCourseHolder().getCourses().size() > 0) {
-            popupMenu.getMenu().add(Menu.NONE, R.id.add_to_course, 0, R.string.menu_add_to_course);
+            menu.getMenu().add(Menu.NONE, R.id.add_to_course, 0, R.string.menu_add_to_course);
         }
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+
+        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.create_set) {
@@ -168,43 +163,18 @@ public class QuizletFragmentMenuListener implements QuizletTermListFragment.List
                 return false;
             }
         });
-
-        popupMenu.show();
     }
 
     @Override
-    public void onTermClicked(QuizletTerm card) {
+    public void onRowViewDeleted(QuizletSet data) {
 
     }
 
-    @Override
-    public void onTermMenuClicked(final QuizletTerm term, View v) {
-        PopupMenu popupMenu = new PopupMenu(this.getContext(), v);
-        popupMenu.getMenu().add(Menu.NONE, R.id.create_set, 0, R.string.menu_create_course);
-        if (getCourseHolder().getCourses().size() > 0) {
-            popupMenu.getMenu().add(Menu.NONE, R.id.add_to_course, 0, R.string.menu_add_to_course);
-        }
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == R.id.create_set) {
-                    onCreateCourseFromCard(term);
-
-                } else if (item.getItemId() == R.id.add_to_course) {
-                    ArrayList<QuizletTerm> terms = new ArrayList<QuizletTerm>();
-                    terms.add(term);
-                    showAddFromSetDialog(terms);
-                }
-
-                return false;
-            }
-        });
-
-        popupMenu.show();
+    public Listener getListener() {
+        return (Listener)this.listener;
     }
 
-    public interface Listener {
-        void onSetClicked(QuizletSet set);
+    public interface Listener extends ListMenuListener.Listener<QuizletSet> {
         void onCourseCreated(Course course);
         void onCourseChanged(Course course);
         void onCardsAdded(Course course);

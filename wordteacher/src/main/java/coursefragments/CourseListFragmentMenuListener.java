@@ -66,7 +66,7 @@ public class CourseListFragmentMenuListener extends DeleteMenuListener<Course> {
         return (Listener)this.listener;
     }
 
-    public interface Listener extends ListMenuListener.Listener<Course> {
+    public interface Listener extends DeleteMenuListener.Listener<Course> {
         void onCourseDeleteClicked(Course data); // expect row deletion from ui
 
         void onLearnNewWordsClick(Course course);

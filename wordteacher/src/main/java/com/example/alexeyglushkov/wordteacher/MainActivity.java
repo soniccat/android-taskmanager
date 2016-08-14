@@ -36,7 +36,7 @@ import model.Card;
 import model.Course;
 import model.CourseHolder;
 import quizletfragments.QuizletTermListFragment;
-import quizletfragments.QuizletFragmentMenuListener;
+import quizletfragments.QuizletSetFragmentMenuListener;
 import quizletfragments.QuizletStackFragment;
 
 // TODO: consider moving content to fragment
@@ -190,8 +190,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     @NonNull
-    private QuizletFragmentMenuListener getMenuListener() {
-        return new QuizletFragmentMenuListener(this, getCourseHolder(), new QuizletFragmentMenuListener.Listener() {
+    private QuizletSetFragmentMenuListener getMenuListener() {
+        return new QuizletSetFragmentMenuListener(this, getCourseHolder(), new QuizletSetFragmentMenuListener.Listener() {
             @Override
             public void onSetClicked(QuizletSet set) {
             }

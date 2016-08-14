@@ -21,7 +21,7 @@ public abstract class DeleteMenuListener<T> extends ListMenuListener<T> {
         snackBarNeedDeleteData = true;
 
         String undoString = context.getString(R.string.snackbar_undo_deletion);
-        currentSnackbar = Snackbar.make(listener.getSnackBarViewContainer(), undoString, Snackbar.LENGTH_LONG);
+        currentSnackbar = Snackbar.make(getListener().getSnackBarViewContainer(), undoString, Snackbar.LENGTH_LONG);
         currentSnackbar.setAction(android.R.string.cancel, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -29,6 +29,7 @@ public abstract class DeleteMenuListener<T> extends ListMenuListener<T> {
                 listener.onDataDeletionCancelled(data);
             }
         });
+
         currentSnackbar.setCallback(new Snackbar.Callback() {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
@@ -52,5 +53,15 @@ public abstract class DeleteMenuListener<T> extends ListMenuListener<T> {
         if (currentSnackbar != null) {
             currentSnackbar.dismiss();
         }
+    }
+
+    protected abstract Error deleteData(T data);
+
+    public Listener getListener() {
+        return (Listener)this.listener;
+    }
+
+    public interface Listener<T> extends ListMenuListener.Listener<T> {
+        View getSnackBarViewContainer();
     }
 }

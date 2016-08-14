@@ -46,14 +46,11 @@ public abstract class ListMenuListener<T> implements BaseListFragment.Listener<T
         this.listener = listener;
     }
 
-    protected abstract Error deleteData(T data);
     protected abstract void fillMenu(T data, PopupMenu menu);
 
     public interface Listener<T> {
         void onRowClicked(T data);
         void onDataDeletionCancelled(T data);
         void onDataDeleted(T data);
-
-        View getSnackBarViewContainer();
     }
 }

@@ -56,7 +56,7 @@ public class CardListFragmentMenuListener extends DeleteMenuListener<Card> {
         return (Listener)this.listener;
     }
 
-    public interface Listener extends ListMenuListener.Listener<Card> {
+    public interface Listener extends DeleteMenuListener.Listener<Card> {
         void onCardDeleteClicked(Card data); // expect row deletion from ui
     }
 }

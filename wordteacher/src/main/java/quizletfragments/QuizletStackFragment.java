@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.wordteacher.StackFragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import main.MainApplication;
@@ -47,10 +46,10 @@ public class QuizletStackFragment extends StackFragment {
     }
 
     @NonNull
-    private QuizletFragmentMenuListener getMenuListener() {
-        return new QuizletFragmentMenuListener(getContext(), getCourseHolder(), new QuizletFragmentMenuListener.Listener() {
+    private QuizletSetFragmentMenuListener getMenuListener() {
+        return new QuizletSetFragmentMenuListener(getContext(), getCourseHolder(), new QuizletSetFragmentMenuListener.Listener() {
             @Override
-            public void onSetClicked(QuizletSet set) {
+            public void onRowClicked(QuizletSet data) {
                 showWordFragment(set);
             }
 
@@ -88,18 +87,17 @@ public class QuizletStackFragment extends StackFragment {
     }
 
     public void setSets(List<QuizletSet> sets) {
-        QuizletTermListFragment setFragment = getSetFragment();
-        setFragment.updateSets(sets);
+        QuizletSetListFragment setFragment = getSetFragment();
+        setFragment.setSets(sets);
     }
 
     public boolean hasData() {
-        QuizletTermListFragment setFragment = getSetFragment();
+        QuizletSetListFragment setFragment = getSetFragment();
         return setFragment.hasSets();
     }
 
     private void showSetFragment() {
         QuizletTermListFragment setFragment = new QuizletTermListFragment();
-        setFragment.setViewType(QuizletTermListFragment.ViewType.Sets);
         setFragment.setListener(getMenuListener());
 
         addFragment(setFragment, null);
@@ -108,13 +106,7 @@ public class QuizletStackFragment extends StackFragment {
     private void showWordFragment(QuizletSet set) {
         QuizletTermListFragment fragment = new QuizletTermListFragment();
         fragment.setListener(getMenuListener());
-        fragment.setViewType(QuizletTermListFragment.ViewType.Cards);
-
-        ArrayList<QuizletSet> list = new ArrayList<>();
-        list.add(set);
-
         fragment.setParentSet(set);
-        fragment.updateSets(list);
 
         addFragment(fragment, new TransactionCallback() {
             @Override
@@ -124,7 +116,7 @@ public class QuizletStackFragment extends StackFragment {
     }
 
     private void restoreListeners() {
-        QuizletTermListFragment setFragment = getSetFragment();
+        QuizletSetListFragment setFragment = getSetFragment();
         if (setFragment != null) {
             setFragment.setListener(getMenuListener());
         }
