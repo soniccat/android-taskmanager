@@ -81,7 +81,7 @@ public abstract class QuizletFragmentMenuListener<T> extends ListMenuListener<T>
         course.addCards(cards);
 
         Error error = getCourseHolder().addCourse(course);
-        if (error != null) {
+        if (error == null) {
             getListener().onCourseCreated(course);
         }
     }

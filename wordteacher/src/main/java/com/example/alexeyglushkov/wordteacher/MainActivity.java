@@ -21,6 +21,7 @@ import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
+import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.service.CachableHttpLoadTask;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
@@ -36,6 +37,7 @@ import model.Card;
 import model.Course;
 import model.CourseHolder;
 import quizletfragments.QuizletSortable;
+import quizletfragments.QuizletTermFragmentMenuListener;
 import quizletfragments.QuizletTermListFragment;
 import quizletfragments.QuizletSetFragmentMenuListener;
 import quizletfragments.QuizletStackFragment;
@@ -134,7 +136,6 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     private void onPagerPageChanged() {
         updateSets();
-        //updateCourses();
         updateToolbarBackButton();
     }
 
@@ -191,20 +192,18 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     @NonNull
-    private QuizletSetFragmentMenuListener getMenuListener() {
-        return new QuizletSetFragmentMenuListener(this, getCourseHolder(), new QuizletSetFragmentMenuListener.Listener<QuizletSet>() {
+    private QuizletTermFragmentMenuListener getMenuListener() {
+        return new QuizletTermFragmentMenuListener(this, getCourseHolder(), new QuizletTermFragmentMenuListener.Listener<QuizletTerm>() {
             @Override
-            public void onRowClicked(QuizletSet data) {
+            public void onRowClicked(QuizletTerm data) {
             }
 
             @Override
-            public void onDataDeletionCancelled(QuizletSet data) {
-
+            public void onDataDeletionCancelled(QuizletTerm data) {
             }
 
             @Override
-            public void onDataDeleted(QuizletSet data) {
-
+            public void onDataDeleted(QuizletTerm data) {
             }
 
             @Override
@@ -224,7 +223,6 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
             @Override
             public void onCourseChanged(Course course) {
-
             }
         });
     }
@@ -662,12 +660,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     private void updateCourses() {
         CourseListStackFragment stackFragment = getCourseListStackFragment();
-        List<Course> courses = getCourseHolder().getCourses();
-        boolean hasCourses = courses != null && courses.size() > 0;
-
-        if (stackFragment != null && stackFragment.hasCourses() != hasCourses) {
-            stackFragment.updateCourses();
-        }
+        stackFragment.updateCourses();
     }
 
     private View getCurrentFragmentView() {

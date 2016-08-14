@@ -45,12 +45,6 @@ public class CourseListStackFragment extends StackFragment {
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        updateCourses();
-    }
-
     private void showCourseFragment() {
         CourseListFragment courseListFragment = new CourseListFragment();
         courseListFragment.setListener(getMenuCourseListener());
@@ -104,8 +98,7 @@ public class CourseListStackFragment extends StackFragment {
         CourseListFragment courseListFragment = getCourseFragment();
         if (courseListFragment != null) {
             applyPendingOperation(courseListFragment);
-            ArrayList<Course> courses = getCourseHolder().getCourses();
-            courseListFragment.setCourses(courses);
+            courseListFragment.reload();
         }
     }
 

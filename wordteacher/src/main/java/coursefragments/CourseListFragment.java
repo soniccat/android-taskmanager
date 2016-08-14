@@ -29,7 +29,6 @@ public class CourseListFragment extends BaseListFragment<Course> {
     public static final String STORE_COURSE_IDS = "STORE_COURSE_IDS";
 
     private CourseListProvider provider;
-
     private MainApplication getMainApplication() {
         return MainApplication.instance;
     }
@@ -47,7 +46,10 @@ public class CourseListFragment extends BaseListFragment<Course> {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putStringArrayList(STORE_COURSE_IDS, getCourseIds(provider.getCourses()));
+
+        if (provider instanceof SimpleCourseListProvider) {
+            outState.putStringArrayList(STORE_COURSE_IDS, getCourseIds(provider.getCourses()));
+        }
     }
 
     @Override
@@ -62,15 +64,23 @@ public class CourseListFragment extends BaseListFragment<Course> {
                 }
             });
         } else {
+            if (provider == null) {
+                provider = createHolderProvider();
+            }
+
             reload();
         }
     }
 
     private void onHolderLoaded(Bundle savedInstanceState) {
-        List<String> courseIds = savedInstanceState.getStringArrayList(STORE_COURSE_IDS);
-        Assert.assertNotNull("now only STORE_COURSE_IDS is supported", courseIds);
+        if (savedInstanceState.containsKey(STORE_COURSE_IDS)) {
+            List<String> courseIds = savedInstanceState.getStringArrayList(STORE_COURSE_IDS);
+            provider = createCourseProviderFromIds(courseIds);
 
-        provider = createCourseProviderFromIds(courseIds);
+        } else {
+            provider = createHolderProvider();
+        }
+
         reload();
     }
 
@@ -80,10 +90,14 @@ public class CourseListFragment extends BaseListFragment<Course> {
 
     private CourseListProvider createCourseProvider(final List<Course> courses) {
         final List<Course> coursesCopy = new ArrayList<>(courses);
+        return new SimpleCourseListProvider(coursesCopy);
+    }
+
+    private CourseListProvider createHolderProvider() {
         return new CourseListProvider() {
             @Override
             public List<Course> getCourses() {
-                return coursesCopy;
+                return getCourseHolder().getCourses();
             }
         };
     }

@@ -71,7 +71,6 @@ public class QuizletTermFragmentMenuListener extends QuizletFragmentMenuListener
         Card card = createCard(quizletTerm);
         ArrayList<Card> cards = new ArrayList<>();
         cards.add(card);
-
         createCourse(name, cards);
     }
 }
