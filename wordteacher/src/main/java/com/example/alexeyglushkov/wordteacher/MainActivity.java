@@ -134,7 +134,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     private void onPagerPageChanged() {
         updateSets();
-        updateCourses();
+        //updateCourses();
         updateToolbarBackButton();
     }
 

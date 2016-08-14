@@ -45,6 +45,12 @@ public class CourseListStackFragment extends StackFragment {
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateCourses();
+    }
+
     private void showCourseFragment() {
         CourseListFragment courseListFragment = new CourseListFragment();
         courseListFragment.setListener(getMenuCourseListener());
