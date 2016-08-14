@@ -628,7 +628,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
         QuizletStackFragment stackFragment = getQuizletStackFragment();
         if (stackFragment != null && stackFragment.hasData() != hasSets) {
-            stackFragment.updateSets(sets);
+            stackFragment.setSets(sets);
         }
 
         QuizletTermListFragment cardFragment = getCardQuizletFragment();

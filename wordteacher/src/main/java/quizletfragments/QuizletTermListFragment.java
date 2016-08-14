@@ -144,12 +144,12 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
 
     public void setTermSet(QuizletSet set) {
         provider = createSetProvider(set);
-        setAdapterTerms(provider.getQuizletTerms());
+        setAdapterTerms(provider.getTerms());
     }
 
     public void setTerms(List<QuizletTerm> terms) {
         provider = createTermListProvider(terms);
-        setAdapterTerms(provider.getQuizletTerms());
+        setAdapterTerms(provider.getTerms());
     }
 
     private void setAdapterTerms(List<QuizletTerm> inTerms) {
@@ -166,7 +166,7 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
     }
 
     public void reload() {
-        setAdapterTerms(provider.getQuizletTerms());
+        setAdapterTerms(provider.getTerms());
     }
 
     /*
@@ -186,7 +186,7 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
     }
 
     public List<QuizletTerm> getTerms() {
-        return provider.getQuizletTerms();
+        return provider.getTerms();
     }
 
     public static int compare(long lhs, long rhs) {

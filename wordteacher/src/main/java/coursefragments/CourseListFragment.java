@@ -26,7 +26,6 @@ import model.CourseHolder;
  * Created by alexeyglushkov on 08.05.16.
  */
 public class CourseListFragment extends BaseListFragment<Course> {
-    //TODO: add type to get all courses from the course holder
     public static final String STORE_COURSE_IDS = "STORE_COURSE_IDS";
 
     private CourseListProvider provider;
@@ -78,10 +77,11 @@ public class CourseListFragment extends BaseListFragment<Course> {
     }
 
     private CourseListProvider createCourseProvider(final List<Course> courses) {
+        final List<Course> coursesCopy = new ArrayList<>(courses);
         return new CourseListProvider() {
             @Override
             public List<Course> getCourses() {
-                return courses;
+                return coursesCopy;
             }
         };
     }

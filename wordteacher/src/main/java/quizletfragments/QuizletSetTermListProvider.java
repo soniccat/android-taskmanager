@@ -20,7 +20,7 @@ public class QuizletSetTermListProvider implements QuizletTermListProvider {
     }
 
     @Override
-    public List<QuizletTerm> getQuizletTerms() {
-        return this.getQuizletTerms();
+    public List<QuizletTerm> getTerms() {
+        return this.getTerms();
     }
 }

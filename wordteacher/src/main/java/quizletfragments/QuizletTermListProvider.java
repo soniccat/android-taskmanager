@@ -8,5 +8,5 @@ import java.util.List;
  * Created by alexeyglushkov on 07.08.16.
  */
 public interface QuizletTermListProvider {
-    List<QuizletTerm> getQuizletTerms();
+    List<QuizletTerm> getTerms();
 }

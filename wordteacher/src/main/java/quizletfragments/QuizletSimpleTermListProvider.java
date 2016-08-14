@@ -15,7 +15,7 @@ public class QuizletSimpleTermListProvider implements QuizletTermListProvider {
     }
 
     @Override
-    public List<QuizletTerm> getQuizletTerms() {
+    public List<QuizletTerm> getTerms() {
         return terms;
     }
 }

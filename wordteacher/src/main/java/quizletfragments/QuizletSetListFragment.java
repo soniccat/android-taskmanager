@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
+import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.wordteacher.R;
 
 import junit.framework.Assert;
@@ -21,12 +22,13 @@ import listfragment.BaseListAdaptor;
 import listfragment.BaseListFragment;
 import main.MainApplication;
 import main.Preferences;
+import model.Course;
 
 /**
  * Created by alexeyglushkov on 07.08.16.
  */
 public class QuizletSetListFragment extends BaseListFragment<QuizletSet> {
-    //public static final String STORE_SET_IDS = "STORE_SET_IDS";
+    public static final String STORE_SET_IDS = "STORE_SET_IDS";
 
     private Preferences.SortOrder sortOrder = Preferences.getQuizletSetSortOrder();
     private QuizletSetListProvider provider;
@@ -46,6 +48,27 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        saveProvider(outState);
+    }
+
+    private void saveProvider(Bundle outState) {
+        outState.putLongArray(STORE_SET_IDS, getIdArray());
+    }
+
+    private long[] getIdArray() {
+        List<QuizletSet> terms = getSets();
+        long[] ids = new long[getSets().size()];
+
+        for (int i=0; i<terms.size(); ++i) {
+            ids[i] = terms.get(i).getId();
+        }
+
+        return ids;
+    }
+
+    @Override
     public void onViewStateRestored(@Nullable final Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
 
@@ -60,8 +83,19 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> {
     }
 
     private void onQuizletServiceLoaded(Bundle savedInstanceState) {
-        provider = createSetProvider();
+        long[] ids = savedInstanceState.getLongArray(STORE_SET_IDS);
+        provider = createSetProvider(getQuizletSets(ids));
         reload();
+    }
+
+    private List<QuizletSet> getQuizletSets(long[] ids) {
+        List<QuizletSet> sets = new ArrayList<>();
+        for (long id : ids) {
+            QuizletSet set = getQuizletService().getSet(id);
+            sets.add(set);
+        }
+
+        return sets;
     }
 
     public boolean hasSets() {
@@ -86,11 +120,12 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> {
         getSetAdapter().setSets(sets);
     }
 
-    private QuizletSetListProvider createSetProvider() {
+    private QuizletSetListProvider createSetProvider(final List<QuizletSet> sets) {
+        final List<QuizletSet> setsCopy = new ArrayList<>(sets);
         return new QuizletSetListProvider() {
             @Override
             public List<QuizletSet> getSets() {
-                return getQuizletService().getSets();
+                return setsCopy;
             }
         };
     }
@@ -98,6 +133,11 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> {
     @Override
     protected BaseListAdaptor createAdapter() {
         return createSetAdapter();
+    }
+
+    public void setSets(List<QuizletSet> sets) {
+        provider = createSetProvider(sets);
+        setAdapterTerms(provider.getSets());
     }
 
     private QuizletSetAdapter createSetAdapter() {

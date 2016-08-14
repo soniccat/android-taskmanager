@@ -87,7 +87,7 @@ public class QuizletStackFragment extends StackFragment {
         }
     }
 
-    public void updateSets(List<QuizletSet> sets) {
+    public void setSets(List<QuizletSet> sets) {
         QuizletTermListFragment setFragment = getSetFragment();
         setFragment.updateSets(sets);
     }
@@ -152,9 +152,9 @@ public class QuizletStackFragment extends StackFragment {
         return sortOrder;
     }
 
-    private QuizletTermListFragment getSetFragment() {
+    private QuizletSetListFragment getSetFragment() {
         List<Fragment> list = getChildFragmentManager().getFragments();
-        return list != null && list.size() > 0 ? (QuizletTermListFragment)list.get(0) : null;
+        return list != null && list.size() > 0 ? (QuizletSetListFragment)list.get(0) : null;
     }
 
     private QuizletTermListFragment getCardsFragment() {
