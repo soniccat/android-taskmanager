@@ -54,7 +54,9 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
     }
 
     private void saveProvider(Bundle outState) {
-        outState.putLongArray(STORE_SET_IDS, getIdArray());
+        if (provider instanceof QuizletSimpleSetListProvider) {
+            outState.putLongArray(STORE_SET_IDS, getIdArray());
+        }
     }
 
     private long[] getIdArray() {
@@ -72,19 +74,27 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
     public void onViewStateRestored(@Nullable final Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            getMainApplication().addCourseHolderListener(new MainApplication.ReadyListener() {
+        if (savedInstanceState != null || provider == null) {
+            getMainApplication().addQuizletServiceListener(new MainApplication.ReadyListener() {
                 @Override
                 public void onReady() {
                     onQuizletServiceLoaded(savedInstanceState);
                 }
             });
+        } else {
+            reload();
         }
     }
 
     private void onQuizletServiceLoaded(Bundle savedInstanceState) {
-        long[] ids = savedInstanceState.getLongArray(STORE_SET_IDS);
-        provider = createSetProvider(getQuizletSets(ids));
+        if (savedInstanceState != null && savedInstanceState.containsKey(STORE_SET_IDS)) {
+            long[] ids = savedInstanceState.getLongArray(STORE_SET_IDS);
+            provider = createSetProvider(getQuizletSets(ids));
+
+        } else {
+            provider = createQuizletServiceProvider();
+        }
+
         reload();
     }
 
@@ -124,10 +134,14 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
 
     private QuizletSetListProvider createSetProvider(final List<QuizletSet> sets) {
         final List<QuizletSet> setsCopy = new ArrayList<>(sets);
+        return new QuizletSimpleSetListProvider(setsCopy);
+    }
+
+    private QuizletSetListProvider createQuizletServiceProvider() {
         return new QuizletSetListProvider() {
             @Override
             public List<QuizletSet> getSets() {
-                return setsCopy;
+                return getQuizletService().getSets();
             }
         };
     }
@@ -139,7 +153,7 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
 
     public void setSets(List<QuizletSet> sets) {
         provider = createSetProvider(sets);
-        setAdapterTerms(getSets());
+        //setAdapterTerms(getSets());
     }
 
     private QuizletSetAdapter createSetAdapter() {

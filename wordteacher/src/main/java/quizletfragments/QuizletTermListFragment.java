@@ -59,7 +59,7 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
             QuizletSetTermListProvider setProvider = (QuizletSetTermListProvider)provider;
             outState.putLong(PARENT_SET_ID, setProvider.getSet().getId());
 
-        } else {
+        } else if (provider instanceof QuizletSimpleTermListProvider) {
             outState.putLongArray(STORE_TERM_IDS, getIdArray());
         }
     }
@@ -79,8 +79,8 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
     public void onViewStateRestored(@Nullable final Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            getMainApplication().addCourseHolderListener(new MainApplication.ReadyListener() {
+        if (savedInstanceState != null || provider == null) {
+            getMainApplication().addQuizletServiceListener(new MainApplication.ReadyListener() {
                 @Override
                 public void onReady() {
                     onQuizletServiceLoaded(savedInstanceState);
@@ -92,13 +92,16 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
     }
 
     private void onQuizletServiceLoaded(Bundle savedInstanceState) {
-        if (savedInstanceState.containsKey(PARENT_SET_ID)) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(PARENT_SET_ID)) {
             long setId = savedInstanceState.getLong(PARENT_SET_ID);
             provider = createSetProvider(setId);
 
-        } else {
+        } else if (savedInstanceState != null && savedInstanceState.containsKey(STORE_TERM_IDS)) {
             long[] ids = savedInstanceState.getLongArray(STORE_TERM_IDS);
             provider = createTermListProvider(getQuizletTerms(ids));
+
+        } else {
+            provider = createQuizletServiceProvider();
         }
 
         reload();
@@ -130,8 +133,13 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
         return new QuizletSimpleTermListProvider(terms);
     }
 
-    public void setParentSet(QuizletSet set) {
-        this.provider = createSetProvider(set);
+    private QuizletTermListProvider createQuizletServiceProvider() {
+        return new QuizletTermListProvider() {
+            @Override
+            public List<QuizletTerm> getTerms() {
+                return getQuizletService().getTerms();
+            }
+        };
     }
 
     public QuizletSet getParentSet() {
@@ -146,12 +154,12 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
 
     public void setTermSet(QuizletSet set) {
         provider = createSetProvider(set);
-        setAdapterTerms(getTerms());
+        //setAdapterTerms(getTerms());
     }
 
     public void setTerms(List<QuizletTerm> terms) {
         provider = createTermListProvider(terms);
-        setAdapterTerms(getTerms());
+        //setAdapterTerms(getTerms());
     }
 
     private void setAdapterTerms(List<QuizletTerm> inTerms) {

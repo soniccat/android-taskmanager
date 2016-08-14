@@ -140,7 +140,7 @@ public class CourseListFragment extends BaseListFragment<Course> {
 
     public void setCourses(List<Course> courses) {
         provider = createCourseProvider(courses);
-        setAdapterCourses(getCourses());
+        //setAdapterCourses(getCourses());
     }
 
     private void setAdapterCourses(List<Course> inCourses) {

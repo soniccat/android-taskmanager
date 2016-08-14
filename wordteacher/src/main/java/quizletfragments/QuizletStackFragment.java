@@ -135,9 +135,11 @@ public class QuizletStackFragment extends StackFragment {
         }
     }
 
-    public void setSets(List<QuizletSet> sets) {
+    public void updateSets() {
         QuizletSetListFragment setFragment = getSetFragment();
-        setFragment.setSets(sets);
+        if (setFragment != null) {
+            setFragment.reload();
+        }
     }
 
     public boolean hasData() {
@@ -155,7 +157,7 @@ public class QuizletStackFragment extends StackFragment {
     private void showWordFragment(QuizletSet set) {
         QuizletTermListFragment fragment = new QuizletTermListFragment();
         fragment.setListener(getTermMenuListener());
-        fragment.setParentSet(set);
+        fragment.setTermSet(set);
 
         addFragment(fragment, new TransactionCallback() {
             @Override

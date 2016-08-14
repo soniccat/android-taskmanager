@@ -20,7 +20,6 @@ import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
-import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.service.CachableHttpLoadTask;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
@@ -39,7 +38,6 @@ import model.CourseHolder;
 import quizletfragments.QuizletSortable;
 import quizletfragments.QuizletTermFragmentMenuListener;
 import quizletfragments.QuizletTermListFragment;
-import quizletfragments.QuizletSetFragmentMenuListener;
 import quizletfragments.QuizletStackFragment;
 
 // TODO: consider moving content to fragment
@@ -135,7 +133,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     private void onPagerPageChanged() {
-        updateSets();
+        //updateSets();
         updateToolbarBackButton();
     }
 
@@ -600,7 +598,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         return result;
     }
 
-    private QuizletTermListFragment getCardQuizletFragment() {
+    private QuizletTermListFragment getTermListQuizletFragment() {
         return (QuizletTermListFragment)getFragment(1);
     }
 
@@ -644,18 +642,11 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     // TODO: try to move these update methods in stack fragments
     private void updateSets() {
-        List<QuizletSet> sets = getQuizletService().getSets();
-        boolean hasSets = sets != null && sets.size() > 0;
-
         QuizletStackFragment stackFragment = getQuizletStackFragment();
-        if (stackFragment != null && stackFragment.hasData() != hasSets) {
-            stackFragment.setSets(sets);
-        }
+        stackFragment.updateSets();
 
-        QuizletTermListFragment cardFragment = getCardQuizletFragment();
-        if (cardFragment != null && cardFragment.hasTerms() != hasSets) {
-            cardFragment.setTerms(getQuizletService().getTerms());
-        }
+        QuizletTermListFragment termFragment = getTermListQuizletFragment();
+        termFragment.reload();
     }
 
     private void updateCourses() {
