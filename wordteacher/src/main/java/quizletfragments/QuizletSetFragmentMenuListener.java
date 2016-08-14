@@ -72,14 +72,6 @@ public class QuizletSetFragmentMenuListener extends ListMenuListener<QuizletSet>
         builder.show();
     }
 
-    private void createCourseFromCard(QuizletTerm quizletTerm, String name) {
-        Card card = createCard(quizletTerm);
-        ArrayList<Card> cards = new ArrayList<>();
-        cards.add(card);
-
-        createCourse(name, cards);
-    }
-
     private void createCourse(String title, ArrayList<Card> cards) {
         Course course = new Course();
         course.setTitle(title);
@@ -102,18 +94,6 @@ public class QuizletSetFragmentMenuListener extends ListMenuListener<QuizletSet>
             getListener().onCardsAdded(course);
         }
     }
-
-    /*
-    private void onCreateCourseFromCard(final QuizletTerm card) {
-        final RenameAlert renameAlert = new RenameAlert();
-        renameAlert.setPositiveButtonListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createCourseFromCard(card, renameAlert.getName());
-            }
-        });
-        renameAlert.show(getContext(), getListener().getDialogContainer());
-    }*/
 
     private void onCreateCourseFromSet(QuizletSet set) {
         ArrayList<Card> cards = new ArrayList<>();
