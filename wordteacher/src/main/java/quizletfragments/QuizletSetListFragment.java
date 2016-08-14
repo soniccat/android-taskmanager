@@ -1,9 +1,16 @@
 package quizletfragments;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
+import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
-import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
+import com.example.alexeyglushkov.wordteacher.R;
+
+import junit.framework.Assert;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,23 +19,49 @@ import java.util.List;
 
 import listfragment.BaseListAdaptor;
 import listfragment.BaseListFragment;
+import main.MainApplication;
 import main.Preferences;
 
 /**
  * Created by alexeyglushkov on 07.08.16.
  */
 public class QuizletSetListFragment extends BaseListFragment<QuizletSet> {
+    //public static final String STORE_SET_IDS = "STORE_SET_IDS";
+
     private Preferences.SortOrder sortOrder = Preferences.getQuizletSetSortOrder();
+    private QuizletSetListProvider provider;
 
-    public void setSortOrder(Preferences.SortOrder sortOrder) {
-        Preferences.setQuizletSetSortOrder(sortOrder);
-
-        this.sortOrder = sortOrder;
-        updateAdapter();
+    private MainApplication getMainApplication() {
+        return MainApplication.instance;
     }
 
-    public Preferences.SortOrder getSortOrder() {
-        return sortOrder;
+    public QuizletService getQuizletService() {
+        return getMainApplication().getQuizletService();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_quizlet_cards, container, false);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable final Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            getMainApplication().addCourseHolderListener(new MainApplication.ReadyListener() {
+                @Override
+                public void onReady() {
+                    onQuizletServiceLoaded(savedInstanceState);
+                }
+            });
+        }
+    }
+
+    private void onQuizletServiceLoaded(Bundle savedInstanceState) {
+        provider = createSetProvider();
+        reload();
     }
 
     public boolean hasSets() {
@@ -38,8 +71,28 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> {
     }
 
     public List<QuizletSet> getSets() {
-        List<QuizletSet> sets = getSetAdapter().getSets();;
-        return sets;
+        return provider.getSets();
+    }
+
+    public void reload() {
+        setAdapterTerms(provider.getSets());
+    }
+
+    private void setAdapterTerms(List<QuizletSet> inSets) {
+        List<QuizletSet> sets = new ArrayList<>();
+        sets.addAll(inSets);
+
+        sortSets(sets);
+        getSetAdapter().setSets(sets);
+    }
+
+    private QuizletSetListProvider createSetProvider() {
+        return new QuizletSetListProvider() {
+            @Override
+            public List<QuizletSet> getSets() {
+                return getQuizletService().getSets();
+            }
+        };
     }
 
     @Override
@@ -51,12 +104,12 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> {
         QuizletSetAdapter adapter = new QuizletSetAdapter(new QuizletSetAdapter.Listener() {
             @Override
             public void onSetClicked(View view, QuizletSet set) {
-                QuizletSetListFragment.this.getListener().onRowClicked(view, set);
+                QuizletSetListFragment.this.getListener().onRowClicked(set);
             }
 
             @Override
             public void onMenuClicked(View view, QuizletSet set) {
-                QuizletSetListFragment.this.onSetMenuClicked(view, set);
+                QuizletSetListFragment.this.getListener().onRowMenuClicked(set, view);
             }
         });
 
@@ -65,15 +118,6 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> {
 
     private QuizletSetAdapter getSetAdapter() {
         return (QuizletSetAdapter)adapter;
-    }
-
-    public List<QuizletTerm> getTerms(List<QuizletSet> sets) {
-        List<QuizletTerm> cards = new ArrayList<>();
-        for (QuizletSet set : sets) {
-            cards.addAll(set.getTerms());
-        }
-
-        return cards;
     }
 
     private List<QuizletSet> sortSets(List<QuizletSet> sets) {
@@ -97,4 +141,20 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> {
 
         return lhs.getTitle().compareToIgnoreCase(rhs.getTitle());
     }
+
+    public static int compare(long lhs, long rhs) {
+        return lhs < rhs ? -1 : (lhs == rhs ? 0 : 1);
+    }
+
+    public void setSortOrder(Preferences.SortOrder sortOrder) {
+        Preferences.setQuizletSetSortOrder(sortOrder);
+
+        this.sortOrder = sortOrder;
+        reload();
+    }
+
+    public Preferences.SortOrder getSortOrder() {
+        return sortOrder;
+    }
+
 }

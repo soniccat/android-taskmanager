@@ -95,7 +95,7 @@ public class CardListFragment extends BaseListFragment<Card> {
         cards.addAll(inCards);
 
         sortCards(cards);
-        getCardAdapter().updateCards(cards);
+        getCardAdapter().setCards(cards);
     }
 
     private List<Card> sortCards(List<Card> cards) {

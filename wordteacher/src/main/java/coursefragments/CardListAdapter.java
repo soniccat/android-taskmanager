@@ -40,7 +40,7 @@ public class CardListAdapter extends BaseListAdaptor<CardListAdapter.Holder, Car
         deleteTouchHelper.attachToRecyclerView(recyclerView);
     }
 
-    public void updateCards(List<Card> newCards) {
+    public void setCards(List<Card> newCards) {
         cards.clear();
         cards.addAll(newCards);
         notifyDataSetChanged();

@@ -26,6 +26,7 @@ import model.CourseHolder;
  * Created by alexeyglushkov on 08.05.16.
  */
 public class CourseListFragment extends BaseListFragment<Course> {
+    //TODO: add type to get all courses from the course holder
     public static final String STORE_COURSE_IDS = "STORE_COURSE_IDS";
 
     private CourseListProvider provider;

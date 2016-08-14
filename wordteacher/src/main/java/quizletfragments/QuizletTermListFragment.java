@@ -42,17 +42,6 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
         return getMainApplication().getQuizletService();
     }
 
-    public void setSortOrder(Preferences.SortOrder sortOrder) {
-        Preferences.setQuizletTermSortOrder(sortOrder);
-
-        this.sortOrder = sortOrder;
-        reload();
-    }
-
-    public Preferences.SortOrder getSortOrder() {
-        return sortOrder;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -109,6 +98,8 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
             long[] ids = savedInstanceState.getLongArray(STORE_TERM_IDS);
             provider = createTermListProvider(getQuizletTerms(ids));
         }
+
+        reload();
     }
 
     private List<QuizletTerm> getQuizletTerms(long[] ids) {
@@ -151,15 +142,6 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
         return parentSet;
     }
 
-    /*
-    public void updateSets(List<QuizletSet> sets) {
-        if (viewType == ViewType.Sets) {
-            getSetAdapter().updateSets(sortSets(sets));
-        } else {
-            getTermAdapter().updateTerms(sortTerms(getTerms(sets)));
-        }
-    }*/
-
     public void setTermSet(QuizletSet set) {
         provider = createSetProvider(set);
         setAdapterTerms(provider.getQuizletTerms());
@@ -190,7 +172,7 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
     /*
     private void updateAdapter() {
         if (viewType == ViewType.Sets) {
-            getSetAdapter().updateSets(sortSets(getSetAdapter().getSets()));
+            getSetAdapter().setSets(sortSets(getSetAdapter().getSets()));
         } else {
             getTermAdapter().updateTerms(sortTerms(getTermAdapter().getTerms()));
         }
@@ -251,5 +233,16 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
         });
 
         return adapter;
+    }
+
+    public void setSortOrder(Preferences.SortOrder sortOrder) {
+        Preferences.setQuizletTermSortOrder(sortOrder);
+
+        this.sortOrder = sortOrder;
+        reload();
+    }
+
+    public Preferences.SortOrder getSortOrder() {
+        return sortOrder;
     }
 }

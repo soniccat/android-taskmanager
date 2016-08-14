@@ -35,7 +35,7 @@ public class QuizletSetAdapter extends BaseListAdaptor<QuizletSetAdapter.Holder,
         this.listener = listener;
     }
 
-    public void updateSets(List<QuizletSet> aSet) {
+    public void setSets(List<QuizletSet> aSet) {
         sets = new ArrayList<QuizletSet>();
         sets.addAll(aSet);
         notifyDataSetChanged();
