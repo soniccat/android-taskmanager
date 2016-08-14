@@ -108,6 +108,7 @@ public class CourseHolder {
         return course.getId().toString();
     }
 
+    // TODO: optimize
     public Card getCard(UUID cardId) {
         Card resultCard = null;
         for (Course course : getCourses()) {

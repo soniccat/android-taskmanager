@@ -73,6 +73,11 @@ public class QuizletSetDeserializer extends CustomDeserializer<QuizletSet> {
         } else if (name.equals("terms")) {
             QuizletTerm[] terms = mapper.readValue(p, QuizletTerm[].class);
             set.setTerms(new ArrayList<>(Arrays.asList(terms)));
+
+            for (QuizletTerm term : terms) {
+                term.setSetId(set.getId());
+            }
+
             isHandled = true;
         }
 

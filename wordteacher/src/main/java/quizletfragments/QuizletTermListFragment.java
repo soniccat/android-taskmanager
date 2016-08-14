@@ -71,8 +71,19 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
             outState.putLong(PARENT_SET_ID, setProvider.getSet().getId());
 
         } else {
-
+            outState.putLongArray(STORE_TERM_IDS, getIdArray());
         }
+    }
+
+    private long[] getIdArray() {
+        List<QuizletTerm> terms = getTerms();
+        long[] ids = new long[getTerms().size()];
+
+        for (int i=0; i<terms.size(); ++i) {
+            ids[i] = terms.get(i).getId();
+        }
+
+        return ids;
     }
 
     @Override
@@ -95,8 +106,19 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
             provider = createSetProvider(setId);
 
         } else {
-
+            long[] ids = savedInstanceState.getLongArray(STORE_TERM_IDS);
+            provider = createTermListProvider(getQuizletTerms(ids));
         }
+    }
+
+    private List<QuizletTerm> getQuizletTerms(long[] ids) {
+        List<QuizletTerm> terms = new ArrayList<>();
+        for (long id : ids) {
+            QuizletTerm term = getQuizletService().getTerm(id);
+            terms.add(term);
+        }
+
+        return terms;
     }
 
     private QuizletTermListProvider createSetProvider(long setId) {
@@ -109,6 +131,10 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
     @NonNull
     private QuizletTermListProvider createSetProvider(QuizletSet set) {
         return new QuizletSetTermListProvider(set);
+    }
+
+    private QuizletTermListProvider createTermListProvider(List<QuizletTerm> terms) {
+        return new QuizletSimpleTermListProvider(terms);
     }
 
     public void setParentSet(QuizletSet set) {
@@ -139,6 +165,11 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
         setAdapterTerms(provider.getQuizletTerms());
     }
 
+    public void setTerms(List<QuizletTerm> terms) {
+        provider = createTermListProvider(terms);
+        setAdapterTerms(provider.getQuizletTerms());
+    }
+
     private void setAdapterTerms(List<QuizletTerm> inTerms) {
         List<QuizletTerm> terms = new ArrayList<>();
         terms.addAll(inTerms);
@@ -150,13 +181,6 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
     @Override
     protected BaseListAdaptor createAdapter() {
         return createTermAdapter();
-    }
-
-    public void setTerms(List<QuizletTerm> inTerms) {
-        List<QuizletTerm> terms = new ArrayList<>();
-        terms.addAll(sortTerms(inTerms));
-
-        getTermAdapter().updateTerms(terms);
     }
 
     public void reload() {

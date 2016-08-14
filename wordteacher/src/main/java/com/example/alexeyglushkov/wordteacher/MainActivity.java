@@ -633,7 +633,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
         QuizletTermListFragment cardFragment = getCardQuizletFragment();
         if (cardFragment != null && cardFragment.hasTerms() != hasSets) {
-            cardFragment.updateSets(sets);
+            cardFragment.setTerms(getQuizletService().getTerms());
         }
     }
 

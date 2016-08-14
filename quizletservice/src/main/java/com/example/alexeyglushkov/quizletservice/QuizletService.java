@@ -9,6 +9,7 @@ import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProxy;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthCredentials;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
+import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.service.CachableHttpLoadTask;
 import com.example.alexeyglushkov.service.SimpleService;
 
@@ -40,6 +41,34 @@ public class QuizletService extends SimpleService {
 
     public List<QuizletSet> getSets() {
         return sets;
+    }
+
+    public List<QuizletTerm> getTerms() {
+        List<QuizletTerm> terms = new ArrayList<>();
+        for (QuizletSet set : getSets()) {
+            terms.addAll(set.getTerms());
+        }
+
+        return terms;
+    }
+
+    // TODO: optimize
+    public QuizletTerm getTerm(long termId) {
+        QuizletTerm resultTerm = null;
+        for (QuizletSet set : getSets()) {
+            for (QuizletTerm term : set.getTerms()) {
+                if (term.getId() == termId) {
+                    resultTerm = term;
+                    break;
+                }
+            }
+
+            if (resultTerm != null) {
+                break;
+            }
+        }
+
+        return resultTerm;
     }
 
     public QuizletSet getSet(long id) {

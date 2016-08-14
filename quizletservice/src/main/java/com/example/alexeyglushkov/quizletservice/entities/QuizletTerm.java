@@ -9,17 +9,18 @@ import android.os.Parcelable;
  */
 public class QuizletTerm implements Parcelable {
     private long id;
+    private long setId;
     private String term;
     private String definition;
     private int rank;
 
     public QuizletTerm() {
-
     }
 
     public QuizletTerm(Parcel parcel) {
         Bundle bundle = parcel.readBundle();
         id = bundle.getLong("id");
+        setId = bundle.getLong("setId");
         term = bundle.getString("term");
         definition = bundle.getString("definition");
         rank = bundle.getInt("rank");
@@ -29,6 +30,7 @@ public class QuizletTerm implements Parcelable {
     public void writeToParcel(Parcel parcel, int flags) {
         Bundle bundle = new Bundle();
         bundle.putLong("id", id);
+        bundle.putLong("setId", setId);
         bundle.putString("term", term);
         bundle.putString("definition", definition);
         bundle.putInt("rank", rank);
@@ -42,6 +44,14 @@ public class QuizletTerm implements Parcelable {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public long getSetId() {
+        return setId;
+    }
+
+    public void setSetId(long setId) {
+        this.setId = setId;
     }
 
     public String getTerm() {
