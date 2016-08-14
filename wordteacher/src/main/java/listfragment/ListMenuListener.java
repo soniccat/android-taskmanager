@@ -50,6 +50,8 @@ public abstract class ListMenuListener<T> implements BaseListFragment.Listener<T
 
     public interface Listener<T> {
         void onRowClicked(T data);
+
+        //TODO: push these up
         void onDataDeletionCancelled(T data);
         void onDataDeleted(T data);
     }

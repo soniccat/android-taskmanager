@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
+import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.wordteacher.StackFragment;
 
 import java.util.List;
@@ -46,11 +47,21 @@ public class QuizletStackFragment extends StackFragment {
     }
 
     @NonNull
-    private QuizletSetFragmentMenuListener getMenuListener() {
-        return new QuizletSetFragmentMenuListener(getContext(), getCourseHolder(), new QuizletSetFragmentMenuListener.Listener() {
+    private QuizletSetFragmentMenuListener getSetMenuListener() {
+        return new QuizletSetFragmentMenuListener(getContext(), getCourseHolder(), new QuizletSetFragmentMenuListener.Listener<QuizletSet>() {
             @Override
-            public void onRowClicked(QuizletSet data) {
+            public void onRowClicked(QuizletSet set) {
                 showWordFragment(set);
+            }
+
+            @Override
+            public void onDataDeletionCancelled(QuizletSet data) {
+
+            }
+
+            @Override
+            public void onDataDeleted(QuizletSet data) {
+
             }
 
             @Override
@@ -70,6 +81,45 @@ public class QuizletStackFragment extends StackFragment {
 
             @Override
             public void onCourseChanged(Course course) {
+
+            }
+        });
+    }
+
+    private QuizletTermFragmentMenuListener getTermMenuListener() {
+        return new QuizletTermFragmentMenuListener(getContext(), getCourseHolder(), new QuizletTermFragmentMenuListener.Listener<QuizletTerm>() {
+            @Override
+            public void onCourseCreated(Course course) {
+
+            }
+
+            @Override
+            public void onCourseChanged(Course course) {
+
+            }
+
+            @Override
+            public void onCardsAdded(Course course) {
+
+            }
+
+            @Override
+            public ViewGroup getDialogContainer() {
+                return null;
+            }
+
+            @Override
+            public void onRowClicked(QuizletTerm data) {
+
+            }
+
+            @Override
+            public void onDataDeletionCancelled(QuizletTerm data) {
+
+            }
+
+            @Override
+            public void onDataDeleted(QuizletTerm data) {
 
             }
         });
@@ -97,15 +147,15 @@ public class QuizletStackFragment extends StackFragment {
     }
 
     private void showSetFragment() {
-        QuizletTermListFragment setFragment = new QuizletTermListFragment();
-        setFragment.setListener(getMenuListener());
+        QuizletSetListFragment setFragment = new QuizletSetListFragment();
+        setFragment.setListener(getSetMenuListener());
 
         addFragment(setFragment, null);
     }
 
     private void showWordFragment(QuizletSet set) {
         QuizletTermListFragment fragment = new QuizletTermListFragment();
-        fragment.setListener(getMenuListener());
+        fragment.setListener(getTermMenuListener());
         fragment.setParentSet(set);
 
         addFragment(fragment, new TransactionCallback() {
@@ -118,12 +168,12 @@ public class QuizletStackFragment extends StackFragment {
     private void restoreListeners() {
         QuizletSetListFragment setFragment = getSetFragment();
         if (setFragment != null) {
-            setFragment.setListener(getMenuListener());
+            setFragment.setListener(getSetMenuListener());
         }
 
         QuizletTermListFragment cardsFragment = getCardsFragment();
         if (cardsFragment != null) {
-            cardsFragment.setListener(getMenuListener());
+            cardsFragment.setListener(getTermMenuListener());
         }
     }
 
@@ -145,13 +195,11 @@ public class QuizletStackFragment extends StackFragment {
     }
 
     private QuizletSetListFragment getSetFragment() {
-        List<Fragment> list = getChildFragmentManager().getFragments();
-        return list != null && list.size() > 0 ? (QuizletSetListFragment)list.get(0) : null;
+        return (QuizletSetListFragment)getFragment(0);
     }
 
     private QuizletTermListFragment getCardsFragment() {
-        List<Fragment> list = getChildFragmentManager().getFragments();
-        return list != null && list.size() > 1 ? (QuizletTermListFragment)list.get(1) : null;
+        return (QuizletTermListFragment)getFragment(1);
     }
 
     public String getTitle() {

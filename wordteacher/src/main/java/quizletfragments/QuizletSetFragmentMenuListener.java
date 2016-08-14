@@ -34,59 +34,6 @@ public class QuizletSetFragmentMenuListener extends QuizletFragmentMenuListener<
         super(context, listener, courseHolder);
     }
 
-    private void showAddFromSetDialog(final List<QuizletTerm> terms) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        List<String> rows = new ArrayList<>();
-        final ArrayList<Course> courses = getCourseHolder().getCourses();
-        for (Course course : courses) {
-            rows.add(course.getTitle());
-        }
-
-        ListAdapter adapter = new ArrayAdapter<>(context, R.layout.row_text_view, rows);
-        builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Course course = courses.get(which);
-                addCardsToCourse(course, terms);
-            }
-        });
-
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
-        });
-
-        String title = context.getString(R.string.dialog_choose_course);
-        builder.setTitle(title);
-        builder.show();
-    }
-
-    private void addCardsToCourse(Course course, List<QuizletTerm> terms) {
-        List<Card> cards = new ArrayList<>();
-        for (QuizletTerm term : terms) {
-            Card card = createCard(term);
-            cards.add(card);
-        }
-
-        if (getCourseHolder().addNewCards(course, cards)) {
-            getListener().onCardsAdded(course);
-        }
-    }
-
-    private void onCreateCourseFromSet(QuizletSet set) {
-        ArrayList<Card> cards = new ArrayList<>();
-        for (QuizletTerm term : set.getTerms()) {
-            Card card = createCard(term);
-            cards.add(card);
-        }
-
-        createCourse(set.getTitle(), cards);
-    }
-
-    // QuizletCardsFragment.Listener
-
-
     @Override
     protected void fillMenu(final QuizletSet set, PopupMenu menu) {
         menu.getMenu().add(Menu.NONE, R.id.create_set, 0, R.string.menu_create_course);
@@ -115,9 +62,18 @@ public class QuizletSetFragmentMenuListener extends QuizletFragmentMenuListener<
         });
     }
 
+    private void onCreateCourseFromSet(QuizletSet set) {
+        ArrayList<Card> cards = new ArrayList<>();
+        for (QuizletTerm term : set.getTerms()) {
+            Card card = createCard(term);
+            cards.add(card);
+        }
+
+        createCourse(set.getTitle(), cards);
+    }
+
     @Override
     public void onRowViewDeleted(QuizletSet data) {
-
     }
 
 }

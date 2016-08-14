@@ -108,18 +108,23 @@ public class CourseListFragment extends BaseListFragment<Course> {
     }
 
     public void reload() {
-        setAdapterCourses(provider.getCourses());
+        setAdapterCourses(getCourses());
     }
 
     public boolean hasCourses() {
-        List<Course> courses = provider != null ? provider.getCourses() : null;
+        List<Course> courses = getCourses();
         int count = courses != null ? courses.size() : 0;
         return count > 0;
     }
 
+    @Nullable
+    private List<Course> getCourses() {
+        return provider != null ? provider.getCourses() : null;
+    }
+
     public void setCourses(List<Course> courses) {
         provider = createCourseProvider(courses);
-        setAdapterCourses(provider.getCourses());
+        setAdapterCourses(getCourses());
     }
 
     private void setAdapterCourses(List<Course> inCourses) {

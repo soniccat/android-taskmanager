@@ -105,11 +105,11 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> {
     }
 
     public List<QuizletSet> getSets() {
-        return provider.getSets();
+        return provider != null ? provider.getSets() : null;
     }
 
     public void reload() {
-        setAdapterTerms(provider.getSets());
+        setAdapterTerms(getSets());
     }
 
     private void setAdapterTerms(List<QuizletSet> inSets) {
@@ -137,7 +137,7 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> {
 
     public void setSets(List<QuizletSet> sets) {
         provider = createSetProvider(sets);
-        setAdapterTerms(provider.getSets());
+        setAdapterTerms(getSets());
     }
 
     private QuizletSetAdapter createSetAdapter() {

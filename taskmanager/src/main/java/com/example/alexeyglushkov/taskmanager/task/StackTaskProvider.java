@@ -53,7 +53,9 @@ public class StackTaskProvider extends SimpleTaskPool implements TaskProvider, T
         Task result = null;
         if (canTakeTask()) {
             int index = getTopTaskIndex(typesToFilter);
-            result = getTasks().get(index);
+            if (index != -1) {
+                result = getTasks().get(index);
+            }
         }
 
         return result;
@@ -83,6 +85,7 @@ public class StackTaskProvider extends SimpleTaskPool implements TaskProvider, T
                         isBlocked = false;
 
                         if (getTaskCount() > 0) {
+                            // TODO: trigger for the next tasks until not blocked
                             triggerOnTaskAdded(getTasks().get(0));
                         }
                     }

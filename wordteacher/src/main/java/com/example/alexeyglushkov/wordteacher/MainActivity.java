@@ -191,9 +191,19 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     @NonNull
     private QuizletSetFragmentMenuListener getMenuListener() {
-        return new QuizletSetFragmentMenuListener(this, getCourseHolder(), new QuizletSetFragmentMenuListener.Listener() {
+        return new QuizletSetFragmentMenuListener(this, getCourseHolder(), new QuizletSetFragmentMenuListener.Listener<QuizletSet>() {
             @Override
-            public void onSetClicked(QuizletSet set) {
+            public void onRowClicked(QuizletSet data) {
+            }
+
+            @Override
+            public void onDataDeletionCancelled(QuizletSet data) {
+
+            }
+
+            @Override
+            public void onDataDeleted(QuizletSet data) {
+
             }
 
             @Override
@@ -219,11 +229,22 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     private void onViewReady() {
+        if (getQuizletService() == null) {
+            getMainApplication().addQuizletServiceListener(new MainApplication.ReadyListener() {
+                @Override
+                public void onReady() {
+                    onQuizletServiceLoaded();
+                }
+            });
+        } else {
+            onQuizletServiceLoaded();
+        }
+    }
+
+    private void onQuizletServiceLoaded() {
         if (getQuizletService() != null && getQuizletService().getAccount() != null && getQuizletService().getAccount().isAuthorized()) {
             Log.d("load","start load quizlet sets");
             loadQuizletSets(false);
-        } else {
-            Log.d("quizlet status", "");
         }
     }
 
@@ -622,6 +643,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         startActivityForResult(activityIntent, LearnActivity.ACTIVITY_RESULT);
     }
 
+    // TODO: try to move these update methods in stack fragments
     private void updateSets() {
         List<QuizletSet> sets = getQuizletService().getSets();
         boolean hasSets = sets != null && sets.size() > 0;

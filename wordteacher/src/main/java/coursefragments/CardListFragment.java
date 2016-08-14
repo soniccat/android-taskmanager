@@ -87,7 +87,7 @@ public class CardListFragment extends BaseListFragment<Card> {
     }
 
     public void reload() {
-        setAdapterCards(provider.getCards());
+        setAdapterCards(getCards());
     }
 
     private void setAdapterCards(List<Card> inCards) {
@@ -114,9 +114,13 @@ public class CardListFragment extends BaseListFragment<Card> {
     }
 
     public boolean hasCards() {
-        List<Card> cards = provider.getCards();
+        List<Card> cards = getCards();
         int count = cards != null ? cards.size() : 0;
         return count > 0;
+    }
+
+    private List<Card> getCards() {
+        return provider != null ? provider.getCards() : null;
     }
 
     @Override
