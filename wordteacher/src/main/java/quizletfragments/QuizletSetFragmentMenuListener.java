@@ -28,31 +28,21 @@ import model.CourseHolder;
 /**
  * Created by alexeyglushkov on 13.06.16.
  */
-public class QuizletSetFragmentMenuListener extends ListMenuListener<QuizletSet> {
-    private CourseHolder courseHolder;
+public class QuizletSetFragmentMenuListener extends QuizletFragmentMenuListener<QuizletSet> {
 
     public QuizletSetFragmentMenuListener(Context context, CourseHolder courseHolder, Listener listener) {
-        super(context, listener);
-        this.courseHolder = courseHolder;
-    }
-
-    private Context getContext() {
-        return context;
-    }
-
-    private CourseHolder getCourseHolder() {
-        return courseHolder;
+        super(context, listener, courseHolder);
     }
 
     private void showAddFromSetDialog(final List<QuizletTerm> terms) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         List<String> rows = new ArrayList<>();
         final ArrayList<Course> courses = getCourseHolder().getCourses();
         for (Course course : courses) {
             rows.add(course.getTitle());
         }
 
-        ListAdapter adapter = new ArrayAdapter<>(getContext(), R.layout.row_text_view, rows);
+        ListAdapter adapter = new ArrayAdapter<>(context, R.layout.row_text_view, rows);
         builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -70,17 +60,6 @@ public class QuizletSetFragmentMenuListener extends ListMenuListener<QuizletSet>
         String title = context.getString(R.string.dialog_choose_course);
         builder.setTitle(title);
         builder.show();
-    }
-
-    private void createCourse(String title, ArrayList<Card> cards) {
-        Course course = new Course();
-        course.setTitle(title);
-        course.addCards(cards);
-
-        Error error = getCourseHolder().addCourse(course);
-        if (error != null) {
-            getListener().onCourseCreated(course);
-        }
     }
 
     private void addCardsToCourse(Course course, List<QuizletTerm> terms) {
@@ -103,15 +82,6 @@ public class QuizletSetFragmentMenuListener extends ListMenuListener<QuizletSet>
         }
 
         createCourse(set.getTitle(), cards);
-    }
-
-    @NonNull
-    private Card createCard(QuizletTerm term) {
-        Card card = new Card();
-        card.setTerm(term.getTerm());
-        card.setDefinition(term.getDefinition());
-        card.setQuizletTerm(term);
-        return card;
     }
 
     // QuizletCardsFragment.Listener
@@ -150,14 +120,4 @@ public class QuizletSetFragmentMenuListener extends ListMenuListener<QuizletSet>
 
     }
 
-    public Listener getListener() {
-        return (Listener)this.listener;
-    }
-
-    public interface Listener extends ListMenuListener.Listener<QuizletSet> {
-        void onCourseCreated(Course course);
-        void onCourseChanged(Course course);
-        void onCardsAdded(Course course);
-        ViewGroup getDialogContainer();
-    }
 }

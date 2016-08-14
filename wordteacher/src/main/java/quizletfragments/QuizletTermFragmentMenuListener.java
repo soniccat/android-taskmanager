@@ -22,16 +22,10 @@ import model.CourseHolder;
 /**
  * Created by alexeyglushkov on 14.08.16.
  */
-public class QuizletTermFragmentMenuListener extends ListMenuListener<QuizletTerm> {
-    private CourseHolder courseHolder;
+public class QuizletTermFragmentMenuListener extends QuizletFragmentMenuListener<QuizletTerm> {
 
     public QuizletTermFragmentMenuListener(Context context, CourseHolder courseHolder, Listener listener) {
-        super(context, listener);
-        this.courseHolder = courseHolder;
-    }
-
-    private CourseHolder getCourseHolder() {
-        return courseHolder;
+        super(context, listener, courseHolder);
     }
 
     @Override
@@ -47,7 +41,7 @@ public class QuizletTermFragmentMenuListener extends ListMenuListener<QuizletTer
                     onCreateCourseFromCard(term);
 
                 } else if (item.getItemId() == R.id.add_to_course) {
-                    ArrayList<QuizletTerm> terms = new ArrayList<QuizletTerm>();
+                    ArrayList<QuizletTerm> terms = new ArrayList<>();
                     terms.add(term);
                     showAddFromSetDialog(terms);
                 }
@@ -79,13 +73,5 @@ public class QuizletTermFragmentMenuListener extends ListMenuListener<QuizletTer
         cards.add(card);
 
         createCourse(name, cards);
-    }
-
-    public Listener getListener() {
-        return (Listener)this.listener;
-    }
-
-    public interface Listener extends ListMenuListener.Listener<QuizletSet> {
-        ViewGroup getDialogContainer();
     }
 }
