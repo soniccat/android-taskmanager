@@ -26,29 +26,67 @@ public class QuizletStackFragment extends StackFragment {
 
     public static final String DEFAULT_TITLE = "Sets";
 
-    public void setListener(Listener listener) {
-        this.listener = listener;
-    }
-
-    private MainApplication getMainApplication() {
-        return MainApplication.instance;
-    }
-
-    public CourseHolder getCourseHolder() {
-        return getMainApplication().getCourseHolder();
-    }
-
-    private QuizletStackFragment.Listener getQuizletListener() {
-        return (QuizletStackFragment.Listener)this.listener;
-    }
+    //// Creation, initialization, restoration
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        if (savedInstanceState == null) {
+            showSetFragment();
+        } else {
+            restoreListeners();
+        }
     }
 
+    private void restoreListeners() {
+        QuizletSetListFragment setFragment = getSetFragment();
+        if (setFragment != null) {
+            setFragment.setListener(createSetMenuListener());
+        }
+
+        QuizletTermListFragment cardsFragment = getCardsFragment();
+        if (cardsFragment != null) {
+            cardsFragment.setListener(createTermMenuListener());
+        }
+    }
+
+    //// Actions
+
+    // Show UI Actions
+
+    private void showSetFragment() {
+        QuizletSetListFragment setFragment = new QuizletSetListFragment();
+        setFragment.setListener(createSetMenuListener());
+
+        addFragment(setFragment, null);
+    }
+
+    private void showWordFragment(QuizletSet set) {
+        QuizletTermListFragment fragment = new QuizletTermListFragment();
+        fragment.setListener(createTermMenuListener());
+        fragment.setTermSet(set);
+
+        addFragment(fragment, new TransactionCallback() {
+            @Override
+            public void onFinished() {
+            }
+        });
+    }
+
+    // Update Data Actions
+
+    public void updateSets() {
+        QuizletSetListFragment setFragment = getSetFragment();
+        if (setFragment != null) {
+            setFragment.reload();
+        }
+    }
+
+    //// Creation methods
+
     @NonNull
-    private QuizletSetFragmentMenuListener getSetMenuListener() {
+    private QuizletSetFragmentMenuListener createSetMenuListener() {
         return new QuizletSetFragmentMenuListener(getContext(), getCourseHolder(), new QuizletSetFragmentMenuListener.Listener<QuizletSet>() {
             @Override
             public void onRowClicked(QuizletSet set) {
@@ -87,7 +125,7 @@ public class QuizletStackFragment extends StackFragment {
         });
     }
 
-    private QuizletTermFragmentMenuListener getTermMenuListener() {
+    private QuizletTermFragmentMenuListener createTermMenuListener() {
         return new QuizletTermFragmentMenuListener(getContext(), getCourseHolder(), new QuizletTermFragmentMenuListener.Listener<QuizletTerm>() {
             @Override
             public void onCourseCreated(Course course) {
@@ -126,59 +164,13 @@ public class QuizletStackFragment extends StackFragment {
         });
     }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    //// Setters
 
-        if (savedInstanceState == null) {
-            showSetFragment();
-        } else {
-            restoreListeners();
-        }
+    public void setListener(Listener listener) {
+        this.listener = listener;
     }
 
-    public void updateSets() {
-        QuizletSetListFragment setFragment = getSetFragment();
-        if (setFragment != null) {
-            setFragment.reload();
-        }
-    }
-
-    public boolean hasData() {
-        QuizletSetListFragment setFragment = getSetFragment();
-        return setFragment.hasSets();
-    }
-
-    private void showSetFragment() {
-        QuizletSetListFragment setFragment = new QuizletSetListFragment();
-        setFragment.setListener(getSetMenuListener());
-
-        addFragment(setFragment, null);
-    }
-
-    private void showWordFragment(QuizletSet set) {
-        QuizletTermListFragment fragment = new QuizletTermListFragment();
-        fragment.setListener(getTermMenuListener());
-        fragment.setTermSet(set);
-
-        addFragment(fragment, new TransactionCallback() {
-            @Override
-            public void onFinished() {
-            }
-        });
-    }
-
-    private void restoreListeners() {
-        QuizletSetListFragment setFragment = getSetFragment();
-        if (setFragment != null) {
-            setFragment.setListener(getSetMenuListener());
-        }
-
-        QuizletTermListFragment cardsFragment = getCardsFragment();
-        if (cardsFragment != null) {
-            cardsFragment.setListener(getTermMenuListener());
-        }
-    }
+    // Set UI
 
     public void setSortOrder(Preferences.SortOrder sortOrder) {
         QuizletSortable fragment = (QuizletSortable) getTopFragment();
@@ -186,6 +178,20 @@ public class QuizletStackFragment extends StackFragment {
             fragment.setSortOrder(sortOrder);
         }
     }
+
+    //// Getters
+
+    // App Data Getters
+
+    private MainApplication getMainApplication() {
+        return MainApplication.instance;
+    }
+
+    public CourseHolder getCourseHolder() {
+        return getMainApplication().getCourseHolder();
+    }
+
+    // Data Getters
 
     public Preferences.SortOrder getSortOrder() {
         QuizletSortable fragment = (QuizletSortable) getTopFragment();
@@ -195,14 +201,6 @@ public class QuizletStackFragment extends StackFragment {
         }
 
         return sortOrder;
-    }
-
-    private QuizletSetListFragment getSetFragment() {
-        return (QuizletSetListFragment)getFragment(0);
-    }
-
-    private QuizletTermListFragment getCardsFragment() {
-        return (QuizletTermListFragment)getFragment(1);
     }
 
     public String getTitle() {
@@ -215,6 +213,31 @@ public class QuizletStackFragment extends StackFragment {
 
         return title;
     }
+
+    // UI Getters
+
+    private QuizletSetListFragment getSetFragment() {
+        return (QuizletSetListFragment)getFragment(0);
+    }
+
+    private QuizletTermListFragment getCardsFragment() {
+        return (QuizletTermListFragment)getFragment(1);
+    }
+
+    // Cast Getters
+
+    private QuizletStackFragment.Listener getQuizletListener() {
+        return (QuizletStackFragment.Listener)this.listener;
+    }
+
+    // Statuses
+
+    public boolean hasData() {
+        QuizletSetListFragment setFragment = getSetFragment();
+        return setFragment.hasSets();
+    }
+
+    //// Interfaces
 
     public interface Listener extends StackFragment.Listener {
         void onCourseChanged(Course course);
