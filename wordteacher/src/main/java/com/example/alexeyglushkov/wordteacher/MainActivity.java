@@ -649,6 +649,12 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         termFragment.reload();
     }
 
+    private void updateCoursesIfNeeded() {
+        if (getCourseListStackFragment() != null) {
+            updateCourses();
+        }
+    }
+
     private void updateCourses() {
         CourseListStackFragment stackFragment = getCourseListStackFragment();
         stackFragment.updateCourses();
@@ -662,7 +668,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     @Override
     public void onCourseChanged(Course course) {
-        updateCourses();
+        updateCoursesIfNeeded();
     }
 
     @Override
