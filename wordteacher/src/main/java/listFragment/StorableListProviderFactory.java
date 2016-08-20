@@ -9,6 +9,6 @@ import java.util.List;
  */
 public interface StorableListProviderFactory<T> {
     StorableListProvider<T> createFromList(List<T> list);
-    StorableListProvider<T> restore(Bundle bundle, Object context);
+    StorableListProvider<T> restore(Bundle bundle);
     StorableListProvider<T> createDefault();
 }

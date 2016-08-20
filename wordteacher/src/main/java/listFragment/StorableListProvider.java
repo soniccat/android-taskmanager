@@ -8,6 +8,6 @@ import android.os.Bundle;
 public interface StorableListProvider<T> extends ListProvider<T> {
     void store(Bundle bundle);
 
-    boolean canRestore(Bundle bundle);
+    // static boolean canRestore(Bundle bundle);
     void restore(Bundle bundle, Object context);
 }
