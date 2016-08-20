@@ -67,42 +67,10 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         }
     }
 
-    private void setToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.main_toolbar);
-        setSupportActionBar(toolbar);
-    }
-
-    private void initPager() {
-        pager = (ViewPager)findViewById(R.id.pager);
-        pager.addOnPageChangeListener(createPageListener());
-
-        pagerAdapter = new MainPageAdapter(getSupportFragmentManager());
-        pagerAdapter.setListener(this);
-        pager.setAdapter(pagerAdapter);
-
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(pager);
-    }
-
-    private void initFloatingButton() {
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onFabPressed();
-            }
-        });
-    }
-
     private void restoreListeners() {
         for (Fragment fragment : getSupportFragmentManager().getFragments()) {
             restoreFragmentListener(fragment);
         }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
     }
 
     private void setOnViewReadyCallback() {
@@ -140,6 +108,35 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
             CourseListStackFragment courseFragment = (CourseListStackFragment) fragment;
             courseFragment.setListener(this);
         }
+    }
+
+    // UI creation and initialization
+
+    private void setToolbar() {
+        toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        setSupportActionBar(toolbar);
+    }
+
+    private void initPager() {
+        pager = (ViewPager)findViewById(R.id.pager);
+        pager.addOnPageChangeListener(createPageListener());
+
+        pagerAdapter = new MainPageAdapter(getSupportFragmentManager());
+        pagerAdapter.setListener(this);
+        pager.setAdapter(pagerAdapter);
+
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(pager);
+    }
+
+    private void initFloatingButton() {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onFabPressed();
+            }
+        });
     }
 
     //// Events
@@ -228,49 +225,6 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         return super.onPrepareOptionsMenu(menu);
     }
 
-    private boolean isSortByName(Preferences.SortOrder sortOrder) {
-        return sortOrder == Preferences.SortOrder.BY_NAME || sortOrder == Preferences.SortOrder.BY_NAME_INV;
-    }
-
-    private boolean isSortByCreateDate(Preferences.SortOrder sortOrder) {
-        return sortOrder == Preferences.SortOrder.BY_CREATE_DATE || sortOrder == Preferences.SortOrder.BY_CREATE_DATE_INV;
-    }
-
-    private boolean isSortByModifyDate(Preferences.SortOrder sortOrder) {
-        return sortOrder == Preferences.SortOrder.BY_MODIFY_DATE || sortOrder == Preferences.SortOrder.BY_MODIFY_DATE_INV;
-    }
-
-    private boolean isSortByPublishDate(Preferences.SortOrder sortOrder) {
-        return sortOrder == Preferences.SortOrder.BY_PUBLISH_DATE || sortOrder == Preferences.SortOrder.BY_PUBLISH_DATE_INV;
-    }
-
-    private Preferences.SortOrder getCurrentSortOrder() {
-        Preferences.SortOrder sortOrder = Preferences.SortOrder.BY_NAME;
-        Fragment fragment = getCurrentFragment();
-        if (fragment instanceof QuizletSortable) {
-            QuizletSortable quizletFragment = (QuizletSortable)fragment;
-            sortOrder = quizletFragment.getSortOrder();
-
-        } else if (fragment instanceof QuizletStackFragment) {
-            QuizletStackFragment stackFragment = (QuizletStackFragment)fragment;
-            sortOrder = stackFragment.getSortOrder();
-        }
-
-        return sortOrder;
-    }
-
-    private void setSortOrder(Preferences.SortOrder sortOrder) {
-        Fragment fragment = getCurrentFragment();
-        if (fragment instanceof QuizletSortable) {
-            QuizletSortable quizletFragment = (QuizletSortable)fragment;
-            quizletFragment.setSortOrder(sortOrder);
-
-        } else if (fragment instanceof QuizletStackFragment) {
-            QuizletStackFragment stackFragment = (QuizletStackFragment)fragment;
-            stackFragment.setSortOrder(sortOrder);
-        }
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -301,15 +255,6 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         return super.onOptionsItemSelected(item);
     }
 
-    private void applySortOrder(Preferences.SortOrder order) {
-        if (getCurrentSortOrder() == order) {
-            order = order.getInverse();
-        }
-
-        setSortOrder(order);
-        supportInvalidateOptionsMenu();
-    }
-
     // Backstack
 
     @Override
@@ -334,27 +279,6 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     //// Actions
-
-    private void syncWithDropbox() {
-        boolean hasCourses = getCourseHolder().getCourses().size() > 0;
-        if (hasCourses) {
-            getMainApplication().getDropboxService().upload(getCourseHolder().getDirectory().getPath(), "/Courses/", new ServiceCommand.CommandCallback() {
-                @Override
-                public void onCompleted(Error error) {
-                    int i = 0;
-                    ++i;
-                }
-            });
-        } else {
-            getMainApplication().getDropboxService().download("/Courses/", getCourseHolder().getDirectory().getPath(), new ServiceCommand.CommandCallback() {
-                @Override
-                public void onCompleted(Error error) {
-                    int i = 0;
-                    ++i;
-                }
-            });
-        }
-    }
 
     private void loadQuizletSets(boolean forceLoad) {
         CachableHttpLoadTask.CacheMode cacheMode = forceLoad ? CachableHttpLoadTask.CacheMode.LOAD_IF_ERROR_THEN_CHECK_CACHE : CachableHttpLoadTask.CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD;
@@ -401,6 +325,58 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         startActivityForResult(activityIntent, LearnActivity.ACTIVITY_RESULT);
     }
 
+    private void applySortOrder(Preferences.SortOrder order) {
+        if (getCurrentSortOrder() == order) {
+            order = order.getInverse();
+        }
+
+        setSortOrder(order);
+        supportInvalidateOptionsMenu();
+    }
+
+    private void syncWithDropbox() {
+        boolean hasCourses = getCourseHolder().getCourses().size() > 0;
+        if (hasCourses) {
+            getMainApplication().getDropboxService().upload(getCourseHolder().getDirectory().getPath(), "/Courses/", new ServiceCommand.CommandCallback() {
+                @Override
+                public void onCompleted(Error error) {
+                    int i = 0;
+                    ++i;
+                }
+            });
+        } else {
+            getMainApplication().getDropboxService().download("/Courses/", getCourseHolder().getDirectory().getPath(), new ServiceCommand.CommandCallback() {
+                @Override
+                public void onCompleted(Error error) {
+                    int i = 0;
+                    ++i;
+                }
+            });
+        }
+    }
+
+    // Update data actions
+
+    // TODO: try to move these update methods in stack fragments
+    private void updateSets() {
+        QuizletStackFragment stackFragment = getQuizletStackFragment();
+        stackFragment.updateSets();
+
+        QuizletTermListFragment termFragment = getTermListQuizletFragment();
+        termFragment.reload();
+    }
+
+    private void updateCoursesIfNeeded() {
+        if (getCourseListStackFragment() != null) {
+            updateCourses();
+        }
+    }
+
+    private void updateCourses() {
+        CourseListStackFragment stackFragment = getCourseListStackFragment();
+        stackFragment.updateCourses();
+    }
+
     // Update UI actions
 
     private void updateToolbarBackButton() {
@@ -427,26 +403,6 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     private void updateTabs() {
         pagerAdapter.notifyDataSetChanged();
-    }
-
-    // TODO: try to move these update methods in stack fragments
-    private void updateSets() {
-        QuizletStackFragment stackFragment = getQuizletStackFragment();
-        stackFragment.updateSets();
-
-        QuizletTermListFragment termFragment = getTermListQuizletFragment();
-        termFragment.reload();
-    }
-
-    private void updateCoursesIfNeeded() {
-        if (getCourseListStackFragment() != null) {
-            updateCourses();
-        }
-    }
-
-    private void updateCourses() {
-        CourseListStackFragment stackFragment = getCourseListStackFragment();
-        stackFragment.updateCourses();
     }
 
     //// Callbacks
@@ -530,7 +486,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         startLearnNewWords(course);
     }
 
-    //// Factory methods
+    //// Creation methods
 
     @NonNull
     private QuizletTermFragmentMenuListener createMenuListener() {
@@ -610,6 +566,20 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         return fragment;
     }
 
+    //// Setters
+
+    private void setSortOrder(Preferences.SortOrder sortOrder) {
+        Fragment fragment = getCurrentFragment();
+        if (fragment instanceof QuizletSortable) {
+            QuizletSortable quizletFragment = (QuizletSortable)fragment;
+            quizletFragment.setSortOrder(sortOrder);
+
+        } else if (fragment instanceof QuizletStackFragment) {
+            QuizletStackFragment stackFragment = (QuizletStackFragment)fragment;
+            stackFragment.setSortOrder(sortOrder);
+        }
+    }
+
     //// Getters
 
     // App getters
@@ -647,6 +617,21 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         return cards;
     }
 
+    private Preferences.SortOrder getCurrentSortOrder() {
+        Preferences.SortOrder sortOrder = Preferences.SortOrder.BY_NAME;
+        Fragment fragment = getCurrentFragment();
+        if (fragment instanceof QuizletSortable) {
+            QuizletSortable quizletFragment = (QuizletSortable)fragment;
+            sortOrder = quizletFragment.getSortOrder();
+
+        } else if (fragment instanceof QuizletStackFragment) {
+            QuizletStackFragment stackFragment = (QuizletStackFragment)fragment;
+            sortOrder = stackFragment.getSortOrder();
+        }
+
+        return sortOrder;
+    }
+
     // UI getters
 
     private Fragment getCurrentFragment() {
@@ -682,6 +667,24 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     private Fragment getFragment(int i) {
         return (Fragment)pagerAdapter.getFragment(i);
+    }
+
+    // Statuses
+
+    private boolean isSortByName(Preferences.SortOrder sortOrder) {
+        return sortOrder == Preferences.SortOrder.BY_NAME || sortOrder == Preferences.SortOrder.BY_NAME_INV;
+    }
+
+    private boolean isSortByCreateDate(Preferences.SortOrder sortOrder) {
+        return sortOrder == Preferences.SortOrder.BY_CREATE_DATE || sortOrder == Preferences.SortOrder.BY_CREATE_DATE_INV;
+    }
+
+    private boolean isSortByModifyDate(Preferences.SortOrder sortOrder) {
+        return sortOrder == Preferences.SortOrder.BY_MODIFY_DATE || sortOrder == Preferences.SortOrder.BY_MODIFY_DATE_INV;
+    }
+
+    private boolean isSortByPublishDate(Preferences.SortOrder sortOrder) {
+        return sortOrder == Preferences.SortOrder.BY_PUBLISH_DATE || sortOrder == Preferences.SortOrder.BY_PUBLISH_DATE_INV;
     }
 
 }
