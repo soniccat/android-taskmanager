@@ -5,6 +5,8 @@ import android.os.Bundle;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 
+import junit.framework.Assert;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,9 +21,15 @@ import listfragment.StorableListProviderFactory;
 public class QuizletSetListFactory implements StorableListProviderFactory<QuizletSet> {
     private QuizletService service;
 
+    //// Initialization
+
     public QuizletSetListFactory(QuizletService service) {
         this.service = service;
     }
+
+    //// Interface methods
+
+    // StorableListProviderFactory
 
     @Override
     public StorableListProvider<QuizletSet> createFromList(List<QuizletSet> list) {
@@ -29,12 +37,17 @@ public class QuizletSetListFactory implements StorableListProviderFactory<Quizle
     }
 
     @Override
+    public StorableListProvider<QuizletSet> createFromObject(Object obj) {
+        Assert.fail("Not supported");
+        return null;
+    }
+
+    @Override
     public StorableListProvider<QuizletSet> restore(Bundle bundle) {
         StorableListProvider<QuizletSet> result = null;
 
         if (QuizletSetListProvider.canRestore(bundle)) {
-            result = new QuizletSetListProvider();
-            result.restore(bundle, service);
+            result = new QuizletSetListProvider(bundle, service);
 
         } else {
             result = createDefault();

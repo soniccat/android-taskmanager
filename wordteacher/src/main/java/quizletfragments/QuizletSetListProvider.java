@@ -14,7 +14,7 @@ import listfragment.SimpleStorableListProvider;
  * Created by alexeyglushkov on 20.08.16.
  */
 public class QuizletSetListProvider extends SimpleStorableListProvider<QuizletSet> {
-    public static final String STORE_SET_IDS = "STORE_SET_IDS";
+    private static final String STORE_SET_IDS = "STORE_SET_IDS";
 
     //// Initialization
 
@@ -22,8 +22,9 @@ public class QuizletSetListProvider extends SimpleStorableListProvider<QuizletSe
         super(items);
     }
 
-    public QuizletSetListProvider() {
+    public QuizletSetListProvider(Bundle bundle, QuizletService service) {
         super(null);
+        restore(bundle, service);
     }
 
     //// Overridden methods
