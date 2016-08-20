@@ -35,8 +35,8 @@ import model.Card;
 import model.Course;
 import model.CourseHolder;
 import quizletfragments.QuizletSortable;
-import quizletfragments.QuizletTermFragmentMenuListener;
-import quizletfragments.QuizletTermListFragment;
+import quizletfragments.terms.QuizletTermFragmentMenuListener;
+import quizletfragments.terms.QuizletTermListFragment;
 import quizletfragments.QuizletStackFragment;
 import tools.UITools;
 

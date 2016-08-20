@@ -1,4 +1,4 @@
-package quizletfragments;
+package quizletfragments.terms;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;

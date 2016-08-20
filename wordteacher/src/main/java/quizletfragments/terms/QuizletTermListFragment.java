@@ -1,6 +1,5 @@
-package quizletfragments;
+package quizletfragments.terms;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,8 +10,6 @@ import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.wordteacher.R;
-
-import junit.framework.Assert;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +22,7 @@ import listfragment.StorableListProvider;
 import listfragment.StorableListProviderFactory;
 import main.MainApplication;
 import main.Preferences;
+import quizletfragments.QuizletSortable;
 
 /**
  * A placeholder fragment containing a simple view.

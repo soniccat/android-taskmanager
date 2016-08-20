@@ -1,4 +1,4 @@
-package quizletfragments;
+package quizletfragments.sets;
 
 import android.os.Bundle;
 
@@ -7,11 +7,8 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 
 import junit.framework.Assert;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import listfragment.SimpleListProvider;
-import listfragment.SimpleStorableListProvider;
 import listfragment.StorableListProvider;
 import listfragment.StorableListProviderFactory;
 

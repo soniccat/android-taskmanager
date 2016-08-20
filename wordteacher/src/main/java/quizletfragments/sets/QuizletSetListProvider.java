@@ -1,4 +1,4 @@
-package quizletfragments;
+package quizletfragments.sets;
 
 import android.os.Bundle;
 

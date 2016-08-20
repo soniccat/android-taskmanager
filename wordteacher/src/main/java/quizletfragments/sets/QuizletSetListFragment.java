@@ -1,4 +1,4 @@
-package quizletfragments;
+package quizletfragments.sets;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,10 +8,7 @@ import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
-import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.wordteacher.R;
-
-import junit.framework.Assert;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,7 +21,7 @@ import listfragment.StorableListProvider;
 import listfragment.StorableListProviderFactory;
 import main.MainApplication;
 import main.Preferences;
-import model.Course;
+import quizletfragments.QuizletSortable;
 
 /**
  * Created by alexeyglushkov on 07.08.16.

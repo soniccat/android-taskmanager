@@ -10,12 +10,14 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.wordteacher.StackFragment;
 
-import java.util.List;
-
 import main.MainApplication;
 import main.Preferences;
 import model.Course;
 import model.CourseHolder;
+import quizletfragments.sets.QuizletSetFragmentMenuListener;
+import quizletfragments.sets.QuizletSetListFragment;
+import quizletfragments.terms.QuizletTermFragmentMenuListener;
+import quizletfragments.terms.QuizletTermListFragment;
 
 /**
  * Created by alexeyglushkov on 11.06.16.

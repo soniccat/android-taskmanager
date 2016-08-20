@@ -1,4 +1,4 @@
-package quizletfragments;
+package quizletfragments.terms;
 
 import android.content.Context;
 import android.support.v7.widget.PopupMenu;
@@ -18,6 +18,7 @@ import listfragment.ListMenuListener;
 import model.Card;
 import model.Course;
 import model.CourseHolder;
+import quizletfragments.QuizletFragmentMenuListener;
 
 /**
  * Created by alexeyglushkov on 14.08.16.

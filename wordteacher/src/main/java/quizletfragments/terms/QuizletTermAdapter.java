@@ -1,7 +1,5 @@
-package quizletfragments;
+package quizletfragments.terms;
 
-import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,36 +7,35 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
+import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.wordteacher.R;
 
 import junit.framework.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import listfragment.BaseListAdaptor;
 
 /**
- * Created by alexeyglushkov on 02.05.16.
+ * Created by alexeyglushkov on 03.05.16.
  */
-public class QuizletSetAdapter extends BaseListAdaptor<QuizletSetAdapter.Holder, QuizletSet>{
-    List<QuizletSet> sets = new ArrayList<>();
+public class QuizletTermAdapter extends BaseListAdaptor<QuizletTermAdapter.Holder, QuizletTerm> {
+    List<QuizletTerm> terms = new ArrayList<>();
     Listener listener;
 
-    public List<QuizletSet> getSets() {
-        return sets;
-    }
-
-    public QuizletSetAdapter(Listener listener) {
+    public QuizletTermAdapter(Listener listener) {
         this.listener = listener;
     }
 
-    public void setSets(List<QuizletSet> aSet) {
-        sets = new ArrayList<QuizletSet>();
-        sets.addAll(aSet);
+    public void updateTerms(List<QuizletTerm> newTerms) {
+        terms = new ArrayList<>();
+        terms.addAll(newTerms);
         notifyDataSetChanged();
+    }
+
+    public List<QuizletTerm> getTerms() {
+        return terms;
     }
 
     @Override
@@ -51,40 +48,37 @@ public class QuizletSetAdapter extends BaseListAdaptor<QuizletSetAdapter.Holder,
 
     @Override
     public void onBindViewHolder(Holder holder, int position) {
-        final QuizletSet set = sets.get(position);
-        holder.nameTextview.setText(set.getTitle());
+        final QuizletTerm term = terms.get(position);
+        holder.nameTextview.setText(term.getTerm());
+        holder.wordCountTextView.setText(term.getDefinition());
 
-        String format = holder.itemView.getContext().getResources().getString(R.string.set_word_count_formant);
-        String description = String.format(Locale.US, format, set.getTerms().size());
-        holder.wordCountTextView.setText(description);
-
-        bindListener(holder, set);
+        bindListener(holder, term);
     }
 
-    private void bindListener(Holder holder, final QuizletSet set) {
-        holder.cardView.setOnClickListener(new View.OnClickListener() {
+    private void bindListener(Holder holder, final QuizletTerm term) {
+        holder.termView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onSetClicked(v, set);
+                listener.onTermClicked(v, term);
             }
         });
 
         holder.menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onMenuClicked(v, set);
+                listener.onMenuClicked(v, term);
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return sets.size();
+        return terms.size();
     }
 
     @Override
-    public int getDataIndex(QuizletSet data) {
-        return sets.indexOf(data);
+    public int getDataIndex(QuizletTerm data) {
+        return terms.indexOf(data);
     }
 
     @Override
@@ -93,14 +87,14 @@ public class QuizletSetAdapter extends BaseListAdaptor<QuizletSetAdapter.Holder,
     }
 
     public class Holder extends RecyclerView.ViewHolder {
-        public View cardView;
+        public View termView;
         public TextView nameTextview;
         public TextView wordCountTextView;
         public ImageView menuButton;
 
         public Holder(View itemView) {
             super(itemView);
-            cardView = itemView.findViewById(R.id.card);
+            termView = itemView.findViewById(R.id.card);
             nameTextview = (TextView)itemView.findViewById(R.id.name);
             wordCountTextView = (TextView)itemView.findViewById(R.id.wordCount);
             menuButton = (ImageView)itemView.findViewById(R.id.menuButton);
@@ -108,7 +102,7 @@ public class QuizletSetAdapter extends BaseListAdaptor<QuizletSetAdapter.Holder,
     }
 
     public interface Listener {
-        void onSetClicked(View view, QuizletSet set);
-        void onMenuClicked(View view, QuizletSet set);
+        void onTermClicked(View view, QuizletTerm card);
+        void onMenuClicked(View view, QuizletTerm card);
     }
 }

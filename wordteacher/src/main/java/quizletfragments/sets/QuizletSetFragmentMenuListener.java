@@ -1,4 +1,4 @@
-package quizletfragments;
+package quizletfragments.sets;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -24,6 +24,7 @@ import listfragment.ListMenuListener;
 import model.Card;
 import model.Course;
 import model.CourseHolder;
+import quizletfragments.QuizletFragmentMenuListener;
 
 /**
  * Created by alexeyglushkov on 13.06.16.
