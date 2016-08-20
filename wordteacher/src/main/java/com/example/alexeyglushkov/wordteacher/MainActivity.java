@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
@@ -39,6 +38,7 @@ import quizletfragments.QuizletSortable;
 import quizletfragments.QuizletTermFragmentMenuListener;
 import quizletfragments.QuizletTermListFragment;
 import quizletfragments.QuizletStackFragment;
+import tools.UITools;
 
 // TODO: consider moving content to fragment
 public class MainActivity extends BaseActivity implements MainPageAdapter.Listener, QuizletStackFragment.Listener, CourseListStackFragment.Listener {
@@ -47,38 +47,44 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     private ViewPager pager;
     private MainPageAdapter pagerAdapter;
 
-    private MainApplication getMainApplication() {
-        return (MainApplication)getApplication();
-    }
-
-    public TaskManager getTaskManager() {
-        return getMainApplication().getTaskManager();
-    }
-
-    public AccountStore getAccountStore() {
-        return getMainApplication().getAccountStore();
-    }
-
-    public CourseHolder getCourseHolder() {
-        return getMainApplication().getCourseHolder();
-    }
-
-    //// Lifecycle
-
-    public QuizletService getQuizletService() {
-        return getMainApplication().getQuizletService();
-    }
+    //// Creation, initialization, restoration
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
+
+        setToolbar();
+        initPager();
+        initFloatingButton();
+
+        if (savedInstanceState != null) {
+            restoreListeners();
+            setOnViewRestoredCallback();
+
+        } else {
+            setOnViewReadyCallback();
+        }
+    }
+
+    private void setToolbar() {
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
+    }
 
-        initPager();
+    private void initPager() {
+        pager = (ViewPager)findViewById(R.id.pager);
+        pager.addOnPageChangeListener(createPageListener());
 
+        pagerAdapter = new MainPageAdapter(getSupportFragmentManager());
+        pagerAdapter.setListener(this);
+        pager.setAdapter(pagerAdapter);
+
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(pager);
+    }
+
+    private void initFloatingButton() {
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,13 +92,6 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
                 onFabPressed();
             }
         });
-
-        if (savedInstanceState != null) {
-            restoreListeners();
-            setOnViewRestoredCallback();
-        } else {
-            setOnViewReadyCallback();
-        }
     }
 
     private void restoreListeners() {
@@ -106,48 +105,10 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         super.onSaveInstanceState(outState);
     }
 
-    private void initPager() {
-        pager = (ViewPager)findViewById(R.id.pager);
-        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                onPagerPageChanged();
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-
-        pagerAdapter = new MainPageAdapter(getSupportFragmentManager());
-        pagerAdapter.setListener(this);
-        pager.setAdapter(pagerAdapter);
-
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(pager);
-    }
-
-    private void onPagerPageChanged() {
-        //updateSets();
-        updateToolbarBackButton();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
     private void setOnViewReadyCallback() {
-        final View rootView = getWindow().getDecorView().getRootView();
-        rootView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+        UITools.runAfterRender(this, new UITools.PreDrawRunnable() {
             @Override
-            public boolean onPreDraw() {
-                rootView.getViewTreeObserver().removeOnPreDrawListener(this);
+            public boolean run() {
                 onViewReady();
                 return true;
             }
@@ -155,22 +116,14 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     private void setOnViewRestoredCallback() {
-        final View rootView = getWindow().getDecorView().getRootView();
-        rootView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+        UITools.runAfterRender(this, new UITools.PreDrawRunnable() {
             @Override
-            public boolean onPreDraw() {
-                rootView.getViewTreeObserver().removeOnPreDrawListener(this);
-
+            public boolean run() {
                 // here pagerAdapter will be restored
                 updateTabs();
                 return true;
             }
         });
-    }
-
-    @Override
-    public void onAttachFragment(Fragment fragment) {
-        super.onAttachFragment(fragment);
     }
 
     private void restoreFragmentListener(Fragment fragment) {
@@ -181,7 +134,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
         } else if (fragment instanceof QuizletSortable) {
             QuizletTermListFragment quizletFragment = (QuizletTermListFragment) fragment;
-            quizletFragment.setListener(getMenuListener());
+            quizletFragment.setListener(createMenuListener());
 
         } else if (fragment instanceof CourseListStackFragment) {
             CourseListStackFragment courseFragment = (CourseListStackFragment) fragment;
@@ -189,40 +142,10 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         }
     }
 
-    @NonNull
-    private QuizletTermFragmentMenuListener getMenuListener() {
-        return new QuizletTermFragmentMenuListener(this, getCourseHolder(), new QuizletTermFragmentMenuListener.Listener<QuizletTerm>() {
-            @Override
-            public void onRowClicked(QuizletTerm data) {
-            }
+    //// Events
 
-            @Override
-            public void onDataDeletionCancelled(QuizletTerm data) {
-            }
-
-            @Override
-            public void onDataDeleted(QuizletTerm data) {
-            }
-
-            @Override
-            public void onCourseCreated(Course course) {
-                MainActivity.this.onCourseChanged(course);
-            }
-
-            @Override
-            public void onCardsAdded(Course course) {
-                MainActivity.this.onCourseChanged(course);
-            }
-
-            @Override
-            public ViewGroup getDialogContainer() {
-                return (ViewGroup) getCourseListStackFragment().getView();
-            }
-
-            @Override
-            public void onCourseChanged(Course course) {
-            }
-        });
+    private void onPagerPageChanged() {
+        updateToolbarBackButton();
     }
 
     private void onViewReady() {
@@ -245,26 +168,32 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         }
     }
 
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
+    private void onQuizletSetsLoaded(Error error) {
+        if (error != null) {
+            boolean isCancelled = false;
+            if (error instanceof Authorizer.AuthError) {
+                isCancelled = ((Authorizer.AuthError)error).getReason() == Authorizer.AuthError.Reason.Cancelled;
+            }
+
+            if (!isCancelled) {
+                showErrorSnackBar(error);
+            }
+        } else {
+            handleLoadedQuizletSets();
+        }
     }
 
-    @Override
-    protected void onResumeFragments() {
-        super.onResumeFragments();
+    private void onFabPressed() {
+        loadQuizletSets(true);
     }
+
+    // Menu Event
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
-    }
-
-    @Override
-    protected boolean onPrepareOptionsPanel(View view, Menu menu) {
-        return super.onPrepareOptionsPanel(view, menu);
     }
 
     @Override
@@ -372,6 +301,40 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         return super.onOptionsItemSelected(item);
     }
 
+    private void applySortOrder(Preferences.SortOrder order) {
+        if (getCurrentSortOrder() == order) {
+            order = order.getInverse();
+        }
+
+        setSortOrder(order);
+        supportInvalidateOptionsMenu();
+    }
+
+    // Backstack
+
+    @Override
+    public void onBackStackChanged() {
+        updateToolbarBackButton();
+        updateTabs();
+        supportInvalidateOptionsMenu();
+    }
+
+    @Override
+    public void onBackPressed() {
+        final Fragment frag = getCurrentFragment();
+        if (frag.isVisible() && frag instanceof StackFragment) {
+            StackFragment stackFragment = (StackFragment)frag;
+            if (stackFragment.getBackStackSize() > 0) {
+                stackFragment.popFragment(null);
+                return;
+            }
+        }
+
+        super.onBackPressed();
+    }
+
+    //// Actions
+
     private void syncWithDropbox() {
         boolean hasCourses = getCourseHolder().getCourses().size() > 0;
         if (hasCourses) {
@@ -393,39 +356,52 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         }
     }
 
-    private void applySortOrder(Preferences.SortOrder order) {
-        if (getCurrentSortOrder() == order) {
-            order = order.getInverse();
-        }
+    private void loadQuizletSets(boolean forceLoad) {
+        CachableHttpLoadTask.CacheMode cacheMode = forceLoad ? CachableHttpLoadTask.CacheMode.LOAD_IF_ERROR_THEN_CHECK_CACHE : CachableHttpLoadTask.CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD;
 
-        setSortOrder(order);
-        supportInvalidateOptionsMenu();
-    }
-
-    private List<Card> getReadyCards() {
-        ArrayList<Card> cards = new ArrayList<>();
-        if (getCourseHolder() != null) {
-            for (Course course : getCourseHolder().getCourses()) {
-                cards.addAll(course.getReadyToLearnCards());
+        getQuizletService().loadSets(new ServiceCommand.CommandCallback() {
+            @Override
+            public void onCompleted(Error error) {
+                onQuizletSetsLoaded(error);
             }
-        }
-
-        return cards;
+        }, cacheMode);
     }
 
-    @Override
-    public void onBackPressed() {
-        final Fragment frag = getCurrentFragment();
-        if (frag.isVisible() && frag instanceof StackFragment) {
-            StackFragment stackFragment = (StackFragment)frag;
-            if (stackFragment.getBackStackSize() > 0) {
-                stackFragment.popFragment(null);
-                return;
-            }
+    private void handleLoadedQuizletSets() {
+        updateSets();
+    }
+
+    private void showErrorSnackBar(Error error) {
+        String errorString = "";
+        if (error instanceof Authorizer.AuthError) {
+            errorString = getString(R.string.error_auth_error);
+        } else {
+            errorString = getString(R.string.error_load_error);
         }
 
-        super.onBackPressed();
+        Snackbar.make(getCurrentFragmentView(), errorString, Snackbar.LENGTH_LONG).show();
     }
+
+    private void startLearnNewWords(Course course) {
+        startLearnActivity(course.getNotStartedCards());
+    }
+
+    private void startLearnActivity(List<Card> cards) {
+        Intent activityIntent = new Intent(this, LearnActivity.class);
+        String[] cardIds = new String[cards.size()];
+
+        for (int i=0; i<cards.size(); ++i) {
+            Card card = cards.get(i);
+            cardIds[i] = card.getId().toString();
+        }
+
+        activityIntent.putExtra(LearnActivity.EXTRA_CARD_IDS, cardIds);
+        activityIntent.putExtra(LearnActivity.EXTRA_DEFINITION_TO_TERM, true);
+
+        startActivityForResult(activityIntent, LearnActivity.ACTIVITY_RESULT);
+    }
+
+    // Update UI actions
 
     private void updateToolbarBackButton() {
         StackFragment stackFragment = getStackContainer(pager.getCurrentItem());
@@ -453,9 +429,27 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         pagerAdapter.notifyDataSetChanged();
     }
 
-    private Fragment getCurrentFragment() {
-        return getFragment(pager.getCurrentItem());
+    // TODO: try to move these update methods in stack fragments
+    private void updateSets() {
+        QuizletStackFragment stackFragment = getQuizletStackFragment();
+        stackFragment.updateSets();
+
+        QuizletTermListFragment termFragment = getTermListQuizletFragment();
+        termFragment.reload();
     }
+
+    private void updateCoursesIfNeeded() {
+        if (getCourseListStackFragment() != null) {
+            updateCourses();
+        }
+    }
+
+    private void updateCourses() {
+        CourseListStackFragment stackFragment = getCourseListStackFragment();
+        stackFragment.updateCourses();
+    }
+
+    //// Callbacks
 
     // QuizletStackCardsFragment.Listener
 
@@ -474,29 +468,6 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         } else {
             fragment = createCourseStackFragment();
         }
-
-        return fragment;
-    }
-
-    @NonNull
-    private QuizletStackFragment createQuizletStackFragment() {
-        QuizletStackFragment fragment = new QuizletStackFragment();
-        fragment.setListener(this);
-
-        return fragment;
-    }
-
-    @NonNull
-    private QuizletTermListFragment createQuzletTermListFragment() {
-        QuizletTermListFragment fragment = new QuizletTermListFragment();
-        fragment.setListener(getMenuListener());
-        return fragment;
-    }
-
-    @NonNull
-    private CourseListStackFragment createCourseStackFragment() {
-        CourseListStackFragment fragment = new CourseListStackFragment();
-        fragment.setListener(this);
 
         return fragment;
     }
@@ -526,58 +497,165 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         return title;
     }
 
+    // QuizletStackFragment.Listener
+
     @Override
-    public void onBackStackChanged() {
-        updateToolbarBackButton();
-        updateTabs();
-        supportInvalidateOptionsMenu();
+    public void onCourseChanged(Course course) {
+        updateCoursesIfNeeded();
     }
 
-    //// Other
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-    private void onFabPressed() {
-        loadQuizletSets(true);
+        if (requestCode == LearnActivity.ACTIVITY_RESULT) {
+            updateCoursesIfNeeded();
+        }
     }
 
-    private void loadQuizletSets(boolean forceLoad) {
-        CachableHttpLoadTask.CacheMode cacheMode = forceLoad ? CachableHttpLoadTask.CacheMode.LOAD_IF_ERROR_THEN_CHECK_CACHE : CachableHttpLoadTask.CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD;
+    // CourseStackFragment.Listener
 
-        getQuizletService().loadSets(new ServiceCommand.CommandCallback() {
+    @Override
+    public void onCourseClicked(Course course) {
+        List<Card> cards = course.getReadyToLearnCards();
+        if (cards.size() > 0) {
+            startLearnActivity(cards);
+        } else if (course.getCards().size() > 0){
+            startLearnActivity(course.getCards());
+        }
+    }
+
+    @Override
+    public void onLearnNewWordsClick(Course course) {
+        startLearnNewWords(course);
+    }
+
+    //// Factory methods
+
+    @NonNull
+    private QuizletTermFragmentMenuListener createMenuListener() {
+        return new QuizletTermFragmentMenuListener(this, getCourseHolder(), new QuizletTermFragmentMenuListener.Listener<QuizletTerm>() {
             @Override
-            public void onCompleted(Error error) {
-                onQuizletSetsLoaded(error);
+            public void onRowClicked(QuizletTerm data) {
             }
-        }, cacheMode);
+
+            @Override
+            public void onDataDeletionCancelled(QuizletTerm data) {
+            }
+
+            @Override
+            public void onDataDeleted(QuizletTerm data) {
+            }
+
+            @Override
+            public void onCourseCreated(Course course) {
+                MainActivity.this.onCourseChanged(course);
+            }
+
+            @Override
+            public void onCardsAdded(Course course) {
+                MainActivity.this.onCourseChanged(course);
+            }
+
+            @Override
+            public ViewGroup getDialogContainer() {
+                return (ViewGroup) getCourseListStackFragment().getView();
+            }
+
+            @Override
+            public void onCourseChanged(Course course) {
+            }
+        });
     }
 
-    private void onQuizletSetsLoaded(Error error) {
-        if (error != null) {
-            boolean isCancelled = false;
-            if (error instanceof Authorizer.AuthError) {
-                isCancelled = ((Authorizer.AuthError)error).getReason() == Authorizer.AuthError.Reason.Cancelled;
+    @NonNull
+    private ViewPager.OnPageChangeListener createPageListener() {
+        return new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             }
-            if (!isCancelled) {
-                showErrorSnackBar(error);
+
+            @Override
+            public void onPageSelected(int position) {
+                onPagerPageChanged();
             }
-        } else {
-            handleLoadedQuizletSets();
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        };
+    }
+
+    @NonNull
+    private QuizletStackFragment createQuizletStackFragment() {
+        QuizletStackFragment fragment = new QuizletStackFragment();
+        fragment.setListener(this);
+
+        return fragment;
+    }
+
+    @NonNull
+    private QuizletTermListFragment createQuzletTermListFragment() {
+        QuizletTermListFragment fragment = new QuizletTermListFragment();
+        fragment.setListener(createMenuListener());
+        return fragment;
+    }
+
+    @NonNull
+    private CourseListStackFragment createCourseStackFragment() {
+        CourseListStackFragment fragment = new CourseListStackFragment();
+        fragment.setListener(this);
+
+        return fragment;
+    }
+
+    //// Getters
+
+    // App getters
+
+    private MainApplication getMainApplication() {
+        return (MainApplication)getApplication();
+    }
+
+    public TaskManager getTaskManager() {
+        return getMainApplication().getTaskManager();
+    }
+
+    public AccountStore getAccountStore() {
+        return getMainApplication().getAccountStore();
+    }
+
+    public CourseHolder getCourseHolder() {
+        return getMainApplication().getCourseHolder();
+    }
+
+    public QuizletService getQuizletService() {
+        return getMainApplication().getQuizletService();
+    }
+
+    // Data getters
+
+    private List<Card> getReadyCards() {
+        ArrayList<Card> cards = new ArrayList<>();
+        if (getCourseHolder() != null) {
+            for (Course course : getCourseHolder().getCourses()) {
+                cards.addAll(course.getReadyToLearnCards());
+            }
         }
+
+        return cards;
     }
 
-    private void handleLoadedQuizletSets() {
-        updateSets();
+    // UI getters
+
+    private Fragment getCurrentFragment() {
+        return getFragment(pager.getCurrentItem());
     }
 
-    /*
-    private CourseListFragment getCourseListFragment() {
-        CourseListFragment result = null;
-        CourseListStackFragment container = getCourseListStackFragment();
-        if (container != null) {
-            result = container.getCour;
-        }
-        return result;
+    private View getCurrentFragmentView() {
+        return pagerAdapter.getFragment(pager.getCurrentItem()).getView();
     }
-    */
 
     private QuizletStackFragment getQuizletStackFragment() {
         return (QuizletStackFragment)getStackContainer(0);
@@ -606,94 +684,4 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
         return (Fragment)pagerAdapter.getFragment(i);
     }
 
-    private void showErrorSnackBar(Error error) {
-        String errorString = "";
-        if (error instanceof Authorizer.AuthError) {
-            errorString = getString(R.string.error_auth_error);
-        } else {
-            errorString = getString(R.string.error_load_error);
-        }
-
-        Snackbar.make(getCurrentFragmentView(), errorString, Snackbar.LENGTH_LONG).show();
-    }
-
-    private void startLearnActivity(Course course) {
-        startLearnActivity(course.getCards());
-    }
-
-    private void startLearnNewWords(Course course) {
-        startLearnActivity(course.getNotStartedCards());
-    }
-
-    private void startLearnActivity(List<Card> cards) {
-        Intent activityIntent = new Intent(this, LearnActivity.class);
-        String[] cardIds = new String[cards.size()];
-
-        for (int i=0; i<cards.size(); ++i) {
-            Card card = cards.get(i);
-            cardIds[i] = card.getId().toString();
-        }
-
-        activityIntent.putExtra(LearnActivity.EXTRA_CARD_IDS, cardIds);
-        activityIntent.putExtra(LearnActivity.EXTRA_DEFINITION_TO_TERM, true);
-
-        startActivityForResult(activityIntent, LearnActivity.ACTIVITY_RESULT);
-    }
-
-    // TODO: try to move these update methods in stack fragments
-    private void updateSets() {
-        QuizletStackFragment stackFragment = getQuizletStackFragment();
-        stackFragment.updateSets();
-
-        QuizletTermListFragment termFragment = getTermListQuizletFragment();
-        termFragment.reload();
-    }
-
-    private void updateCoursesIfNeeded() {
-        if (getCourseListStackFragment() != null) {
-            updateCourses();
-        }
-    }
-
-    private void updateCourses() {
-        CourseListStackFragment stackFragment = getCourseListStackFragment();
-        stackFragment.updateCourses();
-    }
-
-    private View getCurrentFragmentView() {
-        return pagerAdapter.getFragment(pager.getCurrentItem()).getView();
-    }
-
-    // QuizletStackFragment.Listener
-
-    @Override
-    public void onCourseChanged(Course course) {
-        updateCoursesIfNeeded();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == LearnActivity.ACTIVITY_RESULT) {
-            updateCourses();
-        }
-    }
-
-    // CourseStackFragment.Listener
-
-    @Override
-    public void onCourseClicked(Course course) {
-        List<Card> cards = course.getReadyToLearnCards();
-        if (cards.size() > 0) {
-            startLearnActivity(cards);
-        } else if (course.getCards().size() > 0){
-            startLearnActivity(course.getCards());
-        }
-    }
-
-    @Override
-    public void onLearnNewWordsClick(Course course) {
-        startLearnNewWords(course);
-    }
 }
