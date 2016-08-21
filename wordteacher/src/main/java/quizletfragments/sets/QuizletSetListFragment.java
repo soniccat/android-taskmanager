@@ -138,7 +138,7 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
             sortSets(sets);
         }
 
-        getSetAdapter().setSets(sets);
+        getSetAdapter().setItems(sets);
     }
 
     //// Getters

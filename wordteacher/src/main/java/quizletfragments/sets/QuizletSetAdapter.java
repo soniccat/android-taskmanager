@@ -24,21 +24,10 @@ import listfragment.BaseListAdaptor;
 
 // TODO: move methods to the base class
 public class QuizletSetAdapter extends BaseListAdaptor<QuizletSetAdapter.Holder, QuizletSet>{
-    List<QuizletSet> sets = new ArrayList<>();
     Listener listener;
-
-    public List<QuizletSet> getSets() {
-        return sets;
-    }
 
     public QuizletSetAdapter(Listener listener) {
         this.listener = listener;
-    }
-
-    public void setSets(List<QuizletSet> aSet) {
-        sets = new ArrayList<QuizletSet>();
-        sets.addAll(aSet);
-        notifyDataSetChanged();
     }
 
     @Override
@@ -51,7 +40,7 @@ public class QuizletSetAdapter extends BaseListAdaptor<QuizletSetAdapter.Holder,
 
     @Override
     public void onBindViewHolder(Holder holder, int position) {
-        final QuizletSet set = sets.get(position);
+        final QuizletSet set = getItems().get(position);
         holder.nameTextview.setText(set.getTitle());
 
         String format = holder.itemView.getContext().getResources().getString(R.string.set_word_count_formant);
@@ -75,16 +64,6 @@ public class QuizletSetAdapter extends BaseListAdaptor<QuizletSetAdapter.Holder,
                 listener.onMenuClicked(v, set);
             }
         });
-    }
-
-    @Override
-    public int getItemCount() {
-        return sets.size();
-    }
-
-    @Override
-    public int getDataIndex(QuizletSet data) {
-        return sets.indexOf(data);
     }
 
     @Override

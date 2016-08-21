@@ -21,13 +21,8 @@ import model.Card;
  * Created by alexeyglushkov on 03.05.16.
  */
 public class CardListAdapter extends BaseListAdaptor<CardListAdapter.Holder, Card> implements DeleteTouchHelper.Listener {
-    private List<Card> cards = new ArrayList<>();
     private Listener listener;
     private ItemTouchHelper deleteTouchHelper;
-
-    public List<Card> getCards() {
-        return cards;
-    }
 
     public CardListAdapter(Listener listener) {
         this.listener = listener;
@@ -40,30 +35,6 @@ public class CardListAdapter extends BaseListAdaptor<CardListAdapter.Holder, Car
         deleteTouchHelper.attachToRecyclerView(recyclerView);
     }
 
-    public void setCards(List<Card> newCards) {
-        cards.clear();
-        cards.addAll(newCards);
-        notifyDataSetChanged();
-    }
-
-    @Override
-    public int getDataIndex(Card data) {
-        return getCardIndex(data);
-    }
-
-    @Override
-    public void deleteDataAtIndex(int index) {
-        deleteCardAtIndex(index);
-    }
-
-    public int getCardIndex(Card card) {
-        return cards.indexOf(card);
-    }
-
-    public void deleteCardAtIndex(int index) {
-        cards.remove(index);
-    }
-
     @Override
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_quizlet_set_card, parent, false);
@@ -74,7 +45,7 @@ public class CardListAdapter extends BaseListAdaptor<CardListAdapter.Holder, Car
 
     @Override
     public void onBindViewHolder(Holder holder, int position) {
-        final Card term = cards.get(position);
+        final Card term = getItems().get(position);
         holder.nameTextview.setText(term.getTerm());
         holder.wordCountTextView.setText(term.getDefinition());
 
@@ -97,15 +68,10 @@ public class CardListAdapter extends BaseListAdaptor<CardListAdapter.Holder, Car
         });
     }
 
-    @Override
-    public int getItemCount() {
-        return cards.size();
-    }
-
     public void onItemDeleted(RecyclerView.ViewHolder holder, int index, int position) {
-        Card course = cards.get(index);
+        Card course = getItems().get(index);
         listener.onCardViewDeleted(holder.itemView, course);
-        deleteCardAtIndex(index);
+        deleteDataAtIndex(index);
         notifyItemRemoved(position);
     }
 

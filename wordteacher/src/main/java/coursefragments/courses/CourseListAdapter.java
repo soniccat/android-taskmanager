@@ -26,13 +26,8 @@ import tools.Tools;
  * Created by alexeyglushkov on 08.05.16.
  */
 public class CourseListAdapter extends BaseListAdaptor<CourseListAdapter.ViewHolder, Course> implements DeleteTouchHelper.Listener {
-    private List<Course> courses = new ArrayList<>();
     private Listener listener;
     private ItemTouchHelper deleteTouchHelper;
-
-    public List<Course> getCourses() {
-        return courses;
-    }
 
     public CourseListAdapter(Listener listener) {
         this.listener = listener;
@@ -45,20 +40,6 @@ public class CourseListAdapter extends BaseListAdaptor<CourseListAdapter.ViewHol
         deleteTouchHelper.attachToRecyclerView(recyclerView);
     }
 
-    public void setCourses(List<Course> courses) {
-        this.courses.clear();
-        this.courses.addAll(courses);
-        notifyDataSetChanged();
-    }
-
-    public void deleteCourseAtIndex(int index) {
-        courses.remove(index);
-    }
-
-    public int getCourseIndex(Course course) {
-        return courses.indexOf(course);
-    }
-
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_course, parent, false);
@@ -67,7 +48,7 @@ public class CourseListAdapter extends BaseListAdaptor<CourseListAdapter.ViewHol
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final Course course = courses.get(position);
+        final Course course = getItems().get(position);
         bindWordNameTextView(holder, course);
         bindWordCountTextView(holder, course);
         bindProgressTextView(holder, course);
@@ -153,26 +134,11 @@ public class CourseListAdapter extends BaseListAdaptor<CourseListAdapter.ViewHol
         });
     }
 
-    @Override
-    public int getItemCount() {
-        return courses.size();
-    }
-
     public void onItemDeleted(RecyclerView.ViewHolder holder, int index, int position) {
-        Course course = courses.get(index);
+        Course course = getItems().get(index);
         listener.onCourseViewDeleted(holder.itemView, course);
-        deleteCourseAtIndex(index);
+        deleteDataAtIndex(index);
         notifyItemRemoved(position);
-    }
-
-    @Override
-    public int getDataIndex(Course data) {
-        return getCourseIndex(data);
-    }
-
-    @Override
-    public void deleteDataAtIndex(int index) {
-        deleteCourseAtIndex(index);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

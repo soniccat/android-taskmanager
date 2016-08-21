@@ -144,7 +144,7 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
             sortTerms(terms);
         }
 
-        getTermAdapter().updateTerms(terms);
+        getTermAdapter().setItems(terms);
     }
 
     @Override

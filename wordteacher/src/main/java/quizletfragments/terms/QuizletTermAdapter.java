@@ -21,21 +21,10 @@ import listfragment.BaseListAdaptor;
  * Created by alexeyglushkov on 03.05.16.
  */
 public class QuizletTermAdapter extends BaseListAdaptor<QuizletTermAdapter.Holder, QuizletTerm> {
-    List<QuizletTerm> terms = new ArrayList<>();
-    Listener listener;
+    private Listener listener;
 
     public QuizletTermAdapter(Listener listener) {
         this.listener = listener;
-    }
-
-    public void updateTerms(List<QuizletTerm> newTerms) {
-        terms = new ArrayList<>();
-        terms.addAll(newTerms);
-        notifyDataSetChanged();
-    }
-
-    public List<QuizletTerm> getTerms() {
-        return terms;
     }
 
     @Override
@@ -48,7 +37,7 @@ public class QuizletTermAdapter extends BaseListAdaptor<QuizletTermAdapter.Holde
 
     @Override
     public void onBindViewHolder(Holder holder, int position) {
-        final QuizletTerm term = terms.get(position);
+        final QuizletTerm term = getItems().get(position);
         holder.nameTextview.setText(term.getTerm());
         holder.wordCountTextView.setText(term.getDefinition());
 
@@ -69,21 +58,6 @@ public class QuizletTermAdapter extends BaseListAdaptor<QuizletTermAdapter.Holde
                 listener.onMenuClicked(v, term);
             }
         });
-    }
-
-    @Override
-    public int getItemCount() {
-        return terms.size();
-    }
-
-    @Override
-    public int getDataIndex(QuizletTerm data) {
-        return terms.indexOf(data);
-    }
-
-    @Override
-    public void deleteDataAtIndex(int index) {
-        Assert.fail("Not supported");
     }
 
     public class Holder extends RecyclerView.ViewHolder {

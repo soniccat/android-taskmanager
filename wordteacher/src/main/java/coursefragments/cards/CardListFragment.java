@@ -122,7 +122,7 @@ public class CardListFragment extends BaseListFragment<Card> {
             sortCards(cards);
         }
 
-        getCardAdapter().setCards(cards);
+        getCardAdapter().setItems(cards);
     }
 
     //// Getters

@@ -122,7 +122,7 @@ public class CourseListFragment extends BaseListFragment<Course> {
             sortCourses(courses);
         }
 
-        getCourseAdapter().setCourses(courses);
+        getCourseAdapter().setItems(courses);
     }
 
     //// Getters
