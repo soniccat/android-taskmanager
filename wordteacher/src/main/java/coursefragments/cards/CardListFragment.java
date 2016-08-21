@@ -64,7 +64,7 @@ public class CardListFragment extends BaseListFragment<Card> {
     //// Actions
 
     public void reload() {
-        setAdapterCards(getCards());
+        setAdapterCards(getItems());
     }
 
     private List<Card> sortCards(List<Card> cards) {
@@ -156,14 +156,10 @@ public class CardListFragment extends BaseListFragment<Card> {
         return result;
     }
 
-    private List<Card> getCards() {
-        return provider != null ? provider.getList() : null;
-    }
-
     // Statuses
 
     public boolean hasCards() {
-        List<Card> cards = getCards();
+        List<Card> cards = getItems();
         int count = cards != null ? cards.size() : 0;
         return count > 0;
     }

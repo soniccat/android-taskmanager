@@ -60,7 +60,7 @@ public class CourseListFragment extends BaseListFragment<Course> {
     //// Actions
 
     public void reload() {
-        setAdapterCourses(getCourses());
+        setAdapterCourses(getItems());
     }
 
     private List<Course> sortCourses(List<Course> courses) {
@@ -140,17 +140,10 @@ public class CourseListFragment extends BaseListFragment<Course> {
         return getMainApplication().getCourseHolder();
     }
 
-    // Data Getters
-
-    @Nullable
-    private List<Course> getCourses() {
-        return provider != null ? provider.getList() : null;
-    }
-
     // Statuses
 
     public boolean hasCourses() {
-        List<Course> courses = getCourses();
+        List<Course> courses = getItems();
         int count = courses != null ? courses.size() : 0;
         return count > 0;
     }

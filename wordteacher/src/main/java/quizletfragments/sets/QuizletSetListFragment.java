@@ -64,7 +64,7 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
     //// Actions
 
     public void reload() {
-        setAdapterTerms(getSets());
+        setAdapterTerms(getItems());
     }
 
     private List<QuizletSet> sortSets(List<QuizletSet> sets) {
@@ -166,14 +166,10 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
         return (QuizletSetAdapter)adapter;
     }
 
-    public List<QuizletSet> getSets() {
-        return provider != null ? provider.getList() : null;
-    }
-
     // Statuses
 
     public boolean hasSets() {
-        List<QuizletSet> sets = getSets();
+        List<QuizletSet> sets = getItems();
         int count = sets != null ? sets.size() : 0;
         return count > 0;
     }

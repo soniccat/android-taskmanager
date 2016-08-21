@@ -66,7 +66,7 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
     //// Actions
 
     public void reload() {
-        setAdapterTerms(getTerms());
+        setAdapterTerms(getItems());
     }
 
     public static int compare(long lhs, long rhs) {
@@ -178,10 +178,6 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
         return (QuizletTermAdapter)adapter;
     }
 
-    public List<QuizletTerm> getTerms() {
-        return provider != null ? provider.getList() : null;
-    }
-
     public QuizletSet getParentSet() {
         QuizletSet parentSet = null;
         if (provider instanceof QuizletSetTermListProvider) {
@@ -195,7 +191,7 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
     // Statuses
 
     public boolean hasTerms() {
-        List<QuizletTerm> cards = getTerms();
+        List<QuizletTerm> cards = getItems();
         int count = cards != null ? cards.size() : 0;
         return count > 0;
     }

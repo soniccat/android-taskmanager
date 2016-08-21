@@ -10,6 +10,10 @@ import android.view.View;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.wordteacher.R;
 
+import java.util.List;
+
+import model.Card;
+
 /**
  * Created by alexeyglushkov on 23.07.16.
  */
@@ -88,6 +92,12 @@ public abstract class BaseListFragment<T> extends Fragment {
 
     public Listener getListener() {
         return listener;
+    }
+
+    // Data Getters
+
+    protected List<T> getItems() {
+        return provider.getList();
     }
 
     //// UI Getters
