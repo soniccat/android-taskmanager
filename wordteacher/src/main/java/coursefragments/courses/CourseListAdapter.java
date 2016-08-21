@@ -1,7 +1,5 @@
-package coursefragments;
+package coursefragments.courses;
 
-import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;

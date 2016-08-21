@@ -2,14 +2,14 @@ package coursefragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.View;
 
 import com.example.alexeyglushkov.wordteacher.StackFragment;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import coursefragments.cards.CardListFragment;
+import coursefragments.cards.CardListFragmentMenuListener;
+import coursefragments.courses.CourseListFragment;
+import coursefragments.courses.CourseListFragmentMenuListener;
 import main.MainApplication;
 import model.Card;
 import model.Course;
@@ -55,16 +55,9 @@ public class CourseListStackFragment extends StackFragment {
     public void showCardListFragment(Course course) {
         CardListFragment fragment = new CardListFragment();
         fragment.setListener(getMenuCardsListener());
+        fragment.setParentCourse(course);
 
-        Bundle arg = new Bundle();
-        arg.putString(CardListFragment.ARG_PARENT_COURSE_ID, course.getId().toString());
-        fragment.setArguments(arg);
-
-        addFragment(fragment, new TransactionCallback() {
-            @Override
-            public void onFinished() {
-            }
-        });
+        addFragment(fragment, null);
     }
 
     private void restoreListeners() {

@@ -12,8 +12,6 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
-import coursefragments.CourseListFragment;
-
 /**
  * Created by alexeyglushkov on 03.05.16.
  */

@@ -1,4 +1,4 @@
-package coursefragments;
+package coursefragments.cards;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,8 +16,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
+import coursefragments.courses.CourseListProvider;
 import listfragment.BaseListAdaptor;
 import listfragment.BaseListFragment;
+import listfragment.NullStorableListProvider;
+import listfragment.StorableListProvider;
+import listfragment.StorableListProviderFactory;
 import main.MainApplication;
 import model.Card;
 import model.Course;
@@ -27,18 +31,11 @@ import model.CourseHolder;
  * Created by alexeyglushkov on 30.07.16.
  */
 public class CardListFragment extends BaseListFragment<Card> {
-    public final static String ARG_PARENT_COURSE_ID = "ARG_PARENT_COURSE_ID";
-    //public final static String ARG_CARD_IDS = "ARG_CARD_IDS"; // TODO: add arbitrary cards support via another provider
 
-    private CardListProvider provider;
+    private StorableListProviderFactory<Card> factory;
+    private StorableListProvider<Card> provider= new NullStorableListProvider<>();
 
-    private MainApplication getMainApplication() {
-        return MainApplication.instance;
-    }
-
-    public CourseHolder getCourseHolder() {
-        return getMainApplication().getCourseHolder();
-    }
+    //// Creation, initialization, restoration
 
     @Nullable
     @Override
@@ -47,60 +44,34 @@ public class CardListFragment extends BaseListFragment<Card> {
     }
 
     @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        factory = new CardListFactory(getCourseHolder());
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable final Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
 
-        // TODO: use savedInstanceState instead of arguments
         MainApplication.instance.addCourseHolderListener(new MainApplication.ReadyListener() {
             @Override
             public void onReady() {
-                onHolderLoaded();
+                onHolderLoaded(savedInstanceState);
             }
         });
     }
 
-    private void onHolderLoaded() {
-        Bundle bundle = getArguments();
-        String parentCourseIdStr = bundle.getString(ARG_PARENT_COURSE_ID);
-        UUID courseId = UUID.fromString(parentCourseIdStr);
-        Assert.assertNotNull("now only CourserCardsProvider is supported", courseId);
+    //// Events
 
-        if (parentCourseIdStr != null) {
-            provider = createCourseProvider(courseId);
-        }
-
+    private void onHolderLoaded(Bundle savedInstanceState) {
+        provider = factory.restore(savedInstanceState);
         reload();
     }
 
-    private CourseCardListProvider createCourseProvider(UUID courseId) {
-        Course parentCourse = getCourseHolder().getCourse(courseId);
-        CourseCardListProvider result = new CourseCardListProvider(parentCourse);
-        return result;
-    }
-
-    public Course getParentCourse() {
-        Course result = null;
-        if (provider instanceof CourseCardListProvider) {
-            CourseCardListProvider courseProvider = (CourseCardListProvider)provider;
-            result = courseProvider.getCourse();
-        }
-
-        return result;
-    }
+    //// Actions
 
     public void reload() {
         setAdapterCards(getCards());
-    }
-
-    private void setAdapterCards(List<Card> inCards) {
-        ArrayList<Card> cards = new ArrayList<>();
-
-        if (inCards != null) {
-            cards.addAll(inCards);
-            sortCards(cards);
-        }
-
-        getCardAdapter().setCards(cards);
     }
 
     private List<Card> sortCards(List<Card> cards) {
@@ -114,19 +85,7 @@ public class CardListFragment extends BaseListFragment<Card> {
         return cards;
     }
 
-    private CardListAdapter getCardAdapter() {
-        return (CardListAdapter)adapter;
-    }
-
-    public boolean hasCards() {
-        List<Card> cards = getCards();
-        int count = cards != null ? cards.size() : 0;
-        return count > 0;
-    }
-
-    private List<Card> getCards() {
-        return provider != null ? provider.getCards() : null;
-    }
+    //// Creation Methods
 
     @Override
     protected BaseListAdaptor createAdapter() {
@@ -152,5 +111,68 @@ public class CardListFragment extends BaseListFragment<Card> {
         });
 
         return adapter;
+    }
+
+    //// Setters
+
+    // Data Setters
+
+    public void setParentCourse(Course course) {
+        provider = factory.createFromObject(course);
+    }
+
+    // UI Setters
+
+    private void setAdapterCards(List<Card> inCards) {
+        ArrayList<Card> cards = new ArrayList<>();
+
+        if (inCards != null) {
+            cards.addAll(inCards);
+            sortCards(cards);
+        }
+
+        getCardAdapter().setCards(cards);
+    }
+
+    //// Getters
+
+    // App Getters
+
+    private MainApplication getMainApplication() {
+        return MainApplication.instance;
+    }
+
+    public CourseHolder getCourseHolder() {
+        return getMainApplication().getCourseHolder();
+    }
+
+    // Data Getters
+
+    public Course getParentCourse() {
+        Course result = null;
+        if (provider instanceof CourseCardListProvider) {
+            CourseCardListProvider courseProvider = (CourseCardListProvider)provider;
+            result = courseProvider.getCourse();
+        }
+
+        return result;
+    }
+
+    private List<Card> getCards() {
+        return provider != null ? provider.getList() : null;
+    }
+
+    // Statuses
+
+    public boolean hasCards() {
+        List<Card> cards = getCards();
+        int count = cards != null ? cards.size() : 0;
+        return count > 0;
+    }
+
+    // Cast Getters
+
+    private CardListAdapter getCardAdapter() {
+        return (CardListAdapter)adapter;
     }
 }

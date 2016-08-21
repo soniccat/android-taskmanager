@@ -1,4 +1,4 @@
-package coursefragments;
+package coursefragments.courses;
 
 import android.content.Context;
 import android.support.v7.widget.PopupMenu;

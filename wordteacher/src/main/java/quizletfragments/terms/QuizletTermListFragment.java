@@ -1,5 +1,6 @@
 package quizletfragments.terms;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import java.util.List;
 
 import listfragment.BaseListAdaptor;
 import listfragment.BaseListFragment;
+import listfragment.NullStorableListProvider;
 import listfragment.StorableListProvider;
 import listfragment.StorableListProviderFactory;
 import main.MainApplication;
@@ -29,7 +31,7 @@ import quizletfragments.QuizletSortable;
  */
 public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> implements QuizletSortable {
 
-    private StorableListProvider<QuizletTerm> provider;
+    private StorableListProvider<QuizletTerm> provider = new NullStorableListProvider<>();
     private StorableListProviderFactory<QuizletTerm> factory;
 
     private Preferences.SortOrder sortOrder = Preferences.getQuizletSetSortOrder();
@@ -43,13 +45,6 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        factory = new QuizletTermListFactory(getQuizletService());
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         provider.store(outState);
@@ -59,20 +54,21 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
     public void onViewStateRestored(@Nullable final Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
 
-        if (savedInstanceState != null || provider == null) {
-            getMainApplication().addQuizletServiceListener(new MainApplication.ReadyListener() {
-                @Override
-                public void onReady() {
-                    onQuizletServiceLoaded(savedInstanceState);
-                }
-            });
-        } else {
-            reload();
-        }
+        getMainApplication().addQuizletServiceListener(new MainApplication.ReadyListener() {
+            @Override
+            public void onReady() {
+                onQuizletServiceLoaded(savedInstanceState);
+            }
+        });
+
+        reload();
     }
 
+    //// Events
+
     private void onQuizletServiceLoaded(Bundle savedInstanceState) {
-        provider = factory.restore(savedInstanceState);
+        factory = createFactory();
+        restoreProviderIfNeeded(savedInstanceState);
         reload();
     }
 
@@ -108,6 +104,12 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
         return lhs.getTerm().compareToIgnoreCase(rhs.getTerm());
     }
 
+    private void restoreProviderIfNeeded(Bundle savedInstanceState) {
+        if (provider == null) {
+            provider = factory.restore(savedInstanceState);
+        }
+    }
+
     //// Creation methods
 
     @Override
@@ -129,6 +131,11 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
         });
 
         return adapter;
+    }
+
+    @NonNull
+    private QuizletTermListFactory createFactory() {
+        return new QuizletTermListFactory(getQuizletService());
     }
 
     //// Setters

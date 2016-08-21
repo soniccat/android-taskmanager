@@ -21,6 +21,7 @@ public class QuizletSetListFactory implements StorableListProviderFactory<Quizle
     //// Initialization
 
     public QuizletSetListFactory(QuizletService service) {
+        Assert.assertNotNull(service);
         this.service = service;
     }
 

@@ -22,6 +22,7 @@ public class QuizletTermListFactory implements StorableListProviderFactory<Quizl
     //// Initialization
 
     public QuizletTermListFactory(QuizletService service) {
+        Assert.assertNotNull(service);
         this.service = service;
     }
 

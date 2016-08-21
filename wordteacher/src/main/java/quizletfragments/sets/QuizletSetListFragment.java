@@ -1,6 +1,7 @@
 package quizletfragments.sets;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import java.util.List;
 
 import listfragment.BaseListAdaptor;
 import listfragment.BaseListFragment;
+import listfragment.NullStorableListProvider;
 import listfragment.StorableListProvider;
 import listfragment.StorableListProviderFactory;
 import main.MainApplication;
@@ -32,7 +34,7 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
     private Preferences.SortOrder sortOrder = Preferences.getQuizletSetSortOrder();
 
     private StorableListProviderFactory<QuizletSet> factory;
-    private StorableListProvider<QuizletSet> provider;
+    private StorableListProvider<QuizletSet> provider = new NullStorableListProvider<>();
 
     //// Creation, initialization, restoration
 
@@ -40,13 +42,6 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_quizlet_cards, container, false);
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        factory = new QuizletSetListFactory(getQuizletService());
     }
 
     @Override
@@ -63,22 +58,21 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
     public void onViewStateRestored(@Nullable final Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
 
-        if (savedInstanceState != null || provider == null) {
-            getMainApplication().addQuizletServiceListener(new MainApplication.ReadyListener() {
-                @Override
-                public void onReady() {
-                    onQuizletServiceLoaded(savedInstanceState);
-                }
-            });
-        } else {
-            reload();
-        }
+        getMainApplication().addQuizletServiceListener(new MainApplication.ReadyListener() {
+            @Override
+            public void onReady() {
+                onQuizletServiceLoaded(savedInstanceState);
+            }
+        });
+
+        reload();
     }
 
     //// Events
 
     private void onQuizletServiceLoaded(Bundle savedInstanceState) {
-        provider = factory.restore(savedInstanceState);
+        factory = createFactory(getQuizletService());
+        restoreProviderIfNeeded(savedInstanceState);
         reload();
     }
 
@@ -114,6 +108,12 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
         return lhs < rhs ? -1 : (lhs == rhs ? 0 : 1);
     }
 
+    private void restoreProviderIfNeeded(Bundle savedInstanceState) {
+        if (provider != null) {
+            provider = factory.restore(savedInstanceState);
+        }
+    }
+
     //// Creation methods
 
     @Override
@@ -135,6 +135,11 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
         });
 
         return adapter;
+    }
+
+    @NonNull
+    private QuizletSetListFactory createFactory(QuizletService service) {
+        return new QuizletSetListFactory(service);
     }
 
     //// Setters
