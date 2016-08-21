@@ -234,7 +234,7 @@ public class QuizletStackFragment extends StackFragment {
 
     public boolean hasData() {
         QuizletSetListFragment setFragment = getSetFragment();
-        return setFragment.hasSets();
+        return setFragment.hasItems();
     }
 
     //// Interfaces

@@ -9,20 +9,13 @@ import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.wordteacher.R;
 
-import junit.framework.Assert;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 
-import coursefragments.courses.CourseListProvider;
 import listfragment.BaseListAdaptor;
 import listfragment.BaseListFragment;
-import listfragment.NullStorableListProvider;
-import listfragment.StorableListProvider;
-import listfragment.StorableListProviderFactory;
 import main.MainApplication;
 import model.Card;
 import model.Course;
@@ -154,14 +147,6 @@ public class CardListFragment extends BaseListFragment<Card> {
         }
 
         return result;
-    }
-
-    // Statuses
-
-    public boolean hasCards() {
-        List<Card> cards = getItems();
-        int count = cards != null ? cards.size() : 0;
-        return count > 0;
     }
 
     // Cast Getters

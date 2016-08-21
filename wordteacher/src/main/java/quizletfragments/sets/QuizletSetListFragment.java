@@ -18,9 +18,6 @@ import java.util.List;
 
 import listfragment.BaseListAdaptor;
 import listfragment.BaseListFragment;
-import listfragment.NullStorableListProvider;
-import listfragment.StorableListProvider;
-import listfragment.StorableListProviderFactory;
 import main.MainApplication;
 import main.Preferences;
 import quizletfragments.QuizletSortable;
@@ -164,13 +161,5 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
 
     private QuizletSetAdapter getSetAdapter() {
         return (QuizletSetAdapter)adapter;
-    }
-
-    // Statuses
-
-    public boolean hasSets() {
-        List<QuizletSet> sets = getItems();
-        int count = sets != null ? sets.size() : 0;
-        return count > 0;
     }
 }

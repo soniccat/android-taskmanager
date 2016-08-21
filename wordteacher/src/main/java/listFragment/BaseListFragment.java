@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
+import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.wordteacher.R;
 
 import java.util.List;
@@ -106,6 +107,12 @@ public abstract class BaseListFragment<T> extends Fragment {
         RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(index);
         View view = holder.itemView;
         return view;
+    }
+
+    // Statuses
+
+    public boolean hasItems() {
+        return getItems().size() > 0;
     }
 
     //// Inner Interfaces

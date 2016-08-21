@@ -16,9 +16,6 @@ import java.util.List;
 
 import listfragment.BaseListAdaptor;
 import listfragment.BaseListFragment;
-import listfragment.NullStorableListProvider;
-import listfragment.StorableListProvider;
-import listfragment.StorableListProviderFactory;
 import main.MainApplication;
 import model.Course;
 import model.CourseHolder;
@@ -138,14 +135,6 @@ public class CourseListFragment extends BaseListFragment<Course> {
 
     public CourseHolder getCourseHolder() {
         return getMainApplication().getCourseHolder();
-    }
-
-    // Statuses
-
-    public boolean hasCourses() {
-        List<Course> courses = getItems();
-        int count = courses != null ? courses.size() : 0;
-        return count > 0;
     }
 
     // Cast Getters

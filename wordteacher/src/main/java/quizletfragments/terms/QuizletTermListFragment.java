@@ -187,12 +187,4 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
 
         return parentSet;
     }
-
-    // Statuses
-
-    public boolean hasTerms() {
-        List<QuizletTerm> cards = getItems();
-        int count = cards != null ? cards.size() : 0;
-        return count > 0;
-    }
 }

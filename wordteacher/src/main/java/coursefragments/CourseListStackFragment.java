@@ -99,7 +99,7 @@ public class CourseListStackFragment extends StackFragment {
         boolean result = false;
         CourseListFragment courseListFragment = getCourseFragment();
         if (courseListFragment != null) {
-            result = courseListFragment.hasCourses();
+            result = courseListFragment.hasItems();
         }
 
         return result;
