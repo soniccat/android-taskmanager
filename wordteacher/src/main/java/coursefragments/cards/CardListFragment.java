@@ -53,12 +53,6 @@ public class CardListFragment extends BaseListFragment<Card> {
         });
     }
 
-    private void restoreProviderIfNeeded(Bundle savedInstanceState) {
-        if (provider instanceof NullStorableListProvider) {
-            provider = factory.restore(savedInstanceState);
-        }
-    }
-
     //// Events
 
     private void onHolderLoaded(Bundle savedInstanceState) {

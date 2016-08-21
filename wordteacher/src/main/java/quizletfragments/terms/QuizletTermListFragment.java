@@ -95,12 +95,6 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
         return lhs.getTerm().compareToIgnoreCase(rhs.getTerm());
     }
 
-    private void restoreProviderIfNeeded(Bundle savedInstanceState) {
-        if (provider instanceof NullStorableListProvider) {
-            provider = factory.restore(savedInstanceState);
-        }
-    }
-
     //// Creation methods
 
     @Override

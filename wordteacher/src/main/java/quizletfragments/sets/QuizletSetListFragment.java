@@ -93,12 +93,6 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
         return lhs < rhs ? -1 : (lhs == rhs ? 0 : 1);
     }
 
-    private void restoreProviderIfNeeded(Bundle savedInstanceState) {
-        if (provider instanceof  NullStorableListProvider) {
-            provider = factory.restore(savedInstanceState);
-        }
-    }
-
     //// Creation methods
 
     @Override

@@ -49,12 +49,6 @@ public class CourseListFragment extends BaseListFragment<Course> {
         reload();
     }
 
-    private void restoreProviderIfNeeded(Bundle savedInstanceState) {
-        if (provider instanceof NullStorableListProvider) {
-            provider = factory.restore(savedInstanceState);
-        }
-    }
-
     //// Events
 
     private void onHolderLoaded(Bundle savedInstanceState) {

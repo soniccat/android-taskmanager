@@ -54,6 +54,12 @@ public abstract class BaseListFragment<T> extends Fragment {
         recyclerView.setAdapter(adapter);
     }
 
+    protected void restoreProviderIfNeeded(Bundle savedInstanceState) {
+        if (provider instanceof NullStorableListProvider) {
+            provider = factory.restore(savedInstanceState);
+        }
+    }
+
     // Actions
 
     public void deleteView(T data) {
