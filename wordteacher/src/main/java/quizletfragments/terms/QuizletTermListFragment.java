@@ -105,7 +105,7 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
     }
 
     private void restoreProviderIfNeeded(Bundle savedInstanceState) {
-        if (provider == null) {
+        if (provider instanceof NullStorableListProvider) {
             provider = factory.restore(savedInstanceState);
         }
     }

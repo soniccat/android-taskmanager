@@ -1,6 +1,7 @@
 package coursefragments.cards;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,7 +34,7 @@ import model.CourseHolder;
 public class CardListFragment extends BaseListFragment<Card> {
 
     private StorableListProviderFactory<Card> factory;
-    private StorableListProvider<Card> provider= new NullStorableListProvider<>();
+    private StorableListProvider<Card> provider = new NullStorableListProvider<>();
 
     //// Creation, initialization, restoration
 
@@ -41,12 +42,6 @@ public class CardListFragment extends BaseListFragment<Card> {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_quizlet_cards, container, false);
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        factory = new CardListFactory(getCourseHolder());
     }
 
     @Override
@@ -61,10 +56,17 @@ public class CardListFragment extends BaseListFragment<Card> {
         });
     }
 
+    private void restoreProviderIfNeeded(Bundle savedInstanceState) {
+        if (provider instanceof NullStorableListProvider) {
+            provider = factory.restore(savedInstanceState);
+        }
+    }
+
     //// Events
 
     private void onHolderLoaded(Bundle savedInstanceState) {
-        provider = factory.restore(savedInstanceState);
+        factory = createFactory();
+        restoreProviderIfNeeded(savedInstanceState);
         reload();
     }
 
@@ -111,6 +113,11 @@ public class CardListFragment extends BaseListFragment<Card> {
         });
 
         return adapter;
+    }
+
+    @NonNull
+    private CardListFactory createFactory() {
+        return new CardListFactory(getCourseHolder());
     }
 
     //// Setters

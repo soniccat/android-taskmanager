@@ -1,6 +1,7 @@
 package coursefragments.courses;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +29,7 @@ import model.CourseHolder;
 public class CourseListFragment extends BaseListFragment<Course> {
 
     private StorableListProviderFactory<Course> factory;
-    private StorableListProvider<Course> provider= new NullStorableListProvider<>();
+    private StorableListProvider<Course> provider = new NullStorableListProvider<>();
 
     //// Creation, initialization, restoration
 
@@ -36,12 +37,6 @@ public class CourseListFragment extends BaseListFragment<Course> {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_quizlet_cards, container, false);
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        factory = new CourseListFactory(getCourseHolder());
     }
 
     @Override
@@ -54,26 +49,26 @@ public class CourseListFragment extends BaseListFragment<Course> {
     public void onViewStateRestored(@Nullable final Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            getMainApplication().addCourseHolderListener(new MainApplication.ReadyListener() {
-                @Override
-                public void onReady() {
-                    onHolderLoaded(savedInstanceState);
-                }
-            });
-        } else {
-            if (provider == null) {
-                provider = factory.restore(null);
+        getMainApplication().addCourseHolderListener(new MainApplication.ReadyListener() {
+            @Override
+            public void onReady() {
+                onHolderLoaded(savedInstanceState);
             }
+        });
+        reload();
+    }
 
-            reload();
+    private void restoreProviderIfNeeded(Bundle savedInstanceState) {
+        if (provider instanceof NullStorableListProvider) {
+            provider = factory.restore(savedInstanceState);
         }
     }
 
     //// Events
 
     private void onHolderLoaded(Bundle savedInstanceState) {
-        provider = factory.restore(savedInstanceState);
+        factory = createFactory();
+        restoreProviderIfNeeded(savedInstanceState);
         reload();
     }
 
@@ -120,6 +115,11 @@ public class CourseListFragment extends BaseListFragment<Course> {
         });
 
         return adapter;
+    }
+
+    @NonNull
+    private CourseListFactory createFactory() {
+        return new CourseListFactory(getCourseHolder());
     }
 
     //// Setters
