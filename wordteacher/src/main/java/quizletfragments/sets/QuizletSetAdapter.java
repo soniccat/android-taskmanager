@@ -21,6 +21,8 @@ import listfragment.BaseListAdaptor;
 /**
  * Created by alexeyglushkov on 02.05.16.
  */
+
+// TODO: move methods to the base class
 public class QuizletSetAdapter extends BaseListAdaptor<QuizletSetAdapter.Holder, QuizletSet>{
     List<QuizletSet> sets = new ArrayList<>();
     Listener listener;

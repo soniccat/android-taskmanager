@@ -31,9 +31,6 @@ import quizletfragments.QuizletSortable;
  */
 public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> implements QuizletSortable {
 
-    private StorableListProvider<QuizletTerm> provider = new NullStorableListProvider<>();
-    private StorableListProviderFactory<QuizletTerm> factory;
-
     private Preferences.SortOrder sortOrder = Preferences.getQuizletSetSortOrder();
 
     //// Creation, initialization, restoration
@@ -42,12 +39,6 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_quizlet_cards, container, false);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        provider.store(outState);
     }
 
     @Override

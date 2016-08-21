@@ -33,9 +33,6 @@ import model.CourseHolder;
  */
 public class CardListFragment extends BaseListFragment<Card> {
 
-    private StorableListProviderFactory<Card> factory;
-    private StorableListProvider<Card> provider = new NullStorableListProvider<>();
-
     //// Creation, initialization, restoration
 
     @Nullable

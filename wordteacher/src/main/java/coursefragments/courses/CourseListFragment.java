@@ -28,21 +28,12 @@ import model.CourseHolder;
  */
 public class CourseListFragment extends BaseListFragment<Course> {
 
-    private StorableListProviderFactory<Course> factory;
-    private StorableListProvider<Course> provider = new NullStorableListProvider<>();
-
     //// Creation, initialization, restoration
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_quizlet_cards, container, false);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        provider.store(outState);
     }
 
     @Override
