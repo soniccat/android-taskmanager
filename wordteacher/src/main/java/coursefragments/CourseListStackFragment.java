@@ -22,17 +22,7 @@ public class CourseListStackFragment extends StackFragment {
 
     public static final String DEFAULT_TITLE = "Courses";
 
-    private MainApplication getMainApplication() {
-        return MainApplication.instance;
-    }
-
-    public CourseHolder getCourseHolder() {
-        return getMainApplication().getCourseHolder();
-    }
-
-    private CourseListStackFragment.Listener getCourseListener() {
-        return (CourseListStackFragment.Listener)listener;
-    }
+    //// Creation, initialization, restoration
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -43,21 +33,6 @@ public class CourseListStackFragment extends StackFragment {
         } else {
             restoreListeners();
         }
-    }
-
-    private void showCourseFragment() {
-        CourseListFragment courseListFragment = new CourseListFragment();
-        courseListFragment.setListener(getMenuCourseListener());
-
-        addFragment(courseListFragment, null);
-    }
-
-    public void showCardListFragment(Course course) {
-        CardListFragment fragment = new CardListFragment();
-        fragment.setListener(getMenuCardsListener());
-        fragment.setParentCourse(course);
-
-        addFragment(fragment, null);
     }
 
     private void restoreListeners() {
@@ -79,15 +54,9 @@ public class CourseListStackFragment extends StackFragment {
         }
     }
 
-    public CourseListFragment getCourseFragment() {
-        return (CourseListFragment)getFragment(0);
-    }
+    //// Actions
 
-    public CardListFragment getCardListFragment() {
-        return (CardListFragment)getFragment(1);
-    }
-
-    public void updateCourses() {
+    public void reloadCourses() {
         CourseListFragment courseListFragment = getCourseFragment();
         if (courseListFragment != null) {
             applyPendingOperation(courseListFragment);
@@ -95,14 +64,11 @@ public class CourseListStackFragment extends StackFragment {
         }
     }
 
-    public boolean hasCourses() {
-        boolean result = false;
-        CourseListFragment courseListFragment = getCourseFragment();
-        if (courseListFragment != null) {
-            result = courseListFragment.hasItems();
+    public void reloadCards() {
+        CardListFragment cardFragment = getCardListFragment();
+        if (cardFragment != null) {
+            cardFragment.reload();
         }
-
-        return result;
     }
 
     public void applyPendingOperation(CourseListFragment fragment) {
@@ -110,26 +76,24 @@ public class CourseListStackFragment extends StackFragment {
         listener.applyPendingOperation();
     }
 
-    public void updateCards() {
-        CardListFragment cardFragment = getCardListFragment();
-        if (cardFragment != null) {
-            cardFragment.reload();
-        }
+    // Show UI Actions
+
+    private void showCourseFragment() {
+        CourseListFragment courseListFragment = new CourseListFragment();
+        courseListFragment.setListener(getMenuCourseListener());
+
+        addFragment(courseListFragment, null);
     }
 
-    public String getTitle() {
-        String title = null;
-        if (getBackStackSize() > 0) {
-            Course course = getCardListFragment().getParentCourse();
-            if (course != null) {
-                title = course.getTitle();
-            }
-        } else {
-            title = DEFAULT_TITLE;
-        }
+    public void showCardListFragment(Course course) {
+        CardListFragment fragment = new CardListFragment();
+        fragment.setListener(getMenuCardsListener());
+        fragment.setParentCourse(course);
 
-        return title;
+        addFragment(fragment, null);
     }
+
+    //// Creation Methods
 
     private CourseListFragmentMenuListener getMenuCourseListener() {
         return new CourseListFragmentMenuListener(getContext(), getCourseHolder(), new CourseListFragmentMenuListener.Listener() {
@@ -155,7 +119,7 @@ public class CourseListStackFragment extends StackFragment {
 
             @Override
             public void onDataDeletionCancelled(Course course) {
-                updateCourses();
+                reloadCourses();
             }
 
             @Override
@@ -183,13 +147,13 @@ public class CourseListStackFragment extends StackFragment {
 
             @Override
             public void onDataDeletionCancelled(Card data) {
-                updateCards();
+                reloadCards();
             }
 
             @Override
             public void onDataDeleted(Card data) {
                 if (getBackStackSize() == 0) {
-                    updateCourses();
+                    reloadCourses();
                 }
             }
 
@@ -200,7 +164,64 @@ public class CourseListStackFragment extends StackFragment {
         });
     }
 
-    // CourseFragment.Listener
+    //// Getters
+
+    // App Getters
+
+    private MainApplication getMainApplication() {
+        return MainApplication.instance;
+    }
+
+    public CourseHolder getCourseHolder() {
+        return getMainApplication().getCourseHolder();
+    }
+
+    // Data Getters
+
+    public String getTitle() {
+        String title = null;
+        if (getBackStackSize() > 0) {
+            Course course = getCardListFragment().getParentCourse();
+            if (course != null) {
+                title = course.getTitle();
+            }
+        } else {
+            title = DEFAULT_TITLE;
+        }
+
+        return title;
+    }
+
+    // UI Getters
+
+    public CourseListFragment getCourseFragment() {
+        return (CourseListFragment)getFragment(0);
+    }
+
+    public CardListFragment getCardListFragment() {
+        return (CardListFragment)getFragment(1);
+    }
+
+
+    // Statuses
+
+    public boolean hasCourses() {
+        boolean result = false;
+        CourseListFragment courseListFragment = getCourseFragment();
+        if (courseListFragment != null) {
+            result = courseListFragment.hasItems();
+        }
+
+        return result;
+    }
+
+    // Cast Getters
+
+    private CourseListStackFragment.Listener getCourseListener() {
+        return (CourseListStackFragment.Listener)listener;
+    }
+
+    //// Inner Interfaces
 
     public interface Listener extends StackFragment.Listener {
         void onCourseClicked(Course course);

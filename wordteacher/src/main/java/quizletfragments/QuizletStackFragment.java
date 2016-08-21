@@ -76,7 +76,7 @@ public class QuizletStackFragment extends StackFragment {
 
     // Update Data Actions
 
-    public void updateSets() {
+    public void reloadSets() {
         QuizletSetListFragment setFragment = getSetFragment();
         if (setFragment != null) {
             setFragment.reload();

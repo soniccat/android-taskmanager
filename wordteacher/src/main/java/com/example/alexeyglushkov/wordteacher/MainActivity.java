@@ -360,7 +360,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     // TODO: try to move these update methods in stack fragments
     private void updateSets() {
         QuizletStackFragment stackFragment = getQuizletStackFragment();
-        stackFragment.updateSets();
+        stackFragment.reloadSets();
 
         QuizletTermListFragment termFragment = getTermListQuizletFragment();
         termFragment.reload();
@@ -374,7 +374,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     private void updateCourses() {
         CourseListStackFragment stackFragment = getCourseListStackFragment();
-        stackFragment.updateCourses();
+        stackFragment.reloadCourses();
     }
 
     // Update UI actions
