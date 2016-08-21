@@ -11,9 +11,11 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.wordteacher.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import model.Card;
+import model.Course;
 
 /**
  * Created by alexeyglushkov on 23.07.16.
@@ -67,6 +69,10 @@ public abstract class BaseListFragment<T> extends Fragment {
 
     // Actions
 
+    public void reload() {
+        setAdapterItems(getItems());
+    }
+
     public void deleteView(T data) {
         int index = adapter.getDataIndex(data);
         if (index != -1) {
@@ -79,6 +85,10 @@ public abstract class BaseListFragment<T> extends Fragment {
         }
     }
 
+    protected List<T> sortItems(List<T> inItems) {
+        return inItems;
+    }
+
     //// Creation Methods
 
     protected abstract BaseListAdaptor createAdapter();
@@ -87,6 +97,18 @@ public abstract class BaseListFragment<T> extends Fragment {
 
     public void setListener(Listener listener) {
         this.listener = listener;
+    }
+
+    // UI Setters
+
+    protected void setAdapterItems(List<T> inItems) {
+        List<T> courses = new ArrayList<>();
+
+        if (inItems != null) {
+            courses.addAll(sortItems(inItems));
+        }
+
+        adapter.setItems(courses);
     }
 
     //// Getters

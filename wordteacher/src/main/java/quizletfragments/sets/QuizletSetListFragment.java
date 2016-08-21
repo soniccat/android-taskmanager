@@ -60,11 +60,7 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
 
     //// Actions
 
-    public void reload() {
-        setAdapterTerms(getItems());
-    }
-
-    private List<QuizletSet> sortSets(List<QuizletSet> sets) {
+    protected List<QuizletSet> sortItems(List<QuizletSet> sets) {
         Collections.sort(sets, new Comparator<QuizletSet>() {
             @Override
             public int compare(QuizletSet lhs, QuizletSet rhs) {
@@ -125,20 +121,6 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
 
         this.sortOrder = sortOrder;
         reload();
-    }
-
-    public void setSets(List<QuizletSet> sets) {
-        provider = factory.createFromList(sets);
-    }
-
-    private void setAdapterTerms(List<QuizletSet> inSets) {
-        List<QuizletSet> sets = new ArrayList<>();
-        if (inSets != null) {
-            sets.addAll(inSets);
-            sortSets(sets);
-        }
-
-        getSetAdapter().setItems(sets);
     }
 
     //// Getters

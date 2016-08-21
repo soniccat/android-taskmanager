@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.wordteacher.R;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -56,11 +55,7 @@ public class CourseListFragment extends BaseListFragment<Course> {
 
     //// Actions
 
-    public void reload() {
-        setAdapterCourses(getItems());
-    }
-
-    private List<Course> sortCourses(List<Course> courses) {
+    protected List<Course> sortItems(List<Course> courses) {
         Collections.sort(courses, new Comparator<Course>() {
             @Override
             public int compare(Course lhs, Course rhs) {
@@ -110,19 +105,6 @@ public class CourseListFragment extends BaseListFragment<Course> {
 
     public void setCourses(List<Course> courses) {
         provider = factory.createFromList(courses);
-    }
-
-    // UI Setters
-
-    private void setAdapterCourses(List<Course> inCourses) {
-        List<Course> courses = new ArrayList<>();
-
-        if (inCourses != null) {
-            courses.addAll(inCourses);
-            sortCourses(courses);
-        }
-
-        getCourseAdapter().setItems(courses);
     }
 
     //// Getters

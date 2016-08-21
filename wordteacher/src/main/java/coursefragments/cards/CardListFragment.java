@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.wordteacher.R;
 
+import junit.framework.Assert;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -56,11 +58,7 @@ public class CardListFragment extends BaseListFragment<Card> {
 
     //// Actions
 
-    public void reload() {
-        setAdapterCards(getItems());
-    }
-
-    private List<Card> sortCards(List<Card> cards) {
+    protected List<Card> sortItems(List<Card> cards) {
         Collections.sort(cards, new Comparator<Card>() {
             @Override
             public int compare(Card lhs, Card rhs) {
@@ -99,6 +97,12 @@ public class CardListFragment extends BaseListFragment<Card> {
         return adapter;
     }
 
+    private void createFactoryIfNeeded() {
+        if (factory == null) {
+            factory = createFactory();
+        }
+    }
+
     @NonNull
     private CardListFactory createFactory() {
         return new CardListFactory(getCourseHolder());
@@ -109,20 +113,8 @@ public class CardListFragment extends BaseListFragment<Card> {
     // Data Setters
 
     public void setParentCourse(Course course) {
+        createFactoryIfNeeded();
         provider = factory.createFromObject(course);
-    }
-
-    // UI Setters
-
-    private void setAdapterCards(List<Card> inCards) {
-        ArrayList<Card> cards = new ArrayList<>();
-
-        if (inCards != null) {
-            cards.addAll(inCards);
-            sortCards(cards);
-        }
-
-        getCardAdapter().setItems(cards);
     }
 
     //// Getters

@@ -12,6 +12,8 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.wordteacher.R;
 
+import junit.framework.Assert;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -65,15 +67,11 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
 
     //// Actions
 
-    public void reload() {
-        setAdapterTerms(getItems());
-    }
-
     public static int compare(long lhs, long rhs) {
         return lhs < rhs ? -1 : (lhs == rhs ? 0 : 1);
     }
 
-    private List<QuizletTerm> sortTerms(List<QuizletTerm> terms) {
+    protected List<QuizletTerm> sortItems(List<QuizletTerm> terms) {
         Collections.sort(terms, new Comparator<QuizletTerm>() {
             @Override
             public int compare(QuizletTerm lhs, QuizletTerm rhs) {
@@ -118,6 +116,12 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
         return adapter;
     }
 
+    private void createFactoryIfNeeded() {
+        if (factory == null) {
+            factory = createFactory();
+        }
+    }
+
     @NonNull
     private QuizletTermListFactory createFactory() {
         return new QuizletTermListFactory(getQuizletService());
@@ -128,6 +132,7 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
     // Set Data
 
     public void setTermSet(QuizletSet set) {
+        createFactoryIfNeeded();
         provider = factory.createFromObject(set);
     }
 
@@ -136,16 +141,6 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
     }
 
     // Set UI
-
-    private void setAdapterTerms(List<QuizletTerm> inTerms) {
-        List<QuizletTerm> terms = new ArrayList<>();
-        if (inTerms != null) {
-            terms.addAll(inTerms);
-            sortTerms(terms);
-        }
-
-        getTermAdapter().setItems(terms);
-    }
 
     @Override
     public void setSortOrder(Preferences.SortOrder sortOrder) {
@@ -172,10 +167,6 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
     @Override
     public Preferences.SortOrder getSortOrder() {
         return sortOrder;
-    }
-
-    private QuizletTermAdapter getTermAdapter() {
-        return (QuizletTermAdapter)adapter;
     }
 
     public QuizletSet getParentSet() {
