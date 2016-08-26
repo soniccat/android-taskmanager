@@ -9,13 +9,6 @@ import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.wordteacher.R;
 
-import junit.framework.Assert;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 import listfragment.BaseListAdaptor;
 import listfragment.BaseListFragment;
 import main.MainApplication;
@@ -51,7 +44,7 @@ public class CardListFragment extends BaseListFragment<Card> {
     //// Events
 
     private void onHolderLoaded(Bundle savedInstanceState) {
-        factory = createFactory();
+        providerFactory = createFactory();
         restoreProviderIfNeeded(savedInstanceState);
         reload();
     }
@@ -87,8 +80,8 @@ public class CardListFragment extends BaseListFragment<Card> {
     }
 
     private void createFactoryIfNeeded() {
-        if (factory == null) {
-            factory = createFactory();
+        if (providerFactory == null) {
+            providerFactory = createFactory();
         }
     }
 
@@ -103,7 +96,7 @@ public class CardListFragment extends BaseListFragment<Card> {
 
     public void setParentCourse(Course course) {
         createFactoryIfNeeded();
-        provider = factory.createFromObject(course);
+        provider = providerFactory.createFromObject(course);
     }
 
     //// Getters

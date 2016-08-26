@@ -22,10 +22,10 @@ public abstract class BaseListFragment<T> extends Fragment {
     protected BaseListAdaptor adapter;
     protected Listener listener;
 
-    protected StorableListProviderFactory<T> factory;
+    protected StorableListProviderFactory<T> providerFactory;
     protected StorableListProvider<T> provider = new NullStorableListProvider<>();
 
-    protected CompareStrategyFactory<T> compareStrategyFactory = new NullCompareStrategyFactory();
+    protected CompareStrategyFactory<T> compareStrategyFactory = new NullCompareStrategyFactory<>();
     protected CompareStrategy<T> compareStrategy;
 
     //// Creation, initialization, restoration
@@ -82,7 +82,7 @@ public abstract class BaseListFragment<T> extends Fragment {
 
     protected void restoreProviderIfNeeded(Bundle savedInstanceState) {
         if (provider instanceof NullStorableListProvider) {
-            provider = factory.restore(savedInstanceState);
+            provider = providerFactory.restore(savedInstanceState);
         }
     }
 

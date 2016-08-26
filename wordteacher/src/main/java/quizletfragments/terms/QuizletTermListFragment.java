@@ -12,9 +12,6 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.wordteacher.R;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import listfragment.BaseListAdaptor;
@@ -22,10 +19,8 @@ import listfragment.BaseListFragment;
 import listfragment.CompareStrategyFactory;
 import main.MainApplication;
 import main.Preferences;
-import quizletfragments.sets.QuizletSetCompareStrategyFactory;
 import tools.SortOrderCompareStrategy;
 import tools.Sortable;
-import tools.LongTools;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -57,7 +52,7 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
     //// Events
 
     private void onQuizletServiceLoaded(Bundle savedInstanceState) {
-        factory = createFactory();
+        providerFactory = createFactory();
         restoreProviderIfNeeded(savedInstanceState);
         reload();
     }
@@ -86,8 +81,8 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
     }
 
     private void createFactoryIfNeeded() {
-        if (factory == null) {
-            factory = createFactory();
+        if (providerFactory == null) {
+            providerFactory = createFactory();
         }
     }
 
@@ -107,11 +102,11 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
 
     public void setTermSet(QuizletSet set) {
         createFactoryIfNeeded();
-        provider = factory.createFromObject(set);
+        provider = providerFactory.createFromObject(set);
     }
 
     public void setTerms(List<QuizletTerm> terms) {
-        provider = factory.createFromList(terms);
+        provider = providerFactory.createFromList(terms);
     }
 
     // Set UI

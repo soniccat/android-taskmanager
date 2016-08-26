@@ -7,13 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.wordteacher.R;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 import listfragment.BaseListAdaptor;
@@ -23,8 +18,6 @@ import main.MainApplication;
 import main.Preferences;
 import model.Course;
 import model.CourseHolder;
-import quizletfragments.terms.QuizletTermCompareStrategyFactory;
-import tools.LongTools;
 import tools.SortOrderCompareStrategy;
 import tools.Sortable;
 
@@ -57,12 +50,10 @@ public class CourseListFragment extends BaseListFragment<Course> implements Sort
     //// Events
 
     private void onHolderLoaded(Bundle savedInstanceState) {
-        factory = createFactory();
+        providerFactory = createFactory();
         restoreProviderIfNeeded(savedInstanceState);
         reload();
     }
-
-    //// Actions
 
     //// Creation Methods
 
@@ -121,7 +112,7 @@ public class CourseListFragment extends BaseListFragment<Course> implements Sort
     // Data Setters
 
     public void setCourses(List<Course> courses) {
-        provider = factory.createFromList(courses);
+        provider = providerFactory.createFromList(courses);
     }
 
     //// Getters
@@ -141,8 +132,6 @@ public class CourseListFragment extends BaseListFragment<Course> implements Sort
     private CourseListAdapter getCourseAdapter() {
         return (CourseListAdapter)adapter;
     }
-
-    // Cast Getters
 
     private CourseCompareStrategyFactory getCompareStrategyFactory() {
         return (CourseCompareStrategyFactory)compareStrategyFactory;

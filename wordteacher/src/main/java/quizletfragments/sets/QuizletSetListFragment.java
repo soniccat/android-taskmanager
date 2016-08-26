@@ -11,11 +11,6 @@ import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.wordteacher.R;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 import listfragment.BaseListAdaptor;
 import listfragment.BaseListFragment;
 import listfragment.CompareStrategyFactory;
@@ -23,7 +18,6 @@ import main.MainApplication;
 import main.Preferences;
 import tools.SortOrderCompareStrategy;
 import tools.Sortable;
-import tools.LongTools;
 
 /**
  * Created by alexeyglushkov on 07.08.16.
@@ -54,7 +48,7 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
     //// Events
 
     private void onQuizletServiceLoaded(Bundle savedInstanceState) {
-        factory = createFactory(getQuizletService());
+        providerFactory = createFactory(getQuizletService());
         restoreProviderIfNeeded(savedInstanceState);
         reload();
     }

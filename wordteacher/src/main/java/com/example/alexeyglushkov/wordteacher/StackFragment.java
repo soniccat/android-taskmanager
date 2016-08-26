@@ -118,8 +118,12 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
 
     public Fragment getTopFragment() {
         // calling findFragmentById when view is null is error prone
-        int size = getBackStackSize();
+        int size = getFragmentCount();
         return isReadyToAddFragment() && size > 0 ? getFragment(size - 1) : null;
+    }
+
+    public int getFragmentCount() {
+        return getChildFragmentManager().getFragments().size();
     }
 
     public int getBackStackSize() {
