@@ -58,15 +58,16 @@ public class CardListFragment extends BaseListFragment<Card> {
 
     //// Actions
 
-    protected List<Card> sortItems(List<Card> cards) {
-        Collections.sort(cards, new Comparator<Card>() {
+    protected List<Card> getSortedItems(List<Card> cards) {
+        List<Card> copy = new ArrayList<>(cards);
+        Collections.sort(copy, new Comparator<Card>() {
             @Override
             public int compare(Card lhs, Card rhs) {
                 return lhs.getTerm().compareToIgnoreCase(rhs.getTerm());
             }
         });
 
-        return cards;
+        return copy;
     }
 
     //// Creation Methods

@@ -7,22 +7,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.wordteacher.R;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import listfragment.BaseListAdaptor;
 import listfragment.BaseListFragment;
 import main.MainApplication;
+import main.Preferences;
 import model.Course;
 import model.CourseHolder;
+import tools.LongTools;
 
 /**
  * Created by alexeyglushkov on 08.05.16.
  */
 public class CourseListFragment extends BaseListFragment<Course> {
+    private Preferences.SortOrder sortOrder = Preferences.SortOrder.BY_CREATE_DATE_INV;
 
     //// Creation, initialization, restoration
 
@@ -55,15 +61,27 @@ public class CourseListFragment extends BaseListFragment<Course> {
 
     //// Actions
 
-    protected List<Course> sortItems(List<Course> courses) {
-        Collections.sort(courses, new Comparator<Course>() {
+    protected List<Course> getSortedItems(List<Course> courses) {
+        List<Course> copy = new ArrayList<>(courses);
+        Collections.sort(copy, new Comparator<Course>() {
             @Override
             public int compare(Course lhs, Course rhs) {
-                return rhs.getCreateDate().compareTo(lhs.getCreateDate());
+                return compareCourses(lhs, rhs);
             }
         });
 
-        return courses;
+        return copy;
+    }
+
+    private int compareCourses(Course lhs, Course rhs) {
+        switch (sortOrder) {
+            case BY_NAME: return lhs.getTitle().compareToIgnoreCase(rhs.getTitle());
+            case BY_NAME_INV: return rhs.getTitle().compareToIgnoreCase(lhs.getTitle());
+            case BY_CREATE_DATE: return lhs.getCreateDate().compareTo(rhs.getCreateDate());
+            case BY_CREATE_DATE_INV: return rhs.getCreateDate().compareTo(lhs.getCreateDate());
+        }
+
+        return lhs.getTitle().compareToIgnoreCase(rhs.getTitle());
     }
 
     //// Creation Methods
@@ -105,6 +123,11 @@ public class CourseListFragment extends BaseListFragment<Course> {
 
     public void setCourses(List<Course> courses) {
         provider = factory.createFromList(courses);
+    }
+
+    public void setSortOrder(Preferences.SortOrder sortOrder) {
+        this.sortOrder = sortOrder;
+        reload();
     }
 
     //// Getters

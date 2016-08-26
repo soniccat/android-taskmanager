@@ -33,8 +33,7 @@ import tools.LongTools;
  * A placeholder fragment containing a simple view.
  */
 public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> implements QuizletSortable {
-
-    private Preferences.SortOrder sortOrder = Preferences.getQuizletSetSortOrder();
+    private Preferences.SortOrder sortOrder = Preferences.getQuizletTermSortOrder();
 
     //// Creation, initialization, restoration
 
@@ -68,15 +67,16 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
 
     //// Actions
 
-    protected List<QuizletTerm> sortItems(List<QuizletTerm> terms) {
-        Collections.sort(terms, new Comparator<QuizletTerm>() {
+    protected List<QuizletTerm> getSortedItems(List<QuizletTerm> terms) {
+        List<QuizletTerm> copy = new ArrayList<>(terms);
+        Collections.sort(copy, new Comparator<QuizletTerm>() {
             @Override
             public int compare(QuizletTerm lhs, QuizletTerm rhs) {
                 return compareQuizletTerms(lhs, rhs);
             }
         });
 
-        return terms;
+        return copy;
     }
 
     private int compareQuizletTerms(QuizletTerm lhs, QuizletTerm rhs) {

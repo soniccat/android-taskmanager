@@ -7,15 +7,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
-import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.wordteacher.R;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import model.Card;
-import model.Course;
 
 /**
  * Created by alexeyglushkov on 23.07.16.
@@ -70,7 +65,7 @@ public abstract class BaseListFragment<T> extends Fragment {
     // Actions
 
     public void reload() {
-        setAdapterItems(getItems());
+        setAdapterItems(getSortedItems(getItems()));
     }
 
     public void deleteView(T data) {
@@ -85,7 +80,7 @@ public abstract class BaseListFragment<T> extends Fragment {
         }
     }
 
-    protected List<T> sortItems(List<T> inItems) {
+    protected List<T> getSortedItems(List<T> inItems) {
         return inItems;
     }
 
@@ -102,12 +97,7 @@ public abstract class BaseListFragment<T> extends Fragment {
     // UI Setters
 
     protected void setAdapterItems(List<T> inItems) {
-        List<T> courses = new ArrayList<>();
-
-        if (inItems != null) {
-            courses.addAll(sortItems(inItems));
-        }
-
+        List<T> courses = new ArrayList<>(inItems);
         adapter.setItems(courses);
     }
 

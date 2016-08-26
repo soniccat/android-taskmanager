@@ -61,15 +61,16 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
 
     //// Actions
 
-    protected List<QuizletSet> sortItems(List<QuizletSet> sets) {
-        Collections.sort(sets, new Comparator<QuizletSet>() {
+    protected List<QuizletSet> getSortedItems(List<QuizletSet> sets) {
+        List<QuizletSet> copy = new ArrayList<>(sets);
+        Collections.sort(copy, new Comparator<QuizletSet>() {
             @Override
             public int compare(QuizletSet lhs, QuizletSet rhs) {
                 return compareSets(lhs, rhs);
             }
         });
 
-        return sets;
+        return copy;
     }
 
     private int compareSets(QuizletSet lhs, QuizletSet rhs) {
