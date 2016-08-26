@@ -18,65 +18,20 @@ import java.util.HashMap;
 public class DiskStorageMetadata extends HashMap<String, Object> implements StorageMetadata
 {
     private static final long serialVersionUID = -3043981628125337011L;
-    private static final String createTimeKey = "metadataCreateTime";
-    private static final String expireTimeKey = "metadataExpireTime";
-    private static final String fileSizeKey = "metadataFileSize";
-    private static final String entryClassKey = "metadataEntryClass";
+    private static final String CREATE_TIME_KEY = "metadataCreateTime";
+    private static final String EXPIRE_TIME_KEY = "metadataExpireTime";
+    private static final String FILE_SIZE_KEY = "metadataFileSize";
+    private static final String ENTRY_CLASS_KEY = "metadataEntryClass";
 
     private transient File file;
     private transient Serializer serializer = createSerializer();
 
-    private static ObjectSerializer createSerializer() {
-        return new ObjectSerializer();
-    }
+    //// Initialization
 
     public DiskStorageMetadata() {
     }
 
-    public File getFile() {
-        return file;
-    }
-
-    public void setFile(File file) {
-        this.file = file;
-    }
-
-    public void calculateSize(File file) {
-        put(fileSizeKey, file.length());
-    }
-
-    public long getContentSize() {
-        return (long)get(fileSizeKey);
-    }
-
-    public void setContentSize(long fileSize) {
-        put(fileSizeKey, fileSize);
-    }
-
-    public long getCreateTime() {
-        return (long)get(createTimeKey);
-    }
-
-    public void setCreateTime(long createTime) {
-        put(createTimeKey, createTime);
-    }
-
-    public long getExpireTime() {
-        Long value = (Long)get(expireTimeKey);
-        return value == null ? 0 : value;
-    }
-
-    public void setExpireTime(long expireTime) {
-        put(expireTimeKey, expireTime);
-    }
-
-    public void setEntryClass(Class cl) {
-        put(entryClassKey, cl);
-    }
-
-    public Class getEntryClass() {
-        return (Class)get(entryClassKey);
-    }
+    //// Actions
 
     public Error write() {
         Error error = null;
@@ -101,6 +56,7 @@ public class DiskStorageMetadata extends HashMap<String, Object> implements Stor
         return error;
     }
 
+    // TODO: throws an exception
     public static DiskStorageMetadata load(File file) {
         Error error = null;
         InputStream fis = null;
@@ -135,5 +91,75 @@ public class DiskStorageMetadata extends HashMap<String, Object> implements Stor
         }
 
         return error;
+    }
+
+    public void calculateSize(File file) {
+        put(FILE_SIZE_KEY, file.length());
+    }
+
+    //// Construction Methods
+
+    private static ObjectSerializer createSerializer() {
+        return new ObjectSerializer();
+    }
+
+    //// Interfaces
+
+    // StorageMetadata
+
+    public long getContentSize() {
+        return (long)get(FILE_SIZE_KEY);
+    }
+
+    public void setContentSize(long fileSize) {
+        put(FILE_SIZE_KEY, fileSize);
+    }
+
+    public long getCreateTime() {
+        return (long)get(CREATE_TIME_KEY);
+    }
+
+    public void setCreateTime(long createTime) {
+        put(CREATE_TIME_KEY, createTime);
+    }
+
+    public long getExpireTime() {
+        Long value = (Long)get(EXPIRE_TIME_KEY);
+        return value == null ? 0 : value;
+    }
+
+    @Override
+    public boolean isExpired() {
+        long currentTime = System.currentTimeMillis() / 1000L;
+        boolean isExpired = hasExpireTime() && currentTime >= getExpireTime();
+        return isExpired;
+    }
+
+    public boolean hasExpireTime() {
+        return containsKey(EXPIRE_TIME_KEY);
+    }
+
+    public void setExpireTime(long expireTime) {
+        put(EXPIRE_TIME_KEY, expireTime);
+    }
+
+    public void setEntryClass(Class cl) {
+        put(ENTRY_CLASS_KEY, cl);
+    }
+
+    public Class getEntryClass() {
+        return (Class)get(ENTRY_CLASS_KEY);
+    }
+
+    //// Setters
+
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    //// Getters
+
+    public File getFile() {
+        return file;
     }
 }

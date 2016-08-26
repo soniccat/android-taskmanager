@@ -11,6 +11,7 @@ public interface StorageMetadata extends Serializable {
 
     void setExpireTime(long expireTime);
     long getExpireTime();
+    boolean isExpired();
 
     void setContentSize(long size);
     long getContentSize();

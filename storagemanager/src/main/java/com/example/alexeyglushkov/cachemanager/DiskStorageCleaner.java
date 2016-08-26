@@ -18,13 +18,12 @@ public class DiskStorageCleaner implements StorageCleaner {
     @Override
     public void clean(StorageProvider provider) {
         List<StorageEntry> entries = provider.getEntries();
-        long currentTime = System.currentTimeMillis() / 1000L;
 
         for (StorageEntry entry : entries) {
             DiskStorageEntry diskCacheEntry = (DiskStorageEntry)entry;
-            DiskStorageMetadata diskCacheMetadata = (DiskStorageMetadata)diskCacheEntry.getMetadata();
+            DiskStorageMetadata diskCacheMetadata = diskCacheEntry.getMetadata();
 
-            if (currentTime >= diskCacheMetadata.getExpireTime()) {
+            if (diskCacheMetadata.isExpired()) {
                 entry.delete();
             }
         }

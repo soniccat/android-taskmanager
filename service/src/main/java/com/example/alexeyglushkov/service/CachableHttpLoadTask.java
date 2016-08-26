@@ -12,7 +12,7 @@ import com.example.alexeyglushkov.taskmanager.loader.http.HttpURLConnectionProvi
 public class CachableHttpLoadTask extends HttpBytesLoadTask {
     public enum CacheMode {
         CHECK_CACHE_IF_ERROR_THEN_LOAD,
-        LOAD_IF_ERROR_THEN_CHECK_CACHE,
+        LOAD_IF_ERROR_THEN_CHECK_CACHE, //looks odd, generally a client check cache and then load, consider to remove
         IGNORE_CACHE,
         ONLY_LOAD_FROM_CACHE,
         ONLY_STORE_TO_CACHE
@@ -112,12 +112,11 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
 
         byte[] bytes = null;
         if (metadata != null) {
-            long currentTime = System.currentTimeMillis() / 1000L;
-            if (metadata.getExpireTime() != 0 && currentTime < metadata.getExpireTime()) {
-                bytes = (byte[]) cache.getValue(cacheKey);
+            if (metadata.isExpired()) {
+                cache.remove(cacheKey);
 
             } else if (deleteIfExpired) {
-                cache.remove(cacheKey);
+                bytes = (byte[]) cache.getValue(cacheKey);
             }
         }
         return bytes;
