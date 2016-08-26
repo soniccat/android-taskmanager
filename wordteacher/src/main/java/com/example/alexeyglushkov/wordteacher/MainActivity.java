@@ -357,7 +357,6 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     // Update data actions
 
-    // TODO: try to move these update methods in stack fragments
     private void updateSets() {
         QuizletStackFragment stackFragment = getQuizletStackFragment();
         stackFragment.reloadSets();

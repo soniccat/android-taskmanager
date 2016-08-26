@@ -21,6 +21,7 @@ import listfragment.BaseListFragment;
 import main.MainApplication;
 import main.Preferences;
 import quizletfragments.QuizletSortable;
+import tools.LongTools;
 
 /**
  * Created by alexeyglushkov on 07.08.16.
@@ -75,15 +76,11 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
         switch (sortOrder) {
             case BY_NAME: return lhs.getTitle().compareToIgnoreCase(rhs.getTitle());
             case BY_NAME_INV: return rhs.getTitle().compareToIgnoreCase(lhs.getTitle());
-            case BY_CREATE_DATE: return compare(lhs.getCreateDate(), rhs.getCreateDate());
-            case BY_CREATE_DATE_INV: return compare(rhs.getCreateDate(), lhs.getCreateDate());
+            case BY_CREATE_DATE: return LongTools.compare(lhs.getCreateDate(), rhs.getCreateDate());
+            case BY_CREATE_DATE_INV: return LongTools.compare(rhs.getCreateDate(), lhs.getCreateDate());
         }
 
         return lhs.getTitle().compareToIgnoreCase(rhs.getTitle());
-    }
-
-    public static int compare(long lhs, long rhs) {
-        return lhs < rhs ? -1 : (lhs == rhs ? 0 : 1);
     }
 
     //// Creation methods

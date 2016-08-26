@@ -27,6 +27,7 @@ import listfragment.StorableListProviderFactory;
 import main.MainApplication;
 import main.Preferences;
 import quizletfragments.QuizletSortable;
+import tools.LongTools;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -67,10 +68,6 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
 
     //// Actions
 
-    public static int compare(long lhs, long rhs) {
-        return lhs < rhs ? -1 : (lhs == rhs ? 0 : 1);
-    }
-
     protected List<QuizletTerm> sortItems(List<QuizletTerm> terms) {
         Collections.sort(terms, new Comparator<QuizletTerm>() {
             @Override
@@ -86,8 +83,8 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
         switch (sortOrder) {
             case BY_NAME: return lhs.getTerm().compareToIgnoreCase(rhs.getTerm());
             case BY_NAME_INV: return rhs.getTerm().compareToIgnoreCase(lhs.getTerm());
-            case BY_CREATE_DATE: return compare(lhs.getRank(), rhs.getRank());
-            case BY_CREATE_DATE_INV: return compare(rhs.getRank(), lhs.getRank());
+            case BY_CREATE_DATE: return LongTools.compare(lhs.getRank(), rhs.getRank());
+            case BY_CREATE_DATE_INV: return LongTools.compare(rhs.getRank(), lhs.getRank());
         }
 
         return lhs.getTerm().compareToIgnoreCase(rhs.getTerm());
