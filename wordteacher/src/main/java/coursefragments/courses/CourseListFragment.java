@@ -23,11 +23,12 @@ import main.Preferences;
 import model.Course;
 import model.CourseHolder;
 import tools.LongTools;
+import tools.Sortable;
 
 /**
  * Created by alexeyglushkov on 08.05.16.
  */
-public class CourseListFragment extends BaseListFragment<Course> {
+public class CourseListFragment extends BaseListFragment<Course> implements Sortable {
     private Preferences.SortOrder sortOrder = Preferences.SortOrder.BY_CREATE_DATE_INV;
 
     //// Creation, initialization, restoration
@@ -117,17 +118,26 @@ public class CourseListFragment extends BaseListFragment<Course> {
         return new CourseListFactory(getCourseHolder());
     }
 
+    //// Interfaces
+
+    // Sortable
+
+    @Override
+    public Preferences.SortOrder getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(Preferences.SortOrder sortOrder) {
+        this.sortOrder = sortOrder;
+        reload();
+    }
+
     //// Setters
 
     // Data Setters
 
     public void setCourses(List<Course> courses) {
         provider = factory.createFromList(courses);
-    }
-
-    public void setSortOrder(Preferences.SortOrder sortOrder) {
-        this.sortOrder = sortOrder;
-        reload();
     }
 
     //// Getters

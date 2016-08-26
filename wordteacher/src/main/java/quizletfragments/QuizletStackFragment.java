@@ -18,11 +18,12 @@ import quizletfragments.sets.QuizletSetFragmentMenuListener;
 import quizletfragments.sets.QuizletSetListFragment;
 import quizletfragments.terms.QuizletTermFragmentMenuListener;
 import quizletfragments.terms.QuizletTermListFragment;
+import tools.Sortable;
 
 /**
  * Created by alexeyglushkov on 11.06.16.
  */
-public class QuizletStackFragment extends StackFragment {
+public class QuizletStackFragment extends StackFragment implements Sortable {
 
     public static final String DEFAULT_TITLE = "Sets";
 
@@ -173,7 +174,7 @@ public class QuizletStackFragment extends StackFragment {
     // Set UI
 
     public void setSortOrder(Preferences.SortOrder sortOrder) {
-        QuizletSortable fragment = (QuizletSortable) getTopFragment();
+        Sortable fragment = (Sortable) getTopFragment();
         if (fragment != null) {
             fragment.setSortOrder(sortOrder);
         }
@@ -194,7 +195,7 @@ public class QuizletStackFragment extends StackFragment {
     // Data Getters
 
     public Preferences.SortOrder getSortOrder() {
-        QuizletSortable fragment = (QuizletSortable) getTopFragment();
+        Sortable fragment = (Sortable) getTopFragment();
         Preferences.SortOrder sortOrder = Preferences.SortOrder.BY_NAME;
         if (fragment != null) {
             sortOrder = fragment.getSortOrder();

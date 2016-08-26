@@ -34,7 +34,7 @@ import main.Preferences;
 import model.Card;
 import model.Course;
 import model.CourseHolder;
-import quizletfragments.QuizletSortable;
+import tools.Sortable;
 import quizletfragments.terms.QuizletTermFragmentMenuListener;
 import quizletfragments.terms.QuizletTermListFragment;
 import quizletfragments.QuizletStackFragment;
@@ -100,7 +100,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
             QuizletStackFragment cardsFragment = (QuizletStackFragment)fragment;
             cardsFragment.setListener(this);
 
-        } else if (fragment instanceof QuizletSortable) {
+        } else if (fragment instanceof Sortable) {
             QuizletTermListFragment quizletFragment = (QuizletTermListFragment) fragment;
             quizletFragment.setListener(createMenuListener());
 
@@ -568,15 +568,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     //// Setters
 
     private void setSortOrder(Preferences.SortOrder sortOrder) {
-        Fragment fragment = getCurrentFragment();
-        if (fragment instanceof QuizletSortable) {
-            QuizletSortable quizletFragment = (QuizletSortable)fragment;
-            quizletFragment.setSortOrder(sortOrder);
-
-        } else if (fragment instanceof QuizletStackFragment) {
-            QuizletStackFragment stackFragment = (QuizletStackFragment)fragment;
-            stackFragment.setSortOrder(sortOrder);
-        }
+        Sortable sortableFragment = (Sortable)getCurrentFragment();
+        sortableFragment.setSortOrder(sortOrder);
     }
 
     //// Getters
@@ -619,8 +612,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     private Preferences.SortOrder getCurrentSortOrder() {
         Preferences.SortOrder sortOrder = Preferences.SortOrder.BY_NAME;
         Fragment fragment = getCurrentFragment();
-        if (fragment instanceof QuizletSortable) {
-            QuizletSortable quizletFragment = (QuizletSortable)fragment;
+        if (fragment instanceof Sortable) {
+            Sortable quizletFragment = (Sortable)fragment;
             sortOrder = quizletFragment.getSortOrder();
 
         } else if (fragment instanceof QuizletStackFragment) {

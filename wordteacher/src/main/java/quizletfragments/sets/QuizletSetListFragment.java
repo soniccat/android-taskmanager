@@ -20,13 +20,13 @@ import listfragment.BaseListAdaptor;
 import listfragment.BaseListFragment;
 import main.MainApplication;
 import main.Preferences;
-import quizletfragments.QuizletSortable;
+import tools.Sortable;
 import tools.LongTools;
 
 /**
  * Created by alexeyglushkov on 07.08.16.
  */
-public class QuizletSetListFragment extends BaseListFragment<QuizletSet> implements QuizletSortable {
+public class QuizletSetListFragment extends BaseListFragment<QuizletSet> implements Sortable {
     private Preferences.SortOrder sortOrder = Preferences.getQuizletSetSortOrder();
 
     //// Creation, initialization, restoration

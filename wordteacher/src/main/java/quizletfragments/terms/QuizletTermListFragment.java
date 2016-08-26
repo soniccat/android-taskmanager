@@ -12,8 +12,6 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.wordteacher.R;
 
-import junit.framework.Assert;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,18 +19,15 @@ import java.util.List;
 
 import listfragment.BaseListAdaptor;
 import listfragment.BaseListFragment;
-import listfragment.NullStorableListProvider;
-import listfragment.StorableListProvider;
-import listfragment.StorableListProviderFactory;
 import main.MainApplication;
 import main.Preferences;
-import quizletfragments.QuizletSortable;
+import tools.Sortable;
 import tools.LongTools;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> implements QuizletSortable {
+public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> implements Sortable {
     private Preferences.SortOrder sortOrder = Preferences.getQuizletTermSortOrder();
 
     //// Creation, initialization, restoration
