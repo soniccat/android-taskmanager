@@ -1,6 +1,7 @@
 package listfragment;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,6 +11,8 @@ import android.view.View;
 import com.example.alexeyglushkov.wordteacher.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -22,6 +25,8 @@ public abstract class BaseListFragment<T> extends Fragment {
 
     protected StorableListProviderFactory<T> factory;
     protected StorableListProvider<T> provider = new NullStorableListProvider<>();
+
+    protected CompareStrategy<T> compareStrategy;
 
     //// Creation, initialization, restoration
 
@@ -80,8 +85,13 @@ public abstract class BaseListFragment<T> extends Fragment {
         }
     }
 
-    protected List<T> getSortedItems(List<T> inItems) {
-        return inItems;
+    private void sortItems(List<T> inItems, final CompareStrategy<T> compareStrategy) {
+        Collections.sort(inItems, new Comparator<T>() {
+            @Override
+            public int compare(T lhs, T rhs) {
+                return compareStrategy.compare(lhs, rhs);
+            }
+        });
     }
 
     //// Creation Methods
@@ -92,6 +102,11 @@ public abstract class BaseListFragment<T> extends Fragment {
 
     public void setListener(Listener listener) {
         this.listener = listener;
+    }
+
+    public void setCompareStrategy(CompareStrategy<T> compareStrategy) {
+        this.compareStrategy = compareStrategy;
+        reload();
     }
 
     // UI Setters
@@ -111,6 +126,19 @@ public abstract class BaseListFragment<T> extends Fragment {
 
     protected List<T> getItems() {
         return provider.getList();
+    }
+
+    protected List<T> getSortedItems(List<T> inItems) {
+        List<T> result = null;
+        if (compareStrategy != null) {
+            result = new ArrayList<>(inItems);
+            sortItems(result, compareStrategy);
+
+        } else {
+            result = inItems;
+        }
+
+        return result;
     }
 
     //// UI Getters
