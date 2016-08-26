@@ -18,8 +18,10 @@ import java.util.List;
 
 import listfragment.BaseListAdaptor;
 import listfragment.BaseListFragment;
+import listfragment.CompareStrategyFactory;
 import main.MainApplication;
 import main.Preferences;
+import tools.SortOrderCompareStrategy;
 import tools.Sortable;
 import tools.LongTools;
 
@@ -27,8 +29,6 @@ import tools.LongTools;
  * Created by alexeyglushkov on 07.08.16.
  */
 public class QuizletSetListFragment extends BaseListFragment<QuizletSet> implements Sortable {
-    private Preferences.SortOrder sortOrder = Preferences.getQuizletSetSortOrder();
-
     //// Creation, initialization, restoration
 
     @Override
@@ -59,32 +59,7 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
         reload();
     }
 
-    //// Actions
-
-    protected List<QuizletSet> getSortedItems(List<QuizletSet> sets) {
-        List<QuizletSet> copy = new ArrayList<>(sets);
-        Collections.sort(copy, new Comparator<QuizletSet>() {
-            @Override
-            public int compare(QuizletSet lhs, QuizletSet rhs) {
-                return compareSets(lhs, rhs);
-            }
-        });
-
-        return copy;
-    }
-
-    private int compareSets(QuizletSet lhs, QuizletSet rhs) {
-        switch (sortOrder) {
-            case BY_NAME: return lhs.getTitle().compareToIgnoreCase(rhs.getTitle());
-            case BY_NAME_INV: return rhs.getTitle().compareToIgnoreCase(lhs.getTitle());
-            case BY_CREATE_DATE: return LongTools.compare(lhs.getCreateDate(), rhs.getCreateDate());
-            case BY_CREATE_DATE_INV: return LongTools.compare(rhs.getCreateDate(), lhs.getCreateDate());
-        }
-
-        return lhs.getTitle().compareToIgnoreCase(rhs.getTitle());
-    }
-
-    //// Creation methods
+    //// Creation Methods
 
     @Override
     protected BaseListAdaptor createAdapter() {
@@ -112,12 +87,16 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
         return new QuizletSetListFactory(service);
     }
 
+    public CompareStrategyFactory<QuizletSet> createCompareStrategyFactory() {
+        return new QuizletSetCompareStrategyFactory();
+    }
+
     //// Setters
 
     public void setSortOrder(Preferences.SortOrder sortOrder) {
         Preferences.setQuizletSetSortOrder(sortOrder);
+        setCompareStrategy(getCompareStrategyFactory().createStrategy(sortOrder));
 
-        this.sortOrder = sortOrder;
         reload();
     }
 
@@ -136,10 +115,20 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
     // Data Getters
 
     public Preferences.SortOrder getSortOrder() {
-        return sortOrder;
+        return getCompareStrategy().getSortOrder();
     }
 
     private QuizletSetAdapter getSetAdapter() {
         return (QuizletSetAdapter)adapter;
+    }
+
+    // Cast Getters
+
+    private QuizletSetCompareStrategyFactory getCompareStrategyFactory() {
+        return (QuizletSetCompareStrategyFactory)compareStrategyFactory;
+    }
+
+    private SortOrderCompareStrategy getCompareStrategy() {
+        return (SortOrderCompareStrategy)compareStrategy;
     }
 }

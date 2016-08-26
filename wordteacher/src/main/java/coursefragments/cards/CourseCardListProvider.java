@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import listfragment.SimpleStorableListProvider;
+import listfragment.StorableListProvider;
 import model.Card;
 import model.Course;
 import model.CourseHolder;
@@ -13,14 +14,13 @@ import model.CourseHolder;
 /**
  * Created by alexeyglushkov on 21.08.16.
  */
-public class CourseCardListProvider extends SimpleStorableListProvider<Card> {
+public class CourseCardListProvider implements StorableListProvider<Card> {
     public final static String ARG_PARENT_COURSE_ID = "ARG_PARENT_COURSE_ID";
 
     private Course course;
 
     //// Initialization
     public CourseCardListProvider(Course course) {
-        super(null);
         this.course = course;
     }
 
@@ -52,5 +52,10 @@ public class CourseCardListProvider extends SimpleStorableListProvider<Card> {
 
     public Course getCourse() {
         return course;
+    }
+
+    @Override
+    public List<Card> getList() {
+        return course.getCards();
     }
 }

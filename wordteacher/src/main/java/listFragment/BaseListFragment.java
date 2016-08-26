@@ -1,7 +1,6 @@
 package listfragment;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,6 +25,7 @@ public abstract class BaseListFragment<T> extends Fragment {
     protected StorableListProviderFactory<T> factory;
     protected StorableListProvider<T> provider = new NullStorableListProvider<>();
 
+    protected CompareStrategyFactory<T> compareStrategyFactory = new NullCompareStrategyFactory();
     protected CompareStrategy<T> compareStrategy;
 
     //// Creation, initialization, restoration
@@ -35,6 +35,8 @@ public abstract class BaseListFragment<T> extends Fragment {
         super.onCreate(savedInstanceState);
 
         adapter = createAdapter();
+        compareStrategyFactory = createCompareStrategyFactory();
+        restoreCompareStrategyIfNeeded(savedInstanceState);
     }
 
     @Override
@@ -53,12 +55,29 @@ public abstract class BaseListFragment<T> extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         provider.store(outState);
+        storeCompareStrategyIfNeeded(outState);
     }
 
     // Init methods
 
+    public CompareStrategyFactory<T> createCompareStrategyFactory() {
+        return null;
+    }
+
     private void applyAdapter() {
         recyclerView.setAdapter(adapter);
+    }
+
+    private void storeCompareStrategyIfNeeded(Bundle outState) {
+        if (compareStrategy != null) {
+            compareStrategy.store(outState);
+        }
+    }
+
+    private void restoreCompareStrategyIfNeeded(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            compareStrategy = compareStrategyFactory.restore(savedInstanceState);
+        }
     }
 
     protected void restoreProviderIfNeeded(Bundle savedInstanceState) {

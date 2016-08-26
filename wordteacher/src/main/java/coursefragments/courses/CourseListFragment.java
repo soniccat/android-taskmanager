@@ -18,18 +18,20 @@ import java.util.List;
 
 import listfragment.BaseListAdaptor;
 import listfragment.BaseListFragment;
+import listfragment.CompareStrategyFactory;
 import main.MainApplication;
 import main.Preferences;
 import model.Course;
 import model.CourseHolder;
+import quizletfragments.terms.QuizletTermCompareStrategyFactory;
 import tools.LongTools;
+import tools.SortOrderCompareStrategy;
 import tools.Sortable;
 
 /**
  * Created by alexeyglushkov on 08.05.16.
  */
 public class CourseListFragment extends BaseListFragment<Course> implements Sortable {
-    private Preferences.SortOrder sortOrder = Preferences.SortOrder.BY_CREATE_DATE_INV;
 
     //// Creation, initialization, restoration
 
@@ -61,29 +63,6 @@ public class CourseListFragment extends BaseListFragment<Course> implements Sort
     }
 
     //// Actions
-
-    protected List<Course> getSortedItems(List<Course> courses) {
-        List<Course> copy = new ArrayList<>(courses);
-        Collections.sort(copy, new Comparator<Course>() {
-            @Override
-            public int compare(Course lhs, Course rhs) {
-                return compareCourses(lhs, rhs);
-            }
-        });
-
-        return copy;
-    }
-
-    private int compareCourses(Course lhs, Course rhs) {
-        switch (sortOrder) {
-            case BY_NAME: return lhs.getTitle().compareToIgnoreCase(rhs.getTitle());
-            case BY_NAME_INV: return rhs.getTitle().compareToIgnoreCase(lhs.getTitle());
-            case BY_CREATE_DATE: return lhs.getCreateDate().compareTo(rhs.getCreateDate());
-            case BY_CREATE_DATE_INV: return rhs.getCreateDate().compareTo(lhs.getCreateDate());
-        }
-
-        return lhs.getTitle().compareToIgnoreCase(rhs.getTitle());
-    }
 
     //// Creation Methods
 
@@ -118,17 +97,22 @@ public class CourseListFragment extends BaseListFragment<Course> implements Sort
         return new CourseListFactory(getCourseHolder());
     }
 
+    @Override
+    public CompareStrategyFactory<Course> createCompareStrategyFactory() {
+        return new CourseCompareStrategyFactory();
+    }
+
     //// Interfaces
 
     // Sortable
 
     @Override
     public Preferences.SortOrder getSortOrder() {
-        return sortOrder;
+        return getCompareStrategy().getSortOrder();
     }
 
     public void setSortOrder(Preferences.SortOrder sortOrder) {
-        this.sortOrder = sortOrder;
+        setCompareStrategy(getCompareStrategyFactory().createStrategy(sortOrder));
         reload();
     }
 
@@ -156,5 +140,15 @@ public class CourseListFragment extends BaseListFragment<Course> implements Sort
 
     private CourseListAdapter getCourseAdapter() {
         return (CourseListAdapter)adapter;
+    }
+
+    // Cast Getters
+
+    private CourseCompareStrategyFactory getCompareStrategyFactory() {
+        return (CourseCompareStrategyFactory)compareStrategyFactory;
+    }
+
+    private SortOrderCompareStrategy getCompareStrategy() {
+        return (SortOrderCompareStrategy)compareStrategy;
     }
 }

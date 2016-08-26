@@ -19,8 +19,11 @@ import java.util.List;
 
 import listfragment.BaseListAdaptor;
 import listfragment.BaseListFragment;
+import listfragment.CompareStrategyFactory;
 import main.MainApplication;
 import main.Preferences;
+import quizletfragments.sets.QuizletSetCompareStrategyFactory;
+import tools.SortOrderCompareStrategy;
 import tools.Sortable;
 import tools.LongTools;
 
@@ -28,7 +31,6 @@ import tools.LongTools;
  * A placeholder fragment containing a simple view.
  */
 public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> implements Sortable {
-    private Preferences.SortOrder sortOrder = Preferences.getQuizletTermSortOrder();
 
     //// Creation, initialization, restoration
 
@@ -58,31 +60,6 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
         factory = createFactory();
         restoreProviderIfNeeded(savedInstanceState);
         reload();
-    }
-
-    //// Actions
-
-    protected List<QuizletTerm> getSortedItems(List<QuizletTerm> terms) {
-        List<QuizletTerm> copy = new ArrayList<>(terms);
-        Collections.sort(copy, new Comparator<QuizletTerm>() {
-            @Override
-            public int compare(QuizletTerm lhs, QuizletTerm rhs) {
-                return compareQuizletTerms(lhs, rhs);
-            }
-        });
-
-        return copy;
-    }
-
-    private int compareQuizletTerms(QuizletTerm lhs, QuizletTerm rhs) {
-        switch (sortOrder) {
-            case BY_NAME: return lhs.getTerm().compareToIgnoreCase(rhs.getTerm());
-            case BY_NAME_INV: return rhs.getTerm().compareToIgnoreCase(lhs.getTerm());
-            case BY_CREATE_DATE: return LongTools.compare(lhs.getRank(), rhs.getRank());
-            case BY_CREATE_DATE_INV: return LongTools.compare(rhs.getRank(), lhs.getRank());
-        }
-
-        return lhs.getTerm().compareToIgnoreCase(rhs.getTerm());
     }
 
     //// Creation methods
@@ -119,6 +96,11 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
         return new QuizletTermListFactory(getQuizletService());
     }
 
+    @Override
+    public CompareStrategyFactory<QuizletTerm> createCompareStrategyFactory() {
+        return new QuizletTermCompareStrategyFactory();
+    }
+
     //// Setters
 
     // Set Data
@@ -138,7 +120,7 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
     public void setSortOrder(Preferences.SortOrder sortOrder) {
         Preferences.setQuizletTermSortOrder(sortOrder);
 
-        this.sortOrder = sortOrder;
+        setCompareStrategy(getCompareStrategyFactory().createStrategy(sortOrder));
         reload();
     }
 
@@ -158,7 +140,7 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
 
     @Override
     public Preferences.SortOrder getSortOrder() {
-        return sortOrder;
+        return getCompareStrategy().getSortOrder();
     }
 
     public QuizletSet getParentSet() {
@@ -169,5 +151,15 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
         }
 
         return parentSet;
+    }
+
+    // Cast Getters
+
+    private QuizletTermCompareStrategyFactory getCompareStrategyFactory() {
+        return (QuizletTermCompareStrategyFactory)compareStrategyFactory;
+    }
+
+    private SortOrderCompareStrategy getCompareStrategy() {
+        return (SortOrderCompareStrategy)compareStrategy;
     }
 }

@@ -1,0 +1,38 @@
+package tools;
+
+import android.os.Bundle;
+
+import listfragment.SimpleCompareStrategy;
+import main.Preferences;
+
+/**
+ * Created by alexeyglushkov on 26.08.16.
+ */
+public abstract class SortOrderCompareStrategy<T> extends SimpleCompareStrategy<T> {
+    private final static String SORT_KEY = "SORT_KEY";
+
+    private Preferences.SortOrder sortOrder = Preferences.SortOrder.BY_NAME;
+
+    public SortOrderCompareStrategy(Preferences.SortOrder sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    @Override
+    public void restore(Bundle bundle) {
+        bundle.putInt(SORT_KEY, getSortOrder().ordinal());
+    }
+
+    @Override
+    public void store(Bundle bundle) {
+        int intOrder = bundle.getInt(SORT_KEY);
+        setSortOrder(Preferences.SortOrder.values()[intOrder]);
+    }
+
+    public Preferences.SortOrder getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(Preferences.SortOrder sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+}
