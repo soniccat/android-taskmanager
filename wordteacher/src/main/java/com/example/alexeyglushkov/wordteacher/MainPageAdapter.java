@@ -8,7 +8,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.SparseArray;
 import android.view.ViewGroup;
 
-import tools.Tools;
+import com.example.alexeyglushkov.tools.SparceArrayTools;
 
 /**
  * Created by alexeyglushkov on 02.05.16.
@@ -72,7 +72,7 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
     public Parcelable saveState() {
         Bundle bundle = (Bundle)super.saveState();
         if (bundle != null) {
-            Tools.storeSparceArray(titles, bundle, 0);
+            SparceArrayTools.storeSparceArray(titles, bundle, 0);
         }
         return bundle;
     }
@@ -81,7 +81,7 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
     public void restoreState(Parcelable state, ClassLoader loader) {
         super.restoreState(state, loader);
         Bundle bundle = (Bundle)state;
-        titles = Tools.readSparceArray(bundle, 0);
+        titles = SparceArrayTools.readSparceArray(bundle, 0);
     }
 
     public Fragment getFragment(int i) {

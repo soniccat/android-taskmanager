@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.PopupMenu;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -19,7 +18,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.example.alexeyglushkov.taskmanager.task.Tools;
+import com.example.alexeyglushkov.tools.HandlerTools;
 import com.example.alexeyglushkov.wordteacher.R;
 
 import java.util.ArrayList;
@@ -329,7 +328,7 @@ public class LearnActivity extends BaseActivity {
                 showCurrentCard();
 
                 // to show keyboard
-                Tools.runOnMainThreadDelayed(new Runnable() {
+                HandlerTools.runOnMainThreadDelayed(new Runnable() {
                     @Override
                     public void run() {
                         inputLayout.getEditText().requestFocus();

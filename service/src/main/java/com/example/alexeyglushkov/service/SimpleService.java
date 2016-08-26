@@ -11,6 +11,7 @@ import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProvider;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProxy;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.service.Service;
+import com.example.alexeyglushkov.tools.HandlerTools;
 
 /**
  * Created by alexeyglushkov on 26.11.15.
@@ -119,6 +120,6 @@ public class SimpleService implements Service {
     }
 
     private void runAsync(Runnable runnable) {
-        Tools.runOnHandlerThread(getAuthHandler(), runnable);
+        HandlerTools.runOnHandlerThread(getAuthHandler(), runnable);
     }
 }

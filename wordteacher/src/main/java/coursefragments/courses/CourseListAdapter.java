@@ -8,9 +8,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.alexeyglushkov.tools.TimeTools;
 import com.example.alexeyglushkov.wordteacher.R;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -20,7 +20,6 @@ import model.Card;
 import model.CardProgress;
 import tools.DeleteTouchHelper;
 import model.Course;
-import tools.Tools;
 
 /**
  * Created by alexeyglushkov on 08.05.16.
@@ -82,7 +81,7 @@ public class CourseListAdapter extends BaseListAdaptor<CourseListAdapter.ViewHol
                 if (date != null) {
                     long duration = date.getTime() - new Date().getTime();
                     String format = holder.itemView.getContext().getString(R.string.cell_course_revise_time);
-                    String timeString = String.format(Locale.US, format, Tools.getDurationString(duration));
+                    String timeString = String.format(Locale.US, format, TimeTools.getDurationString(duration));
                     holder.inProgressTextView.setText(timeString);
                 } else {
                     holder.inProgressTextView.setText(R.string.cell_course_no_waiting_words);

@@ -22,6 +22,7 @@
             <option value="$PROJECT_DIR$/streamlib" />
             <option value="$PROJECT_DIR$/taskmanager" />
             <option value="$PROJECT_DIR$/testsupport" />
+            <option value="$PROJECT_DIR$/tools" />
             <option value="$PROJECT_DIR$/wordteacher" />
           </set>
         </option>
@@ -41,6 +42,7 @@
             <option value="$PROJECT_DIR$/streamlib" />
             <option value="$PROJECT_DIR$/taskmanager" />
             <option value="$PROJECT_DIR$/testsupport" />
+            <option value="$PROJECT_DIR$/tools" />
             <option value="$PROJECT_DIR$/wordteacher" />
           </set>
         </option>

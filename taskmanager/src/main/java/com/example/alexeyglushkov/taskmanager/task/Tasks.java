@@ -3,6 +3,8 @@ package com.example.alexeyglushkov.taskmanager.task;
 import android.os.Looper;
 import android.util.Log;
 
+import com.example.alexeyglushkov.tools.HandlerTools;
+
 import junit.framework.Assert;
 
 /**
@@ -31,7 +33,7 @@ public class Tasks {
                     listener.setTaskInProgress(task);
 
                 } else if (newStatus == Task.Status.Finished || newStatus == Task.Status.Cancelled)
-                    Tools.runOnMainThread(new Runnable() {
+                    HandlerTools.runOnMainThread(new Runnable() {
                         @Override
                         public void run() {
                             listener.setTaskCompleted(task);

@@ -8,7 +8,6 @@ import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 import com.example.alexeyglushkov.taskmanager.task.TaskPool;
 import com.example.alexeyglushkov.taskmanager.task.TaskPrivate;
 import com.example.alexeyglushkov.taskmanager.task.TaskProvider;
-import com.example.alexeyglushkov.taskmanager.task.Tools;
 
 import org.mockito.Mockito;
 

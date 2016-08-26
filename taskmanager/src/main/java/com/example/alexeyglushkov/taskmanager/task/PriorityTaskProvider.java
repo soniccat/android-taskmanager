@@ -5,6 +5,8 @@ import android.os.Looper;
 import android.util.Log;
 import android.util.SparseArray;
 
+import com.example.alexeyglushkov.tools.HandlerTools;
+
 import junit.framework.Assert;
 
 import java.util.ArrayList;
@@ -108,7 +110,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool {
     }
 
     public void updatePriorities(final PriorityProvider provider) {
-        Tools.runOnHandlerThread(handler, new Runnable() {
+        HandlerTools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
                 for (int i = 0; i < taskQueues.size(); i++) {
@@ -151,7 +153,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool {
         // TaskProvider must set Waiting status on the current thread
         task.getPrivate().setTaskStatus(Task.Status.Waiting);
 
-        Tools.runOnHandlerThread(handler, new Runnable() {
+        HandlerTools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
                 addTaskOnThread(task);
@@ -161,7 +163,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool {
 
     @Override
     public void removeTask(final Task task) {
-        Tools.runOnHandlerThread(handler, new Runnable() {
+        HandlerTools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
                 removeTaskOnThread(task);

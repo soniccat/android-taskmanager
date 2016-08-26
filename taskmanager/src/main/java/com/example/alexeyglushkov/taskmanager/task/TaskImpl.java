@@ -4,12 +4,14 @@ import android.os.Looper;
 
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
+import com.example.alexeyglushkov.tools.HandlerTools;
 
 import junit.framework.Assert;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Handler;
 
 /**
  * Created by alexeyglushkov on 23.07.15.
@@ -199,7 +201,7 @@ public abstract class TaskImpl implements Task, TaskPrivate {
         statusListeners.clear();
 
         if (progressListeners.size() > 0) {
-            Tools.runOnMainThread(new Runnable() {
+            HandlerTools.runOnMainThread(new Runnable() {
                 @Override
                 public void run() {
                     progressListeners.clear();
@@ -288,7 +290,7 @@ public abstract class TaskImpl implements Task, TaskPrivate {
 
     public void triggerProgressListeners(final ProgressInfo progressInfo) {
         if (progressListeners.size() > 0) {
-            Tools.runOnMainThread(new Runnable() {
+            HandlerTools.runOnMainThread(new Runnable() {
                 @Override
                 public void run() {
                     for (ProgressListener l : progressListeners) {

@@ -2,6 +2,8 @@ package com.example.alexeyglushkov.taskmanager.task;
 
 import android.os.Handler;
 
+import com.example.alexeyglushkov.tools.HandlerTools;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,11 +15,11 @@ public class TaskPools {
     // TODO: I am not sure that these methods are necessary
     // maybe it's better to move them in Tools file
     public static void getFilteredTasks(final TaskPool taskPool, final TaskFilter filter, final FilterCompletion completion) {
-        Tools.runOnHandlerThread(taskPool.getHandler(), new Runnable() {
+        HandlerTools.runOnHandlerThread(taskPool.getHandler(), new Runnable() {
             @Override
             public void run() {
                 final List<Task> tasks = new ArrayList<Task>(taskPool.getTasks());
-                Tools.runOnHandlerThread(filter.getHandler(), new Runnable() {
+                HandlerTools.runOnHandlerThread(filter.getHandler(), new Runnable() {
                     @Override
                     public void run() {
                         final List<Task> filteredTasks = new ArrayList<Task>();
@@ -27,7 +29,7 @@ public class TaskPools {
                             }
                         }
 
-                        Tools.runOnHandlerThread(completion.getHandler(), new Runnable() {
+                        HandlerTools.runOnHandlerThread(completion.getHandler(), new Runnable() {
                             @Override
                             public void run() {
                                 completion.completed(filteredTasks);

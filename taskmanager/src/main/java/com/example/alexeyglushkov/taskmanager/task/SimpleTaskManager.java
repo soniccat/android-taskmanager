@@ -6,6 +6,8 @@ import android.os.Looper;
 import android.util.Log;
 import android.util.SparseArray;
 
+import com.example.alexeyglushkov.tools.HandlerTools;
+
 import junit.framework.Assert;
 
 import java.lang.ref.WeakReference;
@@ -121,7 +123,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         // TaskManager must set Waiting status on the current thread
         task.getPrivate().setTaskStatus(Task.Status.Waiting);
 
-        Tools.runOnHandlerThread(handler, new Runnable() {
+        HandlerTools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
                 // task will be launched in onTaskAdded method
@@ -137,7 +139,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
     @Override
     public void startImmediately(final Task task) {
-        Tools.runOnHandlerThread(handler, new Runnable() {
+        HandlerTools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
                 if (handleTaskLoadPolicy(task)) {
@@ -161,7 +163,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
     @Override
     public void cancel(final Task task, final Object info) {
-        Tools.runOnHandlerThread(handler, new Runnable() {
+        HandlerTools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
                 cancelTaskOnThread(task, info);
@@ -174,7 +176,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         Assert.assertEquals(provider.getHandler(), handler);
         Assert.assertNotNull(provider.getTaskProviderId());
 
-        Tools.runOnHandlerThread(handler, new Runnable() {
+        HandlerTools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
                 addTaskProviderOnThread(provider);
@@ -201,7 +203,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
     }
 
     public void setTaskProviderPriority(final TaskProvider provider, final int priority) {
-        Tools.runOnHandlerThread(handler, new Runnable() {
+        HandlerTools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
                 setTaskProviderPriorityOnThread(provider, priority);
@@ -403,7 +405,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
     @Override
     public void removeTaskProvider(final TaskProvider provider) {
-        Tools.runOnHandlerThread(handler, new Runnable() {
+        HandlerTools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
                 removeTaskProviderOnThread(provider);
@@ -419,7 +421,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
     @Override
     public void setLimit(final int taskType, final float availableQueuePart) {
-        Tools.runOnHandlerThread(handler, new Runnable() {
+        HandlerTools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
                 if (availableQueuePart <= 0.0f) {
@@ -558,7 +560,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         Task.Callback callback = new Task.Callback() {
             @Override
             public void onCompleted(final boolean cancelled) {
-                Tools.runOnHandlerThread(handler, new Runnable() {
+                HandlerTools.runOnHandlerThread(handler, new Runnable() {
                     @Override
                     public void run() {
                         logTask(task, "Task onCompleted");
@@ -589,7 +591,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         task.getPrivate().setTaskStatus(status);
         task.getPrivate().clearAllListeners();
 
-        Tools.runOnHandlerThread(callbackHandler, new Runnable() {
+        HandlerTools.runOnHandlerThread(callbackHandler, new Runnable() {
             @Override
             public void run() {
                 if (callback != null) {

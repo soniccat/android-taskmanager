@@ -4,6 +4,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.example.alexeyglushkov.tools.HandlerTools;
+
 import junit.framework.Assert;
 
 import java.util.ArrayList;
@@ -54,7 +56,7 @@ public class SimpleTaskPool implements TaskPool {
         // TaskPool must set Waiting status on the current thread
         task.getPrivate().setTaskStatus(Task.Status.Waiting);
 
-        Tools.runOnHandlerThread(handler, new Runnable() {
+        HandlerTools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
                 addTaskOnThread(task);
@@ -85,7 +87,7 @@ public class SimpleTaskPool implements TaskPool {
 
     @Override
     public void removeTask(final Task task) {
-        Tools.runOnHandlerThread(handler, new Runnable() {
+        HandlerTools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
                 if (tasks.remove(task)) {

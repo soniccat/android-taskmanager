@@ -1,13 +1,12 @@
-package com.example.alexeyglushkov.taskmanager.task;
+package com.example.alexeyglushkov.tools;
 
 import android.os.Handler;
 import android.os.Looper;
 
 /**
- * Created by alexeyglushkov on 31.12.14.
+ * Created by alexeyglushkov on 26.08.16.
  */
-public class Tools {
-
+public final class HandlerTools {
     public static void runOnHandlerThread(Handler handler, final Runnable action) {
         if (Looper.myLooper() == handler.getLooper()) {
             action.run();
@@ -22,9 +21,7 @@ public class Tools {
     }
 
     public static void runOnMainThread(Runnable runnable) {
-        Looper mainLooper = Looper.getMainLooper();
-        Handler hd = new Handler(mainLooper);
-        hd.post(runnable);
+        runOnMainThreadDelayed(runnable, 0);
     }
 
     public static void runOnMainThreadDelayed(Runnable runnable, long delay) {

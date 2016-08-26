@@ -4,6 +4,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.SparseArray;
 
+import com.example.alexeyglushkov.tools.HandlerTools;
+
 import java.lang.ref.WeakReference;
 
 /**
@@ -28,12 +30,12 @@ public class SimpleTaskManagerSnapshot implements TaskManagerSnapshot, TaskManag
     }
 
     private void bind(final TaskManager taskManager) {
-        Tools.runOnHandlerThread(taskManager.getHandler(), new Runnable() {
+        HandlerTools.runOnHandlerThread(taskManager.getHandler(), new Runnable() {
             @Override
             public void run() {
                 bindOnThread(taskManager);
 
-                Tools.runOnHandlerThread(callbackHandler, new Runnable() {
+                HandlerTools.runOnHandlerThread(callbackHandler, new Runnable() {
                     @Override
                     public void run() {
                         triggerOnSnapshotListeners();
@@ -171,7 +173,7 @@ public class SimpleTaskManagerSnapshot implements TaskManagerSnapshot, TaskManag
 
     @Override
     public void onLimitsChanged(TaskManager taskManager, final int taskType, final float availableQueuePart) {
-        Tools.runOnHandlerThread(callbackHandler, new Runnable() {
+        HandlerTools.runOnHandlerThread(callbackHandler, new Runnable() {
             @Override
             public void run() {
                 setLoadingLimit(taskType, availableQueuePart);
@@ -181,7 +183,7 @@ public class SimpleTaskManagerSnapshot implements TaskManagerSnapshot, TaskManag
 
     @Override
     public void onTaskAdded(TaskPool pool, final Task task, final boolean isLoadingQueue) {
-        Tools.runOnHandlerThread(callbackHandler, new Runnable() {
+        HandlerTools.runOnHandlerThread(callbackHandler, new Runnable() {
             @Override
             public void run() {
                 if (isLoadingQueue) {
@@ -195,7 +197,7 @@ public class SimpleTaskManagerSnapshot implements TaskManagerSnapshot, TaskManag
 
     @Override
     public void onTaskRemoved(TaskPool pool, final Task task, final boolean isLoadingQueue) {
-        Tools.runOnHandlerThread(callbackHandler, new Runnable() {
+        HandlerTools.runOnHandlerThread(callbackHandler, new Runnable() {
             @Override
             public void run() {
                 if (isLoadingQueue) {
