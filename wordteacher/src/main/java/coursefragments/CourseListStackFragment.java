@@ -11,14 +11,16 @@ import coursefragments.cards.CardListFragmentMenuListener;
 import coursefragments.courses.CourseListFragment;
 import coursefragments.courses.CourseListFragmentMenuListener;
 import main.MainApplication;
+import main.Preferences;
 import model.Card;
 import model.Course;
 import model.CourseHolder;
+import tools.Sortable;
 
 /**
  * Created by alexeyglushkov on 12.06.16.
  */
-public class CourseListStackFragment extends StackFragment {
+public class CourseListStackFragment extends StackFragment implements Sortable {
 
     public static final String DEFAULT_TITLE = "Courses";
 
@@ -54,6 +56,17 @@ public class CourseListStackFragment extends StackFragment {
         }
     }
 
+    //// Events
+
+    private void onSortOrderChanged(Preferences.SortOrder sortOrder, Sortable fragment) {
+        if (fragment instanceof CardListFragment) {
+            Preferences.setCardListSortOrder(sortOrder);
+
+        } else if (fragment instanceof CourseListFragment) {
+            Preferences.setCourseListSortOrder(sortOrder);
+        }
+    }
+
     //// Actions
 
     public void reloadCourses() {
@@ -80,6 +93,7 @@ public class CourseListStackFragment extends StackFragment {
 
     private void showCourseFragment() {
         CourseListFragment courseListFragment = new CourseListFragment();
+        courseListFragment.setSortOrder(Preferences.getCourseListSortOrder());
         courseListFragment.setListener(getMenuCourseListener());
 
         addFragment(courseListFragment, null);
@@ -87,6 +101,7 @@ public class CourseListStackFragment extends StackFragment {
 
     public void showCardListFragment(Course course) {
         CardListFragment fragment = new CardListFragment();
+        fragment.setSortOrder(Preferences.getCardListSortOrder());
         fragment.setListener(getMenuCardsListener());
         fragment.setParentCourse(course);
 
@@ -162,6 +177,25 @@ public class CourseListStackFragment extends StackFragment {
                 return getView();
             }
         });
+    }
+
+    //// Interfaces
+
+    // Sortable
+
+    @Override
+    public Preferences.SortOrder getSortOrder() {
+        Sortable fragment = (Sortable) getTopFragment();
+        return fragment.getSortOrder();
+    }
+
+    public void setSortOrder(Preferences.SortOrder sortOrder) {
+        Sortable fragment = (Sortable) getTopFragment();
+        if (fragment != null) {
+            fragment.setSortOrder(sortOrder);
+        }
+
+        onSortOrderChanged(sortOrder, fragment);
     }
 
     //// Getters

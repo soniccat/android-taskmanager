@@ -103,6 +103,7 @@ public class CourseListFragment extends BaseListFragment<Course> implements Sort
     }
 
     public void setSortOrder(Preferences.SortOrder sortOrder) {
+        createCompareStrategyFactoryIfNeeded();
         setCompareStrategy(getCompareStrategyFactory().createStrategy(sortOrder));
         reload();
     }

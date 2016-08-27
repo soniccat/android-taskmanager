@@ -67,7 +67,7 @@ public abstract class BaseListFragment<T> extends Fragment {
     }
 
     protected CompareStrategyFactory<T> createCompareStrategyFactory() {
-        return null;
+        return new NullCompareStrategyFactory<>();
     }
 
     private void applyAdapter() {
@@ -95,11 +95,9 @@ public abstract class BaseListFragment<T> extends Fragment {
     // Actions
 
     public void reload() {
-        if (adapter == null) {
-            return;
+        if (adapter != null) {
+            setAdapterItems(getSortedItems(getItems()));
         }
-
-        setAdapterItems(getSortedItems(getItems()));
     }
 
     public void deleteView(T data) {

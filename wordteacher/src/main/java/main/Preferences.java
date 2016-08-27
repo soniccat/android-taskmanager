@@ -59,7 +59,7 @@ public class Preferences {
     // course / card sort order
 
     public static SortOrder getCourseListSortOrder() {
-        return return SortOrder.values()[getReadPreference().getInt("courseSortOrder", SortOrder.BY_CREATE_DATE_INV.ordinal())];
+        return SortOrder.values()[getReadPreference().getInt("courseSortOrder", SortOrder.BY_CREATE_DATE_INV.ordinal())];
     }
 
     public static void setCourseListSortOrder(SortOrder order) {

@@ -123,7 +123,8 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
     }
 
     public int getFragmentCount() {
-        return isReadyToAddFragment() ? getChildFragmentManager().getFragments().size() : 0;
+        List<Fragment> fragments = getChildFragmentManager().getFragments();
+        return fragments != null ? fragments.size() : 0;
     }
 
     public int getBackStackSize() {

@@ -7,19 +7,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.wordteacher.R;
 
+import coursefragments.courses.CourseCompareStrategyFactory;
 import listfragment.BaseListAdaptor;
 import listfragment.BaseListFragment;
+import listfragment.CompareStrategyFactory;
 import main.MainApplication;
+import main.Preferences;
 import model.Card;
 import model.Course;
 import model.CourseHolder;
+import quizletfragments.sets.QuizletSetCompareStrategyFactory;
+import tools.SortOrderCompareStrategy;
+import tools.Sortable;
 
 /**
  * Created by alexeyglushkov on 30.07.16.
  */
-public class CardListFragment extends BaseListFragment<Card> {
+public class CardListFragment extends BaseListFragment<Card> implements Sortable {
 
     //// Creation, initialization, restoration
 
@@ -90,6 +97,27 @@ public class CardListFragment extends BaseListFragment<Card> {
         return new CardListFactory(getCourseHolder());
     }
 
+    public CompareStrategyFactory<Card> createCompareStrategyFactory() {
+        return new CardCompareStrategyFactory();
+    }
+
+    //// Interface
+
+    // Sortable
+
+    @Override
+    public void setSortOrder(Preferences.SortOrder sortOrder) {
+        createCompareStrategyFactoryIfNeeded();
+        setCompareStrategy(getCompareStrategyFactory().createStrategy(sortOrder));
+        reload();
+    }
+
+    @Override
+    public Preferences.SortOrder getSortOrder() {
+        return null;
+    }
+
+
     //// Setters
 
     // Data Setters
@@ -127,5 +155,13 @@ public class CardListFragment extends BaseListFragment<Card> {
 
     private CardListAdapter getCardAdapter() {
         return (CardListAdapter)adapter;
+    }
+
+    private CardCompareStrategyFactory getCompareStrategyFactory() {
+        return (CardCompareStrategyFactory)compareStrategyFactory;
+    }
+
+    private SortOrderCompareStrategy getCompareStrategy() {
+        return (SortOrderCompareStrategy)compareStrategy;
     }
 }

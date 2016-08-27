@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import coursefragments.CourseListStackFragment;
+import coursefragments.cards.CardListFragment;
+import coursefragments.courses.CourseListFragment;
 import learning.LearnActivity;
 import main.BaseActivity;
 import main.MainApplication;
@@ -34,6 +36,7 @@ import main.Preferences;
 import model.Card;
 import model.Course;
 import model.CourseHolder;
+import quizletfragments.sets.QuizletSetListFragment;
 import tools.Sortable;
 import quizletfragments.terms.QuizletTermFragmentMenuListener;
 import quizletfragments.terms.QuizletTermListFragment;
@@ -182,6 +185,12 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     private void onFabPressed() {
         loadQuizletSets(true);
+    }
+
+    private void onSortOrderChanged(Preferences.SortOrder sortOrder, Sortable fragment) {
+        if (fragment instanceof QuizletTermListFragment) {
+            Preferences.setQuizletTermSortOrder(sortOrder);
+        }
     }
 
     // Menu Event
@@ -578,6 +587,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     private void setSortOrder(Preferences.SortOrder sortOrder) {
         Sortable sortableFragment = (Sortable)getCurrentFragment();
         sortableFragment.setSortOrder(sortOrder);
+
+        onSortOrderChanged(sortOrder, sortableFragment);
     }
 
     //// Getters

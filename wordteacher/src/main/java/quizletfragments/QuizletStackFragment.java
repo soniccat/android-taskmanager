@@ -57,6 +57,17 @@ public class QuizletStackFragment extends StackFragment implements Sortable {
         }
     }
 
+    //// Events
+
+    private void onSortOrderChanged(Preferences.SortOrder sortOrder, Sortable fragment) {
+        if (fragment instanceof QuizletTermListFragment) {
+            Preferences.setQuizletTermSortOrder(sortOrder);
+
+        } else if (fragment instanceof QuizletSetListFragment) {
+            Preferences.setQuizletSetSortOrder(sortOrder);
+        }
+    }
+
     //// Actions
 
     // Show UI Actions
@@ -185,6 +196,8 @@ public class QuizletStackFragment extends StackFragment implements Sortable {
         if (fragment != null) {
             fragment.setSortOrder(sortOrder);
         }
+
+        onSortOrderChanged(sortOrder, fragment);
     }
 
     //// Getters
