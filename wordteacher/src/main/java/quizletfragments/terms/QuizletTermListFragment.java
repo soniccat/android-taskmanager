@@ -115,6 +115,7 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
     public void setSortOrder(Preferences.SortOrder sortOrder) {
         Preferences.setQuizletTermSortOrder(sortOrder);
 
+        createCompareStrategyFactoryIfNeeded();
         setCompareStrategy(getCompareStrategyFactory().createStrategy(sortOrder));
         reload();
     }

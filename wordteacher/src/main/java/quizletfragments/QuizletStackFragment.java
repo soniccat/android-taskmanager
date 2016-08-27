@@ -30,14 +30,19 @@ public class QuizletStackFragment extends StackFragment implements Sortable {
     //// Creation, initialization, restoration
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onViewStateRestored(@Nullable final Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
 
-        if (savedInstanceState == null) {
-            showSetFragment();
-        } else {
-            restoreListeners();
-        }
+        getMainApplication().addCourseHolderListener(new MainApplication.ReadyListener() {
+            @Override
+            public void onReady() {
+                if (savedInstanceState == null) {
+                    showSetFragment();
+                } else {
+                    restoreListeners();
+                }
+            }
+        });
     }
 
     private void restoreListeners() {
@@ -58,6 +63,7 @@ public class QuizletStackFragment extends StackFragment implements Sortable {
 
     private void showSetFragment() {
         QuizletSetListFragment setFragment = new QuizletSetListFragment();
+        setFragment.setSortOrder(Preferences.getQuizletSetSortOrder());
         setFragment.setListener(createSetMenuListener());
 
         addFragment(setFragment, null);
@@ -65,6 +71,7 @@ public class QuizletStackFragment extends StackFragment implements Sortable {
 
     private void showWordFragment(QuizletSet set) {
         QuizletTermListFragment fragment = new QuizletTermListFragment();
+        fragment.setSortOrder(Preferences.getQuizletTermSortOrder());
         fragment.setListener(createTermMenuListener());
         fragment.setTermSet(set);
 

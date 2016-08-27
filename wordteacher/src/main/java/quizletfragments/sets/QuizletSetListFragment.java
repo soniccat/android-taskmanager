@@ -89,6 +89,8 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
 
     public void setSortOrder(Preferences.SortOrder sortOrder) {
         Preferences.setQuizletSetSortOrder(sortOrder);
+
+        createCompareStrategyFactoryIfNeeded();
         setCompareStrategy(getCompareStrategyFactory().createStrategy(sortOrder));
 
         reload();

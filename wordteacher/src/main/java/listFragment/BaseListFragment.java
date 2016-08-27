@@ -35,7 +35,7 @@ public abstract class BaseListFragment<T> extends Fragment {
         super.onCreate(savedInstanceState);
 
         adapter = createAdapter();
-        compareStrategyFactory = createCompareStrategyFactory();
+        createCompareStrategyFactoryIfNeeded();
         restoreCompareStrategyIfNeeded(savedInstanceState);
     }
 
@@ -60,7 +60,13 @@ public abstract class BaseListFragment<T> extends Fragment {
 
     // Init methods
 
-    public CompareStrategyFactory<T> createCompareStrategyFactory() {
+    protected void createCompareStrategyFactoryIfNeeded() {
+        if (compareStrategyFactory instanceof NullCompareStrategyFactory) {
+            compareStrategyFactory = createCompareStrategyFactory();
+        }
+    }
+
+    protected CompareStrategyFactory<T> createCompareStrategyFactory() {
         return null;
     }
 
@@ -89,6 +95,10 @@ public abstract class BaseListFragment<T> extends Fragment {
     // Actions
 
     public void reload() {
+        if (adapter == null) {
+            return;
+        }
+
         setAdapterItems(getSortedItems(getItems()));
     }
 

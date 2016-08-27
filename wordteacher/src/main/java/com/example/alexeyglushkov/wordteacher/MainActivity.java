@@ -552,8 +552,16 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     @NonNull
     private QuizletTermListFragment createQuzletTermListFragment() {
-        QuizletTermListFragment fragment = new QuizletTermListFragment();
-        fragment.setListener(createMenuListener());
+        final QuizletTermListFragment fragment = new QuizletTermListFragment();
+        fragment.setSortOrder(Preferences.getQuizletTermSortOrder());
+
+        getMainApplication().addCourseHolderListener(new MainApplication.ReadyListener() {
+            @Override
+            public void onReady() {
+                fragment.setListener(createMenuListener());
+            }
+        });
+
         return fragment;
     }
 

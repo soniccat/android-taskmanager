@@ -33,6 +33,8 @@ public class Preferences {
         }
     }
 
+    // Quizlet Set / Term sort order
+
     // TODO: remove quizlet relation from here
     public static SortOrder getQuizletSetSortOrder() {
         return SortOrder.values()[getReadPreference().getInt("quizletSetSortOrder", SortOrder.BY_CREATE_DATE_INV.ordinal())];
@@ -53,6 +55,30 @@ public class Preferences {
         editor.putInt("quizletTermSortOrder", order.ordinal());
         editor.commit();
     }
+
+    // course / card sort order
+
+    public static SortOrder getCourseListSortOrder() {
+        return return SortOrder.values()[getReadPreference().getInt("courseSortOrder", SortOrder.BY_CREATE_DATE_INV.ordinal())];
+    }
+
+    public static void setCourseListSortOrder(SortOrder order) {
+        SharedPreferences.Editor editor = getWritePreference();
+        editor.putInt("courseSortOrder", order.ordinal());
+        editor.commit();
+    }
+
+    public static SortOrder getCardListSortOrder() {
+        return SortOrder.values()[getReadPreference().getInt("cardSortOrder", SortOrder.BY_NAME.ordinal())];
+    }
+
+    public static void setCardListSortOrder(SortOrder order) {
+        SharedPreferences.Editor editor = getWritePreference();
+        editor.putInt("cardSortOrder", order.ordinal());
+        editor.commit();
+    }
+
+    //
 
     private static SharedPreferences.Editor getWritePreference() {
         return getContext().getSharedPreferences(getName(), Context.MODE_PRIVATE).edit();

@@ -19,13 +19,13 @@ public abstract class SortOrderCompareStrategy<T> extends SimpleCompareStrategy<
 
     @Override
     public void restore(Bundle bundle) {
-        bundle.putInt(SORT_KEY, getSortOrder().ordinal());
+        int intOrder = bundle.getInt(SORT_KEY);
+        setSortOrder(Preferences.SortOrder.values()[intOrder]);
     }
 
     @Override
     public void store(Bundle bundle) {
-        int intOrder = bundle.getInt(SORT_KEY);
-        setSortOrder(Preferences.SortOrder.values()[intOrder]);
+        bundle.putInt(SORT_KEY, getSortOrder().ordinal());
     }
 
     public Preferences.SortOrder getSortOrder() {
