@@ -186,7 +186,7 @@ public class CourseListStackFragment extends StackFragment implements Sortable {
     @Override
     public Preferences.SortOrder getSortOrder() {
         Sortable fragment = (Sortable) getTopFragment();
-        return fragment.getSortOrder();
+        return fragment != null ? fragment.getSortOrder() : null;
     }
 
     public void setSortOrder(Preferences.SortOrder sortOrder) {

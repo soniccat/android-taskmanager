@@ -119,12 +119,29 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
     public Fragment getTopFragment() {
         // calling findFragmentById when view is null is error prone
         int size = getFragmentCount();
-        return isReadyToAddFragment() && size > 0 ? getFragment(size - 1) : null;
+        return size > 0 ? getFragment(size - 1) : null;
     }
 
     public int getFragmentCount() {
         List<Fragment> fragments = getChildFragmentManager().getFragments();
-        return fragments != null ? fragments.size() : 0;
+        int size = 0;
+        if (fragments != null) {
+            size = fragments.size();
+
+            // looks like a bullshit
+            int lastLiveIndex = -1;
+            for (int i=0; i<size; ++i) {
+                if (fragments.get(i) != null) {
+                    lastLiveIndex = i;
+                } else {
+                    break;
+                }
+            }
+
+            size = lastLiveIndex + 1;
+        }
+
+        return fragments != null ? size : 0;
     }
 
     public int getBackStackSize() {

@@ -216,12 +216,7 @@ public class QuizletStackFragment extends StackFragment implements Sortable {
 
     public Preferences.SortOrder getSortOrder() {
         Sortable fragment = (Sortable) getTopFragment();
-        Preferences.SortOrder sortOrder = Preferences.SortOrder.BY_NAME;
-        if (fragment != null) {
-            sortOrder = fragment.getSortOrder();
-        }
-
-        return sortOrder;
+        return fragment != null ? fragment.getSortOrder() : null;
     }
 
     public String getTitle() {

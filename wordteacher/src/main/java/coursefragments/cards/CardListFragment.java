@@ -114,7 +114,7 @@ public class CardListFragment extends BaseListFragment<Card> implements Sortable
 
     @Override
     public Preferences.SortOrder getSortOrder() {
-        return null;
+        return getCompareStrategy().getSortOrder();
     }
 
 

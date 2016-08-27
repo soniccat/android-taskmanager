@@ -146,6 +146,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     private void onPagerPageChanged() {
         updateToolbarBackButton();
+        supportInvalidateOptionsMenu();
     }
 
     private void onViewReady() {
