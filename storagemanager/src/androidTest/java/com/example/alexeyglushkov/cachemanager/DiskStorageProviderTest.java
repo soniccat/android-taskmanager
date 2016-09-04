@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.test.InstrumentationTestCase;
 
+import com.example.alexeyglushkov.cachemanager.disk.DiskStorageMetadata;
+import com.example.alexeyglushkov.cachemanager.disk.DiskStorageProvider;
 import com.example.alexeyglushkov.streamlib.serializers.BitmapSerializer;
 
 import java.io.File;

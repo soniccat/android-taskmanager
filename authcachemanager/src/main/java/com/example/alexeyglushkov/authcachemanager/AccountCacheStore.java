@@ -3,7 +3,7 @@ package com.example.alexeyglushkov.authcachemanager;
 import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.cachemanager.StorageEntry;
-import com.example.alexeyglushkov.cachemanager.DiskStorageProvider;
+import com.example.alexeyglushkov.cachemanager.disk.DiskStorageProvider;
 
 import java.io.File;
 import java.util.ArrayList;

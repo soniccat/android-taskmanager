@@ -3,6 +3,10 @@ package com.example.alexeyglushkov.cachemanager;
 import android.content.Context;
 import android.test.InstrumentationTestCase;
 
+import com.example.alexeyglushkov.cachemanager.disk.DiskStorageCleaner;
+import com.example.alexeyglushkov.cachemanager.disk.DiskStorageMetadata;
+import com.example.alexeyglushkov.cachemanager.disk.DiskStorageProvider;
+
 import java.io.File;
 
 /**

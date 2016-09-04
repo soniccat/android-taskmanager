@@ -345,7 +345,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     private void syncWithDropbox() {
-        boolean hasCourses = getCourseHolder().getCourses().size() > 0;
+        /*boolean hasCourses = getCourseHolder().getCourses().size() > 0;
         if (hasCourses) {
             getMainApplication().getDropboxService().upload(getCourseHolder().getDirectory().getPath(), "/Courses/", new ServiceCommand.CommandCallback() {
                 @Override
@@ -362,7 +362,15 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
                     ++i;
                 }
             });
-        }
+        }*/
+
+        getMainApplication().getDropboxService().sync(getCourseHolder().getDirectory().getPath(), "/CoursesTest/", new ServiceCommand.CommandCallback() {
+            @Override
+            public void onCompleted(Error error) {
+                int i = 0;
+                ++i;
+            }
+        });
     }
 
     // Update data actions

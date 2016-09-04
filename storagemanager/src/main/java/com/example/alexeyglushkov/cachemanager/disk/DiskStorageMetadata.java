@@ -1,5 +1,6 @@
-package com.example.alexeyglushkov.cachemanager;
+package com.example.alexeyglushkov.cachemanager.disk;
 
+import com.example.alexeyglushkov.cachemanager.StorageMetadata;
 import com.example.alexeyglushkov.streamlib.serializers.ObjectSerializer;
 import com.example.alexeyglushkov.streamlib.serializers.Serializer;
 

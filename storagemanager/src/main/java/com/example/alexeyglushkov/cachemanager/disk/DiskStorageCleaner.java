@@ -1,5 +1,8 @@
-package com.example.alexeyglushkov.cachemanager;
+package com.example.alexeyglushkov.cachemanager.disk;
 
+import com.example.alexeyglushkov.cachemanager.StorageCleaner;
+import com.example.alexeyglushkov.cachemanager.StorageEntry;
+import com.example.alexeyglushkov.cachemanager.StorageProvider;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 
 import java.util.List;

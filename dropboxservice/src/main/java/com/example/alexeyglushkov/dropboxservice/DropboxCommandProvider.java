@@ -9,7 +9,8 @@ import com.dropbox.client2.android.AndroidAuthSession;
 public interface DropboxCommandProvider {
     void setApi(DropboxAPI<AndroidAuthSession> api);
 
-    //TODO: make interfaces for commands
+    //TODO: make interfaces for commands or return ServiceTask
     DropboxUploadCommand getUploadCommand(String srcPath, String dstPath);
     DropboxDownloadCommand getDownloadCommand(String srcPath, String dstPath);
+    DropboxSyncCommand getSyncCommand(String srcPath, String dstPath, long lastSyncDate);
 }

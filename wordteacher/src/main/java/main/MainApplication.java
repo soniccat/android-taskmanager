@@ -2,6 +2,7 @@ package main;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.example.alexeyglushkov.authcachemanager.AccountCacheStore;
 import com.example.alexeyglushkov.authorization.Auth.Account;
@@ -12,8 +13,9 @@ import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
 import com.example.alexeyglushkov.cachemanager.StorageCleaner;
 import com.example.alexeyglushkov.cachemanager.StorageProvider;
-import com.example.alexeyglushkov.cachemanager.DiskStorageCleaner;
-import com.example.alexeyglushkov.cachemanager.DiskStorageProvider;
+import com.example.alexeyglushkov.cachemanager.disk.DiskStorageCleaner;
+import com.example.alexeyglushkov.cachemanager.disk.DiskStorageProvider;
+import com.example.alexeyglushkov.dropboxservice.ContextProvider;
 import com.example.alexeyglushkov.dropboxservice.DropboxAccount;
 import com.example.alexeyglushkov.dropboxservice.DropboxCommandProvider;
 import com.example.alexeyglushkov.dropboxservice.DropboxService;
@@ -31,6 +33,7 @@ import java.util.List;
 
 import authorization.AuthActivityProxy;
 import model.CourseHolder;
+import preferencestorage.PreferenceStorageProvider;
 
 public class MainApplication extends Application {
     private AccountStore accountStore;
@@ -175,7 +178,9 @@ public class MainApplication extends Application {
         String id = Integer.toString(dropboxAccount.getServiceType());
         ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
 
-        dropboxService = new DropboxService(dropboxAccount, commandProvider, serviceCommandRunner);
+        StorageProvider storage = new PreferenceStorageProvider("DropboxServicePref", getContextProvider());
+
+        dropboxService = new DropboxService(dropboxAccount, commandProvider, serviceCommandRunner, storage);
     }
 
     private void loadCourseHolder() {
@@ -232,6 +237,16 @@ public class MainApplication extends Application {
         } else {
             quizletServiceListeners.add(listener);
         }
+    }
+
+    @NonNull
+    public static ContextProvider getContextProvider() {
+        return new ContextProvider() {
+            @Override
+            public Context getContext() {
+                return MainApplication.instance.getCurrentContext();
+            }
+        };
     }
 
     public interface ReadyListener {

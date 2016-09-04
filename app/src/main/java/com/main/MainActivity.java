@@ -20,7 +20,7 @@ import com.example.alexeyglushkov.authtaskmanager.HttpServiceTask;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
 import com.example.alexeyglushkov.cachemanager.StorageProvider;
-import com.example.alexeyglushkov.cachemanager.DiskStorageProvider;
+import com.example.alexeyglushkov.cachemanager.disk.DiskStorageProvider;
 import com.example.alexeyglushkov.service.CachableHttpLoadTask;
 import com.example.alexeyglushkov.service.SimpleService;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;

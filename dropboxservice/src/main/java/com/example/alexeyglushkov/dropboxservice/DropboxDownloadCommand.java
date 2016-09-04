@@ -1,70 +1,38 @@
 package com.example.alexeyglushkov.dropboxservice;
 
 import com.dropbox.client2.DropboxAPI;
+import com.dropbox.client2.exception.DropboxException;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTask;
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 /**
  * Created by alexeyglushkov on 17.07.16.
  */
 public class DropboxDownloadCommand extends ServiceTask {
-    private DropboxAPI<?> api;
     private String srcPath;
     private String destPath;
 
+    private DropboxHelper helper;
+
     public DropboxDownloadCommand(DropboxAPI<?> api, String srcPath, String destPath) {
-        this.api = api;
+        this.helper = new DropboxHelper(api);
         this.srcPath = srcPath;
         this.destPath = destPath;
     }
 
     @Override
     public void startTask() {
-        downloadFileOrDir(srcPath, destPath);
-        getPrivate().handleTaskCompletion();
-    }
-
-    private void downloadFileOrDir(String srcPath, String destPath) {
-        FileOutputStream outputStream = null;
         try {
-            DropboxAPI.Entry entry = api.metadata(srcPath, 0, null, true, null);
-            if (entry.isDir) {
-                File f = new File(destPath);
-                if (!f.exists()) {
-                    f.mkdir();
-                }
-
-                for (DropboxAPI.Entry e : entry.contents) {
-                    downloadFileOrDir(e.path, addPathName(f.getPath(), e.fileName()));
-                }
-            } else {
-                File file = new File(destPath);
-                outputStream = new FileOutputStream(file);
-
-                api.getFile(srcPath, null, outputStream, new com.dropbox.client2.ProgressListener() {
-                    @Override
-                    public void onProgress(long bytes, long total) {
-                        DropboxDownloadCommand.this.triggerProgressListeners(bytes, total);
-                    }
-                });
-            }
-
+            helper.downloadFileOrDir(srcPath, destPath, getProgressListener());
         } catch (Exception e) {
             e.printStackTrace();
-            getPrivate().setTaskError(new Error(e));
-        }
-    }
-
-    private String addPathName(String path, String name) {
-        if (!path.endsWith(File.separator)) {
-            path = path + File.separator;
         }
 
-        path = path + name;
-        return path;
+        getPrivate().handleTaskCompletion();
     }
 
     private void triggerProgressListeners(final long bytes, final long total) {
@@ -81,5 +49,22 @@ public class DropboxDownloadCommand extends ServiceTask {
         };
 
         getPrivate().triggerProgressListeners(info);
+    }
+
+    //// Creation Method
+
+    private com.dropbox.client2.ProgressListener getProgressListener() {
+        return new com.dropbox.client2.ProgressListener() {
+            @Override
+            public long progressInterval() {
+                // Update the progress bar every half-second or so
+                return 500;
+            }
+
+            @Override
+            public void onProgress(long bytes, long total) {
+                DropboxDownloadCommand.this.triggerProgressListeners(bytes, total);
+            }
+        };
     }
 }

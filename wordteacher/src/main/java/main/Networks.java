@@ -168,12 +168,7 @@ public class Networks {
         AppKeyPair appKeyPair = new AppKeyPair("0zq9vxe6h5u32vv", "6wbv48j08mz5aa9");
         AndroidAuthSession session = new AndroidAuthSession(appKeyPair);
 
-        DropboxAuthorizer authorizer = new DropboxAuthorizer(session, new ContextProvider() {
-            @Override
-            public Context getContext() {
-                return MainApplication.instance.getCurrentContext();
-            }
-        });
+        DropboxAuthorizer authorizer = new DropboxAuthorizer(session, MainApplication.getContextProvider());
 
         return authorizer;
     }

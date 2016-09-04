@@ -1,8 +1,8 @@
 package model;
 
 import com.example.alexeyglushkov.cachemanager.StorageEntry;
-import com.example.alexeyglushkov.cachemanager.DiskStorageEntry;
-import com.example.alexeyglushkov.cachemanager.DiskStorageProvider;
+import com.example.alexeyglushkov.cachemanager.disk.DiskStorageEntry;
+import com.example.alexeyglushkov.cachemanager.disk.DiskStorageProvider;
 
 import java.io.File;
 import java.util.ArrayList;

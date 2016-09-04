@@ -1,7 +1,10 @@
-package com.example.alexeyglushkov.cachemanager;
+package com.example.alexeyglushkov.cachemanager.disk;
 
 import android.util.Log;
 
+import com.example.alexeyglushkov.cachemanager.StorageEntry;
+import com.example.alexeyglushkov.cachemanager.StorageMetadata;
+import com.example.alexeyglushkov.cachemanager.StorageProvider;
 import com.example.alexeyglushkov.streamlib.serializers.ObjectSerializer;
 import com.example.alexeyglushkov.streamlib.serializers.Serializer;
 
