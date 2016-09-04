@@ -33,11 +33,23 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
 
     @Override
     public void startTask() {
+        boolean needDelay = false;
+
         try {
             syncFileOrDir(localPath, dropboPath, getProgressListener());
+            needDelay = true;
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        if (needDelay) {
+            try {
+                // sleep to handle different later file modification date
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         getPrivate().handleTaskCompletion();
@@ -84,6 +96,9 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
     }
 
     private void syncDir(File localDir, DropboxAPI.Entry dropboxEntry, com.dropbox.client2.ProgressListener listener) throws Exception {
+        long localDirDate = localDir.lastModified();
+        long dropboxDirDate = getModifiedTime(dropboxEntry);
+
         // upload part
         for (File file : localDir.listFiles()) {
             DropboxAPI.Entry childEntry = getChild(dropboxEntry, file.getName());
@@ -101,7 +116,6 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
 
             } else {
                 long localDate = file.lastModified();
-                long dropboxDirDate = getModifiedTime(dropboxEntry);
 
                 if (localDate > dropboxDirDate) {
                     if (localDate > lastSyncDate && dropboxDirDate <= lastSyncDate) {
@@ -137,7 +151,6 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
 
             } else {
                 long dropboxDate = getModifiedTime(childEntry);
-                long localDirDate = localDir.lastModified();
 
                 if (dropboxDate > localDirDate) {
                     if (dropboxDate > lastSyncDate && localDirDate <= lastSyncDate) {
@@ -158,8 +171,7 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
     }
 
     private long getModifiedTime(DropboxAPI.Entry dropboxEntry) {
-        // substract a minute to handle later dropbox file modification date than the last sync date
-        return RESTUtility.parseDate(dropboxEntry.modified).getTime(); //- 60 * 1000;
+        return RESTUtility.parseDate(dropboxEntry.modified).getTime();
     }
 
     private void syncFile(File localFile, DropboxAPI.Entry dropboxFile, com.dropbox.client2.ProgressListener listener) throws Exception {
