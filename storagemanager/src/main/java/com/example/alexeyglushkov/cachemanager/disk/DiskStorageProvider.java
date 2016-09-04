@@ -249,6 +249,7 @@ public class DiskStorageProvider implements StorageProvider {
                 Assert.assertTrue(serializer != null);
 
                 entry = new DiskStorageEntry(file, null, metadata, serializer);
+
             } else {
                 error = new Error("DiskStorageProvider.getEntryByKey() exists(): metadata doesn't exist");
                 setLastError(error);

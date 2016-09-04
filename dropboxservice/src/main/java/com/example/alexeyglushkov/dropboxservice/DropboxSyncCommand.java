@@ -33,23 +33,11 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
 
     @Override
     public void startTask() {
-        boolean needDelay = false;
-
         try {
             syncFileOrDir(localPath, dropboPath, getProgressListener());
-            needDelay = true;
 
         } catch (Exception e) {
             e.printStackTrace();
-        }
-
-        if (needDelay) {
-            try {
-                // sleep to handle different later file modification date
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         }
 
         getPrivate().handleTaskCompletion();
@@ -117,12 +105,9 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
             } else {
                 long localDate = file.lastModified();
 
-                if (localDate > dropboxDirDate) {
-                    if (localDate > lastSyncDate && dropboxDirDate <= lastSyncDate) {
-                        helper.uploadFileOrDirectory(file.getPath(), helper.addPathName(dropboxEntry.path, file.getName()), listener);
-                    } else {
-                        // TODO
-                    }
+                if (localDate > lastSyncDate) {
+                    helper.uploadFileOrDirectory(file.getPath(), helper.addPathName(dropboxEntry.path, file.getName()), listener);
+
                 } else if (dropboxDirDate > localDate) {
                     if (dropboxDirDate > lastSyncDate && localDate <= lastSyncDate) {
                         deleteDirectory(file);
@@ -152,12 +137,9 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
             } else {
                 long dropboxDate = getModifiedTime(childEntry);
 
-                if (dropboxDate > localDirDate) {
-                    if (dropboxDate > lastSyncDate && localDirDate <= lastSyncDate) {
-                        helper.downloadFileOrDir(childEntry.path, helper.addPathName(localDir.getPath(), childEntry.fileName()), listener);
-                    } else {
-                        // TODO
-                    }
+                if (dropboxDate > lastSyncDate) {
+                    helper.downloadFileOrDir(childEntry.path, helper.addPathName(localDir.getPath(), childEntry.fileName()), listener);
+
                 } else if (localDirDate > dropboxDate) {
                     if (localDirDate > lastSyncDate && dropboxDate <= lastSyncDate) {
                         helper.deleteFile(childEntry.path, listener);
