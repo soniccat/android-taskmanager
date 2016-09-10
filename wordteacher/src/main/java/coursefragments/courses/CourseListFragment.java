@@ -38,12 +38,6 @@ public class CourseListFragment extends BaseListFragment<Course> implements Sort
         return fragment;
     }
 
-    @Override
-    protected void initialize() {
-        super.initialize();
-        getCourseHolder().addListener(this);
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -55,6 +49,7 @@ public class CourseListFragment extends BaseListFragment<Course> implements Sort
         super.onViewStateRestored(savedInstanceState);
         this.savedInstanceState = savedInstanceState;
 
+        getCourseHolder().addListener(this);
         if (getCourseHolder().getState() != CourseHolder.State.Unitialized) {
             handleLoadedCourses();
             reload();

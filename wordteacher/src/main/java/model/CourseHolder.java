@@ -46,18 +46,21 @@ public class CourseHolder {
     //// Actions
 
     public void addListener(CourseHolderListener listener) {
-        listeners.add(new WeakReference<>(listener));
+        if (!listeners.contains(listener)) {
+            listeners.add(new WeakReference<>(listener));
+        }
     }
 
     public void removeListener(CourseHolderListener listener) {
         listeners.remove(listener);
     }
 
-    public Task loadCourseListTask() {
-        Task task = new SimpleTask() {
+    public Task getLoadCourseListTask() {
+        final Task task = new SimpleTask() {
             @Override
             public void startTask() {
-                loadCourses();
+                ArrayList<Course> courses = loadCourses();
+                getPrivate().setTaskResult(courses);
                 handleTaskCompletion();
             }
         };
@@ -65,6 +68,11 @@ public class CourseHolder {
         task.setTaskCallback(new Task.Callback() {
             @Override
             public void onCompleted(boolean cancelled) {
+                Object res = task.getTaskResult();
+                if (res != null) {
+                    courses = (ArrayList<Course>) res;
+                }
+
                 state = State.Loaded;
                 onLoaded();
             }
@@ -73,7 +81,9 @@ public class CourseHolder {
         return task;
     }
 
-    public void loadCourses() {
+    public ArrayList<Course> loadCourses() {
+        ArrayList<Course> courses = new ArrayList<>();
+
         List<StorageEntry> entries = diskProvider.getEntries();
         for (StorageEntry entry : entries) {
             DiskStorageEntry diskEntry = (DiskStorageEntry)entry;
@@ -82,6 +92,8 @@ public class CourseHolder {
                 courses.add(course);
             }
         }
+
+        return courses;
     }
 
     public Error addCourse(Course course) {

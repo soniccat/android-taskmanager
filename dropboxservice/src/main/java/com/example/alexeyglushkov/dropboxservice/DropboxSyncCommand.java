@@ -154,7 +154,7 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
         } else if (localDate > lastSyncDate) {
             helper.uploadFile(localFile.getPath(), dropboxFile.path, listener);
 
-        } else {
+        } else if (dropboxDate > lastSyncDate) {
             helper.downloadFile(dropboxFile.path, localFile.getPath(), listener);
         }
     }

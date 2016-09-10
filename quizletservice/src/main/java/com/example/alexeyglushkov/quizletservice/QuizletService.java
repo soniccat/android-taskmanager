@@ -60,7 +60,9 @@ public class QuizletService extends SimpleService {
     //// Actions
 
     public void addListener(QuizletServiceListener listener) {
-        listeners.add(new WeakReference<>(listener));
+        if (!listeners.contains(listener)) {
+            listeners.add(new WeakReference<>(listener));
+        }
     }
 
     public void removeListener(QuizletServiceListener listener) {

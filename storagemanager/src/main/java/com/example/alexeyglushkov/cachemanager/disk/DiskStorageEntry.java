@@ -1,6 +1,9 @@
 package com.example.alexeyglushkov.cachemanager.disk;
 
+import android.util.Log;
+
 import com.example.alexeyglushkov.cachemanager.StorageEntry;
+import com.example.alexeyglushkov.streamlib.readersandwriters.StringReader;
 import com.example.alexeyglushkov.streamlib.serializers.Serializer;
 
 import java.io.BufferedInputStream;
@@ -46,6 +49,10 @@ public class DiskStorageEntry implements StorageEntry {
 
         try {
             fis = new BufferedInputStream(new FileInputStream(file));
+            StringReader tstReader = new StringReader(null);
+            //String str = tstReader.readStreamToString(fis);
+            //Log.d("Parsing", str);
+
             object = serializer.read(fis);
             error = serializer.getReadError();
 

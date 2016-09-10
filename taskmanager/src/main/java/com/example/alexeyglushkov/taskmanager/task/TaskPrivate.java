@@ -77,4 +77,10 @@ public interface TaskPrivate extends Task {
     // Caller: Task
     //
     void handleTaskCompletion();
+
+    // To keep the result
+    //
+    // Caller: Task
+    //
+    void setTaskResult(Object result);
 }

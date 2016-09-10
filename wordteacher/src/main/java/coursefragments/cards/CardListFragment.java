@@ -39,12 +39,6 @@ public class CardListFragment extends BaseListFragment<Card> implements Sortable
         return fragment;
     }
 
-    @Override
-    protected void initialize() {
-        super.initialize();
-        getCourseHolder().addListener(this);
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -56,6 +50,7 @@ public class CardListFragment extends BaseListFragment<Card> implements Sortable
         super.onViewStateRestored(savedInstanceState);
         this.savedInstanceState = savedInstanceState;
 
+        getCourseHolder().addListener(this);
         if (getCourseHolder().getState() != CourseHolder.State.Unitialized) {
             handleLoadedCourses();
             reload();

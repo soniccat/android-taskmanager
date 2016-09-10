@@ -40,13 +40,6 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
     }
 
     @Override
-    protected void initialize() {
-        super.initialize();
-
-        getQuizletService().addListener(this);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_quizlet_cards, container, false);
@@ -57,6 +50,7 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
         super.onViewStateRestored(savedInstanceState);
         this.savedInstanceState = savedInstanceState;
 
+        getQuizletService().addListener(this);
         if (getQuizletService().getState() != QuizletService.State.Unitialized) {
             handleLoadedSets();
             reload();

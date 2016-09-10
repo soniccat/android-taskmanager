@@ -25,6 +25,7 @@ public abstract class TaskImpl implements Task, TaskPrivate {
     protected boolean isCancelled; // is set in subclasses when task is really cancelled
     protected float progressMinChange = 0.1f;
     protected Error error;
+    protected Object result;
     protected String taskId;
     protected LoadPolicy loadPolicy = LoadPolicy.SkipIfAdded;
     protected int priority;
@@ -157,6 +158,14 @@ public abstract class TaskImpl implements Task, TaskPrivate {
     @Override
     public boolean getNeedCancelTask() {
         return needCancelTask;
+    }
+
+    public Object getTaskResult() {
+        return result;
+    }
+
+    public void setTaskResult(Object result) {
+        this.result = result;
     }
 
     @Override

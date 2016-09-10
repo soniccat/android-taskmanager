@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import com.example.alexeyglushkov.authcachemanager.AccountCacheStore;
 import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
-import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
@@ -28,8 +27,6 @@ import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import authorization.AuthActivityProxy;
 import model.CourseHolder;
@@ -161,7 +158,7 @@ public class MainApplication extends Application {
     }
 
     public void loadCourseHolder() {
-        taskManager.addTask(courseHolder.loadCourseListTask());
+        taskManager.addTask(courseHolder.getLoadCourseListTask());
     }
 
     //// Creation Methods

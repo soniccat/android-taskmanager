@@ -9,7 +9,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.*;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,8 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import coursefragments.CourseListStackFragment;
-import coursefragments.cards.CardListFragment;
-import coursefragments.courses.CourseListFragment;
 import learning.LearnActivity;
 import main.BaseActivity;
 import main.MainApplication;
@@ -36,7 +33,6 @@ import main.Preferences;
 import model.Card;
 import model.Course;
 import model.CourseHolder;
-import quizletfragments.sets.QuizletSetListFragment;
 import tools.Sortable;
 import quizletfragments.terms.QuizletTermFragmentMenuListener;
 import quizletfragments.terms.QuizletTermListFragment;
@@ -345,10 +341,7 @@ public class MainActivity extends BaseActivity implements
         getMainApplication().getDropboxService().sync(getCourseHolder().getDirectory().getPath(), "/CoursesTest/", new ServiceCommand.CommandCallback() {
             @Override
             public void onCompleted(Error error) {
-                int i = 0;
-                ++i;
-
-                getCourseHolder().loadCourses();
+                getTaskManager().addTask(getCourseHolder().getLoadCourseListTask());
             }
         });
     }
@@ -408,7 +401,6 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void onLoaded() {
-        //onQuizletServiceLoaded();
         handleLoadedQuizletSets();
     }
 

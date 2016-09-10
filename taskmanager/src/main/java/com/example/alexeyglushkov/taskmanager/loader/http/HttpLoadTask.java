@@ -20,7 +20,7 @@ public class HttpLoadTask extends SimpleTask {
     protected HttpURLConnectionProvider provider;
     protected int contentLength;
     protected HTTPConnectionStreamReader streamReader;
-    protected Object handledData;
+    protected Object handledData; // TODO: use result object and api
     protected int responseCode;
 
     public HttpLoadTask(HttpURLConnectionProvider provider, HTTPConnectionStreamReader streamReader) {
