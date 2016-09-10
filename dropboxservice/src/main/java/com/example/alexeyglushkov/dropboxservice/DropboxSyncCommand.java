@@ -84,8 +84,6 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
     }
 
     private void syncDir(File localDir, DropboxAPI.Entry dropboxEntry, com.dropbox.client2.ProgressListener listener) throws Exception {
-        long localDirDate = localDir.lastModified();
-        long dropboxDirDate = getModifiedTime(dropboxEntry);
 
         // upload part
         for (File file : localDir.listFiles()) {
@@ -108,13 +106,8 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
                 if (localDate > lastSyncDate) {
                     helper.uploadFileOrDirectory(file.getPath(), helper.addPathName(dropboxEntry.path, file.getName()), listener);
 
-                } else if (dropboxDirDate > localDate) {
-                    if (dropboxDirDate > lastSyncDate && localDate <= lastSyncDate) {
-                        deleteDirectory(file);
-
-                    } else {
-                        // TODO
-                    }
+                } else {
+                    deleteDirectory(file);
                 }
             }
         }
@@ -140,13 +133,8 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
                 if (dropboxDate > lastSyncDate) {
                     helper.downloadFileOrDir(childEntry.path, helper.addPathName(localDir.getPath(), childEntry.fileName()), listener);
 
-                } else if (localDirDate > dropboxDate) {
-                    if (localDirDate > lastSyncDate && dropboxDate <= lastSyncDate) {
-                        helper.deleteFile(childEntry.path, listener);
-
-                    } else {
-                        // TODO:
-                    }
+                } else {
+                    helper.deleteFile(childEntry.path, listener);
                 }
             }
         }
@@ -160,18 +148,14 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
         long localDate = localFile.lastModified();
         long dropboxDate = getModifiedTime(dropboxFile);
 
-        if (localDate > dropboxDate) {
-            if (localDate > lastSyncDate && dropboxDate <= lastSyncDate) {
-                helper.uploadFile(localFile.getPath(), dropboxFile.path, listener);
-            } else {
-                // TODO
-            }
-        } else if (dropboxDate > localDate) {
-            if (dropboxDate > lastSyncDate && localDate <= lastSyncDate) {
-                helper.downloadFile(dropboxFile.path, localFile.getPath(), listener);
-            } else {
-                // TODO
-            }
+        if (localDate > lastSyncDate && dropboxDate > lastSyncDate) {
+            // TODO: merge
+
+        } else if (localDate > lastSyncDate) {
+            helper.uploadFile(localFile.getPath(), dropboxFile.path, listener);
+
+        } else {
+            helper.downloadFile(dropboxFile.path, localFile.getPath(), listener);
         }
     }
 

@@ -17,6 +17,7 @@ import java.util.List;
 import listfragment.BaseListAdaptor;
 import listfragment.BaseListFragment;
 import listfragment.CompareStrategyFactory;
+import listfragment.NullStorableListProvider;
 import main.MainApplication;
 import main.Preferences;
 import tools.SortOrderCompareStrategy;
@@ -25,9 +26,25 @@ import tools.Sortable;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> implements Sortable {
+public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> implements Sortable, QuizletService.QuizletServiceListener {
 
     //// Creation, initialization, restoration
+
+    private Bundle savedInstanceState;
+
+    public static QuizletTermListFragment create() {
+        QuizletTermListFragment fragment = new QuizletTermListFragment();
+        fragment.initialize();
+
+        return fragment;
+    }
+
+    @Override
+    protected void initialize() {
+        super.initialize();
+
+        getQuizletService().addListener(this);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -38,26 +55,43 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
     @Override
     public void onViewStateRestored(@Nullable final Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
+        this.savedInstanceState = savedInstanceState;
 
-        getMainApplication().addQuizletServiceListener(new MainApplication.ReadyListener() {
-            @Override
-            public void onReady() {
-                onQuizletServiceLoaded(savedInstanceState);
-            }
-        });
+        if (getQuizletService().getState() != QuizletService.State.Unitialized) {
+            handleLoadedSets();
+            reload();
+        }
+    }
 
-        reload();
+    private void restoreIfNeeded() {
+        if (this.savedInstanceState != null || provider instanceof NullStorableListProvider) {
+            provider = providerFactory.restore(this.savedInstanceState);
+            this.savedInstanceState = null;
+        }
     }
 
     //// Events
 
-    private void onQuizletServiceLoaded(Bundle savedInstanceState) {
-        providerFactory = createFactory();
-        restoreProviderIfNeeded(savedInstanceState);
+    private void handleLoadedSets() {
+        restoreIfNeeded();
         reload();
     }
 
-    //// Creation methods
+    //// Interface Methods
+
+    // QuizletService.QuizletServiceListener
+
+    @Override
+    public void onLoaded() {
+        handleLoadedSets();
+    }
+
+    @Override
+    public void onLoadError(Error error) {
+
+    }
+
+    //// Creation Methods
 
     @Override
     protected BaseListAdaptor createAdapter() {
@@ -80,14 +114,8 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
         return adapter;
     }
 
-    private void createFactoryIfNeeded() {
-        if (providerFactory == null) {
-            providerFactory = createFactory();
-        }
-    }
-
     @NonNull
-    private QuizletTermListFactory createFactory() {
+    protected QuizletTermListFactory createProviderFactory() {
         return new QuizletTermListFactory(getQuizletService());
     }
 
@@ -101,7 +129,6 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
     // Set Data
 
     public void setTermSet(QuizletSet set) {
-        createFactoryIfNeeded();
         provider = providerFactory.createFromObject(set);
     }
 
@@ -113,9 +140,6 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
 
     @Override
     public void setSortOrder(Preferences.SortOrder sortOrder) {
-        Preferences.setQuizletTermSortOrder(sortOrder);
-
-        createCompareStrategyFactoryIfNeeded();
         setCompareStrategy(getCompareStrategyFactory().createStrategy(sortOrder));
         reload();
     }

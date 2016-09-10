@@ -92,7 +92,7 @@ public class CourseListStackFragment extends StackFragment implements Sortable {
     // Show UI Actions
 
     private void showCourseFragment() {
-        CourseListFragment courseListFragment = new CourseListFragment();
+        CourseListFragment courseListFragment = CourseListFragment.create();
         courseListFragment.setSortOrder(Preferences.getCourseListSortOrder());
         courseListFragment.setListener(getMenuCourseListener());
 
@@ -100,7 +100,7 @@ public class CourseListStackFragment extends StackFragment implements Sortable {
     }
 
     public void showCardListFragment(Course course) {
-        CardListFragment fragment = new CardListFragment();
+        CardListFragment fragment = CardListFragment.create();
         fragment.setSortOrder(Preferences.getCardListSortOrder());
         fragment.setListener(getMenuCardsListener());
         fragment.setParentCourse(course);

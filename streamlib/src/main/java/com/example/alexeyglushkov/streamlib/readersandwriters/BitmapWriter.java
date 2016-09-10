@@ -21,6 +21,8 @@ public class BitmapWriter implements OutputStreamWriter {
 
     @Override
     public Error writeStream(OutputStream stream, Object object) {
+        lastError = null;
+
         Bitmap bitmap = (Bitmap)object;
         boolean isCompressed = bitmap.compress(format, quality, stream);
 

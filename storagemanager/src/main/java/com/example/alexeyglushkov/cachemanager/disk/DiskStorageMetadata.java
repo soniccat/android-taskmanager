@@ -9,6 +9,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -57,9 +58,7 @@ public class DiskStorageMetadata extends HashMap<String, Object> implements Stor
         return error;
     }
 
-    // TODO: throws an exception
-    public static DiskStorageMetadata load(File file) {
-        Error error = null;
+    public static DiskStorageMetadata load(File file) throws IOException {
         InputStream fis = null;
         DiskStorageMetadata result = null;
 
@@ -69,16 +68,9 @@ public class DiskStorageMetadata extends HashMap<String, Object> implements Stor
             result = (DiskStorageMetadata)serializer.read(fis);
             result.setFile(file);
 
-        } catch (Exception ex) {
-            // TODO: return these errors
-            error = new Error("DiskCacheEntry exception: " + ex.getMessage());
         } finally {
             if (fis != null) {
-                try {
-                    fis.close();
-                } catch (Exception ex) {
-                    error = new Error("DiskCacheEntry exception: " + ex.getMessage());
-                }
+                fis.close();
             }
         }
 

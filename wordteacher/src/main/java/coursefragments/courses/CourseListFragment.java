@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.wordteacher.R;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 import listfragment.BaseListAdaptor;
 import listfragment.BaseListFragment;
 import listfragment.CompareStrategyFactory;
+import listfragment.NullStorableListProvider;
 import main.MainApplication;
 import main.Preferences;
 import model.Course;
@@ -24,9 +26,23 @@ import tools.Sortable;
 /**
  * Created by alexeyglushkov on 08.05.16.
  */
-public class CourseListFragment extends BaseListFragment<Course> implements Sortable {
+public class CourseListFragment extends BaseListFragment<Course> implements Sortable, CourseHolder.CourseHolderListener {
 
     //// Creation, initialization, restoration
+    private Bundle savedInstanceState;
+
+    public static CourseListFragment create() {
+        CourseListFragment fragment = new CourseListFragment();
+        fragment.initialize();
+
+        return fragment;
+    }
+
+    @Override
+    protected void initialize() {
+        super.initialize();
+        getCourseHolder().addListener(this);
+    }
 
     @Nullable
     @Override
@@ -37,21 +53,29 @@ public class CourseListFragment extends BaseListFragment<Course> implements Sort
     @Override
     public void onViewStateRestored(@Nullable final Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
+        this.savedInstanceState = savedInstanceState;
 
-        getMainApplication().addCourseHolderListener(new MainApplication.ReadyListener() {
-            @Override
-            public void onReady() {
-                onHolderLoaded(savedInstanceState);
-            }
-        });
-        reload();
+        if (getCourseHolder().getState() != CourseHolder.State.Unitialized) {
+            handleLoadedCourses();
+            reload();
+        }
+    }
+
+    private void restoreIfNeeded() {
+        if (this.savedInstanceState != null || provider instanceof NullStorableListProvider) {
+            provider = providerFactory.restore(this.savedInstanceState);
+            this.savedInstanceState = null;
+        }
     }
 
     //// Events
 
-    private void onHolderLoaded(Bundle savedInstanceState) {
-        providerFactory = createFactory();
-        restoreProviderIfNeeded(savedInstanceState);
+    private void onHolderLoaded() {
+        handleLoadedCourses();
+    }
+
+    private void handleLoadedCourses() {
+        restoreIfNeeded();
         reload();
     }
 
@@ -84,7 +108,7 @@ public class CourseListFragment extends BaseListFragment<Course> implements Sort
     }
 
     @NonNull
-    private CourseListFactory createFactory() {
+    protected CourseListFactory createProviderFactory() {
         return new CourseListFactory(getCourseHolder());
     }
 
@@ -103,9 +127,15 @@ public class CourseListFragment extends BaseListFragment<Course> implements Sort
     }
 
     public void setSortOrder(Preferences.SortOrder sortOrder) {
-        createCompareStrategyFactoryIfNeeded();
         setCompareStrategy(getCompareStrategyFactory().createStrategy(sortOrder));
         reload();
+    }
+
+    // CourseHolder.CourseHolderListener
+
+    @Override
+    public void onLoaded() {
+        onHolderLoaded();
     }
 
     //// Setters

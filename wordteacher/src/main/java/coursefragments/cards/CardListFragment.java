@@ -14,6 +14,7 @@ import coursefragments.courses.CourseCompareStrategyFactory;
 import listfragment.BaseListAdaptor;
 import listfragment.BaseListFragment;
 import listfragment.CompareStrategyFactory;
+import listfragment.NullStorableListProvider;
 import main.MainApplication;
 import main.Preferences;
 import model.Card;
@@ -26,9 +27,23 @@ import tools.Sortable;
 /**
  * Created by alexeyglushkov on 30.07.16.
  */
-public class CardListFragment extends BaseListFragment<Card> implements Sortable {
+public class CardListFragment extends BaseListFragment<Card> implements Sortable, CourseHolder.CourseHolderListener {
 
     //// Creation, initialization, restoration
+    private Bundle savedInstanceState;
+
+    public static CardListFragment create() {
+        CardListFragment fragment = new CardListFragment();
+        fragment.initialize();
+
+        return fragment;
+    }
+
+    @Override
+    protected void initialize() {
+        super.initialize();
+        getCourseHolder().addListener(this);
+    }
 
     @Nullable
     @Override
@@ -39,20 +54,29 @@ public class CardListFragment extends BaseListFragment<Card> implements Sortable
     @Override
     public void onViewStateRestored(@Nullable final Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
+        this.savedInstanceState = savedInstanceState;
 
-        MainApplication.instance.addCourseHolderListener(new MainApplication.ReadyListener() {
-            @Override
-            public void onReady() {
-                onHolderLoaded(savedInstanceState);
-            }
-        });
+        if (getCourseHolder().getState() != CourseHolder.State.Unitialized) {
+            handleLoadedCourses();
+            reload();
+        }
+    }
+
+    private void restoreIfNeeded() {
+        if (this.savedInstanceState != null || provider instanceof NullStorableListProvider) {
+            provider = providerFactory.restore(this.savedInstanceState);
+            this.savedInstanceState = null;
+        }
     }
 
     //// Events
 
-    private void onHolderLoaded(Bundle savedInstanceState) {
-        providerFactory = createFactory();
-        restoreProviderIfNeeded(savedInstanceState);
+    private void onHolderLoaded() {
+        handleLoadedCourses();
+    }
+
+    private void handleLoadedCourses() {
+        restoreIfNeeded();
         reload();
     }
 
@@ -86,14 +110,8 @@ public class CardListFragment extends BaseListFragment<Card> implements Sortable
         return adapter;
     }
 
-    private void createFactoryIfNeeded() {
-        if (providerFactory == null) {
-            providerFactory = createFactory();
-        }
-    }
-
     @NonNull
-    private CardListFactory createFactory() {
+    protected CardListFactory createProviderFactory() {
         return new CardListFactory(getCourseHolder());
     }
 
@@ -107,7 +125,6 @@ public class CardListFragment extends BaseListFragment<Card> implements Sortable
 
     @Override
     public void setSortOrder(Preferences.SortOrder sortOrder) {
-        createCompareStrategyFactoryIfNeeded();
         setCompareStrategy(getCompareStrategyFactory().createStrategy(sortOrder));
         reload();
     }
@@ -117,14 +134,20 @@ public class CardListFragment extends BaseListFragment<Card> implements Sortable
         return getCompareStrategy().getSortOrder();
     }
 
+    // CourseHolder.CourseHolderListener
+
+    @Override
+    public void onLoaded() {
+        onHolderLoaded();
+    }
 
     //// Setters
 
     // Data Setters
 
     public void setParentCourse(Course course) {
-        createFactoryIfNeeded();
         provider = providerFactory.createFromObject(course);
+        reload();
     }
 
     //// Getters

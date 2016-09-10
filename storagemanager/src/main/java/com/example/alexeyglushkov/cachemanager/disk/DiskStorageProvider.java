@@ -32,7 +32,8 @@ public class DiskStorageProvider implements StorageProvider {
     private static String METADATA_PREFIX = "_metadata";
 
     private File directory;
-    private Map<Class,Serializer> serializerMap;
+    private Serializer defaultSerializer = new ObjectSerializer();
+    private Map<Class, Serializer> serializerMap;
     private Error lastError;
 
     private Map<String, WeakReference<Object>> lockMap = new HashMap<>();
@@ -40,14 +41,6 @@ public class DiskStorageProvider implements StorageProvider {
     public DiskStorageProvider(File directory) {
         this.directory = directory;
         this.serializerMap = new HashMap<>();
-    }
-
-    public File getDirectory() {
-        return directory;
-    }
-
-    public void setSerializer(Serializer serializer, Class cl) {
-        serializerMap.put(cl, serializer);
     }
 
     @Override
@@ -185,11 +178,7 @@ public class DiskStorageProvider implements StorageProvider {
 
     private Serializer getSerializer(Class cl) {
         Serializer serializer = serializerMap.get(cl);
-        if (serializer == null && Serializable.class.isAssignableFrom(cl)) {
-            serializer = new ObjectSerializer();
-        }
-
-        return serializer;
+        return serializer == null ? defaultSerializer : serializer;
     }
 
     @Override
@@ -237,15 +226,22 @@ public class DiskStorageProvider implements StorageProvider {
 
         if (!file.exists()) {
             error = new Error("DiskStorageProvider.getEntryByKey() exists(): file doesn't exist");
+            setLastError(error);
         }
 
         if (error == null) {
             DiskStorageMetadata metadata = null;
             File metadataFile = getKeyMetadataFile(key);
             if (metadataFile.exists()) {
-                metadata = DiskStorageMetadata.load(metadataFile);
+                Serializer serializer = null;
+                try {
+                    metadata = DiskStorageMetadata.load(metadataFile);
+                    serializer = getSerializer(metadata.getEntryClass());
 
-                Serializer serializer = getSerializer(metadata.getEntryClass());
+                } catch (IOException e) {
+                    serializer = defaultSerializer;
+                }
+
                 Assert.assertTrue(serializer != null);
 
                 entry = new DiskStorageEntry(file, null, metadata, serializer);
@@ -343,5 +339,21 @@ public class DiskStorageProvider implements StorageProvider {
         }
 
         return error;
+    }
+
+    //// Setter
+
+    public void setSerializer(Serializer serializer, Class cl) {
+        serializerMap.put(cl, serializer);
+    }
+
+    public void setDefaultSerializer(Serializer defaultSerializer) {
+        this.defaultSerializer = defaultSerializer;
+    }
+
+    //// Getter
+
+    public File getDirectory() {
+        return directory;
     }
 }

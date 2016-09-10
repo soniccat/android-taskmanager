@@ -21,6 +21,8 @@ public class StringReader implements InputStreamReader {
 
     @Override
     public Object readStream(InputStream stream) {
+        error = null;
+
         try {
             Object object = this.readStreamToString(stream);
             if (stringHandler != null) {

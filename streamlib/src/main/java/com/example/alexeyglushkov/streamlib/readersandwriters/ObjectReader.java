@@ -19,6 +19,8 @@ public class ObjectReader implements InputStreamReader {
 
     @Override
     public Object readStream(InputStream stream) {
+        lastError = null;
+
         Object result = null;
         try {
             Object object = this.readStreamToObject(stream);

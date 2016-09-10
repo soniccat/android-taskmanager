@@ -3,8 +3,12 @@ package model;
 import com.example.alexeyglushkov.cachemanager.StorageEntry;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageEntry;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageProvider;
+import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
+import com.example.alexeyglushkov.taskmanager.task.Task;
+import com.example.alexeyglushkov.taskmanager.task.WeakRefList;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -13,16 +17,60 @@ import java.util.UUID;
  * Created by alexeyglushkov on 07.05.16.
  */
 public class CourseHolder {
+    public enum State {
+        Unitialized,
+        Loaded
+    }
+
     private DiskStorageProvider diskProvider;
     private ArrayList<Course> courses = new ArrayList<>();
+    private WeakRefList<CourseHolderListener> listeners = new WeakRefList<>();
+
+    private State state = State.Unitialized;
+
+    //// Initialization
 
     public CourseHolder(File directory) {
         diskProvider = new DiskStorageProvider(directory);
-        diskProvider.setSerializer(new CourseSerializer(), Course.class);
+        diskProvider.setDefaultSerializer(new CourseSerializer());
     }
 
-    public File getDirectory() {
-        return diskProvider.getDirectory();
+    //// Events
+
+    private void onLoaded() {
+        for (WeakReference<CourseHolderListener> listener : listeners) {
+            listener.get().onLoaded();
+        }
+    }
+
+    //// Actions
+
+    public void addListener(CourseHolderListener listener) {
+        listeners.add(new WeakReference<>(listener));
+    }
+
+    public void removeListener(CourseHolderListener listener) {
+        listeners.remove(listener);
+    }
+
+    public Task loadCourseListTask() {
+        Task task = new SimpleTask() {
+            @Override
+            public void startTask() {
+                loadCourses();
+                handleTaskCompletion();
+            }
+        };
+
+        task.setTaskCallback(new Task.Callback() {
+            @Override
+            public void onCompleted(boolean cancelled) {
+                state = State.Loaded;
+                onLoaded();
+            }
+        });
+
+        return task;
     }
 
     public void loadCourses() {
@@ -61,70 +109,6 @@ public class CourseHolder {
         }
 
         return isAdded;
-    }
-
-    public ArrayList<Card> getNewCards(Course course, List<Card> cards) {
-        ArrayList<Card> result = new ArrayList<>(cards);
-        List<Card> courseCards = course.getCards();
-        for (Card courseCard : courseCards) {
-            int i = getCardIndex(courseCard.getTerm(), result);
-            if (i != -1) {
-                result.remove(i);
-            }
-        }
-
-        return result;
-    }
-
-    public int getCardIndex(String title, List<Card> cards) {
-        int resultIndex = -1;
-        for (int i=0; i<cards.size(); ++i) {
-            if (cards.get(i).getTerm().equals(title)) {
-                resultIndex = i;
-                break;
-            }
-        }
-
-        return resultIndex;
-    }
-
-    public Course getCourse(UUID courseId) {
-        Course course = null;
-        for (Course c : getCourses()) {
-            if (c.getId().equals(courseId)) {
-                course = c;
-                break;
-            }
-        }
-
-        return course;
-    }
-
-    public File getCourseFile(Course course) {
-        return diskProvider.getKeyFile(getKey(course));
-    }
-
-    private String getKey(Course course) {
-        return course.getId().toString();
-    }
-
-    // TODO: optimize
-    public Card getCard(UUID cardId) {
-        Card resultCard = null;
-        for (Course course : getCourses()) {
-            for (Card card : course.getCards()) {
-                if (card.getId().equals(cardId)) {
-                    resultCard = card;
-                    break;
-                }
-            }
-
-            if (resultCard != null) {
-                break;
-            }
-        }
-
-        return resultCard;
     }
 
     private Error storeCourse(Course course) {
@@ -194,7 +178,87 @@ public class CourseHolder {
         }
     }
 
+    //// Getters
+
+    public File getDirectory() {
+        return diskProvider.getDirectory();
+    }
+
     public ArrayList<Course> getCourses() {
         return courses;
+    }
+
+    public ArrayList<Card> getNewCards(Course course, List<Card> cards) {
+        ArrayList<Card> result = new ArrayList<>(cards);
+        List<Card> courseCards = course.getCards();
+        for (Card courseCard : courseCards) {
+            int i = getCardIndex(courseCard.getTerm(), result);
+            if (i != -1) {
+                result.remove(i);
+            }
+        }
+
+        return result;
+    }
+
+    public int getCardIndex(String title, List<Card> cards) {
+        int resultIndex = -1;
+        for (int i=0; i<cards.size(); ++i) {
+            if (cards.get(i).getTerm().equals(title)) {
+                resultIndex = i;
+                break;
+            }
+        }
+
+        return resultIndex;
+    }
+
+    public Course getCourse(UUID courseId) {
+        Course course = null;
+        for (Course c : getCourses()) {
+            if (c.getId().equals(courseId)) {
+                course = c;
+                break;
+            }
+        }
+
+        return course;
+    }
+
+    public File getCourseFile(Course course) {
+        return diskProvider.getKeyFile(getKey(course));
+    }
+
+    private String getKey(Course course) {
+        return course.getId().toString();
+    }
+
+    // TODO: optimize
+    public Card getCard(UUID cardId) {
+        Card resultCard = null;
+        for (Course course : getCourses()) {
+            for (Card card : course.getCards()) {
+                if (card.getId().equals(cardId)) {
+                    resultCard = card;
+                    break;
+                }
+            }
+
+            if (resultCard != null) {
+                break;
+            }
+        }
+
+        return resultCard;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    //// Interfaces
+
+    public interface CourseHolderListener {
+        void onLoaded();
     }
 }

@@ -19,6 +19,8 @@ public class ByteArrayWriter implements OutputStreamWriter {
 
     @Override
     public Error writeStream(OutputStream stream, Object object) {
+        lastError = null;
+
         if (convertor != null) {
             object = this.convertor.convert(object);
         }

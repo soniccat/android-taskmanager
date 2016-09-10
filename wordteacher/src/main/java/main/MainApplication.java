@@ -48,9 +48,6 @@ public class MainApplication extends Application {
 
     public static MainApplication instance;
 
-    private List<ReadyListener> courseHolderListeners = new ArrayList<>();
-    private List<ReadyListener> quizletServiceListeners = new ArrayList<>();
-
     public MainApplication() {
         super();
         instance = this;
@@ -68,6 +65,8 @@ public class MainApplication extends Application {
 
         cleanCache();
         loadAccountStore();
+
+        createCourseHolder();
         loadCourseHolder();
     }
 
@@ -118,28 +117,12 @@ public class MainApplication extends Application {
     }
 
     public void loadAccountStore() {
-        final Task loadAccountTask = new SimpleTask() {
-            @Override
-            public void startTask() {
-                File authDir = getDir("AuthFolder", Context.MODE_PRIVATE);
-                AccountCacheStore store = new AccountCacheStore(authDir);
-                store.load();
-                restoreAccounts(store);
-
-                getPrivate().setTaskUserData(store);
-                getPrivate().handleTaskCompletion();
-            }
-        };
-
-        loadAccountTask.setTaskCallback(new Task.Callback() {
-            @Override
-            public void onCompleted(boolean cancelled) {
-                MainApplication.this.accountStore = (AccountCacheStore) loadAccountTask.getTaskUserData();
-                onAccountStoreLoaded();
-            }
-        });
-
-        taskManager.addTask(loadAccountTask);
+        // TODO: make it async
+        File authDir = getDir("AuthFolder", Context.MODE_PRIVATE);
+        this.accountStore = new AccountCacheStore(authDir);
+        this.accountStore.load();
+        restoreAccounts((AccountCacheStore)this.accountStore);
+        onAccountStoreLoaded();
     }
 
     private void restoreAccounts(AccountCacheStore store) {
@@ -161,14 +144,8 @@ public class MainApplication extends Application {
         String id = Integer.toString(quizletAccount.getServiceType());
         ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
 
-        final QuizletService service = new QuizletService(quizletAccount, quizletCommandProvider, serviceCommandRunner);
-        service.restore(new ServiceCommand.CommandCallback() {
-            @Override
-            public void onCompleted(Error error) {
-                MainApplication.this.quizletService = service;
-                onQuizletServiceLoaded();
-            }
-        });
+        this.quizletService = new QuizletService(quizletAccount, quizletCommandProvider, serviceCommandRunner);
+        this.quizletService.restore();
     }
 
     private void createDropboxService() {
@@ -183,61 +160,18 @@ public class MainApplication extends Application {
         dropboxService = new DropboxService(dropboxAccount, commandProvider, serviceCommandRunner, storage);
     }
 
-    private void loadCourseHolder() {
-        final Task loadCourseHolderTask = new SimpleTask() {
-            @Override
-            public void startTask() {
-                File authDir = getDir("CourseHolder", Context.MODE_PRIVATE);
-                CourseHolder store = new CourseHolder(authDir);
-                store.loadCourses();
-
-                getPrivate().setTaskUserData(store);
-                getPrivate().handleTaskCompletion();
-            }
-        };
-
-        loadCourseHolderTask.setTaskCallback(new Task.Callback() {
-            @Override
-            public void onCompleted(boolean cancelled) {
-                MainApplication.this.courseHolder = (CourseHolder) loadCourseHolderTask.getTaskUserData();
-                onCourseHolderLoaded();
-            }
-        });
-
-        taskManager.addTask(loadCourseHolderTask);
+    public void loadCourseHolder() {
+        taskManager.addTask(courseHolder.loadCourseListTask());
     }
 
-    private void onCourseHolderLoaded() {
-        for (ReadyListener listener : courseHolderListeners) {
-            listener.onReady();
-        }
+    //// Creation Methods
 
-        courseHolderListeners.clear();
+    private void createCourseHolder() {
+        File authDir = getDir("CourseHolder", Context.MODE_PRIVATE);
+        this.courseHolder = new CourseHolder(authDir);
     }
 
-    public void addCourseHolderListener(ReadyListener listener) {
-        if (courseHolder != null) {
-            listener.onReady();
-        } else {
-            courseHolderListeners.add(listener);
-        }
-    }
-
-    private void onQuizletServiceLoaded() {
-        for (ReadyListener listener : quizletServiceListeners) {
-            listener.onReady();
-        }
-
-        quizletServiceListeners.clear();
-    }
-
-    public void addQuizletServiceListener(ReadyListener listener) {
-        if (quizletService != null) {
-            listener.onReady();
-        } else {
-            quizletServiceListeners.add(listener);
-        }
-    }
+    //// Getters
 
     @NonNull
     public static ContextProvider getContextProvider() {
@@ -248,6 +182,8 @@ public class MainApplication extends Application {
             }
         };
     }
+
+    //// Inner Interfaces
 
     public interface ReadyListener {
         void onReady();

@@ -36,6 +36,8 @@ public class ByteArrayReader implements InputStreamReader {
 
     @Override
     public Object readStream(InputStream stream) {
+        lastError = null;
+
         try {
             byte[] byteArray = this.readStreamToByteArray(stream);
             if (keepByteArray) {

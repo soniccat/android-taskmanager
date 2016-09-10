@@ -30,13 +30,28 @@ public abstract class BaseListFragment<T> extends Fragment {
 
     //// Creation, initialization, restoration
 
+    private void initializeIfNeeded() {
+        if (providerFactory == null) {
+            initialize();
+        }
+    }
+
+    protected void initialize() {
+        providerFactory = createProviderFactory();
+        compareStrategyFactory = createCompareStrategyFactory();
+        adapter = createAdapter();
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        adapter = createAdapter();
-        createCompareStrategyFactoryIfNeeded();
-        restoreCompareStrategyIfNeeded(savedInstanceState);
+        initializeIfNeeded();
+
+        if (savedInstanceState != null) {
+            //provider = providerFactory.restore(savedInstanceState);
+            compareStrategy = compareStrategyFactory.restore(savedInstanceState);
+        }
     }
 
     @Override
@@ -60,12 +75,6 @@ public abstract class BaseListFragment<T> extends Fragment {
 
     // Init methods
 
-    protected void createCompareStrategyFactoryIfNeeded() {
-        if (compareStrategyFactory instanceof NullCompareStrategyFactory) {
-            compareStrategyFactory = createCompareStrategyFactory();
-        }
-    }
-
     protected CompareStrategyFactory<T> createCompareStrategyFactory() {
         return new NullCompareStrategyFactory<>();
     }
@@ -80,22 +89,10 @@ public abstract class BaseListFragment<T> extends Fragment {
         }
     }
 
-    private void restoreCompareStrategyIfNeeded(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            compareStrategy = compareStrategyFactory.restore(savedInstanceState);
-        }
-    }
-
-    protected void restoreProviderIfNeeded(Bundle savedInstanceState) {
-        if (provider instanceof NullStorableListProvider) {
-            provider = providerFactory.restore(savedInstanceState);
-        }
-    }
-
     // Actions
 
     public void reload() {
-        if (adapter != null) {
+        if (getView() != null) {
             setAdapterItems(getSortedItems(getItems()));
         }
     }
@@ -124,6 +121,7 @@ public abstract class BaseListFragment<T> extends Fragment {
     //// Creation Methods
 
     protected abstract BaseListAdaptor createAdapter();
+    protected abstract StorableListProviderFactory<T> createProviderFactory();
 
     //// Setters
 

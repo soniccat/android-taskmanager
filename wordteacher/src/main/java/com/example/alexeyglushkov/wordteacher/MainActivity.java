@@ -44,7 +44,12 @@ import quizletfragments.QuizletStackFragment;
 import tools.UITools;
 
 // TODO: consider moving content to fragment
-public class MainActivity extends BaseActivity implements MainPageAdapter.Listener, QuizletStackFragment.Listener, CourseListStackFragment.Listener {
+public class MainActivity extends BaseActivity implements
+        MainPageAdapter.Listener,
+        QuizletStackFragment.Listener,
+        CourseListStackFragment.Listener,
+        QuizletService.QuizletServiceListener {
+
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager pager;
@@ -55,6 +60,7 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         setToolbar();
@@ -150,36 +156,9 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     private void onViewReady() {
-        if (getQuizletService() == null) {
-            getMainApplication().addQuizletServiceListener(new MainApplication.ReadyListener() {
-                @Override
-                public void onReady() {
-                    onQuizletServiceLoaded();
-                }
-            });
-        } else {
-            onQuizletServiceLoaded();
-        }
-    }
+        getQuizletService().addListener(this);
 
-    private void onQuizletServiceLoaded() {
-        if (getQuizletService() != null && getQuizletService().getAccount() != null && getQuizletService().getAccount().isAuthorized()) {
-            Log.d("load","start load quizlet sets");
-            loadQuizletSets(false);
-        }
-    }
-
-    private void onQuizletSetsLoaded(Error error) {
-        if (error != null) {
-            boolean isCancelled = false;
-            if (error instanceof Authorizer.AuthError) {
-                isCancelled = ((Authorizer.AuthError)error).getReason() == Authorizer.AuthError.Reason.Cancelled;
-            }
-
-            if (!isCancelled) {
-                showErrorSnackBar(error);
-            }
-        } else {
+        if (getQuizletService().getState() != QuizletService.State.Unitialized) {
             handleLoadedQuizletSets();
         }
     }
@@ -293,16 +272,15 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     private void loadQuizletSets(boolean forceLoad) {
         CachableHttpLoadTask.CacheMode cacheMode = forceLoad ? CachableHttpLoadTask.CacheMode.LOAD_IF_ERROR_THEN_CHECK_CACHE : CachableHttpLoadTask.CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD;
 
-        getQuizletService().loadSets(new ServiceCommand.CommandCallback() {
-            @Override
-            public void onCompleted(Error error) {
-                onQuizletSetsLoaded(error);
-            }
-        }, cacheMode);
+        getQuizletService().loadSets(cacheMode);
     }
 
     private void handleLoadedQuizletSets() {
-        updateSets();
+        if (getQuizletService().getState() == QuizletService.State.Restored) {
+            loadQuizletSets(false);
+        }
+
+        //updateSets();
     }
 
     private void showErrorSnackBar(Error error) {
@@ -369,6 +347,8 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
             public void onCompleted(Error error) {
                 int i = 0;
                 ++i;
+
+                getCourseHolder().loadCourses();
             }
         });
     }
@@ -423,6 +403,26 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
     }
 
     //// Callbacks
+
+    // QuizletService.QuizletServiceListener
+
+    @Override
+    public void onLoaded() {
+        //onQuizletServiceLoaded();
+        handleLoadedQuizletSets();
+    }
+
+    @Override
+    public void onLoadError(Error error) {
+        boolean isCancelled = false;
+        if (error instanceof Authorizer.AuthError) {
+            isCancelled = ((Authorizer.AuthError)error).getReason() == Authorizer.AuthError.Reason.Cancelled;
+        }
+
+        if (!isCancelled) {
+            showErrorSnackBar(error);
+        }
+    }
 
     // QuizletStackCardsFragment.Listener
 
@@ -570,15 +570,9 @@ public class MainActivity extends BaseActivity implements MainPageAdapter.Listen
 
     @NonNull
     private QuizletTermListFragment createQuzletTermListFragment() {
-        final QuizletTermListFragment fragment = new QuizletTermListFragment();
+        final QuizletTermListFragment fragment = QuizletTermListFragment.create();
         fragment.setSortOrder(Preferences.getQuizletTermSortOrder());
-
-        getMainApplication().addCourseHolderListener(new MainApplication.ReadyListener() {
-            @Override
-            public void onReady() {
-                fragment.setListener(createMenuListener());
-            }
-        });
+        fragment.setListener(createMenuListener());
 
         return fragment;
     }
