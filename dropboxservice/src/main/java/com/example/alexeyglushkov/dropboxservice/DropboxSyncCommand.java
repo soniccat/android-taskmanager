@@ -15,17 +15,22 @@ import junit.framework.Assert;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
 
 /**
  * Created by alexeyglushkov on 04.09.16.
  */
 public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
-    private String localPath;
-    private String dropboPath;
+    private @NonNull String localPath;
+    private @NonNull String dropboPath;
     private long lastSyncDate;
 
-    private DropboxAPI<?> api;
-    private DropboxHelper helper;
+    private @NonNull DropboxAPI<?> api;
+    private @NonNull DropboxHelper helper;
+
+    private @Nullable SyncCallback callback;
+
+    //// Initialize
 
     public DropboxSyncCommand(@NonNull DropboxAPI<?> api, @NonNull String localPath, @NonNull String dropboPath, long lastSyncDate) {
         Assert.assertNotNull(api);
@@ -38,6 +43,8 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
         this.dropboPath = dropboPath;
         this.lastSyncDate = lastSyncDate;
     }
+
+    //// Actions
 
     @Override
     public void startTask() {
@@ -178,7 +185,9 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
         long dropboxDate = getModifiedTime(dropboxFile);
 
         if (localDate > lastSyncDate && dropboxDate > lastSyncDate) {
-            // TODO: merge
+            if (callback != null) {
+                merge(localFile, dropboxFile, listener);
+            }
 
         } else if (localDate > lastSyncDate) {
             helper.uploadFile(localFile.getPath(), dropboxFile.path, listener);
@@ -188,30 +197,43 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
         }
     }
 
-    private DropboxAPI.Entry getChild(@NonNull DropboxAPI.Entry entry, @NonNull String name) {
-        DropboxAPI.Entry result = null;
+    private void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxFile, com.dropbox.client2.ProgressListener listener) throws Exception {
+        Assert.assertNotNull(callback);
 
-        for (DropboxAPI.Entry childEntry : entry.contents) {
-            if (childEntry.fileName().equals(name)) {
-                result = childEntry;
-                break;
+        final ArrayList<Object> container = new ArrayList<>();
+
+        final Semaphore semaphore = new Semaphore(0, true);
+        callback.merge(localFile, dropboxFile, new MergeCompletion() {
+            @Override
+            public void completed(File result, Error error) {
+                if (error != null) {
+                    container.add(error);
+                } else {
+                    container.add(result);
+                }
+
+                semaphore.release();
             }
-        }
+        });
 
-        return result;
+        semaphore.acquire();
+
+        Object result = container.size() > 0 ? container.get(0) : null;
+        if (result != null && result instanceof File) {
+            propagateFile((File)result, localFile.getPath(), dropboxFile.path, listener);
+
+        } else if (result != null && result instanceof Error) {
+            throw (Error)result;
+        }
     }
 
-    private File getChild(@NonNull File dir, @NonNull String name) {
-        File result = null;
+    private void propagateFile(File file, String localPath, String dropboxPath, com.dropbox.client2.ProgressListener listener) throws Exception {
+        helper.uploadFile(file.getPath(), dropboxPath, listener);
 
-        for (File file : dir.listFiles()) {
-            if (file.getName().equals(name)) {
-                result = file;
-                break;
-            }
-        }
+        File localFile = new File(localPath);
+        localFile.delete();
 
-        return result;
+        file.renameTo(localFile);
     }
 
     private void triggerProgressListeners(final long bytes, final long total) {
@@ -262,5 +284,49 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
                 DropboxSyncCommand.this.triggerProgressListeners(bytes, total);
             }
         };
+    }
+
+    //// Setter
+
+    public void setCallback(@Nullable SyncCallback callback) {
+        this.callback = callback;
+    }
+
+    //// Getter
+
+    private DropboxAPI.Entry getChild(@NonNull DropboxAPI.Entry entry, @NonNull String name) {
+        DropboxAPI.Entry result = null;
+
+        for (DropboxAPI.Entry childEntry : entry.contents) {
+            if (childEntry.fileName().equals(name)) {
+                result = childEntry;
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    private File getChild(@NonNull File dir, @NonNull String name) {
+        File result = null;
+
+        for (File file : dir.listFiles()) {
+            if (file.getName().equals(name)) {
+                result = file;
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    //// Inner Interfaces
+
+    public interface SyncCallback {
+        void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxFile, MergeCompletion completion);
+    }
+
+    public interface MergeCompletion {
+        void completed(File result, Error error);
     }
 }

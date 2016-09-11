@@ -12,5 +12,5 @@ public interface DropboxCommandProvider {
     //TODO: make interfaces for commands or return ServiceTask
     DropboxUploadCommand getUploadCommand(String srcPath, String dstPath);
     DropboxDownloadCommand getDownloadCommand(String srcPath, String dstPath);
-    DropboxSyncCommand getSyncCommand(String srcPath, String dstPath, long lastSyncDate);
+    DropboxSyncCommand getSyncCommand(String srcPath, String dstPath, long lastSyncDate, DropboxSyncCommand.SyncCallback callback);
 }

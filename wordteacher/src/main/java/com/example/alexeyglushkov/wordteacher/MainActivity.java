@@ -319,25 +319,6 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void syncWithDropbox() {
-        /*boolean hasCourses = getCourseHolder().getCourses().size() > 0;
-        if (hasCourses) {
-            getMainApplication().getDropboxService().upload(getCourseHolder().getDirectory().getPath(), "/Courses/", new ServiceCommand.CommandCallback() {
-                @Override
-                public void onCompleted(Error error) {
-                    int i = 0;
-                    ++i;
-                }
-            });
-        } else {
-            getMainApplication().getDropboxService().download("/Courses/", getCourseHolder().getDirectory().getPath(), new ServiceCommand.CommandCallback() {
-                @Override
-                public void onCompleted(Error error) {
-                    int i = 0;
-                    ++i;
-                }
-            });
-        }*/
-
         getMainApplication().getDropboxService().sync(getCourseHolder().getDirectory().getPath(), "/CoursesTest/", new ServiceCommand.CommandCallback() {
             @Override
             public void onCompleted(Error error) {

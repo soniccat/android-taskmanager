@@ -1,5 +1,8 @@
 package com.example.alexeyglushkov.dropboxservice;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
@@ -7,6 +10,7 @@ import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.cachemanager.StorageProvider;
 import com.example.alexeyglushkov.service.SimpleService;
 
+import java.io.File;
 import java.util.Date;
 
 /**
@@ -20,6 +24,7 @@ public class DropboxService extends SimpleService {
     private StorageProvider storage;
 
     private long lastSyncDate = 0;
+    private Callback callback;
 
     public DropboxService(DropboxAccount account, DropboxCommandProvider commandProvider, ServiceCommandRunner commandRunner, StorageProvider storage) {
         setAccount(account);
@@ -47,7 +52,7 @@ public class DropboxService extends SimpleService {
     public void sync(String srcPath, String dstPath, final ServiceCommand.CommandCallback callback) {
         lastSyncDate = loadLastSyncDate();
 
-        DropboxSyncCommand cmd = commandProvider.getSyncCommand(srcPath, dstPath, lastSyncDate);
+        DropboxSyncCommand cmd = commandProvider.getSyncCommand(srcPath, dstPath, lastSyncDate, getSyncCallback());
         cmd.setServiceCommandCallback(new ServiceCommand.CommandCallback() {
             @Override
             public void onCompleted(Error error) {
@@ -62,8 +67,38 @@ public class DropboxService extends SimpleService {
         runCommand(cmd, true, callback);
     }
 
+    private @Nullable DropboxSyncCommand.SyncCallback getSyncCallback() {
+        DropboxSyncCommand.SyncCallback result = new DropboxSyncCommand.SyncCallback() {
+            @Override
+            public void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxFile, DropboxSyncCommand.MergeCompletion completion) {
+                callback.merge(localFile, dropboxFile, completion);
+            }
+        };
+
+        return callback != null ? result : null;
+    }
+
     private long loadLastSyncDate() {
         Object loadedInfo = storage.getValue(LAST_SYNC_DATE);
         return loadedInfo == null ? 0 : (long)loadedInfo;
+    }
+
+    //// Inner Interfaces
+
+    public interface Callback {
+        void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxFile, DropboxSyncCommand.MergeCompletion completion);
+    }
+
+    //// Setter
+
+    public void setCallback(Callback callback) {
+        this.callback = callback;
+    }
+
+    //// Getter
+
+
+    public DropboxAPI<AndroidAuthSession> getApi() {
+        return api;
     }
 }

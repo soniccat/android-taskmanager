@@ -20,6 +20,13 @@ public class Course implements Parcelable {
     private String title;
     private ArrayList<Card> cards = new ArrayList<>();
 
+    public Course(Course course) {
+        id = course.id;
+        createDate = course.createDate;
+        title = course.title;
+        cards = new ArrayList<>(course.cards);
+    }
+
     public Course(Parcel parcel) {
         //TODO: remove bundle
         Bundle bundle = parcel.readBundle(Card.class.getClassLoader());

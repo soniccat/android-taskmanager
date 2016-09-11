@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.dropbox.client2.DropboxAPI;
 import com.example.alexeyglushkov.authcachemanager.AccountCacheStore;
 import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
@@ -17,8 +18,13 @@ import com.example.alexeyglushkov.cachemanager.disk.DiskStorageProvider;
 import com.example.alexeyglushkov.dropboxservice.ContextProvider;
 import com.example.alexeyglushkov.dropboxservice.DropboxAccount;
 import com.example.alexeyglushkov.dropboxservice.DropboxCommandProvider;
+import com.example.alexeyglushkov.dropboxservice.DropboxFileMerger;
+import com.example.alexeyglushkov.dropboxservice.DropboxHelper;
 import com.example.alexeyglushkov.dropboxservice.DropboxService;
 import com.example.alexeyglushkov.dropboxservice.DropboxServiceTaskProvider;
+import com.example.alexeyglushkov.dropboxservice.DropboxSyncCommand;
+import com.example.alexeyglushkov.dropboxservice.FileMerger;
+import com.example.alexeyglushkov.dropboxservice.FileObjectMerger;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.tasks.QuizletServiceTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
@@ -27,9 +33,13 @@ import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
 
 import authorization.AuthActivityProxy;
 import model.CourseHolder;
+import model.CourseMerger;
+import model.CourseSerializer;
 import preferencestorage.PreferenceStorageProvider;
 
 public class MainApplication extends Application {
@@ -140,6 +150,29 @@ public class MainApplication extends Application {
         StorageProvider storage = new PreferenceStorageProvider("DropboxServicePref", getContextProvider());
 
         dropboxService = new DropboxService(dropboxAccount, commandProvider, serviceCommandRunner, storage);
+        dropboxService.setCallback(new DropboxService.Callback() {
+            @Override
+            public void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxEntry, DropboxSyncCommand.MergeCompletion completion) {
+                MainApplication.this.merge(localFile, dropboxEntry, completion);
+            }
+        });
+    }
+
+    private void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxEntry, DropboxSyncCommand.MergeCompletion completion) {
+        try {
+            File tmpDir = getCacheDir();
+
+            UUID outFileName = UUID.randomUUID();
+            File outFile = File.createTempFile(outFileName.toString(), "", getCacheDir());
+
+            FileMerger fileMerger = new FileObjectMerger(new CourseSerializer(), new CourseMerger(), outFile);
+            DropboxFileMerger merger = new DropboxFileMerger(dropboxService.getApi(), tmpDir, fileMerger);
+
+            merger.merge(localFile, dropboxEntry, completion);
+
+        } catch (Exception ex) {
+            completion.completed(null, new Error("Merge exception", ex));
+        }
     }
 
     //// Getters

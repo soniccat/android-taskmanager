@@ -49,7 +49,7 @@ public class DiskStorageEntry implements StorageEntry {
 
         try {
             fis = new BufferedInputStream(new FileInputStream(file));
-            StringReader tstReader = new StringReader(null);
+            //StringReader tstReader = new StringReader(null);
             //String str = tstReader.readStreamToString(fis);
             //Log.d("Parsing", str);
 
