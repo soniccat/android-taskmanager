@@ -32,7 +32,6 @@ public class PreferenceStorageProvider implements StorageProvider {
         }
 
         editor.commit();
-
         return null;
     }
 

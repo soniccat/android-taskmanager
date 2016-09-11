@@ -45,6 +45,8 @@ public class MainApplication extends Application {
 
     public static MainApplication instance;
 
+    //// Initialization
+
     public MainApplication() {
         super();
         instance = this;
@@ -65,6 +67,91 @@ public class MainApplication extends Application {
 
         createCourseHolder();
         loadCourseHolder();
+    }
+
+    //// Events
+
+    private void onAccountStoreLoaded() {
+        createQuizletService();
+        createDropboxService();
+    }
+
+    //// Actions
+
+    public void loadAccountStore() {
+        // TODO: make it async, but have to handle nil quizletService
+        File authDir = getDir("AuthFolder", Context.MODE_PRIVATE);
+        this.accountStore = new AccountCacheStore(authDir);
+        this.accountStore.load();
+        restoreAccounts((AccountCacheStore)this.accountStore);
+        onAccountStoreLoaded();
+    }
+
+    private void restoreAccounts(AccountCacheStore store) {
+        for (Account acc : store.getAccounts()) {
+            acc.setAuthCredentialStore(store);
+            Networks.restoreAuthorizer(acc);
+        }
+    }
+
+    public void loadCourseHolder() {
+        taskManager.addTask(courseHolder.getLoadCourseListTask());
+    }
+
+    public void cleanCache() {
+        final Task cleanTask = new SimpleTask() {
+            @Override
+            public void startTask() {
+                StorageCleaner cleaner = new DiskStorageCleaner();
+                cleaner.clean(getStorageProvider());
+
+                getPrivate().handleTaskCompletion();
+            }
+        };
+
+        taskManager.addTask(cleanTask);
+    }
+
+    //// Creation Methods
+
+    private void createCourseHolder() {
+        File authDir = getDir("CourseHolder", Context.MODE_PRIVATE);
+        this.courseHolder = new CourseHolder(authDir);
+    }
+
+    private void createQuizletService() {
+        Account quizletAccount = Networks.getAccount(Networks.Network.Quizlet);
+        QuizletServiceTaskProvider quizletCommandProvider = new QuizletServiceTaskProvider(getStorageProvider());
+
+        String id = Integer.toString(quizletAccount.getServiceType());
+        ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
+
+        this.quizletService = new QuizletService(quizletAccount, quizletCommandProvider, serviceCommandRunner);
+        this.quizletService.restore();
+    }
+
+    private void createDropboxService() {
+        DropboxAccount dropboxAccount = (DropboxAccount)Networks.getAccount(Networks.Network.Dropbox);
+        DropboxCommandProvider commandProvider = new DropboxServiceTaskProvider();
+
+        String id = Integer.toString(dropboxAccount.getServiceType());
+        ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
+
+        StorageProvider storage = new PreferenceStorageProvider("DropboxServicePref", getContextProvider());
+
+        dropboxService = new DropboxService(dropboxAccount, commandProvider, serviceCommandRunner, storage);
+    }
+
+    //// Getters
+
+    @NonNull
+    public static ContextProvider getContextProvider() {
+        return new ContextProvider() {
+            @Override
+            public Context getContext() {
+                return MainApplication.instance.getCurrentContext();
+            }
+        };
     }
 
     public TaskManager getTaskManager() {
@@ -95,89 +182,10 @@ public class MainApplication extends Application {
         return dropboxService;
     }
 
+    // Cast Getters
+
     public Context getCurrentContext() {
         return ((AuthActivityProxy)authWebClient).getCurrentActivity();
-    }
-
-    public void cleanCache() {
-        final Task cleanTask = new SimpleTask() {
-            @Override
-            public void startTask() {
-                StorageCleaner cleaner = new DiskStorageCleaner();
-                cleaner.clean(getStorageProvider());
-
-                getPrivate().handleTaskCompletion();
-            }
-        };
-
-        taskManager.addTask(cleanTask);
-    }
-
-    public void loadAccountStore() {
-        // TODO: make it async
-        File authDir = getDir("AuthFolder", Context.MODE_PRIVATE);
-        this.accountStore = new AccountCacheStore(authDir);
-        this.accountStore.load();
-        restoreAccounts((AccountCacheStore)this.accountStore);
-        onAccountStoreLoaded();
-    }
-
-    private void restoreAccounts(AccountCacheStore store) {
-        for (Account acc : store.getAccounts()) {
-            acc.setAuthCredentialStore(store);
-            Networks.restoreAuthorizer(acc);
-        }
-    }
-
-    private void onAccountStoreLoaded() {
-        createQuizletService();
-        createDropboxService();
-    }
-
-    private void createQuizletService() {
-        Account quizletAccount = Networks.getAccount(Networks.Network.Quizlet);
-        QuizletServiceTaskProvider quizletCommandProvider = new QuizletServiceTaskProvider(getStorageProvider());
-
-        String id = Integer.toString(quizletAccount.getServiceType());
-        ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
-
-        this.quizletService = new QuizletService(quizletAccount, quizletCommandProvider, serviceCommandRunner);
-        this.quizletService.restore();
-    }
-
-    private void createDropboxService() {
-        DropboxAccount dropboxAccount = (DropboxAccount)Networks.getAccount(Networks.Network.Dropbox);
-        DropboxCommandProvider commandProvider = new DropboxServiceTaskProvider();
-
-        String id = Integer.toString(dropboxAccount.getServiceType());
-        ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
-
-        StorageProvider storage = new PreferenceStorageProvider("DropboxServicePref", getContextProvider());
-
-        dropboxService = new DropboxService(dropboxAccount, commandProvider, serviceCommandRunner, storage);
-    }
-
-    public void loadCourseHolder() {
-        taskManager.addTask(courseHolder.getLoadCourseListTask());
-    }
-
-    //// Creation Methods
-
-    private void createCourseHolder() {
-        File authDir = getDir("CourseHolder", Context.MODE_PRIVATE);
-        this.courseHolder = new CourseHolder(authDir);
-    }
-
-    //// Getters
-
-    @NonNull
-    public static ContextProvider getContextProvider() {
-        return new ContextProvider() {
-            @Override
-            public Context getContext() {
-                return MainApplication.instance.getCurrentContext();
-            }
-        };
     }
 
     //// Inner Interfaces

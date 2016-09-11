@@ -45,6 +45,8 @@ public class CourseHolder {
 
     //// Actions
 
+    // Listeners
+
     public void addListener(CourseHolderListener listener) {
         if (!listeners.contains(listener)) {
             listeners.add(new WeakReference<>(listener));
@@ -55,31 +57,7 @@ public class CourseHolder {
         listeners.remove(listener);
     }
 
-    public Task getLoadCourseListTask() {
-        final Task task = new SimpleTask() {
-            @Override
-            public void startTask() {
-                ArrayList<Course> courses = loadCourses();
-                getPrivate().setTaskResult(courses);
-                handleTaskCompletion();
-            }
-        };
-
-        task.setTaskCallback(new Task.Callback() {
-            @Override
-            public void onCompleted(boolean cancelled) {
-                Object res = task.getTaskResult();
-                if (res != null) {
-                    courses = (ArrayList<Course>) res;
-                }
-
-                state = State.Loaded;
-                onLoaded();
-            }
-        });
-
-        return task;
-    }
+    //
 
     public ArrayList<Course> loadCourses() {
         ArrayList<Course> courses = new ArrayList<>();
@@ -191,6 +169,32 @@ public class CourseHolder {
     }
 
     //// Getters
+
+    public Task getLoadCourseListTask() {
+        final Task task = new SimpleTask() {
+            @Override
+            public void startTask() {
+                ArrayList<Course> courses = loadCourses();
+                getPrivate().setTaskResult(courses);
+                handleTaskCompletion();
+            }
+        };
+
+        task.setTaskCallback(new Task.Callback() {
+            @Override
+            public void onCompleted(boolean cancelled) {
+                Object res = task.getTaskResult();
+                if (res != null) {
+                    courses = (ArrayList<Course>) res;
+                }
+
+                state = State.Loaded;
+                onLoaded();
+            }
+        });
+
+        return task;
+    }
 
     public File getDirectory() {
         return diskProvider.getDirectory();

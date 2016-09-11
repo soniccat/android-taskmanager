@@ -1,5 +1,6 @@
 package com.example.alexeyglushkov.dropboxservice;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.dropbox.client2.DropboxAPI;
@@ -10,7 +11,10 @@ import com.example.alexeyglushkov.authtaskmanager.IServiceTask;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTask;
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
 
+import junit.framework.Assert;
+
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * Created by alexeyglushkov on 04.09.16.
@@ -23,7 +27,11 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
     private DropboxAPI<?> api;
     private DropboxHelper helper;
 
-    public DropboxSyncCommand(DropboxAPI<?> api, String localPath, String dropboPath, long lastSyncDate) {
+    public DropboxSyncCommand(@NonNull DropboxAPI<?> api, @NonNull String localPath, @NonNull String dropboPath, long lastSyncDate) {
+        Assert.assertNotNull(api);
+        Assert.assertNotNull(localPath);
+        Assert.assertNotNull(dropboPath);
+
         this.api = api;
         this.helper = new DropboxHelper(api);
         this.localPath = localPath;
@@ -38,13 +46,14 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
 
         } catch (Exception e) {
             e.printStackTrace();
+            setTaskError(new Error("Dropbox Sync Error", e));
         }
 
         getPrivate().handleTaskCompletion();
     }
 
     // src - local path, dest - dropbox path
-    private void syncFileOrDir(String localPath, String dropboxPath, com.dropbox.client2.ProgressListener listener) throws Exception {
+    private void syncFileOrDir(@NonNull String localPath, @NonNull String dropboxPath, @Nullable com.dropbox.client2.ProgressListener listener) throws Exception {
         File srcFile = new File(localPath);
         DropboxAPI.Entry entry = loadMetadata(dropboxPath);
 
@@ -61,12 +70,10 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
         } else {
             // TODO:
         }
-
-        //if (entry.isDir) {
     }
 
     @Nullable
-    private DropboxAPI.Entry loadMetadata(String dropboxPath) throws DropboxException {
+    private DropboxAPI.Entry loadMetadata(@NonNull String dropboxPath) throws DropboxException {
         DropboxAPI.Entry entry = null;
         try {
             entry = api.metadata(dropboxPath, 0, null, true, null);
@@ -83,35 +90,12 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
         return entry;
     }
 
-    private void syncDir(File localDir, DropboxAPI.Entry dropboxEntry, com.dropbox.client2.ProgressListener listener) throws Exception {
+    private void syncDir(@NonNull File localDir, @NonNull DropboxAPI.Entry dropboxEntry, @Nullable com.dropbox.client2.ProgressListener listener) throws Exception {
+        updateLocalDir(localDir, dropboxEntry, listener);
+        updateDropboxDir(localDir, dropboxEntry, listener);
+    }
 
-        // upload part
-        for (File file : localDir.listFiles()) {
-            DropboxAPI.Entry childEntry = getChild(dropboxEntry, file.getName());
-
-            if (childEntry != null) {
-                if (file.isDirectory() && childEntry.isDir) {
-                    syncDir(file, childEntry, listener);
-
-                } else if (!file.isDirectory() && !childEntry.isDir) {
-                    syncFile(file, childEntry, listener);
-
-                } else {
-                    // TODO
-                }
-
-            } else {
-                long localDate = file.lastModified();
-
-                if (localDate > lastSyncDate) {
-                    helper.uploadFileOrDirectory(file.getPath(), helper.addPathName(dropboxEntry.path, file.getName()), listener);
-
-                } else {
-                    deleteDirectory(file);
-                }
-            }
-        }
-
+    private void updateDropboxDir(@NonNull File localDir, @NonNull DropboxAPI.Entry dropboxEntry, @Nullable com.dropbox.client2.ProgressListener listener) throws Exception {
         // download part
         for (DropboxAPI.Entry childEntry : dropboxEntry.contents) {
             File file = getChild(localDir, childEntry.fileName());
@@ -140,11 +124,56 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
         }
     }
 
-    private long getModifiedTime(DropboxAPI.Entry dropboxEntry) {
+    private void updateLocalDir(@NonNull File localDir, @NonNull DropboxAPI.Entry dropboxEntry, @Nullable com.dropbox.client2.ProgressListener listener) throws Exception {
+        // upload part
+        for (File file : localDir.listFiles()) {
+            DropboxAPI.Entry childEntry = getChild(dropboxEntry, file.getName());
+            childEntry = validateEntry(dropboxEntry, childEntry);
+
+            if (childEntry != null) {
+                if (file.isDirectory() && childEntry.isDir) {
+                    syncDir(file, childEntry, listener);
+
+                } else if (!file.isDirectory() && !childEntry.isDir) {
+                    syncFile(file, childEntry, listener);
+
+                } else {
+                    // TODO
+                }
+
+            } else {
+                long localDate = file.lastModified();
+
+                if (localDate > lastSyncDate) {
+                    helper.uploadFileOrDirectory(file.getPath(), helper.addPathName(dropboxEntry.path, file.getName()), listener);
+
+                } else {
+                    deleteDirectory(file);
+                }
+            }
+        }
+    }
+
+    @Nullable
+    private DropboxAPI.Entry validateEntry(@NonNull DropboxAPI.Entry dropboxEntry, @NonNull DropboxAPI.Entry childEntry) throws DropboxException {
+        DropboxAPI.Entry result = dropboxEntry;
+
+        if (childEntry.isDir && childEntry.contents == null) {
+            result = loadMetadata(dropboxEntry.path);
+        }
+
+        if (result != null && result.isDeleted) {
+            result.contents = new ArrayList<>();
+        }
+
+        return result;
+    }
+
+    private long getModifiedTime(@NonNull DropboxAPI.Entry dropboxEntry) {
         return RESTUtility.parseDate(dropboxEntry.modified).getTime();
     }
 
-    private void syncFile(File localFile, DropboxAPI.Entry dropboxFile, com.dropbox.client2.ProgressListener listener) throws Exception {
+    private void syncFile(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxFile, @Nullable com.dropbox.client2.ProgressListener listener) throws Exception {
         long localDate = localFile.lastModified();
         long dropboxDate = getModifiedTime(dropboxFile);
 
@@ -159,7 +188,7 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
         }
     }
 
-    private DropboxAPI.Entry getChild(DropboxAPI.Entry entry, String name) {
+    private DropboxAPI.Entry getChild(@NonNull DropboxAPI.Entry entry, @NonNull String name) {
         DropboxAPI.Entry result = null;
 
         for (DropboxAPI.Entry childEntry : entry.contents) {
@@ -172,7 +201,7 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
         return result;
     }
 
-    private File getChild(File dir, String name) {
+    private File getChild(@NonNull File dir, @NonNull String name) {
         File result = null;
 
         for (File file : dir.listFiles()) {
@@ -202,16 +231,15 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
     }
 
     // TODO: move to tools
-    private static boolean deleteDirectory(File directory) {
+    private static boolean deleteDirectory(@NonNull File directory) {
         if (directory.exists()) {
             File[] files = directory.listFiles();
-            if(null!=files) {
-                for (int i=0; i<files.length; i++) {
-                    if(files[i].isDirectory()) {
-                        deleteDirectory(files[i]);
-                    }
-                    else {
-                        files[i].delete();
+            if(null != files) {
+                for (File file : files) {
+                    if(file.isDirectory()) {
+                        deleteDirectory(file);
+                    } else {
+                        file.delete();
                     }
                 }
             }
