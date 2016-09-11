@@ -26,7 +26,7 @@ public class DiskStorageCleaner implements StorageCleaner {
             DiskStorageEntry diskCacheEntry = (DiskStorageEntry)entry;
             DiskStorageMetadata diskCacheMetadata = diskCacheEntry.getMetadata();
 
-            if (diskCacheMetadata.isExpired()) {
+            if (diskCacheMetadata != null && diskCacheMetadata.isExpired()) {
                 entry.delete();
             }
         }

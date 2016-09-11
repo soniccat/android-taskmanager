@@ -319,7 +319,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void syncWithDropbox() {
-        getMainApplication().getDropboxService().sync(getCourseHolder().getDirectory().getPath(), "/CoursesTest/", new ServiceCommand.CommandCallback() {
+        getMainApplication().getDropboxService().sync(getCourseHolder().getDirectory().getPath(), "/Courses/", new ServiceCommand.CommandCallback() {
             @Override
             public void onCompleted(Error error) {
                 getTaskManager().addTask(getCourseHolder().getLoadCourseListTask());

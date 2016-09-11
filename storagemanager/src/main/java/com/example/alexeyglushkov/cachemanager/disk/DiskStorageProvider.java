@@ -238,7 +238,7 @@ public class DiskStorageProvider implements StorageProvider {
                     metadata = DiskStorageMetadata.load(metadataFile);
                     serializer = getSerializer(metadata.getEntryClass());
 
-                } catch (IOException e) {
+                } catch (Exception e) {
                     serializer = defaultSerializer;
                 }
 

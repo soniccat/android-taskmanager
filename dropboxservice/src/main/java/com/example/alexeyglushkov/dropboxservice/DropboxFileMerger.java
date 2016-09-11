@@ -24,7 +24,7 @@ public class DropboxFileMerger {
         this.fileMerger = fileMerger;
     }
 
-    public void merge(@NonNull final File localFile, @NonNull DropboxAPI.Entry dropboxEntry, final DropboxSyncCommand.MergeCompletion completion) throws Exception {
+    public void merge(@NonNull final File localFile, @NonNull DropboxAPI.Entry dropboxEntry, final DropboxCommandProvider.MergeCompletion completion) throws Exception {
         UUID dropboxFileName = UUID.randomUUID();
         final File dropboxFile = File.createTempFile(dropboxFileName.toString(), "", tmpDir);
 

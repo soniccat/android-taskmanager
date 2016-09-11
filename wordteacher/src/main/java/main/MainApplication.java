@@ -152,13 +152,13 @@ public class MainApplication extends Application {
         dropboxService = new DropboxService(dropboxAccount, commandProvider, serviceCommandRunner, storage);
         dropboxService.setCallback(new DropboxService.Callback() {
             @Override
-            public void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxEntry, DropboxSyncCommand.MergeCompletion completion) {
+            public void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxEntry, DropboxCommandProvider.MergeCompletion completion) {
                 MainApplication.this.merge(localFile, dropboxEntry, completion);
             }
         });
     }
 
-    private void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxEntry, DropboxSyncCommand.MergeCompletion completion) {
+    private void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxEntry, DropboxCommandProvider.MergeCompletion completion) {
         try {
             File tmpDir = getCacheDir();
 

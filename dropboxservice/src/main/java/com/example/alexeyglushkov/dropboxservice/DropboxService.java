@@ -67,10 +67,10 @@ public class DropboxService extends SimpleService {
         runCommand(cmd, true, callback);
     }
 
-    private @Nullable DropboxSyncCommand.SyncCallback getSyncCallback() {
-        DropboxSyncCommand.SyncCallback result = new DropboxSyncCommand.SyncCallback() {
+    private @Nullable DropboxCommandProvider.SyncCallback getSyncCallback() {
+        DropboxCommandProvider.SyncCallback result = new DropboxCommandProvider.SyncCallback() {
             @Override
-            public void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxFile, DropboxSyncCommand.MergeCompletion completion) {
+            public void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxFile, DropboxCommandProvider.MergeCompletion completion) {
                 callback.merge(localFile, dropboxFile, completion);
             }
         };
@@ -86,7 +86,7 @@ public class DropboxService extends SimpleService {
     //// Inner Interfaces
 
     public interface Callback {
-        void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxFile, DropboxSyncCommand.MergeCompletion completion);
+        void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxFile, DropboxCommandProvider.MergeCompletion completion);
     }
 
     //// Setter

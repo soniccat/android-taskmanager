@@ -28,7 +28,7 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
     private @NonNull DropboxAPI<?> api;
     private @NonNull DropboxHelper helper;
 
-    private @Nullable SyncCallback callback;
+    private @Nullable DropboxCommandProvider.SyncCallback callback;
 
     //// Initialize
 
@@ -203,7 +203,7 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
         final ArrayList<Object> container = new ArrayList<>();
 
         final Semaphore semaphore = new Semaphore(0, true);
-        callback.merge(localFile, dropboxFile, new MergeCompletion() {
+        callback.merge(localFile, dropboxFile, new DropboxCommandProvider.MergeCompletion() {
             @Override
             public void completed(File result, Error error) {
                 if (error != null) {
@@ -288,7 +288,7 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
 
     //// Setter
 
-    public void setCallback(@Nullable SyncCallback callback) {
+    public void setCallback(@Nullable DropboxCommandProvider.SyncCallback callback) {
         this.callback = callback;
     }
 
@@ -318,15 +318,5 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
         }
 
         return result;
-    }
-
-    //// Inner Interfaces
-
-    public interface SyncCallback {
-        void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxFile, MergeCompletion completion);
-    }
-
-    public interface MergeCompletion {
-        void completed(File result, Error error);
     }
 }
