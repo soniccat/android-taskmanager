@@ -38,13 +38,13 @@ public class DropboxService extends SimpleService {
 
     public void upload(String srcPath, String dstPath, final ServiceCommand.CommandCallback callback) {
         //TODO: handle 401 error
-        DropboxUploadCommand cmd = commandProvider.getUploadCommand(srcPath, dstPath);
+        ServiceCommand cmd = commandProvider.getUploadCommand(srcPath, dstPath);
         cmd.setServiceCommandCallback(callback);
         runCommand(cmd, true, callback);
     }
 
     public void download(String srcPath, String dstPath, final ServiceCommand.CommandCallback callback) {
-        DropboxDownloadCommand cmd = commandProvider.getDownloadCommand(srcPath, dstPath);
+        ServiceCommand cmd = commandProvider.getDownloadCommand(srcPath, dstPath);
         cmd.setServiceCommandCallback(callback);
         runCommand(cmd, true, callback);
     }
@@ -96,7 +96,6 @@ public class DropboxService extends SimpleService {
     }
 
     //// Getter
-
 
     public DropboxAPI<AndroidAuthSession> getApi() {
         return api;
