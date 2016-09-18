@@ -12,6 +12,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -35,9 +36,7 @@ public class DiskStorageEntry implements StorageEntry {
         return file.getName();
     }
 
-
-    // TODO: consider throwing an exception
-    public Object getObject() {
+    public Object getObject() throws Exception {
         if (object == null) {
             loadObject();
         }
@@ -45,8 +44,7 @@ public class DiskStorageEntry implements StorageEntry {
         return object;
     }
 
-    private Error loadObject() {
-        Error error = null;
+    private void loadObject() throws Exception {
         InputStream fis = null;
 
         try {
@@ -56,46 +54,32 @@ public class DiskStorageEntry implements StorageEntry {
             //Log.d("Parsing", str);
 
             object = serializer.read(fis);
-            error = serializer.getReadError();
-
-        } catch (Exception ex) {
-            error = new Error("DiskCacheEntry exception: " + ex.getMessage());
 
         } finally {
             if (fis != null) {
                 try {
                     fis.close();
                 } catch (Exception ex) {
-                    error = new Error("DiskCacheEntry exception: " + ex.getMessage());
                 }
             }
         }
-
-        return error;
     }
 
-    // TODO: consider throwing an exception
-    public Error write() {
-        Error error = null;
+    public void write() throws Exception {
         OutputStream os = null;
 
         try {
             os = new BufferedOutputStream(new FileOutputStream(file));
-            error = serializer.write(os, object);
+            serializer.write(os, object);
 
-        } catch (Exception ex) {
-            error = new Error("DiskCacheEntry write open stream exception: " + ex.getMessage());
         } finally {
             if (os != null) {
                 try {
                     os.close();
                 } catch (Exception ex) {
-                    error = new Error("DiskCacheEntry write close stream exception: " + ex.getMessage());
                 }
             }
         }
-
-        return error;
     }
 
     @Override

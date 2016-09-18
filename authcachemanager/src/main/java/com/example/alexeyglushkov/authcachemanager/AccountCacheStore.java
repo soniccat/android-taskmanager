@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.authcachemanager;
 
+import android.support.annotation.Nullable;
+
 import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.cachemanager.StorageEntry;
@@ -22,16 +24,13 @@ public class AccountCacheStore extends DiskStorageProvider implements AccountSto
     }
 
     @Override
-    public Error putAccount(Account account) {
-        Error error = put(Integer.toString(account.getId()), account, null);
-        if (error == null) {
-            accounts.add(account);
-        }
-
-        return error;
+    public void putAccount(Account account) throws Exception {
+        put(Integer.toString(account.getId()), account, null);
+        accounts.add(account);
     }
 
     @Override
+    @Nullable
     public Account getAccount(int key) {
         return (Account)getValue(Integer.toString(key));
     }
@@ -85,10 +84,14 @@ public class AccountCacheStore extends DiskStorageProvider implements AccountSto
         List<Account> accounts = new ArrayList<>();
 
         for (StorageEntry entry : entries) {
-            Account account = (Account)entry.getObject();
-            account.setAuthCredentialStore(this);
+            try {
+                Account account = (Account)entry.getObject();
+                account.setAuthCredentialStore(this);
+                accounts.add(account);
 
-            accounts.add(account);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         this.accounts = accounts;

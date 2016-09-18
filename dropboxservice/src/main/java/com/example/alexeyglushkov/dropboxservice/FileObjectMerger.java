@@ -29,7 +29,7 @@ public class FileObjectMerger implements FileMerger {
     }
 
     @Override
-    public File merge(File f1, File f2) {
+    public File merge(File f1, File f2) throws Exception {
         try {
             Object obj1 = readObject(f1);
             Object obj2 = readObject(f2);
@@ -44,16 +44,13 @@ public class FileObjectMerger implements FileMerger {
         return outFile;
     }
 
-    private Object readObject(File f1) throws IOException {
+    private Object readObject(File f1) throws Exception {
         Object obj = null;
 
         InputStream fis = null;
         try {
             fis = new BufferedInputStream(new FileInputStream(f1));
             obj = this.serializer.read(fis);
-
-        } catch (IOException ex) {
-            throw ex;
 
         } finally {
             try {
@@ -68,15 +65,12 @@ public class FileObjectMerger implements FileMerger {
         return obj;
     }
 
-    private void writeObject(File file, Object obj) throws IOException {
+    private void writeObject(File file, Object obj) throws Exception {
         OutputStream os = null;
 
         try {
             os = new BufferedOutputStream(new FileOutputStream(file));
             serializer.write(os, obj);
-
-        } catch (Exception ex) {
-            throw ex;
 
         } finally {
             if (os != null) {

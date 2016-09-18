@@ -60,7 +60,6 @@ public class FileLoadTask extends SimpleTask {
         }
 
         getPrivate().handleTaskCompletion();
-        return;
     }
 
     public Object getHandledData() {
@@ -71,7 +70,7 @@ public class FileLoadTask extends SimpleTask {
         this.handledData = handledData;
     }
 
-    protected Object handleStream(InputStream fis) {
+    protected Object handleStream(InputStream fis) throws Exception {
         return handler.readStream(fis);
     }
 

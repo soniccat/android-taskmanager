@@ -68,8 +68,13 @@ public class SimpleAccount implements Account, Serializable {
         authorizer.authorize(new Authorizer.AuthorizerCompletion() {
             @Override
             public void onFinished(AuthCredentials credentials, Authorizer.AuthError error) {
-                if (credentials != null) {
-                    updateCredentials(credentials);
+                if (credentials != null && error == null) {
+                    try {
+                        updateCredentials(credentials);
+
+                    } catch (Exception e) {
+                        error = new Authorizer.AuthError(Authorizer.AuthError.Reason.InnerError, e);
+                    }
                 }
 
                 if (completion != null) {
@@ -79,13 +84,12 @@ public class SimpleAccount implements Account, Serializable {
         });
     }
 
-    private void updateCredentials(AuthCredentials creds) {
+    private void updateCredentials(AuthCredentials creds) throws Exception {
         credentials = creds;
-
         store();
     }
 
-    public void store() {
+    public void store() throws Exception {
         if (id == 0) { // for a new account
             id = accountStore.getMaxAccountId() + 1;
         }

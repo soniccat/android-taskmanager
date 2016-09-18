@@ -1,5 +1,6 @@
 package com.example.alexeyglushkov.cachemanager.disk;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.example.alexeyglushkov.cachemanager.StorageEntry;
@@ -7,6 +8,8 @@ import com.example.alexeyglushkov.cachemanager.StorageMetadata;
 import com.example.alexeyglushkov.cachemanager.StorageProvider;
 import com.example.alexeyglushkov.streamlib.serializers.ObjectSerializer;
 import com.example.alexeyglushkov.streamlib.serializers.Serializer;
+
+import android.support.annotation.Nullable;
 
 import junit.framework.Assert;
 
@@ -44,14 +47,9 @@ public class DiskStorageProvider implements StorageProvider {
     }
 
     @Override
-    public Error put(String key, Object entry, StorageMetadata metadata) {
-        Error error = prepareDirectory();
-        if (error == null) {
-            error = write(key, entry, (DiskStorageMetadata) metadata);
-            setLastError(error);
-        }
-
-        return error;
+    public void put(String key, Object entry, StorageMetadata metadata) throws Exception {
+        prepareDirectory();
+        write(key, entry, (DiskStorageMetadata) metadata);
     }
 
     private void setLastError(Error error) {
@@ -65,15 +63,12 @@ public class DiskStorageProvider implements StorageProvider {
         Log.e(ERROR_TAG, error.getMessage());
     }
 
-    private Error prepareDirectory() {
-        Error error = null;
+    private void prepareDirectory() throws Exception {
         if (!directory.exists()) {
             if (!directory.mkdir()) {
-                error = new Error("DiskStorageProvider.prepareDirectory.mkdir: can't create directory " + directory.getAbsolutePath());
+                throw new Exception("DiskStorageProvider.prepareDirectory.mkdir: can't create directory " + directory.getAbsolutePath());
             }
         }
-
-        return error;
     }
 
     public File getKeyFile(String key) {
@@ -89,15 +84,13 @@ public class DiskStorageProvider implements StorageProvider {
         return file.getName().endsWith(METADATA_PREFIX);
     }
 
-    private Error write(String fileName, Object object, DiskStorageMetadata metadata) {
-        Error error = null;
+    private void write(@NonNull String fileName, @NonNull Object object, @Nullable DiskStorageMetadata metadata) throws Exception {
         String key = getKeyName(fileName);
         Object lockObject = getLockObject(key);
-        synchronized (lockObject) {
-            error = writeByKey(key, object, metadata);
-        }
 
-        return error;
+        synchronized (lockObject) {
+            writeByKey(key, object, metadata);
+        }
     }
 
     private static final Set<Character> ReservedCharsSet = new HashSet<>(Arrays.asList(
@@ -138,52 +131,38 @@ public class DiskStorageProvider implements StorageProvider {
     }
 
     // TODO: need to refactor
-    private Error writeByKey(String key, Object object, DiskStorageMetadata metadata) {
-        Error error = null;
+    private void writeByKey(@NonNull String key, @NonNull Object object, @Nullable DiskStorageMetadata metadata) throws Exception {
         File file = getKeyFile(key);
         if (!file.exists()) {
-            boolean isFileCreated = false;
-            try {
-                isFileCreated = file.createNewFile();
-
-            } catch (IOException ex) {
-                error = new Error("DiskStorageProvider.write() createNewFile exception:" + ex.getMessage());
-                setLastError(error);
-
-            } finally {
-                if (!isFileCreated && error == null) {
-                    error = new Error("DiskStorageProvider.write() createNewFile create error");
-                    setLastError(error);
-                }
-            }
+            createFile(file);
         }
 
-        if (error == null) {
+        try {
             Serializer serializer = getSerializer(object.getClass());
-            Assert.assertTrue("Can't find a serializer for " + object.getClass(), serializer != null);
+            if (serializer == null) {
+                throw new Exception("Can't find a serializer for " + object.getClass());
+            }
 
             DiskStorageEntry entry = new DiskStorageEntry(file, object, metadata, serializer);
-            error = entry.write();
-            setLastError(error);
-        }
+            entry.write();
 
-        if (error == null) {
-            if (metadata == null) {
-                metadata = createMetadata();
+            if (metadata != null) {
+                writeMetadata(metadata, object, key, file);
             }
 
-            metadata.setFile(getKeyMetadataFile(key));
-            metadata.setCreateTime(System.currentTimeMillis() / 1000L);
-            metadata.calculateSize(file);
-            metadata.setEntryClass(object.getClass());
-            error = metadata.write();
-            setLastError(error);
-
-        } else {
+        } finally {
             file.delete();
+            if (metadata != null && metadata.getFile() != null) {
+                metadata.getFile().delete();
+            }
         }
+    }
 
-        return error;
+    private void createFile(File file) throws IOException {
+        boolean isFileCreated = file.createNewFile();
+        if (!isFileCreated) {
+            throw new IOException("DiskStorageProvider.write() createNewFile create error");
+        }
     }
 
     private Serializer getSerializer(Class cl) {
@@ -191,13 +170,26 @@ public class DiskStorageProvider implements StorageProvider {
         return serializer == null ? defaultSerializer : serializer;
     }
 
+    private void writeMetadata(@NonNull DiskStorageMetadata metadata, @NonNull Object object, @NonNull String key, @NonNull File file) throws Exception {
+        metadata.setFile(getKeyMetadataFile(key));
+        metadata.setCreateTime(System.currentTimeMillis() / 1000L);
+        metadata.calculateSize(file);
+        metadata.setEntryClass(object.getClass());
+        metadata.write();
+    }
+
     @Override
+    @Nullable
     public Object getValue(String key) {
         Object result = null;
         DiskStorageEntry entry = (DiskStorageEntry)getEntry(key);
 
         if (entry != null) {
-            result = entry.getObject();
+            try {
+                result = entry.getObject();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         return result;

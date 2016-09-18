@@ -3,6 +3,7 @@ package com.example.alexeyglushkov.streamlib.readersandwriters;
 import com.example.alexeyglushkov.streamlib.convertors.Convertor;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
@@ -11,43 +12,27 @@ import java.io.OutputStream;
  */
 public class ObjectWriter implements OutputStreamWriter {
     private Convertor convertor;
-    private Error lastError;
-
     public ObjectWriter(Convertor convertor) {
         this.convertor = convertor;
     }
 
     @Override
-    public Error writeStream(OutputStream stream, Object object) {
-        lastError = null;
-
+    public void writeStream(OutputStream stream, Object object) throws IOException {
         if (convertor != null) {
             object = convertor.convert(object);
         }
 
-        lastError = writeObjectToStream(stream, object);
-        return lastError;
+        writeObjectToStream(stream, object);
     }
 
-    public Error writeObjectToStream(OutputStream stream, Object object) {
+    public void writeObjectToStream(OutputStream stream, Object object) throws IOException {
         ObjectOutputStream objectStream = null;
-        try {
-            objectStream = new ObjectOutputStream(stream);
-            objectStream.writeObject(object);
-        } catch (Exception ex) {
-            return new Error("ObjectWriter writeObjectToStream open stream or writer exception: " + ex.getMessage());
-        }
-
-        return null;
+        objectStream = new ObjectOutputStream(stream);
+        objectStream.writeObject(object);
     }
 
     @Override
     public void setProgressUpdater(ProgressUpdater progressUpdater) {
 
-    }
-
-    @Override
-    public Error getError() {
-        return lastError;
     }
 }

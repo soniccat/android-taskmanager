@@ -13,32 +13,24 @@ import java.io.InputStream;
 public class StringReader implements InputStreamReader {
     //TODO: think about cancellation
     private StringHandler stringHandler;
-    private Error error;
 
     public StringReader(StringHandler handler) {
         stringHandler = handler;
     }
 
     @Override
-    public Object readStream(InputStream stream) {
-        error = null;
-
-        try {
-            Object object = this.readStreamToString(stream);
-            if (stringHandler != null) {
-                object = stringHandler.handleString((String)object);
-            }
-            return object;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return error = new Error("InputStreamToByteArrayBufferHandler:readStream exception: " + e.getMessage());
+    public Object readStream(InputStream stream) throws Exception {
+        Object object = this.readStreamToString(stream);
+        if (stringHandler != null) {
+            object = stringHandler.handleString((String)object);
         }
+        return object;
     }
 
     public String readStreamToString(InputStream stream) throws Exception {
         StringBuilder builder = new StringBuilder();
         BufferedReader buffreader = null;
+        
         try {
             java.io.InputStreamReader isr = new java.io.InputStreamReader(stream);
             buffreader = new BufferedReader(isr);
@@ -52,25 +44,18 @@ public class StringReader implements InputStreamReader {
 
         } finally {
             try {
-                buffreader.close();
+                if (buffreader != null) {
+                    buffreader.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-        String result = null;
-        if (builder != null) {
-            result = builder.toString();
-        }
-        return result;
+        return builder.toString();
     }
 
     @Override
     public void setProgressUpdater(ProgressUpdater progressUpdater) {
-    }
-
-    @Override
-    public Error getError() {
-        return error;
     }
 }

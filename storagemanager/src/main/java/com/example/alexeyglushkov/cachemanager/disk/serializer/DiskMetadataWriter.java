@@ -13,12 +13,8 @@ import java.io.OutputStream;
  * Created by alexeyglushkov on 11.09.16.
  */
 public class DiskMetadataWriter implements OutputStreamWriter {
-    private Error error;
-
     @Override
-    public Error writeStream(OutputStream stream, Object object) {
-        error = null;
-
+    public void writeStream(OutputStream stream, Object object) throws IOException {
         DiskStorageMetadata metadata = (DiskStorageMetadata)object;
 
         JsonFactory f = new JsonFactory();
@@ -31,9 +27,6 @@ public class DiskMetadataWriter implements OutputStreamWriter {
             g.writeNumberField("expireTime", metadata.getExpireTime());
             g.writeStringField("entryClass", metadata.getEntryClass().toString());
 
-        } catch (Exception e) {
-            error = new Error(e.getMessage());
-
         } finally {
             if (g != null) {
                 try {
@@ -43,17 +36,10 @@ public class DiskMetadataWriter implements OutputStreamWriter {
                 }
             }
         }
-
-        return error;
     }
 
     @Override
     public void setProgressUpdater(ProgressUpdater progressUpdater) {
 
-    }
-
-    @Override
-    public Error getError() {
-        return error;
     }
 }

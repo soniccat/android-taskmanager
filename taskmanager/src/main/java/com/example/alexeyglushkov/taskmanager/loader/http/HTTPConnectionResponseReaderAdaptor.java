@@ -21,17 +21,12 @@ public class HTTPConnectionResponseReaderAdaptor implements HTTPConnectionStream
     }
 
     @Override
-    public Object readStream(InputStream data) {
+    public Object readStream(InputStream data) throws Exception {
         return reader.readStream(data);
     }
 
     @Override
     public void setProgressUpdater(ProgressUpdater progressUpdater) {
         reader.setProgressUpdater(progressUpdater);
-    }
-
-    @Override
-    public Error getError() {
-        return reader.getError();
     }
 }

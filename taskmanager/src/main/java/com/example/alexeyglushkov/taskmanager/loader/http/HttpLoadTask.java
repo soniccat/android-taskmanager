@@ -80,7 +80,7 @@ public class HttpLoadTask extends SimpleTask {
                 setHandledData(data);
             }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             String errorString = getErrorString(connection);
             Error error = new Error(errorString);
             setError(error);
@@ -98,7 +98,6 @@ public class HttpLoadTask extends SimpleTask {
         }
 
         getPrivate().handleTaskCompletion();
-        return;
     }
 
     @NonNull
@@ -120,7 +119,7 @@ public class HttpLoadTask extends SimpleTask {
         return result;
     }
 
-    protected Object handleStream(InputStream stream) {
+    protected Object handleStream(InputStream stream) throws Exception {
         return streamReader.readStream(stream);
     }
 

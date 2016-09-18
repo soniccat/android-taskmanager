@@ -14,35 +14,22 @@ import java.io.InputStream;
  * Created by alexeyglushkov on 11.09.16.
  */
 public class DiskMetadataReader implements InputStreamReader {
-    private Error error;
 
     @Override
-    public Object readStream(InputStream data) {
-        error = null;
-
+    public Object readStream(InputStream data) throws IOException {
         Object result = null;
-        try {
-            SimpleModule md = new SimpleModule("DiskMetadataModule", new Version(1,0,0,null,null,null));
-            md.addDeserializer(DiskStorageMetadata.class, new DiskMetadataDeserializer(DiskStorageMetadata.class));
+        SimpleModule md = new SimpleModule("DiskMetadataModule", new Version(1,0,0,null,null,null));
+        md.addDeserializer(DiskStorageMetadata.class, new DiskMetadataDeserializer(DiskStorageMetadata.class));
 
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(md);
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(md);
 
-            result = mapper.readValue(data, DiskStorageMetadata.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        result = mapper.readValue(data, DiskStorageMetadata.class);
         return result;
     }
 
     @Override
     public void setProgressUpdater(ProgressUpdater progressUpdater) {
 
-    }
-
-    @Override
-    public Error getError() {
-        return error;
     }
 }

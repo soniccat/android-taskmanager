@@ -92,8 +92,11 @@ public class CourseHolder {
 
         ArrayList<Card> newCards = getNewCards(course, cards);
         course.addCards(newCards);
-        Error error = storeCourse(course);
-        if (error != null) {
+
+        try {
+            storeCourse(course);
+
+        } catch (Exception e) {
             course.setCards(cardsCopy);
             isAdded = false;
         }
@@ -101,9 +104,8 @@ public class CourseHolder {
         return isAdded;
     }
 
-    private Error storeCourse(Course course) {
-        Error error = diskProvider.put(getKey(course), course, null);
-        return error;
+    private void storeCourse(Course course) throws Exception {
+        diskProvider.put(getKey(course), course, null);
     }
 
     public Error removeCourse(UUID courseId) {

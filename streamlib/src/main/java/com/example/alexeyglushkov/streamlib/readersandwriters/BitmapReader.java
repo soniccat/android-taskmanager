@@ -19,9 +19,4 @@ public class BitmapReader implements InputStreamReader {
     public void setProgressUpdater(ProgressUpdater progressUpdater) {
 
     }
-
-    @Override
-    public Error getError() {
-        return null;
-    }
 }

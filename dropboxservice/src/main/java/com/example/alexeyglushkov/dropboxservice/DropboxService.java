@@ -57,7 +57,10 @@ public class DropboxService extends SimpleService {
             @Override
             public void onCompleted(Error error) {
                 if (error == null) {
-                    storage.put(LAST_SYNC_DATE, (new Date()).getTime(), null);
+                    try {
+                        storage.put(LAST_SYNC_DATE, (new Date()).getTime(), null);
+                    } catch (Exception e) {
+                    }
                 }
 
                 callback.onCompleted(error);

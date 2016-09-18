@@ -33,31 +33,24 @@ public class DiskStorageMetadata implements StorageMetadata
 
     //// Actions
 
-    public Error write() {
-        Error error = null;
+    public void write() throws Exception {
         OutputStream os = null;
 
         try {
             os = new BufferedOutputStream(new FileOutputStream(file));
-            error = serializer.write(os, this);
-
-        } catch (Exception ex) {
-            error = new Error("DiskCacheEntry write open stream exception: " + ex.getMessage());
+            serializer.write(os, this);
 
         } finally {
             if (os != null) {
                 try {
                     os.close();
                 } catch (Exception ex) {
-                    error = new Error("DiskCacheEntry write close stream exception: " + ex.getMessage());
                 }
             }
         }
-
-        return error;
     }
 
-    public static DiskStorageMetadata load(File file) throws IOException {
+    public static DiskStorageMetadata load(File file) throws Exception {
         InputStream fis = null;
         DiskStorageMetadata result = null;
 

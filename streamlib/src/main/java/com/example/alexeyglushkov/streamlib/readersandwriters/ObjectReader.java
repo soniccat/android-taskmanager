@@ -11,30 +11,19 @@ import java.io.ObjectInputStream;
  */
 public class ObjectReader implements InputStreamReader {
     private Convertor convertor;
-    private Error lastError;
 
     public ObjectReader(Convertor handler) {
         convertor = handler;
     }
 
     @Override
-    public Object readStream(InputStream stream) {
-        lastError = null;
-
+    public Object readStream(InputStream stream) throws Exception {
         Object result = null;
-        try {
-            Object object = this.readStreamToObject(stream);
-            if (convertor != null) {
-                result = convertor.convert(object);
-            } else {
-                result = object;
-            }
-
-            return result;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            lastError = new Error("ObjectReader:readStream exception: " + e.getMessage());
+        Object object = this.readStreamToObject(stream);
+        if (convertor != null) {
+            result = convertor.convert(object);
+        } else {
+            result = object;
         }
 
         return result;
@@ -48,10 +37,5 @@ public class ObjectReader implements InputStreamReader {
     @Override
     public void setProgressUpdater(ProgressUpdater progressUpdater) {
 
-    }
-
-    @Override
-    public Error getError() {
-        return lastError;
     }
 }

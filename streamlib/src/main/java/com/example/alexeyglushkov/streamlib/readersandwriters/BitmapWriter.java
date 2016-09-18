@@ -12,7 +12,6 @@ import java.io.OutputStream;
 public class BitmapWriter implements OutputStreamWriter {
     Bitmap.CompressFormat format;
     int quality;
-    Error lastError = null;
 
     public BitmapWriter(Bitmap.CompressFormat format, int quality) {
         this.format = format;
@@ -20,26 +19,17 @@ public class BitmapWriter implements OutputStreamWriter {
     }
 
     @Override
-    public Error writeStream(OutputStream stream, Object object) {
-        lastError = null;
-
+    public void writeStream(OutputStream stream, Object object) throws Exception {
         Bitmap bitmap = (Bitmap)object;
         boolean isCompressed = bitmap.compress(format, quality, stream);
 
         if (!isCompressed) {
-            lastError = new Error("BitmapWriter writeStream compress error");
+            throw new Exception("BitmapWriter writeStream compress error");
         }
-
-        return lastError;
     }
 
     @Override
     public void setProgressUpdater(ProgressUpdater progressUpdater) {
 
-    }
-
-    @Override
-    public Error getError() {
-        return lastError;
     }
 }

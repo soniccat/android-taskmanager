@@ -15,7 +15,6 @@ public class ByteArrayReader implements InputStreamReader {
     //TODO: think about cancellation
     private ByteArrayHandler byteArrayHandler;
     private ProgressUpdater progressUpdater;
-    private Error lastError;
 
     boolean keepByteArray;
     byte[] byteArray;
@@ -35,28 +34,20 @@ public class ByteArrayReader implements InputStreamReader {
     }
 
     @Override
-    public Object readStream(InputStream stream) {
-        lastError = null;
-
-        try {
-            byte[] byteArray = this.readStreamToByteArray(stream);
-            if (keepByteArray) {
-                this.byteArray = byteArray;
-            }
-
-            Object result = null;
-            if (byteArrayHandler != null) {
-                result = byteArrayHandler.handleByteArrayBuffer(byteArray);
-            } else {
-                result = byteArray;
-            }
-
-            return result;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return lastError = new Error("InputStreamToByteArrayBufferHandler exception: " + e.getMessage());
+    public Object readStream(InputStream stream) throws IOException {
+        byte[] byteArray = this.readStreamToByteArray(stream);
+        if (keepByteArray) {
+            this.byteArray = byteArray;
         }
+
+        Object result = null;
+        if (byteArrayHandler != null) {
+            result = byteArrayHandler.handleByteArrayBuffer(byteArray);
+        } else {
+            result = byteArray;
+        }
+
+        return result;
     }
 
     public byte[] readStreamToByteArray(InputStream stream) throws IOException {
@@ -92,10 +83,5 @@ public class ByteArrayReader implements InputStreamReader {
 
     public void setProgressUpdater(ProgressUpdater progressUpdater) {
         this.progressUpdater = progressUpdater;
-    }
-
-    @Override
-    public Error getError() {
-        return lastError;
     }
 }

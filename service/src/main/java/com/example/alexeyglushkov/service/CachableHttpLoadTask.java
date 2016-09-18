@@ -134,7 +134,12 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
                 long expireTime = System.currentTimeMillis() / 1000L + cacheStoreDuration();
                 metadata.setExpireTime(expireTime);
             }
-            cache.put(getCacheKey(), byteArrayReader.getByteArray(), metadata);
+
+            try {
+                cache.put(getCacheKey(), byteArrayReader.getByteArray(), metadata);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

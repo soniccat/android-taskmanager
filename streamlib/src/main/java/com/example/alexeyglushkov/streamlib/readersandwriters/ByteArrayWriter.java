@@ -11,16 +11,13 @@ import java.io.OutputStream;
  */
 public class ByteArrayWriter implements OutputStreamWriter {
     private Convertor convertor;
-    private Error lastError;
 
     public ByteArrayWriter(Convertor convertor) {
         this.convertor = convertor;
     }
 
     @Override
-    public Error writeStream(OutputStream stream, Object object) {
-        lastError = null;
-
+    public void writeStream(OutputStream stream, Object object) throws Exception {
         if (convertor != null) {
             object = this.convertor.convert(object);
         }
@@ -32,8 +29,6 @@ public class ByteArrayWriter implements OutputStreamWriter {
         } catch (IOException ex) {
             lastError = new Error("ByteArrayWriter exception: " + ex.getMessage());
         }*/
-
-        return lastError;
     }
 
     /*
@@ -45,10 +40,5 @@ public class ByteArrayWriter implements OutputStreamWriter {
     @Override
     public void setProgressUpdater(ProgressUpdater progressUpdater) {
 
-    }
-
-    @Override
-    public Error getError() {
-        return lastError;
     }
 }
