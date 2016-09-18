@@ -29,6 +29,8 @@ public class CardTeacher implements Parcelable {
     private int hintShowCount;
     private boolean isWrongAnswerCounted;
 
+    //// Initialization
+
     public CardTeacher(Parcel parcel) {
         cardPerSession = parcel.readInt();
         parcel.readTypedList(cards, Card.CREATOR);
@@ -37,25 +39,6 @@ public class CardTeacher implements Parcelable {
         checkCount = parcel.readInt();
         hintShowCount = parcel.readInt();
         isWrongAnswerCounted = parcel.readInt() > 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(cardPerSession);
-        dest.writeTypedList(cards);
-        dest.writeTypedList(sessions);
-        dest.writeParcelable(currentSession, flags);
-        dest.writeInt(checkCount);
-        dest.writeInt(hintShowCount);
-        dest.writeInt(isWrongAnswerCounted ? 1 : 0);
-    }
-
-    private MainApplication getMainApplication() {
-        return MainApplication.instance;
-    }
-
-    public CourseHolder getCourseHolder() {
-        return getMainApplication().getCourseHolder();
     }
 
     public CardTeacher(UUID courseId) {
@@ -68,6 +51,8 @@ public class CardTeacher implements Parcelable {
         this.cards.addAll(cards);
         buildCourseSession();
     }
+
+    //// Actions
 
     private void buildCourseSession() {
         ArrayList<Card> sessinCards = new ArrayList<>();
@@ -91,15 +76,6 @@ public class CardTeacher implements Parcelable {
         }
 
         currentSession = new LearnSession(sessinCards);
-    }
-
-    public Card getCurrentCard() {
-        return currentSession != null ? currentSession.getCurrentCard() : null;
-    }
-
-    public Card getNextCard() {
-        prepareToNewCard();
-        return currentSession.getNextCard();
     }
 
     private void prepareToNewCard() {
@@ -143,7 +119,7 @@ public class CardTeacher implements Parcelable {
         return currentSession;
     }
 
-    private void countWronAnswer() {
+    private void countWronAnswer() throws Exception {
         if (!isWrongAnswerCounted) {
             getCourseHolder().countWrongAnswer(getCurrentCard());
             currentSession.updateProgress(getCurrentCard(), false);
@@ -151,13 +127,28 @@ public class CardTeacher implements Parcelable {
         }
     }
 
-    private void countRightAnswer() {
+    private void countRightAnswer() throws Exception {
         getCourseHolder().countRighAnswer(getCurrentCard());
         currentSession.updateProgress(getCurrentCard(), true);
     }
 
     public boolean isWrongAnswerCounted() {
         return isWrongAnswerCounted;
+    }
+
+    //// Interfaces
+
+    // Parcelable
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(cardPerSession);
+        dest.writeTypedList(cards);
+        dest.writeTypedList(sessions);
+        dest.writeParcelable(currentSession, flags);
+        dest.writeInt(checkCount);
+        dest.writeInt(hintShowCount);
+        dest.writeInt(isWrongAnswerCounted ? 1 : 0);
     }
 
     public static final Parcelable.Creator<CardTeacher> CREATOR = new Parcelable.Creator<CardTeacher>() {
@@ -174,4 +165,26 @@ public class CardTeacher implements Parcelable {
     public int describeContents() {
         return 0;
     }
+
+    //// Getters
+
+    public Card getCurrentCard() {
+        return currentSession != null ? currentSession.getCurrentCard() : null;
+    }
+
+    public Card getNextCard() {
+        prepareToNewCard();
+        return currentSession.getNextCard();
+    }
+
+    // Cast Getters
+
+    private MainApplication getMainApplication() {
+        return MainApplication.instance;
+    }
+
+    public CourseHolder getCourseHolder() {
+        return getMainApplication().getCourseHolder();
+    }
+
 }

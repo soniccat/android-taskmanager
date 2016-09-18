@@ -58,8 +58,8 @@ public class CourseListFragmentMenuListener extends DeleteMenuListener<Course> {
     }
 
     @Override
-    protected Error deleteData(Course data) {
-        return courseHolder.removeCourse(data);
+    protected void deleteData(Course data) throws Exception {
+        courseHolder.removeCourse(data);
     }
 
     public Listener getListener() {

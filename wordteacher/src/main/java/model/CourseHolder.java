@@ -1,5 +1,7 @@
 package model;
 
+import android.support.annotation.NonNull;
+
 import com.example.alexeyglushkov.cachemanager.StorageEntry;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageEntry;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageProvider;
@@ -22,9 +24,9 @@ public class CourseHolder {
         Loaded
     }
 
-    private DiskStorageProvider diskProvider;
-    private ArrayList<Course> courses = new ArrayList<>();
-    private WeakRefList<CourseHolderListener> listeners = new WeakRefList<>();
+    private @NonNull DiskStorageProvider diskProvider;
+    private @NonNull ArrayList<Course> courses = new ArrayList<>();
+    private @NonNull WeakRefList<CourseHolderListener> listeners = new WeakRefList<>();
 
     private State state = State.Unitialized;
 
@@ -65,29 +67,25 @@ public class CourseHolder {
         List<StorageEntry> entries = diskProvider.getEntries();
         for (StorageEntry entry : entries) {
             DiskStorageEntry diskEntry = (DiskStorageEntry)entry;
-            Course course = (Course)diskEntry.getObject();
-            if (course != null) {
+
+            try {
+                Course course = (Course)diskEntry.getObject();
                 courses.add(course);
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
         return courses;
     }
 
-    public Error addCourse(Course course) {
-        Error error = null;
-        if (course != null) {
-            error = storeCourse(course);
-            if (error == null) {
-                courses.add(course);
-            }
-        }
-
-        return error;
+    public void addCourse(Course course) throws Exception {
+        storeCourse(course);
+        courses.add(course);
     }
 
-    public boolean addNewCards(Course course, List<Card> cards) {
-        boolean isAdded = true;
+    public void addNewCards(Course course, List<Card> cards) throws Exception {
         ArrayList<Card> cardsCopy = new ArrayList<>(course.getCards());
 
         ArrayList<Card> newCards = getNewCards(course, cards);
@@ -98,55 +96,49 @@ public class CourseHolder {
 
         } catch (Exception e) {
             course.setCards(cardsCopy);
-            isAdded = false;
+            throw e;
         }
-
-        return isAdded;
     }
 
     private void storeCourse(Course course) throws Exception {
         diskProvider.put(getKey(course), course, null);
     }
 
-    public Error removeCourse(UUID courseId) {
+    public void removeCourse(UUID courseId) throws Exception {
         Course course = getCourse(courseId);
-        return removeCourse(course);
+        removeCourse(course);
     }
 
-    public Error removeCourse(Course course) {
-        Error error = diskProvider.remove(getKey(course));
-        if (error == null) {
-            courses.remove(course);
-        }
-
-        return error;
+    public void removeCourse(Course course) throws Exception {
+        diskProvider.remove(getKey(course));
+        courses.remove(course);
     }
 
-    public Error removeCard(Card card) {
-        Error error = null;
+    public void removeCard(Card card) throws Exception {
         Course course = getCourse(card.getCourseId());
         if (course != null) {
             int index = course.getCardIndex(card);
             if (index != -1) {
                 course.removeCard(card);
 
-                error = storeCourse(course);
-                if (error != null) {
+                try {
+                    storeCourse(course);
+
+                } catch (Exception e) {
                     // rollback
                     course.addCard(index, card);
+                    throw e;
                 }
             }
         }
-
-        return error;
     }
 
-    public void countRighAnswer(Card card) {
+    public void countRighAnswer(Card card) throws Exception {
         Course course = getCourse(card.getCourseId());
         countRighAnswer(course, card);
     }
 
-    public void countRighAnswer(Course course, Card card) {
+    public void countRighAnswer(Course course, Card card) throws Exception {
         CardProgress progress = card.getProgress();
         if (progress == null) {
             progress = new CardProgress();
@@ -157,12 +149,12 @@ public class CourseHolder {
         storeCourse(course);
     }
 
-    public void countWrongAnswer(Card card) {
+    public void countWrongAnswer(Card card) throws Exception {
         Course course = getCourse(card.getCourseId());
         countWrongAnswer(course, card);
     }
 
-    public void countWrongAnswer(Course course, Card card) {
+    public void countWrongAnswer(Course course, Card card) throws Exception {
         CardProgress progress = card.getProgress();
         if (progress != null) {
             progress.countWrongAnswer();
@@ -198,10 +190,12 @@ public class CourseHolder {
         return task;
     }
 
+    @NonNull
     public File getDirectory() {
         return diskProvider.getDirectory();
     }
 
+    @NonNull
     public ArrayList<Course> getCourses() {
         return courses;
     }

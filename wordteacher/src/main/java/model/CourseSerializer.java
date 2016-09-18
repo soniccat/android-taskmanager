@@ -30,22 +30,12 @@ public class CourseSerializer implements Serializer {
     }
 
     @Override
-    public Error write(OutputStream outputStream, Object value) {
-        return writer.writeStream(outputStream, value);
+    public void write(OutputStream outputStream, Object value) throws Exception {
+        writer.writeStream(outputStream, value);
     }
 
     @Override
-    public Object read(InputStream inputStream) {
+    public Object read(InputStream inputStream) throws Exception {
         return reader.readStream(inputStream);
-    }
-
-    @Override
-    public Error getReadError() {
-        return reader.getError();
-    }
-
-    @Override
-    public Error getWriteError() {
-        return writer.getError();
     }
 }

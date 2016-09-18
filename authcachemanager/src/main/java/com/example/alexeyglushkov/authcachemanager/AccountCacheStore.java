@@ -69,8 +69,8 @@ public class AccountCacheStore extends DiskStorageProvider implements AccountSto
     }
 
     @Override
-    public Error removeAccount(int id) {
-        return remove(Integer.toString(id));
+    public void removeAccount(int id) throws Exception {
+        remove(Integer.toString(id));
     }
 
     @Override

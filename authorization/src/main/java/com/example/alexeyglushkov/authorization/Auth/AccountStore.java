@@ -17,9 +17,8 @@ public interface AccountStore {
 
     List<Account> getAccounts();
     List<Account> getAccounts(int serviceType);
-    Error removeAccount(int id);
-    Error removeAll();
-    Error getError();
+    void removeAccount(int id) throws Exception;
+    void removeAll() throws Exception;
 
     // TODO: provide async loader
     boolean isLoaded();

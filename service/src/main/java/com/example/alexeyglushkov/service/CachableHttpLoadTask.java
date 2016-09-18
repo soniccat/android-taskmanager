@@ -113,7 +113,12 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
         byte[] bytes = null;
         if (metadata != null) {
             if (metadata.isExpired()) {
-                cache.remove(cacheKey);
+                try {
+                    cache.remove(cacheKey);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
             } else if (deleteIfExpired) {
                 bytes = (byte[]) cache.getValue(cacheKey);

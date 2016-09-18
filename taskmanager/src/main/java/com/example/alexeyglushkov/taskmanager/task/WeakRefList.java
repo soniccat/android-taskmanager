@@ -26,6 +26,21 @@ public class WeakRefList<T> extends ArrayList<WeakReference<T>> {
     }
 
     @Override
+    public boolean contains(Object object) {
+        if (object instanceof WeakReference) {
+            return super.contains(object);
+        }
+
+        for (WeakReference<T> ref : this) {
+            if (ref.get() == object) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
     public boolean remove(Object object) {
         if (object instanceof WeakReference) {
             return super.remove(object);

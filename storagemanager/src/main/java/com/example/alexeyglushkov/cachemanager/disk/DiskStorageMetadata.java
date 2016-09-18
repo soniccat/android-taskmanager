@@ -1,5 +1,8 @@
 package com.example.alexeyglushkov.cachemanager.disk;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import com.example.alexeyglushkov.cachemanager.StorageMetadata;
 import com.example.alexeyglushkov.cachemanager.disk.serializer.DiskMetadataSerializer;
 import com.example.alexeyglushkov.streamlib.serializers.Serializer;
@@ -21,10 +24,9 @@ public class DiskStorageMetadata implements StorageMetadata
     private long contentSize;
     private long createDate;
     private long expireDate;
-    private Class entryClass;
-
-    private transient File file;
-    private transient Serializer serializer = createSerializer();
+    private @Nullable Class entryClass;
+    private @Nullable File file;
+    private @NonNull Serializer serializer = createSerializer();
 
     //// Initialization
 
@@ -67,15 +69,6 @@ public class DiskStorageMetadata implements StorageMetadata
         }
 
         return result;
-    }
-
-    public static Error delete(File file) {
-        Error error = null;
-        if (!file.delete()) {
-            error = new Error("DiskCacheMetadata delete: can't delete file " + file.getAbsolutePath());
-        }
-
-        return error;
     }
 
     public void calculateSize(File file) {
@@ -127,22 +120,24 @@ public class DiskStorageMetadata implements StorageMetadata
         this.expireDate = expireTime;
     }
 
-    public void setEntryClass(Class cl) {
+    public void setEntryClass(@NonNull Class cl) {
         entryClass = cl;
     }
 
+    @Nullable
     public Class getEntryClass() {
         return entryClass;
     }
 
     //// Setters
 
-    public void setFile(File file) {
+    public void setFile(@NonNull File file) {
         this.file = file;
     }
 
     //// Getters
 
+    @Nullable
     public File getFile() {
         return file;
     }

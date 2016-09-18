@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import junit.framework.Assert;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
@@ -31,36 +32,22 @@ import java.util.Set;
 
 // TODO: check synchronization
 public class DiskStorageProvider implements StorageProvider {
-    private static String ERROR_TAG = "DiskStorageProvider error";
     private static String METADATA_PREFIX = "_metadata";
 
-    private File directory;
-    private Serializer defaultSerializer = new ObjectSerializer();
-    private Map<Class, Serializer> serializerMap;
-    private Error lastError;
+    private @NonNull File directory;
+    private @NonNull Serializer defaultSerializer = new ObjectSerializer();
+    private @NonNull Map<Class, Serializer> serializerMap = new HashMap<>();
 
-    private Map<String, WeakReference<Object>> lockMap = new HashMap<>();
+    private @NonNull Map<String, WeakReference<Object>> lockMap = new HashMap<>();
 
-    public DiskStorageProvider(File directory) {
+    public DiskStorageProvider(@NonNull File directory) {
         this.directory = directory;
-        this.serializerMap = new HashMap<>();
     }
 
     @Override
-    public void put(String key, Object entry, StorageMetadata metadata) throws Exception {
+    public void put(@NonNull String key, @NonNull Object entry, @Nullable StorageMetadata metadata) throws Exception {
         prepareDirectory();
         write(key, entry, (DiskStorageMetadata) metadata);
-    }
-
-    private void setLastError(Error error) {
-        if (error != null) {
-            this.lastError = error;
-            logError(error);
-        }
-    }
-
-    private void logError(Error error) {
-        Log.e(ERROR_TAG, error.getMessage());
     }
 
     private void prepareDirectory() throws Exception {
@@ -71,11 +58,12 @@ public class DiskStorageProvider implements StorageProvider {
         }
     }
 
-    public File getKeyFile(String key) {
+    public File getKeyFile(@NonNull String key) {
         return new File(directory.getPath() + File.separator + key);
     }
 
-    private File getKeyMetadataFile(String key) {
+    @NonNull
+    private File getKeyMetadataFile(@NonNull String key) {
         String fileName = key + METADATA_PREFIX;
         return new File(directory.getPath() + File.separator + fileName);
     }
@@ -180,7 +168,7 @@ public class DiskStorageProvider implements StorageProvider {
 
     @Override
     @Nullable
-    public Object getValue(String key) {
+    public Object getValue(@NonNull  String key) {
         Object result = null;
         DiskStorageEntry entry = (DiskStorageEntry)getEntry(key);
 
@@ -196,11 +184,13 @@ public class DiskStorageProvider implements StorageProvider {
     }
 
     @Override
+    @NonNull
     public DiskStorageMetadata createMetadata() {
         return new DiskStorageMetadata();
     }
 
-    public StorageMetadata getMetadata(String key) {
+    @Nullable
+    public StorageMetadata getMetadata(@NonNull String key) {
         StorageMetadata result = null;
         StorageEntry entry = getEntry(key);
         if (entry != null) {
@@ -210,70 +200,65 @@ public class DiskStorageProvider implements StorageProvider {
     }
 
     @Override
-    public StorageEntry getEntry(String fileName) {
+    @Nullable
+    public StorageEntry getEntry(@NonNull String fileName) {
         StorageEntry entry = null;
         String key = getKeyName(fileName);
         Object lockObject = getLockObject(key);
+
         synchronized (lockObject) {
-            entry = getEntryByKey(key);
-        }
-
-        return entry;
-    }
-
-    private StorageEntry getEntryByKey(String key) {
-        DiskStorageEntry entry = null;
-        File file = getKeyFile(key);
-        Error error = null;
-
-        if (!file.exists()) {
-            error = new Error("DiskStorageProvider.getEntryByKey() exists(): file doesn't exist");
-            setLastError(error);
-        }
-
-        if (error == null) {
-            DiskStorageMetadata metadata = null;
-            File metadataFile = getKeyMetadataFile(key);
-            if (metadataFile.exists()) {
-                Serializer serializer = null;
-                try {
-                    metadata = DiskStorageMetadata.load(metadataFile);
-                    serializer = getSerializer(metadata.getEntryClass());
-
-                } catch (Exception e) {
-                    serializer = defaultSerializer;
-                }
-
-                Assert.assertTrue(serializer != null);
-
-                entry = new DiskStorageEntry(file, null, metadata, serializer);
-
-            } else {
-                error = new Error("DiskStorageProvider.getEntryByKey() exists(): metadata doesn't exist");
-                setLastError(error);
+            try {
+                entry = getEntryByKey(key);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
         return entry;
     }
 
+    @NonNull
+    private StorageEntry getEntryByKey(@NonNull String key) throws Exception {
+        DiskStorageEntry entry = null;
+        File file = getKeyFile(key);
+
+        if (!file.exists()) {
+            throw new FileNotFoundException("DiskStorageProvider.getEntryByKey() exists(): file doesn't exist");
+        }
+
+        DiskStorageMetadata metadata = null;
+        Serializer serializer = null;
+        File metadataFile = getKeyMetadataFile(key);
+
+        if (metadataFile.exists()) {
+            try {
+                metadata = DiskStorageMetadata.load(metadataFile);
+                serializer = getSerializer(metadata.getEntryClass());
+
+            } catch (Exception e) {
+                serializer = defaultSerializer;
+            }
+        } else {
+            serializer = defaultSerializer;
+        }
+
+        if (serializer == null) {
+            throw new Exception("Serializer is null");
+        }
+
+        entry = new DiskStorageEntry(file, null, metadata, serializer);
+        return entry;
+    }
+
     @Override
-    public Error remove(String key) {
-        Error error = null;
+    public void remove(@NonNull String key) throws Exception {
         Object lockObject = getLockObject(key);
         synchronized (lockObject) {
             StorageEntry entry = getEntry(key);
             if (entry != null) {
-                error = entry.delete();
-                setLastError(error);
+                entry.delete();
             }
         }
-        return error;
-    }
-
-    @Override
-    public Error getError() {
-        return lastError;
     }
 
     // TODO: think about returning interface instead
@@ -291,10 +276,14 @@ public class DiskStorageProvider implements StorageProvider {
                 if (!isMetadataFile(file)) {
                     String key = file.getName();
                     Object lockObject = getLockObject(key);
+
                     synchronized (lockObject) {
-                        StorageEntry entry = getEntryByKey(key);
-                        if (entry != null) {
+                        try {
+                            StorageEntry entry = getEntryByKey(key);
                             entries.add(entry);
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
                 }
@@ -317,44 +306,46 @@ public class DiskStorageProvider implements StorageProvider {
         return entryCount;
     }
 
-    public Error removeAll() {
-        Error error = null;
+    public void removeAll() throws Exception {
+        Exception lastException = null;
+
         List<StorageEntry> entries = getEntries();
         for (StorageEntry file : entries) {
             DiskStorageEntry diskCacheEntry = (DiskStorageEntry)file;
             String key = diskCacheEntry.getFileName();
             Object lockObject = getLockObject(key);
             synchronized (lockObject) {
-                Error deleteError = file.delete();
-                if (deleteError != null) {
-                    error = deleteError;
-                    setLastError(error);
+                try {
+                    file.delete();
+
+                } catch (Exception e) {
+                    lastException = e;
                 }
             }
         }
 
-        if (error == null) {
+        if (lastException == null) {
             if (!directory.delete()) {
-                error = new Error("DiskStorageProvider.removeAll() delete(): remove directory error");
-                setLastError(error);
+                throw new Exception("DiskStorageProvider.removeAll() delete(): remove directory error");
             }
+        } else {
+            throw lastException;
         }
-
-        return error;
     }
 
     //// Setter
 
-    public void setSerializer(Serializer serializer, Class cl) {
+    public void setSerializer(@NonNull  Serializer serializer, @NonNull Class cl) {
         serializerMap.put(cl, serializer);
     }
 
-    public void setDefaultSerializer(Serializer defaultSerializer) {
+    public void setDefaultSerializer(@NonNull Serializer defaultSerializer) {
         this.defaultSerializer = defaultSerializer;
     }
 
     //// Getter
 
+    @NonNull
     public File getDirectory() {
         return directory;
     }

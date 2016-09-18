@@ -9,7 +9,7 @@ public interface Account {
 
     AuthCredentials getCredentials();
     boolean isAuthorized();
-    void logout();
+    void logout() throws Exception;
 
     void setAuthorizer(Authorizer authorizer);
     Authorizer getAuthorizer();

@@ -138,7 +138,7 @@ public class CourseListStackFragment extends StackFragment implements Sortable {
             }
 
             @Override
-            public void onDataDeleted(Course course) {
+            public void onDataDeleted(Course course, Exception exception) {
             }
 
             @Override
@@ -166,7 +166,7 @@ public class CourseListStackFragment extends StackFragment implements Sortable {
             }
 
             @Override
-            public void onDataDeleted(Card data) {
+            public void onDataDeleted(Card data, Exception exception) {
                 if (getBackStackSize() == 0) {
                     reloadCourses();
                 }

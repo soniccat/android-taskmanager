@@ -44,7 +44,7 @@ public class SimpleAccount implements Account, Serializable {
     }
 
     @Override
-    public void logout() {
+    public void logout() throws Exception {
         if (getCredentials() != null) {
             accountStore.removeAccount(getId());
         }

@@ -14,12 +14,15 @@ public interface StorageProvider {
     @Nullable
     Object getValue(@NonNull String key);
 
+    @NonNull
     StorageMetadata createMetadata();
-    StorageMetadata getMetadata(@NonNull String key);
-    Error remove(@NonNull String key);
-    Error getError();
 
+    @Nullable
+    StorageMetadata getMetadata(@NonNull String key);
+    void remove(@NonNull String key) throws Exception;
+
+    @Nullable
     StorageEntry getEntry(@NonNull String key);
     List<StorageEntry> getEntries();
-    Error removeAll();
+    void removeAll() throws Exception;
 }

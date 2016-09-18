@@ -25,7 +25,6 @@ public class DiskMetadataDeserializer extends CustomDeserializer<DiskStorageMeta
 
     @Override
     protected boolean handle(JsonParser p, DeserializationContext ctxt, DiskStorageMetadata metadata) throws IOException {
-        ObjectMapper mapper = (ObjectMapper) p.getCodec();
         String name = p.getCurrentName();
         boolean isHandled = false;
 

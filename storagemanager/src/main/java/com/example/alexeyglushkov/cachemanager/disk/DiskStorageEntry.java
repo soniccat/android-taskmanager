@@ -36,6 +36,7 @@ public class DiskStorageEntry implements StorageEntry {
         return file.getName();
     }
 
+    @NonNull
     public Object getObject() throws Exception {
         if (object == null) {
             loadObject();
@@ -83,17 +84,16 @@ public class DiskStorageEntry implements StorageEntry {
     }
 
     @Override
-    public Error delete() {
-        Error error = null;
+    public void delete() throws Exception {
         if (!file.delete()) {
-            error = new Error("DiskCacheEntry delete: can't delete file " + file.getAbsolutePath());
+            throw new Exception("DiskCacheEntry delete: can't delete file " + file.getAbsolutePath());
         }
 
-        if (error == null && metadata != null) {
-            error = DiskStorageMetadata.delete(metadata.getFile());
+        if (metadata != null) {
+            if (!metadata.getFile().delete()) {
+                throw new Exception("DiskCacheEntry delete: can't delete metadata " + metadata.getFile().getAbsolutePath());
+            }
         }
-
-        return error;
     }
 
     @Override

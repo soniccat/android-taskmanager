@@ -20,27 +20,23 @@ import java.io.InputStream;
  * Created by alexeyglushkov on 08.05.16.
  */
 public class CourseReader implements InputStreamReader {
-    @Override
-    public Object readStream(InputStream data) {
 
+    @Override
+    public Object readStream(InputStream data) throws IOException {
         //StringReader reader = new StringReader(null);
         //String str = (String)reader.readStream(data);
 
         Object result = null;
-        try {
-            SimpleModule md = new SimpleModule("CourseModule", new Version(1,0,0,null,null,null));
-            md.addDeserializer(Course.class, new CourseDeserializer(Course.class));
-            md.addDeserializer(Card.class, new CardDeserializer(Card.class));
-            md.addDeserializer(QuizletTerm.class, new QuizletTermDeserializer(QuizletTerm.class));
-            md.addDeserializer(CardProgress.class, new CardProgressDeserializer(CardProgress.class));
+        SimpleModule md = new SimpleModule("CourseModule", new Version(1,0,0,null,null,null));
+        md.addDeserializer(Course.class, new CourseDeserializer(Course.class));
+        md.addDeserializer(Card.class, new CardDeserializer(Card.class));
+        md.addDeserializer(QuizletTerm.class, new QuizletTermDeserializer(QuizletTerm.class));
+        md.addDeserializer(CardProgress.class, new CardProgressDeserializer(CardProgress.class));
 
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(md);
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(md);
 
-            result = mapper.readValue(data, Course.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        result = mapper.readValue(data, Course.class);
 
         return result;
     }
@@ -48,10 +44,5 @@ public class CourseReader implements InputStreamReader {
     @Override
     public void setProgressUpdater(ProgressUpdater progressUpdater) {
 
-    }
-
-    @Override
-    public Error getError() {
-        return null;
     }
 }

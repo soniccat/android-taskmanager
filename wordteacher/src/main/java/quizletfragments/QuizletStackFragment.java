@@ -3,7 +3,6 @@ package quizletfragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
@@ -112,18 +111,18 @@ public class QuizletStackFragment extends StackFragment implements Sortable {
             }
 
             @Override
-            public void onDataDeleted(QuizletSet data) {
+            public void onDataDeleted(QuizletSet data, Exception exception) {
 
             }
 
             @Override
-            public void onCourseCreated(Course course) {
-                getQuizletListener().onCourseChanged(course);
+            public void onCourseCreated(Course course, Exception exception) {
+                getQuizletListener().onCourseChanged(course, exception);
             }
 
             @Override
-            public void onCardsAdded(Course course) {
-                getQuizletListener().onCourseChanged(course);
+            public void onCardsAdded(Course course, Exception exception) {
+                getQuizletListener().onCourseChanged(course, exception);
             }
 
             @Override
@@ -141,8 +140,8 @@ public class QuizletStackFragment extends StackFragment implements Sortable {
     private QuizletTermFragmentMenuListener createTermMenuListener() {
         return new QuizletTermFragmentMenuListener(getContext(), getCourseHolder(), new QuizletTermFragmentMenuListener.Listener<QuizletTerm>() {
             @Override
-            public void onCourseCreated(Course course) {
-                getQuizletListener().onCourseChanged(course);
+            public void onCourseCreated(Course course, Exception exception) {
+                getQuizletListener().onCourseChanged(course, exception);
             }
 
             @Override
@@ -151,8 +150,8 @@ public class QuizletStackFragment extends StackFragment implements Sortable {
             }
 
             @Override
-            public void onCardsAdded(Course course) {
-                getQuizletListener().onCourseChanged(course);
+            public void onCardsAdded(Course course, Exception exception) {
+                getQuizletListener().onCourseChanged(course, exception);
             }
 
             @Override
@@ -171,7 +170,7 @@ public class QuizletStackFragment extends StackFragment implements Sortable {
             }
 
             @Override
-            public void onDataDeleted(QuizletTerm data) {
+            public void onDataDeleted(QuizletTerm data, Exception exception) {
 
             }
         });
@@ -250,6 +249,6 @@ public class QuizletStackFragment extends StackFragment implements Sortable {
     //// Interfaces
 
     public interface Listener extends StackFragment.Listener {
-        void onCourseChanged(Course course);
+        void onCourseChanged(Course course, Exception exception);
     }
 }

@@ -35,12 +35,14 @@ public abstract class DeleteMenuListener<T> extends ListMenuListener<T> {
             public void onDismissed(Snackbar snackbar, int event) {
                 super.onDismissed(snackbar, event);
                 if (snackBarNeedDeleteData) {
-                    Error error = deleteData(data);
-                    if (error != null) {
-                        listener.onDataDeletionCancelled(data);
-                    } else {
-                        listener.onDataDeleted(data);
+                    Exception exception = null;
+                    try {
+                        deleteData(data);
+                    } catch (Exception e) {
+                        exception = e;
                     }
+
+                    listener.onDataDeleted(data, exception);
                 }
 
                 currentSnackbar = null;
@@ -55,7 +57,7 @@ public abstract class DeleteMenuListener<T> extends ListMenuListener<T> {
         }
     }
 
-    protected abstract Error deleteData(T data);
+    protected abstract void deleteData(T data) throws Exception;
 
     public Listener getListener() {
         return (Listener)this.listener;

@@ -48,8 +48,8 @@ public class CardListFragmentMenuListener extends DeleteMenuListener<Card> {
     }
 
     @Override
-    protected Error deleteData(Card data) {
-        return courseHolder.removeCard(data);
+    protected void deleteData(Card data) throws Exception {
+        courseHolder.removeCard(data);
     }
 
     public Listener getListener() {

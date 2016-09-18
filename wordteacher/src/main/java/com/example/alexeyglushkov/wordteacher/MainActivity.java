@@ -9,6 +9,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.*;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,6 +46,8 @@ public class MainActivity extends BaseActivity implements
         QuizletStackFragment.Listener,
         CourseListStackFragment.Listener,
         QuizletService.QuizletServiceListener {
+
+    private static String ERROR_TAG = "Exception";
 
     private Toolbar toolbar;
     private TabLayout tabLayout;
@@ -279,7 +282,7 @@ public class MainActivity extends BaseActivity implements
         //updateSets();
     }
 
-    private void showErrorSnackBar(Error error) {
+    private void showLoadErrorSnackBar(Error error) {
         String errorString = "";
         if (error instanceof Authorizer.AuthError) {
             errorString = getString(R.string.error_auth_error);
@@ -288,6 +291,13 @@ public class MainActivity extends BaseActivity implements
         }
 
         Snackbar.make(getCurrentFragmentView(), errorString, Snackbar.LENGTH_LONG).show();
+        Log.e(ERROR_TAG, error.getMessage());
+    }
+
+    private void showAppExceptionSnackBar(Exception ex) {
+        String errorString = ex.getMessage();
+        Snackbar.make(getCurrentFragmentView(), errorString, Snackbar.LENGTH_LONG).show();
+        Log.e(ERROR_TAG, ex.getMessage());
     }
 
     private void startLearnNewWords(Course course) {
@@ -393,7 +403,7 @@ public class MainActivity extends BaseActivity implements
         }
 
         if (!isCancelled) {
-            showErrorSnackBar(error);
+            showLoadErrorSnackBar(error);
         }
     }
 
@@ -446,7 +456,11 @@ public class MainActivity extends BaseActivity implements
     // QuizletStackFragment.Listener
 
     @Override
-    public void onCourseChanged(Course course) {
+    public void onCourseChanged(Course course, Exception exception) {
+        if (exception != null) {
+            showAppExceptionSnackBar(exception);
+        }
+
         updateCoursesIfNeeded();
     }
 
@@ -490,17 +504,17 @@ public class MainActivity extends BaseActivity implements
             }
 
             @Override
-            public void onDataDeleted(QuizletTerm data) {
+            public void onDataDeleted(QuizletTerm data, Exception exception) {
             }
 
             @Override
-            public void onCourseCreated(Course course) {
-                MainActivity.this.onCourseChanged(course);
+            public void onCourseCreated(Course course, Exception exception) {
+                MainActivity.this.onCourseChanged(course, exception);
             }
 
             @Override
-            public void onCardsAdded(Course course) {
-                MainActivity.this.onCourseChanged(course);
+            public void onCardsAdded(Course course, Exception exception) {
+                MainActivity.this.onCourseChanged(course, exception);
             }
 
             @Override

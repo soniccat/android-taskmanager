@@ -1,5 +1,8 @@
 package com.example.alexeyglushkov.cachemanager;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import java.io.Serializable;
 
 /**
@@ -16,6 +19,6 @@ public interface StorageMetadata {
     void setContentSize(long size);
     long getContentSize();
 
-    void setEntryClass(Class cl);
-    Class getEntryClass();
+    void setEntryClass(@NonNull Class cl);
+    @Nullable Class getEntryClass();
 }

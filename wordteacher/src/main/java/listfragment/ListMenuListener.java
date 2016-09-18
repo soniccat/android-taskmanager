@@ -53,6 +53,6 @@ public abstract class ListMenuListener<T> implements BaseListFragment.Listener<T
 
         //TODO: push these up
         void onDataDeletionCancelled(T data);
-        void onDataDeleted(T data);
+        void onDataDeleted(T data, Exception exception);
     }
 }

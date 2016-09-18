@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 
-import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.wordteacher.R;
 
@@ -70,9 +69,14 @@ public abstract class QuizletFragmentMenuListener<T> extends ListMenuListener<T>
             cards.add(card);
         }
 
-        if (getCourseHolder().addNewCards(course, cards)) {
-            getListener().onCardsAdded(course);
+        Exception exception = null;
+        try {
+            getCourseHolder().addNewCards(course, cards);
+        } catch (Exception e) {
+            exception = e;
         }
+
+        getListener().onCardsAdded(course, exception);
     }
 
     protected void createCourse(String title, ArrayList<Card> cards) {
@@ -80,10 +84,14 @@ public abstract class QuizletFragmentMenuListener<T> extends ListMenuListener<T>
         course.setTitle(title);
         course.addCards(cards);
 
-        Error error = getCourseHolder().addCourse(course);
-        if (error == null) {
-            getListener().onCourseCreated(course);
+        Exception exception = null;
+        try {
+            getCourseHolder().addCourse(course);
+        } catch (Exception e) {
+            exception = e;
         }
+
+        getListener().onCourseCreated(course, exception);
     }
 
     @NonNull
@@ -100,10 +108,10 @@ public abstract class QuizletFragmentMenuListener<T> extends ListMenuListener<T>
     }
 
     public interface Listener<T> extends ListMenuListener.Listener<T> {
-        void onCourseCreated(Course course);
+        void onCourseCreated(Course course, Exception exception);
         //TODO: delete it
         void onCourseChanged(Course course);
-        void onCardsAdded(Course course);
+        void onCardsAdded(Course course, Exception error);
         ViewGroup getDialogContainer();
     }
 }
