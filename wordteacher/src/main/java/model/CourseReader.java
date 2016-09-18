@@ -26,7 +26,6 @@ public class CourseReader implements InputStreamReader {
         //StringReader reader = new StringReader(null);
         //String str = (String)reader.readStream(data);
 
-
         Object result = null;
         try {
             SimpleModule md = new SimpleModule("CourseModule", new Version(1,0,0,null,null,null));

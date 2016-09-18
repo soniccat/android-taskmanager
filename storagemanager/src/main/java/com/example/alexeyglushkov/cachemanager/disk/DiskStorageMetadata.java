@@ -1,7 +1,7 @@
 package com.example.alexeyglushkov.cachemanager.disk;
 
 import com.example.alexeyglushkov.cachemanager.StorageMetadata;
-import com.example.alexeyglushkov.streamlib.serializers.ObjectSerializer;
+import com.example.alexeyglushkov.cachemanager.disk.serializer.DiskMetadataSerializer;
 import com.example.alexeyglushkov.streamlib.serializers.Serializer;
 
 import java.io.BufferedInputStream;
@@ -12,18 +12,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
 
 /**
  * Created by alexeyglushkov on 04.10.15.
  */
-public class DiskStorageMetadata extends HashMap<String, Object> implements StorageMetadata
+public class DiskStorageMetadata implements StorageMetadata
 {
-    private static final long serialVersionUID = -3043981628125337011L;
-    private static final String CREATE_TIME_KEY = "metadataCreateTime";
-    private static final String EXPIRE_TIME_KEY = "metadataExpireTime";
-    private static final String FILE_SIZE_KEY = "metadataFileSize";
-    private static final String ENTRY_CLASS_KEY = "metadataEntryClass";
+    private long contentSize;
+    private long createDate;
+    private long expireDate;
+    private Class entryClass;
 
     private transient File file;
     private transient Serializer serializer = createSerializer();
@@ -45,6 +43,7 @@ public class DiskStorageMetadata extends HashMap<String, Object> implements Stor
 
         } catch (Exception ex) {
             error = new Error("DiskCacheEntry write open stream exception: " + ex.getMessage());
+
         } finally {
             if (os != null) {
                 try {
@@ -64,7 +63,7 @@ public class DiskStorageMetadata extends HashMap<String, Object> implements Stor
 
         try {
             fis = new BufferedInputStream(new FileInputStream(file));
-            ObjectSerializer serializer = createSerializer();
+            Serializer serializer = createSerializer();
             result = (DiskStorageMetadata)serializer.read(fis);
             result.setFile(file);
 
@@ -87,13 +86,13 @@ public class DiskStorageMetadata extends HashMap<String, Object> implements Stor
     }
 
     public void calculateSize(File file) {
-        put(FILE_SIZE_KEY, file.length());
+        contentSize = file.length();
     }
 
     //// Construction Methods
 
-    private static ObjectSerializer createSerializer() {
-        return new ObjectSerializer();
+    private static Serializer createSerializer() {
+        return new DiskMetadataSerializer();
     }
 
     //// Interfaces
@@ -101,24 +100,23 @@ public class DiskStorageMetadata extends HashMap<String, Object> implements Stor
     // StorageMetadata
 
     public long getContentSize() {
-        return (long)get(FILE_SIZE_KEY);
+        return contentSize;
     }
 
     public void setContentSize(long fileSize) {
-        put(FILE_SIZE_KEY, fileSize);
+        contentSize = fileSize;
     }
 
     public long getCreateTime() {
-        return (long)get(CREATE_TIME_KEY);
+        return createDate;
     }
 
     public void setCreateTime(long createTime) {
-        put(CREATE_TIME_KEY, createTime);
+        this.createDate = createTime;
     }
 
     public long getExpireTime() {
-        Long value = (Long)get(EXPIRE_TIME_KEY);
-        return value == null ? 0 : value;
+        return expireDate;
     }
 
     @Override
@@ -129,19 +127,19 @@ public class DiskStorageMetadata extends HashMap<String, Object> implements Stor
     }
 
     public boolean hasExpireTime() {
-        return containsKey(EXPIRE_TIME_KEY);
+        return expireDate > 0;
     }
 
     public void setExpireTime(long expireTime) {
-        put(EXPIRE_TIME_KEY, expireTime);
+        this.expireDate = expireTime;
     }
 
     public void setEntryClass(Class cl) {
-        put(ENTRY_CLASS_KEY, cl);
+        entryClass = cl;
     }
 
     public Class getEntryClass() {
-        return (Class)get(ENTRY_CLASS_KEY);
+        return entryClass;
     }
 
     //// Setters

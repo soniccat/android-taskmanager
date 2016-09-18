@@ -15,7 +15,6 @@ public class CardProgressWriter {
         g.writeNumberField("lastMistakeCount", progress.getLastMistakeCount());
 
         long time = progress.getLastLessonDate().getTime();
-        Date date = new Date(time);
         g.writeNumberField("lastLessonDate", time);
     }
 }

@@ -95,7 +95,7 @@ public class MainActivity extends BaseActivity {
                 final Account account = Networks.createAccount(Networks.Network.Quizlet);
                 account.authorize(new Authorizer.AuthorizerCompletion() {
                     @Override
-                    public void onFinished(AuthCredentials credentials, Error error) {
+                    public void onFinished(AuthCredentials credentials, Authorizer.AuthError error) {
                         Log.d(TAG, "showAuthorization onFinished " + account.getCredentials().isValid());
                         getPrivate().handleTaskCompletion();
                     }
@@ -117,9 +117,9 @@ public class MainActivity extends BaseActivity {
         final HttpServiceTask cmd = new HttpServiceTask();
         cmd.setCache(storageProvider);
         cmd.setConnectionBuilder(builder);
-        cmd.setServiceCommandCallback(new ServiceCommand.Callback() {
+        cmd.setServiceCommandCallback(new ServiceCommand.CommandCallback() {
             @Override
-            public void onCompleted() {
+            public void onCompleted(Error error) {
                 Log.d(TAG, "finished " + cmd.getResponse());
             }
         });

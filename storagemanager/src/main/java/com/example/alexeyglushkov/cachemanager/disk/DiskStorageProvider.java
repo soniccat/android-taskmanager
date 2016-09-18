@@ -68,7 +68,9 @@ public class DiskStorageProvider implements StorageProvider {
     private Error prepareDirectory() {
         Error error = null;
         if (!directory.exists()) {
-            directory.mkdir();
+            if (!directory.mkdir()) {
+                error = new Error("DiskStorageProvider.prepareDirectory.mkdir: can't create directory " + directory.getAbsolutePath());
+            }
         }
 
         return error;
@@ -140,11 +142,19 @@ public class DiskStorageProvider implements StorageProvider {
         Error error = null;
         File file = getKeyFile(key);
         if (!file.exists()) {
+            boolean isFileCreated = false;
             try {
-                file.createNewFile();
+                isFileCreated = file.createNewFile();
+
             } catch (IOException ex) {
                 error = new Error("DiskStorageProvider.write() createNewFile exception:" + ex.getMessage());
                 setLastError(error);
+
+            } finally {
+                if (!isFileCreated && error == null) {
+                    error = new Error("DiskStorageProvider.write() createNewFile create error");
+                    setLastError(error);
+                }
             }
         }
 
@@ -169,7 +179,7 @@ public class DiskStorageProvider implements StorageProvider {
             error = metadata.write();
             setLastError(error);
 
-        } else if (file != null) {
+        } else {
             file.delete();
         }
 
@@ -324,7 +334,7 @@ public class DiskStorageProvider implements StorageProvider {
             Object lockObject = getLockObject(key);
             synchronized (lockObject) {
                 Error deleteError = file.delete();
-                if (deleteError == null) {
+                if (deleteError != null) {
                     error = deleteError;
                     setLastError(error);
                 }

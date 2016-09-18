@@ -1,10 +1,11 @@
 package com.example.alexeyglushkov.cachemanager.disk;
 
-import android.util.Log;
+import android.support.annotation.NonNull;
 
 import com.example.alexeyglushkov.cachemanager.StorageEntry;
-import com.example.alexeyglushkov.streamlib.readersandwriters.StringReader;
 import com.example.alexeyglushkov.streamlib.serializers.Serializer;
+
+import android.support.annotation.Nullable;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -18,12 +19,12 @@ import java.io.OutputStream;
  * Created by alexeyglushkov on 27.09.15.
  */
 public class DiskStorageEntry implements StorageEntry {
-    private File file;
-    private Object object;
-    private Serializer serializer;
-    private DiskStorageMetadata metadata;
+    @NonNull  private File file;
+    @Nullable private Object object;
+    @NonNull  private Serializer serializer;
+    @Nullable private DiskStorageMetadata metadata;
 
-    public DiskStorageEntry(File file, Object object, DiskStorageMetadata metadata, Serializer serializer) {
+    public DiskStorageEntry(@NonNull File file, @Nullable Object object, @Nullable DiskStorageMetadata metadata, @NonNull Serializer serializer) {
         this.file = file;
         this.object = object;
         this.metadata = metadata;
@@ -35,6 +36,7 @@ public class DiskStorageEntry implements StorageEntry {
     }
 
 
+    // TODO: consider throwing an exception
     public Object getObject() {
         if (object == null) {
             loadObject();
@@ -58,6 +60,7 @@ public class DiskStorageEntry implements StorageEntry {
 
         } catch (Exception ex) {
             error = new Error("DiskCacheEntry exception: " + ex.getMessage());
+
         } finally {
             if (fis != null) {
                 try {
@@ -67,9 +70,11 @@ public class DiskStorageEntry implements StorageEntry {
                 }
             }
         }
+
         return error;
     }
 
+    // TODO: consider throwing an exception
     public Error write() {
         Error error = null;
         OutputStream os = null;
@@ -100,7 +105,7 @@ public class DiskStorageEntry implements StorageEntry {
             error = new Error("DiskCacheEntry delete: can't delete file " + file.getAbsolutePath());
         }
 
-        if (error == null) {
+        if (error == null && metadata != null) {
             error = DiskStorageMetadata.delete(metadata.getFile());
         }
 
@@ -108,6 +113,7 @@ public class DiskStorageEntry implements StorageEntry {
     }
 
     @Override
+    @Nullable
     public DiskStorageMetadata getMetadata() {
         return metadata;
     }
