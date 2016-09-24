@@ -88,21 +88,21 @@ public class CardTeacher implements Parcelable {
         ++checkCount;
     }
 
-    public void onRightInput() {
+    public void onRightInput() throws Exception {
         countRightAnswer();
     }
 
-    public void onGiveUp() {
+    public void onGiveUp() throws Exception {
         countWronAnswer();
     }
 
-    public void onWrongInput() {
+    public void onWrongInput() throws Exception {
         if (checkCount > 1) {
             countWronAnswer();
         }
     }
 
-    public void onHintShown() {
+    public void onHintShown() throws Exception {
         hintShowCount++;
 
         if (hintShowCount > 1) {

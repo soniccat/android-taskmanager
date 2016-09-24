@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.PopupMenu;
 import android.text.Editable;
@@ -61,19 +62,67 @@ public class LearnActivity extends BaseActivity {
     private boolean definitionToTerm;
     private StringBuilder hintArray = new StringBuilder();
 
-    private MainApplication getMainApplication() {
-        return MainApplication.instance;
-    }
-
-    public CourseHolder getCourseHolder() {
-        return getMainApplication().getCourseHolder();
-    }
+    //// Initialization
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_learn);
+        bindViews();
+        bindListeners();
+
+        setResult(ACTIVITY_RESULT_CODE, getIntent());
+
+        if (savedInstanceState == null) {
+            createTeacher();
+            definitionToTerm = getIntent().getBooleanExtra(EXTRA_DEFINITION_TO_TERM, false);
+        } else {
+            restore(savedInstanceState);
+        }
+
+        showCurrentCard();
+    }
+
+    private void createTeacher() {
+        String[] courseIdStrings = getIntent().getStringArrayExtra(EXTRA_CARD_IDS);
+        List<Card> cards = new ArrayList<>();
+        for (String id : courseIdStrings) {
+            UUID cardId = UUID.fromString(id);
+            Card card = getCourseHolder().getCard(cardId);
+            cards.add(card);
+        }
+
+        teacher = new CardTeacher(cards);
+    }
+
+    private void restore(Bundle savedInstanceState) {
+        teacher = savedInstanceState.getParcelable("teacher");
+        definitionToTerm = savedInstanceState.getBoolean("definitionToTerm");
+
+        String string = savedInstanceState.getString("hintArray");
+        hintArray = new StringBuilder(string);
+
+        // because of the support lib bug
+        string = savedInstanceState.getString("input");
+        inputLayout.getEditText().setText(string);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable("teacher", teacher);
+        outState.putBoolean("definitionToTerm", definitionToTerm);
+        outState.putString("hintArray", hintArray.toString());
+
+        // because of the support lib bug
+        outState.putString("input", inputLayout.getEditText().getText().toString());
+    }
+
+    // Binding
+
+    private void bindViews() {
         rootView = (View)findViewById(R.id.root);
         termView = (TextView)findViewById(R.id.word);
         progressTextView = (TextView)findViewById(R.id.progressTextView);
@@ -82,7 +131,9 @@ public class LearnActivity extends BaseActivity {
         checkButton = (Button)findViewById(R.id.checkButton);
         goNextButton = (Button)findViewById(R.id.go_next_button);
         hintButton = (ImageButton)findViewById(R.id.hit_button);
+    }
 
+    private void bindListeners() {
         giveUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -137,54 +188,172 @@ public class LearnActivity extends BaseActivity {
                 return handed;
             }
         });
-
-        setResult(ACTIVITY_RESULT_CODE, getIntent());
-
-        if (savedInstanceState == null) {
-            createTeacher();
-            definitionToTerm = getIntent().getBooleanExtra(EXTRA_DEFINITION_TO_TERM, false);
-        } else {
-            restore(savedInstanceState);
-        }
-
-        showCurrentCard();
     }
 
-    private void createTeacher() {
-        String[] courseIdStrings = getIntent().getStringArrayExtra(EXTRA_CARD_IDS);
-        List<Card> cards = new ArrayList<>();
-        for (String id : courseIdStrings) {
-            UUID cardId = UUID.fromString(id);
-            Card card = getCourseHolder().getCard(cardId);
-            cards.add(card);
+    //// Events
+
+    private void onRightInput() {
+        try {
+            teacher.onRightInput();
+        } catch (Exception e) {
+            showException(e);
         }
 
-        teacher = new CardTeacher(cards);
+        showNextCard();
     }
 
-    private void restore(Bundle savedInstanceState) {
-        teacher = savedInstanceState.getParcelable("teacher");
-        definitionToTerm = savedInstanceState.getBoolean("definitionToTerm");
+    private void onWrongInput() {
+        try {
+            teacher.onWrongInput();
+        } catch (Exception e) {
+            showException(e);
+        }
 
-        String string = savedInstanceState.getString("hintArray");
-        hintArray = new StringBuilder(string);
+        inputLayout.setError(getString(R.string.error_wrong_input));
+    }
 
-        // because of the support lib bug
-        string = savedInstanceState.getString("input");
-        inputLayout.getEditText().setText(string);
+    private void onSessionFinished() {
+        LearnSession session = teacher.getCurrentSession();
+        teacher.onSessionsFinished();
+
+        showResultActivity(session);
+    }
+
+    private void onTextChanged() {
+        if (isInputCorrect() && teacher.isWrongAnswerCounted()) {
+            showNextButton();
+        }
+    }
+
+    private void onShowNextLetterPressed() {
+        int index = hintArray.indexOf(GAP_STRING);
+        updateHintString(index);
+        showHintString();
+        updateHintButton();
+    }
+
+    private void onShowRandomLetterPressed() {
+        updateHintStringWithRandomLetter();
+        showHintString();
+        updateHintButton();
+    }
+
+    private void onGiveUpPressed() {
+        teacher.onGiveUp();
+        inputLayout.getEditText().setText("");
+
+        String definition = getDefinition(teacher.getCurrentCard());
+        for (int i=0; i<definition.length(); ++i) {
+            hintArray.setCharAt(i, definition.charAt(i));
+        }
+
+        showHintString();
+        updateHintButton();
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-        outState.putParcelable("teacher", teacher);
-        outState.putBoolean("definitionToTerm", definitionToTerm);
-        outState.putString("hintArray", hintArray.toString());
-
-        // because of the support lib bug
-        outState.putString("input", inputLayout.getEditText().getText().toString());
+        if (requestCode == SessionResultActivity.ACTIVITY_RESULT) {
+            handleResultActivityClose();
+        }
     }
+
+    //// Actions
+
+    private void checkInput() {
+        teacher.onCheckInput();
+
+        if (isInputCorrect()) {
+            onRightInput();
+        } else {
+            onWrongInput();
+        }
+    }
+
+    private void prepareToNewCard() {
+        showDefaultButtons();
+        setHintButtonEnabled(true);
+        prepareHintString();
+    }
+
+    private void prepareHintString() {
+        hintArray.setLength(0);
+
+        Card currentCard = teacher.getCurrentCard();
+        for (int i = 0; i < getDefinition(currentCard).length(); ++i) {
+            hintArray.append(GAP_CHAR);
+        }
+    }
+
+    // Show UI actions
+
+    private void showCurrentCard() {
+        prepareToNewCard();
+        bindCurrentCard();
+    }
+
+    private void showNextCard() {
+        teacher.getNextCard();
+
+        if (teacher.getCurrentCard() != null) {
+            prepareToNewCard();
+            bindCurrentCard();
+        } else {
+            onSessionFinished();
+        }
+    }
+
+    private void showDefaultButtons() {
+        giveUpButton.setVisibility(View.VISIBLE);
+        checkButton.setVisibility(View.VISIBLE);
+        goNextButton.setVisibility(View.GONE);
+    }
+
+    private void showNextButton() {
+        giveUpButton.setVisibility(View.GONE);
+        checkButton.setVisibility(View.GONE);
+        goNextButton.setVisibility(View.VISIBLE);
+    }
+
+    private void showHintMenu() {
+        PopupMenu popupMenu = new PopupMenu(this, hintButton);
+        popupMenu.inflate(R.menu.menu_hint);
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.hint_show_letter) {
+                    onShowNextLetterPressed();
+
+                } else if (item.getItemId() == R.id.hint_show_random_letter) {
+                    onShowRandomLetterPressed();
+                }
+
+                return false;
+            }
+        });
+
+        popupMenu.show();
+    }
+
+    private void showHintString() {
+        teacher.onHintShown();
+
+        StringBuilder builder = new StringBuilder();
+        for (int i=0; i < hintArray.length(); ++i) {
+            char ch = hintArray.charAt(i);
+            builder.append(ch);
+
+            if (builder.length() < hintArray.length()*2-1) {
+                builder.append(' ');
+            }
+        }
+
+        inputLayout.setError(builder.toString());
+    }
+
+    // Update UI
 
     private void bindCurrentCard() {
         Card card = teacher.getCurrentCard();
@@ -225,146 +394,16 @@ public class LearnActivity extends BaseActivity {
         rootView.setBackgroundColor(resultColor);
     }
 
-    private String getTerm(Card card) {
-        return definitionToTerm ? card.getDefinition() : card.getTerm();
+    private void updateHintString(int index) {
+        String definition = getDefinition(teacher.getCurrentCard());
+        hintArray.setCharAt(index, definition.charAt(index));
     }
 
-    private String getDefinition(Card card) {
-        return definitionToTerm ? card.getTerm() : card.getDefinition();
-    }
-
-    private void onTextChanged() {
-        if (isInputCorrect() && teacher.isWrongAnswerCounted()) {
-            showNextButton();
-        }
-    }
-
-    private void showDefaultButtons() {
-        giveUpButton.setVisibility(View.VISIBLE);
-        checkButton.setVisibility(View.VISIBLE);
-        goNextButton.setVisibility(View.GONE);
-    }
-
-    private void showNextButton() {
-        giveUpButton.setVisibility(View.GONE);
-        checkButton.setVisibility(View.GONE);
-        goNextButton.setVisibility(View.VISIBLE);
-    }
-
-    private void checkInput() {
-        teacher.onCheckInput();
-
-        if (isInputCorrect()) {
-            onRightInput();
-        } else {
-            onWrongInput();
-        }
-    }
-
-    private boolean isInputCorrect() {
-        Card card = teacher.getCurrentCard();
-        String input = inputLayout.getEditText().getText().toString();
-        return input.equalsIgnoreCase(getDefinition(card));
-    }
-
-    private void onRightInput() {
-        teacher.onRightInput();
-        showNextCard();
-    }
-
-    private void showCurrentCard() {
-        prepareToNewCard();
-        bindCurrentCard();
-    }
-
-    private void showNextCard() {
-        teacher.getNextCard();
-
-        if (teacher.getCurrentCard() != null) {
-            prepareToNewCard();
-            bindCurrentCard();
-        } else {
-            onSessionFinished();
-        }
-    }
-
-    private void prepareToNewCard() {
-        showDefaultButtons();
-        setHintButtonEnabled(true);
-        prepareHintString();
-    }
-
-    private void prepareHintString() {
-        hintArray.setLength(0);
-
-        Card currentCard = teacher.getCurrentCard();
-        for (int i=0; i<getDefinition(currentCard).length(); ++i) {
-            hintArray.append(GAP_CHAR);
-        }
-    }
-
-    private void onWrongInput() {
-        teacher.onWrongInput();
-        inputLayout.setError(getString(R.string.error_wrong_input));
-    }
-
-    private void onSessionFinished() {
-        LearnSession session = teacher.getCurrentSession();
-        teacher.onSessionsFinished();
-
-        Intent intent = new Intent(this, SessionResultActivity.class);
-        intent.putExtra(SessionResultActivity.EXTERNAL_SESSION, session);
-        startActivityForResult(intent, SessionResultActivity.ACTIVITY_RESULT);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == SessionResultActivity.ACTIVITY_RESULT) {
-            if (teacher.getCurrentCard() == null) {
-                finish();
-            } else {
-                showCurrentCard();
-
-                // to show keyboard
-                HandlerTools.runOnMainThreadDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        inputLayout.getEditText().requestFocus();
-                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.showSoftInput(inputLayout.getEditText(), InputMethodManager.SHOW_IMPLICIT);
-                    }
-                }, 300);
-            }
-        }
-    }
-
-    private void showHintMenu() {
-        PopupMenu popupMenu = new PopupMenu(this, hintButton);
-        popupMenu.inflate(R.menu.menu_hint);
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == R.id.hint_show_letter) {
-                    onShowNextLetterPressed();
-
-                } else if (item.getItemId() == R.id.hint_show_random_letter) {
-                    onShowRandomLetterPressed();
-                }
-
-                return false;
-            }
-        });
-
-        popupMenu.show();
-    }
-
-    private void onShowNextLetterPressed() {
-        int index = hintArray.indexOf(GAP_STRING);
-        updateHintString(index);
-        showHintString();
-        updateHintButton();
+    private void updateHintStringWithRandomLetter() {
+        int gapCount = getHintGapCount();
+        int random = Math.abs(new Random(new Date().getTime()).nextInt());
+        int gapIndex = random % gapCount;
+        updateHintString(getGapIndexToCharIndex(gapIndex));
     }
 
     private void updateHintButton() {
@@ -375,21 +414,49 @@ public class LearnActivity extends BaseActivity {
         hintButton.setEnabled(isEnable);
     }
 
-    private void onShowRandomLetterPressed() {
-        updateHintStringWithRandomLetter();
-        showHintString();
-        updateHintButton();
+    //// Subactivities
+
+    // Result Activity
+
+    private void showResultActivity(LearnSession session) {
+        Intent intent = new Intent(this, SessionResultActivity.class);
+        intent.putExtra(SessionResultActivity.EXTERNAL_SESSION, session);
+        startActivityForResult(intent, SessionResultActivity.ACTIVITY_RESULT);
     }
 
-    private boolean isHintStringFull() {
-        return getHintGapCount() == 0;
+    private void handleResultActivityClose() {
+        if (teacher.getCurrentCard() == null) {
+            finish();
+
+        } else {
+            showCurrentCard();
+
+            // to show keyboard
+            HandlerTools.runOnMainThreadDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    inputLayout.getEditText().requestFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.showSoftInput(inputLayout.getEditText(), InputMethodManager.SHOW_IMPLICIT);
+                }
+            }, 300);
+        }
     }
 
-    private void updateHintStringWithRandomLetter() {
-        int gapCount = getHintGapCount();
-        int random = Math.abs(new Random(new Date().getTime()).nextInt());
-        int gapIndex = random % gapCount;
-        updateHintString(gapIndexToCharIndex(gapIndex));
+    // Exceptions
+
+    private void showException(Exception ex) {
+        Snackbar.make(getWindow().getDecorView(), ex.getMessage(), Snackbar.LENGTH_LONG).show();
+    }
+
+    //// Getters
+
+    private String getTerm(Card card) {
+        return definitionToTerm ? card.getDefinition() : card.getTerm();
+    }
+
+    private String getDefinition(Card card) {
+        return definitionToTerm ? card.getTerm() : card.getDefinition();
     }
 
     private int getHintGapCount() {
@@ -402,7 +469,7 @@ public class LearnActivity extends BaseActivity {
         return gapCount;
     }
 
-    private int gapIndexToCharIndex(int searchGapIndex) {
+    private int getGapIndexToCharIndex(int searchGapIndex) {
         int gapIndex = -1;
         int position = -1;
         for (int i=0; i<hintArray.length(); ++i) {
@@ -418,37 +485,25 @@ public class LearnActivity extends BaseActivity {
         return position;
     }
 
-    private void updateHintString(int index) {
-        String definition = getDefinition(teacher.getCurrentCard());
-        hintArray.setCharAt(index, definition.charAt(index));
+    // Cast Getters
+
+    private MainApplication getMainApplication() {
+        return MainApplication.instance;
     }
 
-    private void showHintString() {
-        teacher.onHintShown();
-
-        StringBuilder builder = new StringBuilder();
-        for (int i=0; i < hintArray.length(); ++i) {
-            char ch = hintArray.charAt(i);
-            builder.append(ch);
-
-            if (builder.length() < hintArray.length()*2-1) {
-                builder.append(' ');
-            }
-        }
-
-        inputLayout.setError(builder.toString());
+    public CourseHolder getCourseHolder() {
+        return getMainApplication().getCourseHolder();
     }
 
-    private void onGiveUpPressed() {
-        teacher.onGiveUp();
-        inputLayout.getEditText().setText("");
+    // Statuses
 
-        String definition = getDefinition(teacher.getCurrentCard());
-        for (int i=0; i<definition.length(); ++i) {
-            hintArray.setCharAt(i, definition.charAt(i));
-        }
+    private boolean isHintStringFull() {
+        return getHintGapCount() == 0;
+    }
 
-        showHintString();
-        updateHintButton();
+    private boolean isInputCorrect() {
+        Card card = teacher.getCurrentCard();
+        String input = inputLayout.getEditText().getText().toString();
+        return input.equalsIgnoreCase(getDefinition(card));
     }
 }
