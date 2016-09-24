@@ -23,7 +23,7 @@ public class PreferenceStorageProvider implements StorageProvider {
     }
 
     @Override
-    public Error put(String key, Object value, StorageMetadata metadata) {
+    public void put(String key, Object value, StorageMetadata metadata) throws Exception {
         SharedPreferences.Editor editor = getWritePreference();
         if (value instanceof Integer) {
             editor.putInt(key, (int)value);
@@ -32,7 +32,6 @@ public class PreferenceStorageProvider implements StorageProvider {
         }
 
         editor.commit();
-        return null;
     }
 
     @Override
@@ -51,17 +50,10 @@ public class PreferenceStorageProvider implements StorageProvider {
     }
 
     @Override
-    public Error remove(String key) {
+    public void remove(String key) throws Exception {
         SharedPreferences.Editor editor = getWritePreference();
         editor.remove(key);
         editor.commit();
-
-        return null;
-    }
-
-    @Override
-    public Error getError() {
-        return null;
     }
 
     @Override
@@ -75,8 +67,10 @@ public class PreferenceStorageProvider implements StorageProvider {
     }
 
     @Override
-    public Error removeAll() {
-        return null;
+    public void removeAll() throws Exception {
+        SharedPreferences.Editor editor = getWritePreference();
+        editor.clear();
+        editor.commit();
     }
 
     ////

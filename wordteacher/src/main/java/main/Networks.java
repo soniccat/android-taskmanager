@@ -58,7 +58,7 @@ public class Networks {
         return MainApplication.instance.getAccountStore();
     }
 
-    public static Account getAccount(Network network) {
+    public static Account getAccount(Network network) throws Exception {
         Assert.assertNotNull("accountStore must exists", getAccountStore());
 
         List<Account> accounts = getAccountStore().getAccounts(network.ordinal());
@@ -85,7 +85,7 @@ public class Networks {
     }
 
     @NonNull
-    public static Account createAccount(Network network) {
+    public static Account createAccount(Network network) throws Exception {
         if (network == Network.Foursquare) {
             return createFoursquareAccount();
 
@@ -152,7 +152,7 @@ public class Networks {
         return authorizer;
     }
 
-    public static Account createDropboxAccount() {
+    public static Account createDropboxAccount() throws Exception {
         Authorizer authorizer = getDropboxAuthorizer();
         DropboxAccount account = new DropboxAccount(Network.Dropbox.ordinal());
         account.setAuthorizer(authorizer);

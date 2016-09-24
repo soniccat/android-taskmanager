@@ -239,7 +239,12 @@ public class LearnActivity extends BaseActivity {
     }
 
     private void onGiveUpPressed() {
-        teacher.onGiveUp();
+        try {
+            teacher.onGiveUp();
+        } catch (Exception e) {
+            showException(e);
+        }
+
         inputLayout.getEditText().setText("");
 
         String definition = getDefinition(teacher.getCurrentCard());
@@ -338,7 +343,11 @@ public class LearnActivity extends BaseActivity {
     }
 
     private void showHintString() {
-        teacher.onHintShown();
+        try {
+            teacher.onHintShown();
+        } catch (Exception e) {
+            showException(e);
+        }
 
         StringBuilder builder = new StringBuilder();
         for (int i=0; i < hintArray.length(); ++i) {

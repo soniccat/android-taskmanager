@@ -1,7 +1,9 @@
 package main;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.os.Build;
 import android.support.annotation.NonNull;
 
 import com.dropbox.client2.DropboxAPI;
@@ -32,6 +34,8 @@ import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManager;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
+import junit.framework.Assert;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
@@ -43,17 +47,17 @@ import model.CourseSerializer;
 import preferencestorage.PreferenceStorageProvider;
 
 public class MainApplication extends Application {
-    private AccountStore accountStore;
-    private OAuthWebClient authWebClient;
+    private @NonNull AccountStore accountStore;
+    private @NonNull OAuthWebClient authWebClient;
 
-    private QuizletService quizletService;
-    private DropboxService dropboxService;
-    private CourseHolder courseHolder;
-    private TaskManager taskManager;
+    private @NonNull QuizletService quizletService;
+    private @NonNull DropboxService dropboxService;
+    private @NonNull CourseHolder courseHolder;
+    private @NonNull TaskManager taskManager;
 
-    private StorageProvider storageProvider;
+    private @NonNull StorageProvider storageProvider;
 
-    public static MainApplication instance;
+    public static @NonNull MainApplication instance;
 
     //// Initialization
 
@@ -82,8 +86,18 @@ public class MainApplication extends Application {
     //// Events
 
     private void onAccountStoreLoaded() {
-        createQuizletService();
-        createDropboxService();
+        try {
+            createQuizletService();
+            createDropboxService();
+
+        } catch (Exception ex) {
+            finishApp(ex);
+        }
+    }
+
+    private void finishApp(Exception ex) {
+        ex.printStackTrace();
+        Assert.fail(ex.getMessage());
     }
 
     //// Actions
@@ -129,7 +143,7 @@ public class MainApplication extends Application {
         this.courseHolder = new CourseHolder(authDir);
     }
 
-    private void createQuizletService() {
+    private void createQuizletService() throws Exception {
         Account quizletAccount = Networks.getAccount(Networks.Network.Quizlet);
         QuizletServiceTaskProvider quizletCommandProvider = new QuizletServiceTaskProvider(getStorageProvider());
 
@@ -140,7 +154,7 @@ public class MainApplication extends Application {
         this.quizletService.restore();
     }
 
-    private void createDropboxService() {
+    private void createDropboxService() throws Exception {
         DropboxAccount dropboxAccount = (DropboxAccount)Networks.getAccount(Networks.Network.Dropbox);
         DropboxCommandProvider commandProvider = new DropboxServiceTaskProvider();
 
@@ -187,43 +201,41 @@ public class MainApplication extends Application {
         };
     }
 
-    public TaskManager getTaskManager() {
+    public @NonNull TaskManager getTaskManager() {
         return taskManager;
     }
 
-    public AccountStore getAccountStore() {
+    public @NonNull AccountStore getAccountStore() {
         return accountStore;
     }
 
-    public CourseHolder getCourseHolder() {
+    public @NonNull CourseHolder getCourseHolder() {
         return courseHolder;
     }
 
-    public OAuthWebClient getAuthWebClient() {
+    public @NonNull OAuthWebClient getAuthWebClient() {
         return authWebClient;
     }
 
-    public StorageProvider getStorageProvider() {
+    public @NonNull StorageProvider getStorageProvider() {
         return storageProvider;
     }
 
-    public QuizletService getQuizletService() {
+    public @NonNull QuizletService getQuizletService() {
         return quizletService;
     }
 
-    public DropboxService getDropboxService() {
+    public @NonNull DropboxService getDropboxService() {
         return dropboxService;
     }
 
     // Cast Getters
 
     public Context getCurrentContext() {
-        return ((AuthActivityProxy)authWebClient).getCurrentActivity();
+        return getCurrentActivity();
     }
 
-    //// Inner Interfaces
-
-    public interface ReadyListener {
-        void onReady();
+    private Activity getCurrentActivity() {
+        return ((AuthActivityProxy)authWebClient).getCurrentActivity();
     }
 }

@@ -15,11 +15,10 @@ import java.io.OutputStream;
  */
 public class CourseWriter implements OutputStreamWriter {
     @Override
-    public Error writeStream(OutputStream stream, Object object) {
+    public void writeStream(OutputStream stream, Object object) throws Exception {
 
         Course course = (Course)object;
 
-        Error error = null;
         JsonFactory f = new JsonFactory();
         JsonGenerator g = null;
         try {
@@ -36,8 +35,6 @@ public class CourseWriter implements OutputStreamWriter {
 
             g.writeEndArray();
 
-        } catch (Exception e) {
-            error = new Error(e.getMessage());
         } finally {
             if (g != null) {
                 try {
@@ -47,8 +44,6 @@ public class CourseWriter implements OutputStreamWriter {
                 }
             }
         }
-
-        return error;
     }
 
     // TODO: separate in different wirter
@@ -88,10 +83,5 @@ public class CourseWriter implements OutputStreamWriter {
     @Override
     public void setProgressUpdater(ProgressUpdater progressUpdater) {
 
-    }
-
-    @Override
-    public Error getError() {
-        return null;
     }
 }
