@@ -108,7 +108,7 @@ public class MainActivity extends BaseActivity implements
             QuizletStackFragment cardsFragment = (QuizletStackFragment)fragment;
             cardsFragment.setListener(this);
 
-        } else if (fragment instanceof Sortable) {
+        } else if (fragment instanceof QuizletTermListFragment) {
             QuizletTermListFragment quizletFragment = (QuizletTermListFragment) fragment;
             quizletFragment.setListener(createMenuListener());
 
@@ -622,12 +622,8 @@ public class MainActivity extends BaseActivity implements
         Preferences.SortOrder sortOrder = Preferences.SortOrder.BY_NAME;
         Fragment fragment = getCurrentFragment();
         if (fragment instanceof Sortable) {
-            Sortable quizletFragment = (Sortable)fragment;
-            sortOrder = quizletFragment.getSortOrder();
-
-        } else if (fragment instanceof QuizletStackFragment) {
-            QuizletStackFragment stackFragment = (QuizletStackFragment)fragment;
-            sortOrder = stackFragment.getSortOrder();
+            Sortable sortableFragment = (Sortable)fragment;
+            sortOrder = sortableFragment.getSortOrder();
         }
 
         return sortOrder;
