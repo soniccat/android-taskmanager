@@ -173,11 +173,13 @@ public class MainApplication extends Application {
     }
 
     private void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxEntry, DropboxCommandProvider.MergeCompletion completion) {
+        File outFile;
+
         try {
             File tmpDir = getCacheDir();
 
             UUID outFileName = UUID.randomUUID();
-            File outFile = File.createTempFile(outFileName.toString(), "", getCacheDir());
+            outFile = File.createTempFile(outFileName.toString(), "", getCacheDir());
 
             FileMerger fileMerger = new FileObjectMerger(new CourseSerializer(), new CourseMerger(), outFile);
             DropboxFileMerger merger = new DropboxFileMerger(dropboxService.getApi(), tmpDir, fileMerger);

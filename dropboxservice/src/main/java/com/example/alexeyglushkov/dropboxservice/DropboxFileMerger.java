@@ -33,5 +33,10 @@ public class DropboxFileMerger {
 
         File result = fileMerger.merge(localFile, dropboxFile);
         completion.completed(result, null);
+
+        try {
+            dropboxFile.delete();
+        } catch (Exception ex) {
+        }
     }
 }

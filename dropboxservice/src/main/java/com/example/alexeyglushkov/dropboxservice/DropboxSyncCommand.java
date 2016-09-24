@@ -220,7 +220,14 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
 
         Object result = container.size() > 0 ? container.get(0) : null;
         if (result != null && result instanceof File) {
-            propagateFile((File)result, localFile.getPath(), dropboxFile.path, listener);
+            File file = (File)result;
+            propagateFile(file, localFile.getPath(), dropboxFile.path, listener);
+
+            // TODO: move to helper like safeDelete
+            try {
+                file.delete();
+            } catch (Exception ex) {
+            }
 
         } else if (result != null && result instanceof Error) {
             throw (Error)result;
