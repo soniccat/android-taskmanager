@@ -38,11 +38,6 @@ public class CardTeacher {
         restore(bundle, holder);
     }
 
-    /*
-    public CardTeacher(Parcel parcel) {
-
-    }*/
-
     public CardTeacher(UUID courseId) {
         Course course = getCourseHolder().getCourse(courseId);
         cards.addAll(course.getCards());

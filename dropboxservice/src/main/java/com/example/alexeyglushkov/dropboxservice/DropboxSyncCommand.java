@@ -135,9 +135,10 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
         // upload part
         for (File file : localDir.listFiles()) {
             DropboxAPI.Entry childEntry = getChild(dropboxEntry, file.getName());
-            childEntry = validateEntry(dropboxEntry, childEntry);
 
             if (childEntry != null) {
+                childEntry = validateEntry(dropboxEntry, childEntry);
+
                 if (file.isDirectory() && childEntry.isDir) {
                     syncDir(file, childEntry, listener);
 
