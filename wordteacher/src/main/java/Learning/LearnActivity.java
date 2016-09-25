@@ -48,7 +48,7 @@ public class LearnActivity extends BaseActivity {
     public final static char GAP_CHAR = '_';
     public final static String GAP_STRING = "_";
 
-    private CardTeacher teacher;
+    private @Nullable CardTeacher teacher;
 
     private View rootView;
     private TextView termView;
@@ -77,11 +77,25 @@ public class LearnActivity extends BaseActivity {
         if (savedInstanceState == null) {
             createTeacher();
             definitionToTerm = getIntent().getBooleanExtra(EXTRA_DEFINITION_TO_TERM, false);
+            onReady();
+        } else {
+            registerRestoration(savedInstanceState);
+        }
+    }
+
+    private void registerRestoration(@Nullable final Bundle savedInstanceState) {
+        final CourseHolder holder = getCourseHolder();
+        if (holder.getState() == CourseHolder.State.Unitialized) {
+            getCourseHolder().addListener(new CourseHolder.CourseHolderListener() {
+                @Override
+                public void onLoaded() {
+                    restore(savedInstanceState);
+                    holder.removeListener(this);
+                }
+            });
         } else {
             restore(savedInstanceState);
         }
-
-        showCurrentCard();
     }
 
     private void createTeacher() {
@@ -97,7 +111,7 @@ public class LearnActivity extends BaseActivity {
     }
 
     private void restore(Bundle savedInstanceState) {
-        teacher = savedInstanceState.getParcelable("teacher");
+        teacher = new CardTeacher(savedInstanceState, getCourseHolder());
         definitionToTerm = savedInstanceState.getBoolean("definitionToTerm");
 
         String string = savedInstanceState.getString("hintArray");
@@ -106,13 +120,22 @@ public class LearnActivity extends BaseActivity {
         // because of the support lib bug
         string = savedInstanceState.getString("input");
         inputLayout.getEditText().setText(string);
+        onRestore();
+    }
+
+    private void onRestore() {
+        onReady();
+    }
+
+    private void onReady() {
+        showCurrentCard();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putParcelable("teacher", teacher);
+        teacher.store(outState);
         outState.putBoolean("definitionToTerm", definitionToTerm);
         outState.putString("hintArray", hintArray.toString());
 

@@ -6,6 +6,7 @@ import junit.framework.Assert;
 
 import java.util.List;
 
+import coursefragments.courses.CourseListProvider;
 import listfragment.StorableListProvider;
 import listfragment.StorableListProviderFactory;
 import model.Card;
@@ -28,8 +29,7 @@ public class CardListFactory implements StorableListProviderFactory<Card> {
 
     @Override
     public StorableListProvider<Card> createFromList(List<Card> list) {
-        Assert.fail("Not supported");
-        return null;
+        return new CardListProvider(list);
     }
 
     @Override
@@ -48,7 +48,19 @@ public class CardListFactory implements StorableListProviderFactory<Card> {
 
     @Override
     public StorableListProvider<Card> restore(Bundle bundle) {
-        return null;
+        StorableListProvider<Card> result = null;
+
+        if (CourseCardListProvider.canRestore(bundle)) {
+            result = new CourseCardListProvider(bundle, holder);
+
+        } else if (CardListProvider.canRestore(bundle)) {
+            result = new CardListProvider(bundle, holder);
+
+        } else {
+            result = createDefault();
+        }
+
+        return result;
     }
 
     @Override

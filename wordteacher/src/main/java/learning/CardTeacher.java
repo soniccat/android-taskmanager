@@ -1,5 +1,6 @@
 package learning;
 
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -9,15 +10,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import coursefragments.cards.CardListProvider;
 import main.MainApplication;
 import model.Card;
 import model.Course;
 import model.CourseHolder;
+import tools.BundleTools;
 
 /**
  * Created by alexeyglushkov on 09.05.16.
  */
-public class CardTeacher implements Parcelable {
+public class CardTeacher {
 
     private int cardPerSession = 7;
 
@@ -31,15 +34,14 @@ public class CardTeacher implements Parcelable {
 
     //// Initialization
 
-    public CardTeacher(Parcel parcel) {
-        cardPerSession = parcel.readInt();
-        parcel.readTypedList(cards, Card.CREATOR);
-        parcel.readTypedList(sessions, LearnSession.CREATOR);
-        currentSession = parcel.readParcelable(LearnSession.class.getClassLoader());
-        checkCount = parcel.readInt();
-        hintShowCount = parcel.readInt();
-        isWrongAnswerCounted = parcel.readInt() > 0;
+    public CardTeacher(Bundle bundle, CourseHolder holder) {
+        restore(bundle, holder);
     }
+
+    /*
+    public CardTeacher(Parcel parcel) {
+
+    }*/
 
     public CardTeacher(UUID courseId) {
         Course course = getCourseHolder().getCourse(courseId);
@@ -50,6 +52,50 @@ public class CardTeacher implements Parcelable {
     public CardTeacher(List<Card> cards) {
         this.cards.addAll(cards);
         buildCourseSession();
+    }
+
+    public void restore(Bundle bundle, CourseHolder holder) {
+        cardPerSession = bundle.getInt("cardPerSession");
+        CardListProvider cardListProvider = new CardListProvider(bundle, holder);
+        cards = cardListProvider.getList();
+
+        restoreSessions(bundle, holder);
+        currentSession = new LearnSession(bundle, holder);
+        checkCount = bundle.getInt("checkCount");
+        hintShowCount = bundle.getInt("hintShowCount");
+        isWrongAnswerCounted = bundle.getBoolean("isWrongAnswerCounted");
+    }
+
+    private void restoreSessions(Bundle bundle, CourseHolder holder) {
+        sessions = new ArrayList<>();
+        List<Bundle> bundles = BundleTools.restoreBundles(bundle, "sessions");
+        for (Bundle b : bundles) {
+            sessions.add(new LearnSession(b, holder));
+        }
+    }
+
+    public void store(Bundle bundle) {
+        bundle.putInt("cardPerSession", cardPerSession);
+
+        CardListProvider cardListProvider = new CardListProvider(cards);
+        cardListProvider.store(bundle);
+
+        storeSessions(bundle);
+        currentSession.store(bundle);
+        bundle.putInt("checkCount", checkCount);
+        bundle.putInt("hintShowCount", hintShowCount);
+        bundle.putBoolean("isWrongAnswerCounted", isWrongAnswerCounted);
+    }
+
+    private void storeSessions(Bundle bundle) {
+        List<Bundle> sessionBundles = new ArrayList<>();
+        for (LearnSession session : sessions) {
+            Bundle b = new Bundle();
+            session.store(b);
+            sessionBundles.add(b);
+        }
+
+        BundleTools.storeBundles(bundle, "sessions", sessionBundles);
     }
 
     //// Actions
@@ -134,36 +180,6 @@ public class CardTeacher implements Parcelable {
 
     public boolean isWrongAnswerCounted() {
         return isWrongAnswerCounted;
-    }
-
-    //// Interfaces
-
-    // Parcelable
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(cardPerSession);
-        dest.writeTypedList(cards);
-        dest.writeTypedList(sessions);
-        dest.writeParcelable(currentSession, flags);
-        dest.writeInt(checkCount);
-        dest.writeInt(hintShowCount);
-        dest.writeInt(isWrongAnswerCounted ? 1 : 0);
-    }
-
-    public static final Parcelable.Creator<CardTeacher> CREATOR = new Parcelable.Creator<CardTeacher>() {
-        public CardTeacher createFromParcel(Parcel in) {
-            return new CardTeacher(in);
-        }
-
-        public CardTeacher[] newArray(int size) {
-            return new CardTeacher[size];
-        }
-    };
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     //// Getters

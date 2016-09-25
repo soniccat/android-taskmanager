@@ -2,6 +2,7 @@ package coursefragments.cards;
 
 import android.os.Bundle;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,7 +16,7 @@ import model.CourseHolder;
  * Created by alexeyglushkov on 21.08.16.
  */
 public class CourseCardListProvider implements StorableListProvider<Card> {
-    public final static String ARG_PARENT_COURSE_ID = "ARG_PARENT_COURSE_ID";
+    public final static String STORE_PARENT_COURSE_ID = "STORE_PARENT_COURSE_ID";
 
     private Course course;
 
@@ -24,22 +25,26 @@ public class CourseCardListProvider implements StorableListProvider<Card> {
         this.course = course;
     }
 
+    public CourseCardListProvider(Bundle bundle, Object context) {
+        restore(bundle, context);
+    }
+
     //// Interface methods
 
     // StorableListProvider
 
     @Override
     public void store(Bundle bundle) {
-        bundle.putString(ARG_PARENT_COURSE_ID, course.getId().toString());
+        bundle.putString(STORE_PARENT_COURSE_ID, course.getId().toString());
     }
 
     static boolean canRestore(Bundle bundle) {
-        return bundle != null && bundle.containsKey(ARG_PARENT_COURSE_ID);
+        return bundle != null && bundle.containsKey(STORE_PARENT_COURSE_ID);
     }
 
     @Override
     public void restore(Bundle bundle, Object context) {
-        String strId = bundle.getString(ARG_PARENT_COURSE_ID);
+        String strId = bundle.getString(STORE_PARENT_COURSE_ID);
         course = getCourse((CourseHolder) context, strId);
     }
 

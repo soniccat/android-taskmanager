@@ -136,6 +136,25 @@ public class MainApplication extends Application {
         taskManager.addTask(cleanTask);
     }
 
+    private void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxEntry, DropboxCommandProvider.MergeCompletion completion) {
+        File outFile;
+
+        try {
+            File tmpDir = getCacheDir();
+
+            UUID outFileName = UUID.randomUUID();
+            outFile = File.createTempFile(outFileName.toString(), "", getCacheDir());
+
+            FileMerger fileMerger = new FileObjectMerger(new CourseSerializer(), new CourseMerger(), outFile);
+            DropboxFileMerger merger = new DropboxFileMerger(dropboxService.getApi(), tmpDir, fileMerger);
+
+            merger.merge(localFile, dropboxEntry, completion);
+
+        } catch (Exception ex) {
+            completion.completed(null, new Error("Merge exception", ex));
+        }
+    }
+
     //// Creation Methods
 
     private void createCourseHolder() {
@@ -170,25 +189,6 @@ public class MainApplication extends Application {
                 MainApplication.this.merge(localFile, dropboxEntry, completion);
             }
         });
-    }
-
-    private void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxEntry, DropboxCommandProvider.MergeCompletion completion) {
-        File outFile;
-
-        try {
-            File tmpDir = getCacheDir();
-
-            UUID outFileName = UUID.randomUUID();
-            outFile = File.createTempFile(outFileName.toString(), "", getCacheDir());
-
-            FileMerger fileMerger = new FileObjectMerger(new CourseSerializer(), new CourseMerger(), outFile);
-            DropboxFileMerger merger = new DropboxFileMerger(dropboxService.getApi(), tmpDir, fileMerger);
-
-            merger.merge(localFile, dropboxEntry, completion);
-
-        } catch (Exception ex) {
-            completion.completed(null, new Error("Merge exception", ex));
-        }
     }
 
     //// Getters
@@ -238,6 +238,6 @@ public class MainApplication extends Application {
     }
 
     private Activity getCurrentActivity() {
-        return ((AuthActivityProxy)authWebClient).getCurrentActivity();
+        return AuthActivityProxy.getCurrentActivity();
     }
 }

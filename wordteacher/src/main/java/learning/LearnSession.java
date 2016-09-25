@@ -1,20 +1,26 @@
 package learning;
 
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
+import coursefragments.cards.CardListProvider;
 import model.Card;
+import model.CourseHolder;
 
 /**
  * Created by alexeyglushkov on 15.05.16.
  */
 public class LearnSession implements Parcelable {
-    private ArrayList<Card> cards = new ArrayList<>();
+    private List<Card> cards = new ArrayList<>();
     private ArrayList<SessionCardResult> results = new ArrayList<>();
     private int currentIndex;
+
+    //// Initialization
 
     public LearnSession(ArrayList<Card> cards) {
         this.cards.addAll(cards);
@@ -26,6 +32,10 @@ public class LearnSession implements Parcelable {
 
             results.add(result);
         }
+    }
+
+    public LearnSession(Bundle bundle, CourseHolder holder) {
+        restore(bundle, holder);
     }
 
     public LearnSession(Parcel parcel) {
@@ -41,6 +51,46 @@ public class LearnSession implements Parcelable {
         dest.writeInt(currentIndex);
     }
 
+    public void store(Bundle bundle) {
+        CardListProvider cardListProvider = new CardListProvider(cards);
+        cardListProvider.store(bundle);
+        bundle.putParcelableArrayList("results", results);
+        bundle.putInt("currentIndex", currentIndex);
+    }
+
+    public void restore(Bundle bundle, CourseHolder courseHolder) {
+        CardListProvider cardListProvider = new CardListProvider(bundle, courseHolder);
+        cards = cardListProvider.getList();
+        results = bundle.getParcelableArrayList("results");
+        currentIndex = bundle.getInt("currentIndex");
+    }
+
+    //// Actions
+
+    public void updateProgress(Card card, boolean isRight) {
+        SessionCardResult result = getCardResult(card);
+        result.newProgress = card.getFloatProgress();
+        result.isRight = isRight;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Parcelable.Creator<LearnSession> CREATOR
+            = new Parcelable.Creator<LearnSession>() {
+        public LearnSession createFromParcel(Parcel in) {
+            return new LearnSession(in);
+        }
+
+        public LearnSession[] newArray(int size) {
+            return new LearnSession[size];
+        }
+    };
+
+    //// Getters
+
     public Card getCurrentCard() {
         return currentIndex < cards.size() ? cards.get(currentIndex) : null;
     }
@@ -53,12 +103,6 @@ public class LearnSession implements Parcelable {
         }
 
         return result;
-    }
-
-    public void updateProgress(Card card, boolean isRight) {
-        SessionCardResult result = getCardResult(card);
-        result.newProgress = card.getFloatProgress();
-        result.isRight = isRight;
     }
 
     private SessionCardResult getCardResult(Card card) {
@@ -82,22 +126,6 @@ public class LearnSession implements Parcelable {
 
         return resultArray;
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public static final Parcelable.Creator<LearnSession> CREATOR
-            = new Parcelable.Creator<LearnSession>() {
-        public LearnSession createFromParcel(Parcel in) {
-            return new LearnSession(in);
-        }
-
-        public LearnSession[] newArray(int size) {
-            return new LearnSession[size];
-        }
-    };
 
     public int getSize() {
         return cards.size();
