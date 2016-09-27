@@ -139,7 +139,6 @@ public class DiskStorageProvider implements StorageProvider {
             }
 
         } catch (Exception ex) {
-            // TODO: investigate
             file.delete();
             if (metadata != null && metadata.getFile() != null) {
                 metadata.getFile().delete();
