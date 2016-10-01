@@ -25,7 +25,7 @@ public class DiskMetadataWriter implements OutputStreamWriter {
             g.writeNumberField("contentSize", metadata.getContentSize());
             g.writeNumberField("createTime", metadata.getCreateTime());
             g.writeNumberField("expireTime", metadata.getExpireTime());
-            g.writeStringField("entryClass", metadata.getEntryClass().toString());
+            g.writeStringField("entryClass", metadata.getEntryClass().getName());
 
         } finally {
             if (g != null) {
