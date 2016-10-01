@@ -1,15 +1,22 @@
 package com.example.alexeyglushkov.service;
 
+import android.util.Log;
+
 import com.example.alexeyglushkov.cachemanager.StorageMetadata;
 import com.example.alexeyglushkov.cachemanager.StorageProvider;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionBytesReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpBytesLoadTask;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpURLConnectionProvider;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
 /**
  * Created by alexeyglushkov on 26.11.15.
  */
 public class CachableHttpLoadTask extends HttpBytesLoadTask {
+    private static final String TAG = "CHLT";
+
     public enum CacheMode {
         CHECK_CACHE_IF_ERROR_THEN_LOAD,
         LOAD_IF_ERROR_THEN_CHECK_CACHE, //looks odd, generally a client check cache and then load, consider to remove
@@ -56,7 +63,12 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
     public void startTask() {
         boolean canLoadTask = true;
         if (cache != null && canLoadFromCache()) {
-            canLoadTask = handleCacheContent();
+            try {
+                canLoadTask = handleCacheContent();
+            } catch (Exception ex) {
+                Log.e(TAG, "handleCacheContent exception");
+                ex.printStackTrace();
+            }
         }
 
         if (canLoadTask) {
@@ -67,7 +79,7 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
         }
     }
 
-    private boolean handleCacheContent() {
+    private boolean handleCacheContent() throws Exception {
         boolean canLoadTaskAfter = true;
 
         if (applyCacheContent()) {
@@ -81,15 +93,12 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
         return canLoadTaskAfter;
     }
 
-    private boolean applyCacheContent() {
+    private boolean applyCacheContent() throws Exception {
         boolean isApplied = false;
         byte[] bytes = getCachedBytes();
 
         if (bytes != null) {
-            Object result = bytes;
-            if (byteArrayReader.getByteArrayHandler() != null) {
-                result = byteArrayReader.getByteArrayHandler().handleByteArrayBuffer(bytes);
-            }
+            Object result = byteArrayReader.readStream(new ByteArrayInputStream(bytes));
 
             //TODO: think to call base menthod which wrap calling this two
             // now in base class something could be inserted after setHandleData and won't be called here
@@ -106,21 +115,16 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
                 cacheMode != CacheMode.ONLY_STORE_TO_CACHE;
     }
 
-    private byte[] getCachedBytes() {
+    private byte[] getCachedBytes() throws Exception {
         String cacheKey = getCacheKey();
         StorageMetadata metadata = cache.getMetadata(cacheKey);
 
         byte[] bytes = null;
         if (metadata != null) {
-            if (metadata.isExpired()) {
-                try {
-                    cache.remove(cacheKey);
+            if (deleteIfExpired && metadata.isExpired()) {
+                cache.remove(cacheKey);
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            } else if (deleteIfExpired) {
+            } else {
                 bytes = (byte[]) cache.getValue(cacheKey);
             }
         }
@@ -142,7 +146,9 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
 
             try {
                 cache.put(getCacheKey(), byteArrayReader.getByteArray(), metadata);
+
             } catch (Exception e) {
+                Log.e(TAG, "cache.put exception");
                 e.printStackTrace();
             }
         }
@@ -152,7 +158,13 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
     public void setError(Error error) {
         if (cacheMode == CacheMode.LOAD_IF_ERROR_THEN_CHECK_CACHE) {
             needStore = false;
-            applyCacheContent();
+            try {
+                applyCacheContent();
+
+            } catch (Exception e) {
+                Log.e(TAG, "applyCacheContent exception");
+                e.printStackTrace();
+            }
         }
 
         if (getHandledData() == null) {
