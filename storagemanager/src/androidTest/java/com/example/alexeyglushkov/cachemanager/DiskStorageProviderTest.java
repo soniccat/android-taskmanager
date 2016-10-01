@@ -33,6 +33,10 @@ public class DiskStorageProviderTest extends InstrumentationTestCase {
         assertEquals(0, cacheProvider.getEntries().size());
     }
 
+    public void testGetDirectory() {
+        assertTrue(cacheProvider.getDirectory().getPath().endsWith("testDir"));
+    }
+
     public void testStoreData() {
         // Arrange
         DiskStorageMetadata metadata = new DiskStorageMetadata();
@@ -81,6 +85,69 @@ public class DiskStorageProviderTest extends InstrumentationTestCase {
         DiskStorageMetadata readMetadata = (DiskStorageMetadata)cacheProvider.getMetadata("img");
         assertNotNull(result);
         assertNotNull(readMetadata);
+        assertEquals(bitmap.getByteCount(), result.getByteCount());
+    }
+
+    public void testEntryCount() {
+        // Act
+        Exception ex = null;
+        try {
+            cacheProvider.put("1", "123", null);
+            cacheProvider.put("2", "543", null);
+            cacheProvider.put("3", "1462", null);
+        } catch (Exception e) {
+            ex = e;
+        }
+
+        // Verify
+        assertNull(ex);
+        assertEquals(3, cacheProvider.getEntryCount());
+    }
+
+    public void testRemove() {
+        // Act
+        Exception ex = null;
+        try {
+            cacheProvider.put("1", "123", null);
+            cacheProvider.put("2", "543", null);
+            cacheProvider.put("3", "1462", null);
+
+            cacheProvider.remove("2");
+        } catch (Exception e) {
+            ex = e;
+        }
+
+        // Verify
+        assertNull(ex);
+        assertEquals(2, cacheProvider.getEntryCount());
+        assertNull(cacheProvider.getEntry("2"));
+    }
+
+    public void testCreateMetadata() {
+        DiskStorageMetadata metadata = cacheProvider.createMetadata();
+        assertEquals(DiskStorageMetadata.class, metadata.getClass());
+    }
+
+    public void testSetDefaultSerializer() {
+        // Act
+        cacheProvider.setDefaultSerializer(new BitmapSerializer());
+
+        Bitmap bitmap = BitmapFactory.decodeResource(getInstrumentation().getContext().getResources(),
+                R.drawable.imgtocache);
+
+        // Act
+        Exception ex = null;
+        try {
+            cacheProvider.put("img", bitmap, null);
+        } catch (Exception e) {
+            ex = e;
+        }
+
+        // Verify
+        assertNull(ex);
+
+        Bitmap result = (Bitmap)cacheProvider.getValue("img");
+        assertNotNull(result);
         assertEquals(bitmap.getByteCount(), result.getByteCount());
     }
 }
