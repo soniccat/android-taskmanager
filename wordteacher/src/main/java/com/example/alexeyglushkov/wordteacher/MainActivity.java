@@ -151,7 +151,6 @@ public class MainActivity extends BaseActivity implements
 
     private void onPagerPageChanged() {
         updateToolbarBackButton();
-        supportInvalidateOptionsMenu();
     }
 
     private void onViewReady() {
@@ -185,7 +184,7 @@ public class MainActivity extends BaseActivity implements
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem learnMenuItem = menu.findItem(R.id.learn_ready_words);
         List<Card> cards = getReadyCards();
-        learnMenuItem.setVisible(cards.size() > 0);
+        learnMenuItem.setEnabled(cards.size() > 0);
 
         MenuItem sortByCreateName = menu.findItem(R.id.sort_by_name);
         MenuItem sortByCreateDate = menu.findItem(R.id.sort_by_create_date);
@@ -356,6 +355,7 @@ public class MainActivity extends BaseActivity implements
     private void updateCourses() {
         CourseListStackFragment stackFragment = getCourseListStackFragment();
         stackFragment.reloadCourses();
+        supportInvalidateOptionsMenu();
     }
 
     // Update UI actions
@@ -462,6 +462,7 @@ public class MainActivity extends BaseActivity implements
         }
 
         updateCoursesIfNeeded();
+        supportInvalidateOptionsMenu();
     }
 
     @Override
@@ -470,6 +471,7 @@ public class MainActivity extends BaseActivity implements
 
         if (requestCode == LearnActivity.ACTIVITY_RESULT) {
             updateCoursesIfNeeded();
+            supportInvalidateOptionsMenu();
         }
     }
 
@@ -524,6 +526,7 @@ public class MainActivity extends BaseActivity implements
 
             @Override
             public void onCourseChanged(Course course) {
+                MainActivity.this.onCourseChanged(course, null);
             }
         });
     }

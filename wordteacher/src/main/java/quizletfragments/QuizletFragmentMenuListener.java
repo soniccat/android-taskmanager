@@ -109,7 +109,6 @@ public abstract class QuizletFragmentMenuListener<T> extends ListMenuListener<T>
 
     public interface Listener<T> extends ListMenuListener.Listener<T> {
         void onCourseCreated(Course course, Exception exception);
-        //TODO: delete it
         void onCourseChanged(Course course);
         void onCardsAdded(Course course, Exception error);
         ViewGroup getDialogContainer();
