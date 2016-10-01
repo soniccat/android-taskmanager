@@ -46,7 +46,13 @@ public class DiskStorageCleanerTest extends InstrumentationTestCase {
     private void createEntry(DiskStorageProvider cacheProvider, String key, String value, long timeOffset) {
         DiskStorageMetadata metadata = new DiskStorageMetadata();
         metadata.setExpireTime(System.currentTimeMillis() / 1000L + timeOffset);
-        Error error = cacheProvider.put(key, value, metadata);
-        assertNull(error);
+
+        Exception ex = null;
+        try {
+            cacheProvider.put(key, value, metadata);
+        } catch (Exception e) {
+            ex = e;
+        }
+        assertNull(ex);
     }
 }

@@ -36,36 +36,26 @@ public class DiskStorageProviderTest extends InstrumentationTestCase {
     public void testStoreData() {
         // Arrange
         DiskStorageMetadata metadata = new DiskStorageMetadata();
-        metadata.put("mkey", "mvalue");
+        metadata.setExpireTime(555334);
+        metadata.setContentSize(555);
 
         // Act
-        Error putError = cacheProvider.put("1", "123", metadata);
+        Exception ex = null;
+        try {
+            cacheProvider.put("1", "123", metadata);
+        } catch (Exception e) {
+            ex = e;
+        }
 
         // Verify
-        assertNull(putError);
+        assertNull(ex);
         assertEquals("123", cacheProvider.getValue("1"));
 
         DiskStorageMetadata readMetadata = (DiskStorageMetadata)cacheProvider.getMetadata("1");
-        assertEquals("mvalue", readMetadata.get("mkey"));
         assertNotNull(readMetadata.getCreateTime());
-        assertTrue(readMetadata.getContentSize() != 0);
-    }
-
-    public void testStoreUrlData() {
-        // Arrange
-        DiskStorageMetadata metadata = new DiskStorageMetadata();
-        metadata.put("https://api.quizlet.com/2.0/users/alexey_glushkov/sets", "https://api.quizlet.com/2.0/users/alexey_glushkov/sets/data");
-
-        // Act
-        Error putError = cacheProvider.put("https://api.quizlet.com/2.0/users/alexey_glushkov/sets2", "https://api.quizlet.com/2.0/users/alexey_glushkov/sets/data2", metadata);
-
-        // Verify
-        assertNull(putError);
-        assertEquals("https://api.quizlet.com/2.0/users/alexey_glushkov/sets/data2", cacheProvider.getValue("https://api.quizlet.com/2.0/users/alexey_glushkov/sets2"));
-
-        DiskStorageMetadata readMetadata = (DiskStorageMetadata)cacheProvider.getMetadata("https://api.quizlet.com/2.0/users/alexey_glushkov/sets2");
-        assertEquals("https://api.quizlet.com/2.0/users/alexey_glushkov/sets/data", readMetadata.get("https://api.quizlet.com/2.0/users/alexey_glushkov/sets"));
-        assertNotNull(readMetadata.getCreateTime());
+        assertEquals(555334, readMetadata.getExpireTime());
+        assertEquals(10, readMetadata.getContentSize());
+        assertEquals(String.class, readMetadata.getEntryClass());
         assertTrue(readMetadata.getContentSize() != 0);
     }
 
@@ -76,10 +66,15 @@ public class DiskStorageProviderTest extends InstrumentationTestCase {
         cacheProvider.setSerializer(new BitmapSerializer(), Bitmap.class);
 
         // Act
-        Error putError = cacheProvider.put("img", bitmap, null);
+        Exception ex = null;
+        try {
+            cacheProvider.put("img", bitmap, new DiskStorageMetadata());
+        } catch (Exception e) {
+            ex = e;
+        }
 
         // Verify
-        assertNull(putError);
+        assertNull(ex);
         assertNotNull(cacheProvider.getEntry("img"));
 
         Bitmap result = (Bitmap)cacheProvider.getValue("img");
@@ -87,19 +82,5 @@ public class DiskStorageProviderTest extends InstrumentationTestCase {
         assertNotNull(result);
         assertNotNull(readMetadata);
         assertEquals(bitmap.getByteCount(), result.getByteCount());
-    }
-
-    public void testDeleteEntry() {
-        // Act
-        cacheProvider.put("key1","a",null);
-        cacheProvider.put("key2", "b", null);
-        cacheProvider.put("key3", "c", null);
-
-        Error error = cacheProvider.remove("key2");
-
-        // Verify
-        assertNull(error);
-        assertEquals(2, cacheProvider.getEntries().size());
-        assertNull(cacheProvider.getEntry("key2"));
     }
 }
