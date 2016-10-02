@@ -146,7 +146,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void onFabPressed() {
-        loadQuizletSets(true);
+        loadQuizletSets();
     }
 
     private void onSortOrderChanged(Preferences.SortOrder sortOrder, Sortable fragment) {
@@ -255,9 +255,8 @@ public class MainActivity extends BaseActivity implements
 
     //// Actions
 
-    private void loadQuizletSets(boolean forceLoad) {
-        CachableHttpLoadTask.CacheMode cacheMode = forceLoad ? CachableHttpLoadTask.CacheMode.LOAD_IF_ERROR_THEN_CHECK_CACHE : CachableHttpLoadTask.CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD;
-
+    private void loadQuizletSets() {
+        CachableHttpLoadTask.CacheMode cacheMode = CachableHttpLoadTask.CacheMode.ONLY_STORE_TO_CACHE;
         getQuizletService().loadSets(cacheMode);
     }
 
@@ -267,7 +266,7 @@ public class MainActivity extends BaseActivity implements
 
     private void forceLoadSetsIfNeeded() {
         if (getQuizletService().getState() == QuizletService.State.Restored) {
-            loadQuizletSets(false);
+            loadQuizletSets();
         }
     }
 

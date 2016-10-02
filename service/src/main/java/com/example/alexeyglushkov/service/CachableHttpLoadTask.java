@@ -19,7 +19,6 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
 
     public enum CacheMode {
         CHECK_CACHE_IF_ERROR_THEN_LOAD,
-        LOAD_IF_ERROR_THEN_CHECK_CACHE, //looks odd, generally a client check cache and then load, consider to remove
         IGNORE_CACHE,
         ONLY_LOAD_FROM_CACHE,
         ONLY_STORE_TO_CACHE
@@ -111,7 +110,6 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
 
     private boolean canLoadFromCache() {
         return cacheMode != CacheMode.IGNORE_CACHE &&
-                cacheMode != CacheMode.LOAD_IF_ERROR_THEN_CHECK_CACHE &&
                 cacheMode != CacheMode.ONLY_STORE_TO_CACHE;
     }
 
@@ -156,17 +154,6 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
 
     @Override
     public void setError(Error error) {
-        if (cacheMode == CacheMode.LOAD_IF_ERROR_THEN_CHECK_CACHE) {
-            needStore = false;
-            try {
-                applyCacheContent();
-
-            } catch (Exception e) {
-                Log.e(TAG, "applyCacheContent exception");
-                e.printStackTrace();
-            }
-        }
-
         if (getHandledData() == null) {
             super.setError(error);
         }
