@@ -14,5 +14,19 @@ allprojects {
         jcenter()
     }
 
+    project.ext {
+        compileSdkVersion = 24
+        buildToolsVersion = "24.0.3"
+        minSdkVersion = 14
+        targetSdkVersion = 24
+        minifyEnabled = false
+
+        applicationId = "com.example.alexeyglushkov.wordteacher"
+        versionCode = 1
+        versionName = "1.0"
+
+        compatLibVersion = "24.2.1"
+    }
+
     task hello << { task -> println "I'm $task.project.name $buildDir" }
 }
