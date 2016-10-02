@@ -41,13 +41,13 @@ public class CourseHolder {
 
     private void onLoaded() {
         for (WeakReference<CourseHolderListener> listener : listeners) {
-            listener.get().onLoaded();
+            listener.get().onLoaded(this);
         }
     }
 
     private void onCourseDeleted(Course course) {
         for (WeakReference<CourseHolderListener> listener : listeners) {
-            listener.get().onCourseRemoved(course);
+            listener.get().onCourseRemoved(this, course);
         }
     }
 
@@ -278,7 +278,7 @@ public class CourseHolder {
     //// Interfaces
 
     public interface CourseHolderListener {
-        void onLoaded();
-        void onCourseRemoved(Course course);
+        void onLoaded(CourseHolder holder);
+        void onCourseRemoved(CourseHolder holder, Course course);
     }
 }

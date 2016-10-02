@@ -76,12 +76,12 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
     // QuizletService.QuizletServiceListener
 
     @Override
-    public void onLoaded() {
+    public void onLoaded(QuizletService service) {
         handleLoadedSets();
     }
 
     @Override
-    public void onLoadError(Error error) {
+    public void onLoadError(QuizletService service, Error error) {
 
     }
 

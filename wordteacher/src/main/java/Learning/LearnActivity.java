@@ -89,13 +89,13 @@ public class LearnActivity extends BaseActivity {
         if (holder.getState() == CourseHolder.State.Unitialized) {
             getCourseHolder().addListener(new CourseHolder.CourseHolderListener() {
                 @Override
-                public void onLoaded() {
+                public void onLoaded(CourseHolder holder) {
                     restore(savedInstanceState);
                     holder.removeListener(this);
                 }
 
                 @Override
-                public void onCourseRemoved(Course course) {
+                public void onCourseRemoved(CourseHolder holder, Course course) {
                 }
             });
         } else {

@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.wordteacher.R;
 
 import java.util.List;
@@ -129,12 +128,12 @@ public class CourseListFragment extends BaseListFragment<Course> implements Sort
     // CourseHolder.CourseHolderListener
 
     @Override
-    public void onLoaded() {
+    public void onLoaded(CourseHolder holder) {
         onHolderLoaded();
     }
 
     @Override
-    public void onCourseRemoved(Course course) {
+    public void onCourseRemoved(CourseHolder holder, Course course) {
         reload();
     }
 

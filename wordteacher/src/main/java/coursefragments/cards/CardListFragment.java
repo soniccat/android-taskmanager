@@ -7,10 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.wordteacher.R;
 
-import coursefragments.courses.CourseCompareStrategyFactory;
 import listfragment.BaseListAdaptor;
 import listfragment.BaseListFragment;
 import listfragment.CompareStrategyFactory;
@@ -20,7 +18,6 @@ import main.Preferences;
 import model.Card;
 import model.Course;
 import model.CourseHolder;
-import quizletfragments.sets.QuizletSetCompareStrategyFactory;
 import tools.SortOrderCompareStrategy;
 import tools.Sortable;
 
@@ -131,12 +128,12 @@ public class CardListFragment extends BaseListFragment<Card> implements Sortable
     // CourseHolder.CourseHolderListener
 
     @Override
-    public void onLoaded() {
+    public void onLoaded(CourseHolder holder) {
         onHolderLoaded();
     }
 
     @Override
-    public void onCourseRemoved(Course course) {
+    public void onCourseRemoved(CourseHolder holder, Course course) {
         reload();
     }
 

@@ -45,7 +45,8 @@ public class MainActivity extends BaseActivity implements
         MainPageAdapter.Listener,
         QuizletStackFragment.Listener,
         CourseListStackFragment.Listener,
-        QuizletService.QuizletServiceListener {
+        QuizletService.QuizletServiceListener,
+        CourseHolder.CourseHolderListener {
 
     private static String ERROR_TAG = "Exception";
 
@@ -71,6 +72,7 @@ public class MainActivity extends BaseActivity implements
             setOnViewRestoredCallback();
         }
 
+        getCourseHolder().addListener(this);
         getQuizletService().addListener(this);
         forceLoadSetsIfNeeded();
     }
@@ -151,6 +153,10 @@ public class MainActivity extends BaseActivity implements
         if (fragment instanceof QuizletTermListFragment) {
             Preferences.setQuizletTermSortOrder(sortOrder);
         }
+    }
+
+    private void onCourseHolderChanged() {
+        supportInvalidateOptionsMenu();
     }
 
     // Menu Event
@@ -257,7 +263,6 @@ public class MainActivity extends BaseActivity implements
 
     private void handleLoadedQuizletSets() {
         forceLoadSetsIfNeeded();
-        supportInvalidateOptionsMenu();
     }
 
     private void forceLoadSetsIfNeeded() {
@@ -309,7 +314,6 @@ public class MainActivity extends BaseActivity implements
         }
 
         setSortOrder(order);
-        supportInvalidateOptionsMenu();
     }
 
     private void syncWithDropbox() {
@@ -340,7 +344,6 @@ public class MainActivity extends BaseActivity implements
     private void updateCourses() {
         CourseListStackFragment stackFragment = getCourseListStackFragment();
         stackFragment.reloadCourses();
-        supportInvalidateOptionsMenu();
     }
 
     // Update UI actions
@@ -376,12 +379,12 @@ public class MainActivity extends BaseActivity implements
     // QuizletService.QuizletServiceListener
 
     @Override
-    public void onLoaded() {
+    public void onLoaded(QuizletService service) {
         handleLoadedQuizletSets();
     }
 
     @Override
-    public void onLoadError(Error error) {
+    public void onLoadError(QuizletService service, Error error) {
         boolean isCancelled = false;
         if (error instanceof Authorizer.AuthError) {
             isCancelled = ((Authorizer.AuthError)error).getReason() == Authorizer.AuthError.Reason.Cancelled;
@@ -390,6 +393,18 @@ public class MainActivity extends BaseActivity implements
         if (!isCancelled) {
             showLoadErrorSnackBar(error);
         }
+    }
+
+    // CourseHolder.CourseHolderListener
+
+    @Override
+    public void onLoaded(CourseHolder holder) {
+        onCourseHolderChanged();
+    }
+
+    @Override
+    public void onCourseRemoved(CourseHolder holder, Course course) {
+        onCourseHolderChanged();
     }
 
     // QuizletStackCardsFragment.Listener
@@ -447,7 +462,7 @@ public class MainActivity extends BaseActivity implements
         }
 
         updateCoursesIfNeeded();
-        supportInvalidateOptionsMenu();
+        onCourseHolderChanged();
     }
 
     @Override

@@ -67,7 +67,7 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
     }
 
     @Override
-    public void onLoadError(Error error) {
+    public void onLoadError(QuizletService service, Error error) {
 
     }
 
@@ -83,7 +83,7 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
     // QuizletService.QuizletServiceListener
 
     @Override
-    public void onLoaded() {
+    public void onLoaded(QuizletService service) {
         onQuizletServiceLoaded();
     }
 

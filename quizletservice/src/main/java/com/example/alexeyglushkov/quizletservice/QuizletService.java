@@ -47,13 +47,13 @@ public class QuizletService extends SimpleService {
 
     private void onSetsLoaded() {
         for (WeakReference<QuizletServiceListener> ref : listeners) {
-            ref.get().onLoaded();
+            ref.get().onLoaded(this);
         }
     }
 
     private void onSetsLoadError(Error error) {
         for (WeakReference<QuizletServiceListener> ref : listeners) {
-            ref.get().onLoadError(error);
+            ref.get().onLoadError(this, error);
         }
     }
 
@@ -196,7 +196,7 @@ public class QuizletService extends SimpleService {
     //// Interfaces
 
     public interface QuizletServiceListener {
-        void onLoaded();
-        void onLoadError(Error error);
+        void onLoaded(QuizletService service);
+        void onLoadError(QuizletService service, Error error);
     }
 }
