@@ -53,7 +53,6 @@ public class CardListFragment extends BaseListFragment<Card> implements Sortable
         getCourseHolder().addListener(this);
         if (getCourseHolder().getState() != CourseHolder.State.Unitialized) {
             handleLoadedCourses();
-            reload();
         }
     }
 
@@ -134,6 +133,11 @@ public class CardListFragment extends BaseListFragment<Card> implements Sortable
     @Override
     public void onLoaded() {
         onHolderLoaded();
+    }
+
+    @Override
+    public void onCourseRemoved(Course course) {
+        reload();
     }
 
     //// Setters

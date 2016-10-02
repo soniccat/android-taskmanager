@@ -57,7 +57,7 @@ public class QuizletService extends SimpleService {
         }
     }
 
-    //// Actions
+    //// ActionsaddListener
 
     public void addListener(QuizletServiceListener listener) {
         if (!listeners.contains(listener)) {

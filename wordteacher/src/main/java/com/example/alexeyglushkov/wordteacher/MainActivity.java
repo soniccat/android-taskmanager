@@ -69,26 +69,16 @@ public class MainActivity extends BaseActivity implements
         if (savedInstanceState != null) {
             restoreListeners();
             setOnViewRestoredCallback();
-
-        } else {
-            setOnViewReadyCallback();
         }
+
+        getQuizletService().addListener(this);
+        forceLoadSetsIfNeeded();
     }
 
     private void restoreListeners() {
         for (Fragment fragment : getSupportFragmentManager().getFragments()) {
             restoreFragmentListener(fragment);
         }
-    }
-
-    private void setOnViewReadyCallback() {
-        UITools.runAfterRender(this, new UITools.PreDrawRunnable() {
-            @Override
-            public boolean run() {
-                onViewReady();
-                return true;
-            }
-        });
     }
 
     private void setOnViewRestoredCallback() {
@@ -151,14 +141,6 @@ public class MainActivity extends BaseActivity implements
 
     private void onPagerPageChanged() {
         updateToolbarBackButton();
-    }
-
-    private void onViewReady() {
-        getQuizletService().addListener(this);
-
-        if (getQuizletService().getState() != QuizletService.State.Unitialized) {
-            handleLoadedQuizletSets();
-        }
     }
 
     private void onFabPressed() {
@@ -274,11 +256,14 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void handleLoadedQuizletSets() {
+        forceLoadSetsIfNeeded();
+        supportInvalidateOptionsMenu();
+    }
+
+    private void forceLoadSetsIfNeeded() {
         if (getQuizletService().getState() == QuizletService.State.Restored) {
             loadQuizletSets(false);
         }
-
-        //updateSets();
     }
 
     private void showLoadErrorSnackBar(Error error) {

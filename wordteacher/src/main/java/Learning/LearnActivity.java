@@ -33,6 +33,7 @@ import main.BaseActivity;
 import main.MainApplication;
 import model.Card;
 import model.CardProgress;
+import model.Course;
 import model.CourseHolder;
 
 /**
@@ -91,6 +92,10 @@ public class LearnActivity extends BaseActivity {
                 public void onLoaded() {
                     restore(savedInstanceState);
                     holder.removeListener(this);
+                }
+
+                @Override
+                public void onCourseRemoved(Course course) {
                 }
             });
         } else {

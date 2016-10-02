@@ -45,6 +45,12 @@ public class CourseHolder {
         }
     }
 
+    private void onCourseDeleted(Course course) {
+        for (WeakReference<CourseHolderListener> listener : listeners) {
+            listener.get().onCourseRemoved(course);
+        }
+    }
+
     //// Actions
 
     // Listeners
@@ -112,6 +118,7 @@ public class CourseHolder {
     public void removeCourse(Course course) throws Exception {
         diskProvider.remove(getKey(course));
         courses.remove(course);
+        onCourseDeleted(course);
     }
 
     public void removeCard(Card card) throws Exception {
@@ -272,5 +279,6 @@ public class CourseHolder {
 
     public interface CourseHolderListener {
         void onLoaded();
+        void onCourseRemoved(Course course);
     }
 }

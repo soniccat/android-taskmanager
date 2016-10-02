@@ -133,6 +133,11 @@ public class CourseListFragment extends BaseListFragment<Course> implements Sort
         onHolderLoaded();
     }
 
+    @Override
+    public void onCourseRemoved(Course course) {
+        reload();
+    }
+
     //// Setters
 
     // Data Setters
