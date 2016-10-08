@@ -45,7 +45,7 @@ public class CourseListStackFragment extends StackFragment implements Sortable {
     private void restoreCardListListener() {
         CardListFragment cardFragment = getCardListFragment();
         if (cardFragment != null) {
-            cardFragment.setListener(getMenuCourseListener());
+            cardFragment.setListener(getMenuCardsListener());
         }
     }
 

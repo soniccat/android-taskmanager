@@ -1,6 +1,9 @@
 package coursefragments.courses;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -26,11 +29,31 @@ import tools.Sortable;
  * Created by alexeyglushkov on 08.05.16.
  */
 public class CourseListFragment extends BaseListFragment<Course> implements Sortable, CourseHolder.CourseHolderListener {
+    static final int MSG_REFRESH = 0;
+    static final int REFRESH_INTERVAL = 60 * 1000;
+
+    private @NonNull Handler refreshHandler;
 
     //// Creation, initialization, restoration
-    private Bundle savedInstanceState;
+    private @Nullable Bundle savedInstanceState;
 
-    public static CourseListFragment create() {
+    @Override
+    protected void initialize() {
+        super.initialize();
+        refreshHandler = new Handler(Looper.myLooper(), new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                if (msg.what == MSG_REFRESH) {
+                    refresh();
+                    return true;
+                }
+
+                return false;
+            }
+        });
+    }
+
+    public static @NonNull CourseListFragment create() {
         CourseListFragment fragment = new CourseListFragment();
         fragment.initialize();
 
@@ -64,6 +87,18 @@ public class CourseListFragment extends BaseListFragment<Course> implements Sort
 
     //// Events
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        scheduleRefresh();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        invalidateRefreshSchedule();
+    }
+
     private void onHolderLoaded() {
         handleLoadedCourses();
     }
@@ -71,6 +106,27 @@ public class CourseListFragment extends BaseListFragment<Course> implements Sort
     private void handleLoadedCourses() {
         restoreIfNeeded();
         reload();
+    }
+
+    //// Actions
+    
+    // Refreshing
+
+    public void scheduleRefresh() {
+        refreshHandler.sendEmptyMessageDelayed(MSG_REFRESH, REFRESH_INTERVAL);
+    }
+
+    public void invalidateRefreshSchedule() {
+        refreshHandler.removeMessages(MSG_REFRESH);
+    }
+
+    public void refresh() {
+        reloadCells();
+        scheduleRefresh();
+    }
+
+    public void reloadCells() {
+        adapter.notifyItemRangeChanged(0, adapter.getItemCount());
     }
 
     //// Creation Methods

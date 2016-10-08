@@ -20,7 +20,7 @@ import java.util.List;
 public abstract class BaseListFragment<T> extends Fragment {
     protected RecyclerView recyclerView;
     protected BaseListAdaptor adapter;
-    protected Listener listener;
+    protected Listener<T> listener;
 
     protected StorableListProviderFactory<T> providerFactory;
     protected StorableListProvider<T> provider = new NullStorableListProvider<>();
@@ -125,7 +125,7 @@ public abstract class BaseListFragment<T> extends Fragment {
 
     //// Setters
 
-    public void setListener(Listener listener) {
+    public void setListener(Listener<T> listener) {
         this.listener = listener;
     }
 
@@ -143,7 +143,7 @@ public abstract class BaseListFragment<T> extends Fragment {
 
     //// Getters
 
-    public Listener getListener() {
+    public Listener<T> getListener() {
         return listener;
     }
 

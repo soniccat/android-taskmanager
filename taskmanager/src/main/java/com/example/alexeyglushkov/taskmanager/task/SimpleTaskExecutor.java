@@ -23,10 +23,12 @@ public class SimpleTaskExecutor implements TaskExecutor {
         }
     };
 
+    // TODO: BlockingQueue gives bad performance, consider using our own executor
     private static final BlockingQueue<Runnable> sPoolWorkQueue =
             new LinkedBlockingQueue<Runnable>(128);
 
     public SimpleTaskExecutor() {
+        // TODO: need to transfer these values somehow
         executor = new ThreadPoolExecutor(10, 10, 60, TimeUnit.SECONDS, sPoolWorkQueue, sThreadFactory);
     }
 
