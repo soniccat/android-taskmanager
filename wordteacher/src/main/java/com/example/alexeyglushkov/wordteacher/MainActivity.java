@@ -49,6 +49,7 @@ public class MainActivity extends BaseActivity implements
         QuizletService.QuizletServiceListener,
         CourseHolder.CourseHolderListener {
 
+    @NonNull
     private static String ERROR_TAG = "Exception";
 
     private @NonNull Toolbar toolbar;
@@ -59,7 +60,7 @@ public class MainActivity extends BaseActivity implements
     //// Creation, initialization, restoration
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
@@ -97,7 +98,7 @@ public class MainActivity extends BaseActivity implements
 
     private void restoreFragmentListener(Fragment fragment) {
         // while restoration pagerAdapter could be null
-        if (fragment instanceof QuizletStackFragment && pagerAdapter != null) {
+        if (fragment instanceof QuizletStackFragment) {
             QuizletStackFragment cardsFragment = (QuizletStackFragment)fragment;
             cardsFragment.setListener(this);
 
@@ -170,7 +171,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    public boolean onPrepareOptionsMenu(@NonNull Menu menu) {
         MenuItem learnMenuItem = menu.findItem(R.id.learn_ready_words);
         List<Card> cards = getReadyCards();
         learnMenuItem.setEnabled(cards.size() > 0);
@@ -202,7 +203,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -243,7 +244,7 @@ public class MainActivity extends BaseActivity implements
     @Override
     public void onBackPressed() {
         final Fragment frag = getCurrentFragment();
-        if (frag.isVisible() && frag instanceof StackFragment) {
+        if (frag != null && frag.isVisible() && frag instanceof StackFragment) {
             StackFragment stackFragment = (StackFragment)frag;
             if (stackFragment.getBackStackSize() > 0) {
                 stackFragment.popFragment(null);
@@ -272,7 +273,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void showLoadErrorSnackBar(Error error) {
-        String errorString = "";
+        String errorString;
         if (error instanceof Authorizer.AuthError) {
             errorString = getString(R.string.error_auth_error);
         } else {
@@ -286,7 +287,7 @@ public class MainActivity extends BaseActivity implements
         Log.e(ERROR_TAG, error.getMessage());
     }
 
-    private void showAppExceptionSnackBar(Exception ex) {
+    private void showAppExceptionSnackBar(@NonNull Exception ex) {
         String errorString = ex.getMessage();
         View view = getCurrentFragmentView();
         if (view != null) {
@@ -296,11 +297,11 @@ public class MainActivity extends BaseActivity implements
         Log.e(ERROR_TAG, ex.getMessage());
     }
 
-    private void startLearnNewWords(Course course) {
+    private void startLearnNewWords(@NonNull Course course) {
         startLearnActivity(course.getNotStartedCards());
     }
 
-    private void startLearnActivity(List<Card> cards) {
+    private void startLearnActivity(@NonNull List<Card> cards) {
         Intent activityIntent = new Intent(this, LearnActivity.class);
         String[] cardIds = new String[cards.size()];
 
@@ -336,10 +337,14 @@ public class MainActivity extends BaseActivity implements
 
     private void updateSets() {
         QuizletStackFragment stackFragment = getQuizletStackFragment();
-        stackFragment.reloadSets();
+        if (stackFragment != null) {
+            stackFragment.reloadSets();
+        }
 
         QuizletTermListFragment termFragment = getTermListQuizletFragment();
-        termFragment.reload();
+        if (termFragment != null) {
+            termFragment.reload();
+        }
     }
 
     private void updateCoursesIfNeeded() {
@@ -350,7 +355,9 @@ public class MainActivity extends BaseActivity implements
 
     private void updateCourses() {
         CourseListStackFragment stackFragment = getCourseListStackFragment();
-        stackFragment.reloadCourses();
+        if (stackFragment != null) {
+            stackFragment.reloadCourses();
+        }
     }
 
     // Update UI actions
@@ -435,6 +442,7 @@ public class MainActivity extends BaseActivity implements
         return fragment;
     }
 
+    @Nullable
     @Override
     public String getTitleAtIndex(int index, boolean isDefault) {
         String title = null;
@@ -463,7 +471,7 @@ public class MainActivity extends BaseActivity implements
     // QuizletStackFragment.Listener
 
     @Override
-    public void onCourseChanged(Course course, Exception exception) {
+    public void onCourseChanged(Course course, @Nullable Exception exception) {
         if (exception != null) {
             showAppExceptionSnackBar(exception);
         }
@@ -485,7 +493,7 @@ public class MainActivity extends BaseActivity implements
     // CourseStackFragment.Listener
 
     @Override
-    public void onCourseClicked(Course course) {
+    public void onCourseClicked(@NonNull Course course) {
         List<Card> cards = course.getReadyToLearnCards();
         if (cards.size() > 0) {
             startLearnActivity(cards);
@@ -495,7 +503,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     @Override
-    public void onLearnNewWordsClick(Course course) {
+    public void onLearnNewWordsClick(@NonNull Course course) {
         startLearnNewWords(course);
     }
 
@@ -517,22 +525,23 @@ public class MainActivity extends BaseActivity implements
             }
 
             @Override
-            public void onCourseCreated(Course course, Exception exception) {
+            public void onCourseCreated(@NonNull Course course, Exception exception) {
                 MainActivity.this.onCourseChanged(course, exception);
             }
 
             @Override
-            public void onCardsAdded(Course course, Exception exception) {
+            public void onCardsAdded(@NonNull Course course, Exception exception) {
                 MainActivity.this.onCourseChanged(course, exception);
             }
 
+            @Nullable
             @Override
             public ViewGroup getDialogContainer() {
-                return (ViewGroup) getCourseListStackFragment().getView();
+                return (ViewGroup) getCurrentFragmentView();
             }
 
             @Override
-            public void onCourseChanged(Course course) {
+            public void onCourseChanged(@NonNull Course course) {
                 MainActivity.this.onCourseChanged(course, null);
             }
         });
@@ -586,43 +595,48 @@ public class MainActivity extends BaseActivity implements
 
     private void setSortOrder(Preferences.SortOrder sortOrder) {
         Sortable sortableFragment = (Sortable)getCurrentFragment();
-        sortableFragment.setSortOrder(sortOrder);
-
-        onSortOrderChanged(sortOrder, sortableFragment);
+        if (sortableFragment != null) {
+            sortableFragment.setSortOrder(sortOrder);
+            onSortOrderChanged(sortOrder, sortableFragment);
+        }
     }
 
     //// Getters
 
     // App getters
 
+    @NonNull
     private MainApplication getMainApplication() {
         return (MainApplication)getApplication();
     }
 
+    @NonNull
     public TaskManager getTaskManager() {
         return getMainApplication().getTaskManager();
     }
 
+    @NonNull
     public AccountStore getAccountStore() {
         return getMainApplication().getAccountStore();
     }
 
+    @NonNull
     public CourseHolder getCourseHolder() {
         return getMainApplication().getCourseHolder();
     }
 
+    @NonNull
     public QuizletService getQuizletService() {
         return getMainApplication().getQuizletService();
     }
 
     // Data getters
 
+    @NonNull
     private List<Card> getReadyCards() {
         ArrayList<Card> cards = new ArrayList<>();
-        if (getCourseHolder() != null) {
-            for (Course course : getCourseHolder().getCourses()) {
-                cards.addAll(course.getReadyToLearnCards());
-            }
+        for (Course course : getCourseHolder().getCourses()) {
+            cards.addAll(course.getReadyToLearnCards());
         }
 
         return cards;
@@ -641,22 +655,28 @@ public class MainActivity extends BaseActivity implements
 
     // UI getters
 
-    private @Nullable Fragment getCurrentFragment() {
+    @Nullable
+    private Fragment getCurrentFragment() {
         return getFragment(pager.getCurrentItem());
     }
 
-    private @Nullable View getCurrentFragmentView() {
-        return pagerAdapter.getFragment(pager.getCurrentItem()).getView();
+    @Nullable
+    private View getCurrentFragmentView() {
+        Fragment fragment = pagerAdapter.getFragment(pager.getCurrentItem());
+        return fragment != null ? fragment.getView() : null;
     }
 
+    @Nullable
     private QuizletStackFragment getQuizletStackFragment() {
         return (QuizletStackFragment)getStackContainer(0);
     }
 
+    @Nullable
     private CourseListStackFragment getCourseListStackFragment() {
         return (CourseListStackFragment)getStackContainer(2);
     }
 
+    @Nullable
     private StackFragment getStackContainer(int position) {
         StackFragment result = null;
 
@@ -668,11 +688,13 @@ public class MainActivity extends BaseActivity implements
         return result;
     }
 
+    @Nullable
     private QuizletTermListFragment getTermListQuizletFragment() {
         return (QuizletTermListFragment)getFragment(1);
     }
 
-    private @Nullable Fragment getFragment(int i) {
+    @Nullable
+    private Fragment getFragment(int i) {
         return pagerAdapter.getFragment(i);
     }
 

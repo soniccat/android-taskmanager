@@ -33,5 +33,5 @@ dependencies {
     compile project(':streamlib')
     compile 'com.fasterxml.jackson.core:jackson-core:2.7.3'
     compile project(path: ':jacksonlib')
-    compile 'com.android.support:support-annotations:' + project.ext.compatLibVersion
+    compile 'com.android.support:support-annotations:' + project.ext.supportLibVersion
 }

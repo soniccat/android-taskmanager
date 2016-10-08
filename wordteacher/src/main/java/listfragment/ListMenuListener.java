@@ -1,6 +1,7 @@
 package listfragment;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.PopupMenu;
 import android.view.View;
@@ -14,10 +15,10 @@ import model.Course;
  * Created by alexeyglushkov on 24.07.16.
  */
 public abstract class ListMenuListener<T> implements BaseListFragment.Listener<T> {
-    protected Context context;
-    protected Listener listener;
+    protected @NonNull Context context;
+    protected @NonNull Listener listener;
 
-    public ListMenuListener(Context context, Listener listener) {
+    public ListMenuListener(@NonNull Context context, @NonNull Listener listener) {
         this.context = context;
         this.listener = listener;
     }
@@ -38,11 +39,12 @@ public abstract class ListMenuListener<T> implements BaseListFragment.Listener<T
         listener.onRowClicked(data);
     }
 
+    @NonNull
     public Listener getListener() {
         return listener;
     }
 
-    public void setListener(Listener listener) {
+    public void setListener(@NonNull Listener listener) {
         this.listener = listener;
     }
 

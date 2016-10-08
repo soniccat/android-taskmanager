@@ -27,8 +27,8 @@ android {
 
 
 dependencies {
-    compile 'com.android.support:support-v4:'  + project.ext.compatLibVersion
-    compile 'com.android.support:appcompat-v7:'  + project.ext.compatLibVersion
+    compile 'com.android.support:support-v4:'  + project.ext.supportLibVersion
+    compile 'com.android.support:appcompat-v7:'  + project.ext.supportLibVersion
     compile 'com.google.dexmaker:dexmaker:1.2'
     compile 'com.google.dexmaker:dexmaker-mockito:1.2'
     compile 'com.google.guava:guava:18.0'

@@ -65,6 +65,7 @@ public class QuizletTermFragmentMenuListener extends QuizletFragmentMenuListener
                 createCourseFromCard(card, renameAlert.getName());
             }
         });
+
         renameAlert.show(context, getListener().getDialogContainer());
     }
 

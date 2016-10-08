@@ -25,7 +25,7 @@ allprojects {
         versionCode = 1
         versionName = "1.0"
 
-        compatLibVersion = "24.2.1"
+        supportLibVersion = "24.2.1"
     }
 
     task hello << { task -> println "I'm $task.project.name $buildDir" }
