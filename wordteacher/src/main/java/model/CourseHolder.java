@@ -1,6 +1,7 @@
 package model;
 
 import android.support.annotation.NonNull;
+import android.support.v4.util.Pair;
 
 import com.example.alexeyglushkov.cachemanager.StorageEntry;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageEntry;
@@ -93,6 +94,17 @@ public class CourseHolder {
 
     public void addNewCards(Course course, List<Card> cards) throws Exception {
         ArrayList<Card> cardsCopy = new ArrayList<>(course.getCards());
+        ArrayList<Card> changedCards = new ArrayList<>();
+
+        ArrayList<Pair<Card, Card>> updatedCards = getUpdatedCards(course, cards);
+        for (Pair<Card, Card> pair : updatedCards) {
+            Card newCard = pair.first;
+            Card courseCard = pair.second;
+            boolean isChanged = updateCard(courseCard, newCard);
+            if (isChanged) {
+                changedCards.add(courseCard);
+            }
+        }
 
         ArrayList<Card> newCards = getNewCards(course, cards);
         course.addCards(newCards);
@@ -104,6 +116,20 @@ public class CourseHolder {
             course.setCards(cardsCopy);
             throw e;
         }
+    }
+
+    private boolean updateCard(Card existingCard, Card newCard) {
+        boolean isTermChanged = !existingCard.getTerm().equals(newCard.getTerm());
+        boolean isDefinitionChanged = !existingCard.getDefinition().equals(newCard.getDefinition());
+
+        if (isTermChanged || isDefinitionChanged) {
+            existingCard.setTerm(newCard.getTerm());
+            existingCard.setDefinition(newCard.getDefinition());
+            existingCard.setProgress(null);
+            return true;
+        }
+
+        return false;
     }
 
     private void storeCourse(Course course) throws Exception {
@@ -207,7 +233,7 @@ public class CourseHolder {
         return courses;
     }
 
-    public ArrayList<Card> getNewCards(Course course, List<Card> cards) {
+    private ArrayList<Card> getNewCards(Course course, List<Card> cards) {
         ArrayList<Card> result = new ArrayList<>(cards);
         List<Card> courseCards = course.getCards();
         for (Card courseCard : courseCards) {
@@ -220,8 +246,22 @@ public class CourseHolder {
         return result;
     }
 
-    public int getCardIndex(String title, List<Card> cards) {
+    private ArrayList<Pair<Card, Card>> getUpdatedCards(Course course, List<Card> cards) {
+        ArrayList<Pair<Card, Card>> result = new ArrayList<>();
+        List<Card> courseCards = course.getCards();
+        for (Card courseCard : courseCards) {
+            int i = getCardIndex(courseCard.getTerm(), cards);
+            if (i != -1) {
+                result.add(new Pair<Card, Card>(cards.get(i), courseCard));
+            }
+        }
+
+        return result;
+    }
+
+    private int getCardIndex(String title, List<Card> cards) {
         int resultIndex = -1;
+        // TODO: looks sad
         for (int i=0; i<cards.size(); ++i) {
             if (cards.get(i).getTerm().equals(title)) {
                 resultIndex = i;
@@ -256,14 +296,21 @@ public class CourseHolder {
     public Card getCard(UUID cardId) {
         Card resultCard = null;
         for (Course course : getCourses()) {
-            for (Card card : course.getCards()) {
-                if (card.getId().equals(cardId)) {
-                    resultCard = card;
-                    break;
-                }
-            }
+            resultCard = getCard(cardId, course.getCards());
 
             if (resultCard != null) {
+                break;
+            }
+        }
+
+        return resultCard;
+    }
+
+    private Card getCard(UUID cardId, List<Card> cards) {
+        Card resultCard = null;
+        for (Card card : cards) {
+            if (card.getId().equals(cardId)) {
+                resultCard = card;
                 break;
             }
         }
@@ -280,5 +327,6 @@ public class CourseHolder {
     public interface CourseHolderListener {
         void onLoaded(CourseHolder holder);
         void onCourseRemoved(CourseHolder holder, Course course);
+        //void onCourseUpdated(CourseHolder holder, Course course, List<Card> addedCards, List<Card> updatedCards, List<Card> removedCards);
     }
 }

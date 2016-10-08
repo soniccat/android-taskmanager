@@ -13,6 +13,7 @@ import com.example.alexeyglushkov.wordteacher.R;
 import com.example.alexeyglushkov.wordteacher.RenameAlert;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import listfragment.ListMenuListener;
 import model.Card;
@@ -44,7 +45,13 @@ public class QuizletTermFragmentMenuListener extends QuizletFragmentMenuListener
                 } else if (item.getItemId() == R.id.add_to_course) {
                     ArrayList<QuizletTerm> terms = new ArrayList<>();
                     terms.add(term);
-                    showAddFromSetDialog(terms);
+
+                    List<Course> courses = getCourseHolder().getCourses();
+                    if (courses.size() > 1) {
+                        showAddFromSetDialog(terms);
+                    } else {
+                        addCardsToCourse(courses.get(0), terms);
+                    }
                 }
 
                 return false;

@@ -23,7 +23,6 @@ public class Card implements Parcelable {
     private QuizletTerm quizletTerm;
 
     public Card(Parcel parcel) {
-        // TODO: remove bundle
         Bundle bundle = parcel.readBundle(QuizletTerm.class.getClassLoader());
         id = UUID.fromString(bundle.getString("id"));
         courseId = UUID.fromString(bundle.getString("courseId"));
@@ -36,7 +35,6 @@ public class Card implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
-        // TODO: remove bundle
         Bundle bundle = new Bundle();
         bundle.putString("id", id.toString());
         bundle.putString("courseId", courseId.toString());
