@@ -2,6 +2,7 @@ package com.example.alexeyglushkov.wordteacher;
 
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -84,7 +85,7 @@ public class MainPageAdapter extends FragmentStatePagerAdapter {
         titles = SparceArrayTools.readSparceArray(bundle, 0);
     }
 
-    public Fragment getFragment(int i) {
+    public @Nullable Fragment getFragment(int i) {
         return fragments.get(i);
     }
 
