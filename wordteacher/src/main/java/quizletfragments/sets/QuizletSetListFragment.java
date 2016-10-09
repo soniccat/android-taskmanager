@@ -50,6 +50,8 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
         getQuizletService().addListener(this);
         if (getQuizletService().getState() != QuizletService.State.Unitialized) {
             handleLoadedSets();
+        } else {
+            showLoading();
         }
     }
 
@@ -80,6 +82,7 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
     //// Actions
 
     private void handleLoadedSets() {
+        hideLoading();
         restoreIfNeeded();
         reload();
     }

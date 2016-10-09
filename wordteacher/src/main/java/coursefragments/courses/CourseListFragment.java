@@ -75,6 +75,8 @@ public class CourseListFragment extends BaseListFragment<Course> implements Sort
         if (getCourseHolder().getState() != CourseHolder.State.Unitialized) {
             handleLoadedCourses();
             reload();
+        } else {
+            showLoading();
         }
     }
 
@@ -112,6 +114,7 @@ public class CourseListFragment extends BaseListFragment<Course> implements Sort
     }
 
     private void handleLoadedCourses() {
+        hideLoading();
         restoreIfNeeded();
         reload();
     }

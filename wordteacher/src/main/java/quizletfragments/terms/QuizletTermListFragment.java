@@ -54,6 +54,8 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
         if (getQuizletService().getState() != QuizletService.State.Unitialized) {
             handleLoadedSets();
             reload();
+        } else {
+            showLoading();
         }
     }
 
@@ -73,6 +75,7 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
     }
 
     private void handleLoadedSets() {
+        hideLoading();
         restoreIfNeeded();
         reload();
     }

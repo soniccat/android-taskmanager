@@ -19,6 +19,8 @@ import java.util.List;
  */
 public abstract class BaseListFragment<T> extends Fragment {
     protected RecyclerView recyclerView;
+    protected View loader;
+
     protected BaseListAdaptor adapter;
     protected Listener<T> listener;
 
@@ -49,7 +51,6 @@ public abstract class BaseListFragment<T> extends Fragment {
         initializeIfNeeded();
 
         if (savedInstanceState != null) {
-            //provider = providerFactory.restore(savedInstanceState);
             compareStrategy = compareStrategyFactory.restore(savedInstanceState);
         }
     }
@@ -59,6 +60,7 @@ public abstract class BaseListFragment<T> extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         recyclerView = (RecyclerView)view.findViewById(R.id.recyclerView);
+        loader = view.findViewById(R.id.loader);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
@@ -140,6 +142,16 @@ public abstract class BaseListFragment<T> extends Fragment {
                 return compareStrategy.compare(lhs, rhs);
             }
         });
+    }
+
+    // Update UI
+
+    public void showLoading() {
+        loader.setVisibility(View.VISIBLE);
+    }
+
+    public void hideLoading() {
+        loader.setVisibility(View.INVISIBLE);
     }
 
     //// Creation Methods
