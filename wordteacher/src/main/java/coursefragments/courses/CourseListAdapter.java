@@ -8,9 +8,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.alexeyglushkov.taskmanager.task.WeakRefList;
 import com.example.alexeyglushkov.tools.TimeTools;
 import com.example.alexeyglushkov.wordteacher.R;
 
+import java.lang.ref.WeakReference;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -28,10 +30,14 @@ public class CourseListAdapter extends BaseListAdaptor<CourseListAdapter.ViewHol
     private Listener listener;
     private ItemTouchHelper deleteTouchHelper;
 
+    //// Initialization
+
     public CourseListAdapter(Listener listener) {
         this.listener = listener;
         this.deleteTouchHelper = new ItemTouchHelper(new DeleteTouchHelper(this));
     }
+
+    //// Events
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
@@ -52,6 +58,15 @@ public class CourseListAdapter extends BaseListAdaptor<CourseListAdapter.ViewHol
         bindWordCountTextView(holder, course);
         bindProgressTextView(holder, course);
         bindListener(holder, course);
+    }
+
+    //// Actions
+
+    @Override
+    public void cleanup() {
+        super.cleanup();
+        listener = null;
+        deleteTouchHelper = null;
     }
 
     private void bindWordNameTextView(ViewHolder holder, Course course) {
@@ -136,6 +151,7 @@ public class CourseListAdapter extends BaseListAdaptor<CourseListAdapter.ViewHol
     public void onItemDeleted(RecyclerView.ViewHolder holder, int index, int position) {
         Course course = getItems().get(index);
         listener.onCourseViewDeleted(holder.itemView, course);
+
         deleteDataAtIndex(index);
         notifyItemRemoved(position);
     }

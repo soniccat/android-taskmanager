@@ -41,7 +41,7 @@ import model.CourseHolder;
  * Created by alexeyglushkov on 09.05.16.
  */
 // TODO: consider moving content to fragment
-public class LearnActivity extends BaseActivity {
+public class LearnActivity extends BaseActivity implements CourseHolder.CourseHolderListener{
 
     public static final int ACTIVITY_RESULT = 10002;
     public static final int ACTIVITY_RESULT_CODE = 1;
@@ -49,6 +49,8 @@ public class LearnActivity extends BaseActivity {
     public final static String EXTRA_CARD_IDS = "EXTRA_CARD_IDS";
     public final static char GAP_CHAR = '_';
     public final static String GAP_STRING = "_";
+
+    @Nullable Bundle savedInstanceState;
 
     private @Nullable CardTeacher teacher;
 
@@ -88,28 +90,8 @@ public class LearnActivity extends BaseActivity {
     private void registerRestoration(@Nullable final Bundle savedInstanceState) {
         final CourseHolder holder = getCourseHolder();
         if (holder.getState() == CourseHolder.State.Unitialized) {
-            getCourseHolder().addListener(new CourseHolder.CourseHolderListener() {
-                @Override
-                public void onLoaded(@NonNull CourseHolder holder) {
-                    restore(savedInstanceState);
-                    holder.removeListener(this);
-                }
-
-                @Override
-                public void onCoursesAdded(@NonNull CourseHolder holder, @NonNull List<Course> courses) {
-                    // TODO: handle
-                }
-
-                @Override
-                public void onCoursesRemoved(@NonNull CourseHolder holder, @NonNull List<Course> courses) {
-                    // TODO: handle
-                }
-
-                @Override
-                public void onCourseUpdated(@NonNull CourseHolder holder, @NonNull Course course, @NonNull CourseHolder.UpdateBatch batch) {
-                    // TODO: handle
-                }
-            });
+            this.savedInstanceState = savedInstanceState;
+            getCourseHolder().addListener(this);
         } else {
             restore(savedInstanceState);
         }
@@ -231,6 +213,13 @@ public class LearnActivity extends BaseActivity {
     }
 
     //// Events
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        getCourseHolder().removeListener(this);
+    }
 
     private void onRightInput() {
         try {
@@ -496,6 +485,38 @@ public class LearnActivity extends BaseActivity {
 
     private void showException(Exception ex) {
         Snackbar.make(getWindow().getDecorView(), ex.getMessage(), Snackbar.LENGTH_LONG).show();
+    }
+
+    //// Interfaces
+
+    // CourseHolder.CourseHolderListener
+
+    @Override
+    public void onLoaded(@NonNull CourseHolder holder) {
+        restoreIfNeeded();
+        holder.removeListener(this);
+    }
+
+    private void restoreIfNeeded() {
+        if (savedInstanceState != null) {
+            restore(savedInstanceState);
+            savedInstanceState = null;
+        }
+    }
+
+    @Override
+    public void onCoursesAdded(@NonNull CourseHolder holder, @NonNull List<Course> courses) {
+        // TODO: handle
+    }
+
+    @Override
+    public void onCoursesRemoved(@NonNull CourseHolder holder, @NonNull List<Course> courses) {
+        // TODO: handle
+    }
+
+    @Override
+    public void onCourseUpdated(@NonNull CourseHolder holder, @NonNull Course course, @NonNull CourseHolder.UpdateBatch batch) {
+        // TODO: handle
     }
 
     //// Getters

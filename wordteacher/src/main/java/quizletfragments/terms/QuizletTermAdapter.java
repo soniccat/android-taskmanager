@@ -23,9 +23,13 @@ import listfragment.BaseListAdaptor;
 public class QuizletTermAdapter extends BaseListAdaptor<QuizletTermAdapter.Holder, QuizletTerm> {
     private Listener listener;
 
+    //// Initialization
+
     public QuizletTermAdapter(Listener listener) {
         this.listener = listener;
     }
+
+    //// Events
 
     @Override
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -42,6 +46,15 @@ public class QuizletTermAdapter extends BaseListAdaptor<QuizletTermAdapter.Holde
         holder.wordCountTextView.setText(term.getDefinition());
 
         bindListener(holder, term);
+    }
+
+    //// Actions
+
+
+    @Override
+    public void cleanup() {
+        super.cleanup();
+        listener = null;
     }
 
     private void bindListener(Holder holder, final QuizletTerm term) {

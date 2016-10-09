@@ -64,6 +64,13 @@ public class CardListFragment extends BaseListFragment<Card> implements Sortable
 
     //// Events
 
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        getCourseHolder().removeListener(this);
+    }
+
     private void onHolderLoaded() {
         handleLoadedCourses();
     }

@@ -62,6 +62,12 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
 
     //// Events
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        getQuizletService().removeListener(this);
+    }
+
     private void onQuizletServiceLoaded() {
         handleLoadedSets();
     }

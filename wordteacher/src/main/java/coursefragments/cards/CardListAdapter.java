@@ -24,10 +24,14 @@ public class CardListAdapter extends BaseListAdaptor<CardListAdapter.Holder, Car
     private Listener listener;
     private ItemTouchHelper deleteTouchHelper;
 
+    //// Initialization
+
     public CardListAdapter(Listener listener) {
         this.listener = listener;
         this.deleteTouchHelper = new ItemTouchHelper(new DeleteTouchHelper(this));
     }
+
+    //// Events
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
@@ -50,6 +54,16 @@ public class CardListAdapter extends BaseListAdaptor<CardListAdapter.Holder, Car
         holder.wordCountTextView.setText(term.getDefinition());
 
         bindListener(holder, term);
+    }
+
+    //// Actions
+
+
+    @Override
+    public void cleanup() {
+        super.cleanup();
+        listener = null;
+        deleteTouchHelper = null;
     }
 
     private void bindListener(Holder holder, final Card term) {

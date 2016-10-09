@@ -30,6 +30,8 @@ public class QuizletSetAdapter extends BaseListAdaptor<QuizletSetAdapter.Holder,
         this.listener = listener;
     }
 
+    //// Events
+
     @Override
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_quizlet_set_card, parent, false);
@@ -48,6 +50,15 @@ public class QuizletSetAdapter extends BaseListAdaptor<QuizletSetAdapter.Holder,
         holder.wordCountTextView.setText(description);
 
         bindListener(holder, set);
+    }
+
+    //// Actions
+
+
+    @Override
+    public void cleanup() {
+        super.cleanup();
+        listener = null;
     }
 
     private void bindListener(Holder holder, final QuizletSet set) {

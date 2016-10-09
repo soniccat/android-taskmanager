@@ -99,6 +99,14 @@ public class CourseListFragment extends BaseListFragment<Course> implements Sort
         invalidateRefreshSchedule();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        getCourseHolder().removeListener(this);
+        invalidateRefreshSchedule();
+        refreshHandler = null;
+    }
+
     private void onHolderLoaded() {
         handleLoadedCourses();
     }

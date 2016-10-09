@@ -79,6 +79,13 @@ public class MainActivity extends BaseActivity implements
         forceLoadSetsIfNeeded();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        getCourseHolder().removeListener(this);
+        getQuizletService().removeListener(this);
+    }
+
     private void restoreListeners() {
         for (Fragment fragment : getSupportFragmentManager().getFragments()) {
             restoreFragmentListener(fragment);

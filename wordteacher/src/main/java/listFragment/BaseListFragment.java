@@ -89,7 +89,31 @@ public abstract class BaseListFragment<T> extends Fragment {
         }
     }
 
-    // Actions
+    //// Events
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        recyclerView = null;
+
+        adapter.cleanup();
+        adapter = null;
+        listener = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        // clear here to support onSaveInstanceState
+        providerFactory = null;
+        provider = null;
+
+        compareStrategyFactory = null;
+        compareStrategy = null;
+    }
+
+    //// Actions
 
     public void reload() {
         if (getView() != null) {

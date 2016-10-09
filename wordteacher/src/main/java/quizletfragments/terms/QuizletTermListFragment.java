@@ -66,6 +66,12 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
 
     //// Events
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        getQuizletService().removeListener(this);
+    }
+
     private void handleLoadedSets() {
         restoreIfNeeded();
         reload();

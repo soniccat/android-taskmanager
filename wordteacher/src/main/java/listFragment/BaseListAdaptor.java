@@ -14,6 +14,10 @@ import java.util.List;
 public abstract class BaseListAdaptor<VH extends RecyclerView.ViewHolder, T> extends RecyclerView.Adapter<VH> {
     protected List<T> items = new ArrayList<>();
 
+    public void cleanup() {
+        items = null;
+    }
+
     public List<T> getItems() {
         return items;
     }
