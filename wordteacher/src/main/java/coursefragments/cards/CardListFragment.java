@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.wordteacher.R;
 
+import java.util.List;
+
 import listfragment.BaseListAdaptor;
 import listfragment.BaseListFragment;
 import listfragment.CompareStrategyFactory;
@@ -133,8 +135,36 @@ public class CardListFragment extends BaseListFragment<Card> implements Sortable
     }
 
     @Override
-    public void onCourseRemoved(CourseHolder holder, Course course) {
-        reload();
+    public void onCoursesAdded(@NonNull CourseHolder holder, @NonNull List<Course> courses) {
+        Course parentCourse = getParentCourse();
+        if (!isExplicitCardList() && parentCourse == null) {
+            reload();
+        }
+    }
+
+    @Override
+    public void onCoursesRemoved(@NonNull CourseHolder holder, @NonNull List<Course> courses) {
+        Course parentCourse = getParentCourse();
+        if (parentCourse != null) {
+            if (courses.contains(getParentCourse())) {
+                provider = new NullStorableListProvider<>();
+                reload();
+            }
+        } else {
+            reload();
+        }
+    }
+
+    @Override
+    public void onCourseUpdated(@NonNull CourseHolder holder, @NonNull Course course, @NonNull CourseHolder.UpdateBatch batch) {
+        Course parentCourse = getParentCourse();
+        if (parentCourse != null) {
+            if (course.equals(parentCourse)) {
+                reload();
+            }
+        } else {
+            reload();
+        }
     }
 
     //// Setters
@@ -160,7 +190,7 @@ public class CardListFragment extends BaseListFragment<Card> implements Sortable
 
     // Data Getters
 
-    public Course getParentCourse() {
+    public @Nullable Course getParentCourse() {
         Course result = null;
         if (provider instanceof CourseCardListProvider) {
             CourseCardListProvider courseProvider = (CourseCardListProvider)provider;
@@ -168,6 +198,12 @@ public class CardListFragment extends BaseListFragment<Card> implements Sortable
         }
 
         return result;
+    }
+
+    // State Getters
+
+    private boolean isExplicitCardList() {
+        return provider instanceof CardListProvider;
     }
 
     // Cast Getters

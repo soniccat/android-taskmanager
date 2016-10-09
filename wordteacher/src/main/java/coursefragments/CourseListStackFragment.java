@@ -1,6 +1,7 @@
 package coursefragments;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
 
@@ -212,7 +213,7 @@ public class CourseListStackFragment extends StackFragment implements Sortable {
 
     // Data Getters
 
-    public String getTitle() {
+    public @NonNull String getTitle() {
         String title = null;
         if (getBackStackSize() > 0) {
             Course course = getCardListFragment().getParentCourse();

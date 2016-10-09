@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
@@ -89,13 +90,24 @@ public class LearnActivity extends BaseActivity {
         if (holder.getState() == CourseHolder.State.Unitialized) {
             getCourseHolder().addListener(new CourseHolder.CourseHolderListener() {
                 @Override
-                public void onLoaded(CourseHolder holder) {
+                public void onLoaded(@NonNull CourseHolder holder) {
                     restore(savedInstanceState);
                     holder.removeListener(this);
                 }
 
                 @Override
-                public void onCourseRemoved(CourseHolder holder, Course course) {
+                public void onCoursesAdded(@NonNull CourseHolder holder, @NonNull List<Course> courses) {
+                    // TODO: handle
+                }
+
+                @Override
+                public void onCoursesRemoved(@NonNull CourseHolder holder, @NonNull List<Course> courses) {
+                    // TODO: handle
+                }
+
+                @Override
+                public void onCourseUpdated(@NonNull CourseHolder holder, @NonNull Course course, @NonNull CourseHolder.UpdateBatch batch) {
+                    // TODO: handle
                 }
             });
         } else {

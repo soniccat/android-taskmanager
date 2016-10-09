@@ -1,6 +1,7 @@
 package model;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 
 import com.example.alexeyglushkov.cachemanager.StorageEntry;
@@ -13,6 +14,7 @@ import com.example.alexeyglushkov.taskmanager.task.WeakRefList;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,9 +48,21 @@ public class CourseHolder {
         }
     }
 
-    private void onCourseDeleted(Course course) {
+    private void onCoursesAdded(List<Course> courses) {
         for (WeakReference<CourseHolderListener> listener : listeners) {
-            listener.get().onCourseRemoved(this, course);
+            listener.get().onCoursesAdded(this, courses);
+        }
+    }
+
+    private void onCoursesDeleted(List<Course> courses) {
+        for (WeakReference<CourseHolderListener> listener : listeners) {
+            listener.get().onCoursesRemoved(this, courses);
+        }
+    }
+
+    private void onCourseUpdated(@NonNull Course course, @NonNull UpdateBatch batch) {
+        for (WeakReference<CourseHolderListener> listener : listeners) {
+            listener.get().onCourseUpdated(this, course, batch);
         }
     }
 
@@ -90,27 +104,31 @@ public class CourseHolder {
     public void addCourse(Course course) throws Exception {
         storeCourse(course);
         courses.add(course);
+        onCoursesAdded(Collections.singletonList(course));
     }
 
     public void addNewCards(Course course, List<Card> cards) throws Exception {
         ArrayList<Card> cardsCopy = new ArrayList<>(course.getCards());
-        ArrayList<Card> changedCards = new ArrayList<>();
+        UpdateBatch updateBatch = new UpdateBatch();
 
         ArrayList<Pair<Card, Card>> updatedCards = getUpdatedCards(course, cards);
         for (Pair<Card, Card> pair : updatedCards) {
-            Card newCard = pair.first;
-            Card courseCard = pair.second;
+            Card courseCard = pair.first;
+            Card newCard = pair.second;
             boolean isChanged = updateCard(courseCard, newCard);
             if (isChanged) {
-                changedCards.add(courseCard);
+                updateBatch.updatedCards.add(courseCard);
             }
         }
 
         ArrayList<Card> newCards = getNewCards(course, cards);
         course.addCards(newCards);
 
+        updateBatch.addedCards.addAll(newCards);
+
         try {
             storeCourse(course);
+            onCourseUpdated(course, updateBatch);
 
         } catch (Exception e) {
             course.setCards(cardsCopy);
@@ -121,15 +139,15 @@ public class CourseHolder {
     private boolean updateCard(Card existingCard, Card newCard) {
         boolean isTermChanged = !existingCard.getTerm().equals(newCard.getTerm());
         boolean isDefinitionChanged = !existingCard.getDefinition().equals(newCard.getDefinition());
+        boolean isChanged = isTermChanged || isDefinitionChanged;
 
-        if (isTermChanged || isDefinitionChanged) {
+        if (isChanged) {
             existingCard.setTerm(newCard.getTerm());
             existingCard.setDefinition(newCard.getDefinition());
             existingCard.setProgress(null);
-            return true;
         }
 
-        return false;
+        return isChanged;
     }
 
     private void storeCourse(Course course) throws Exception {
@@ -144,7 +162,7 @@ public class CourseHolder {
     public void removeCourse(Course course) throws Exception {
         diskProvider.remove(getKey(course));
         courses.remove(course);
-        onCourseDeleted(course);
+        onCoursesDeleted(Collections.singletonList(course));
     }
 
     public void removeCard(Card card) throws Exception {
@@ -156,6 +174,10 @@ public class CourseHolder {
 
                 try {
                     storeCourse(course);
+
+                    UpdateBatch batch = new UpdateBatch();
+                    batch.removedCards.add(card);
+                    onCourseUpdated(course, batch);
 
                 } catch (Exception e) {
                     // rollback
@@ -252,7 +274,7 @@ public class CourseHolder {
         for (Card courseCard : courseCards) {
             int i = getCardIndex(courseCard.getTerm(), cards);
             if (i != -1) {
-                result.add(new Pair<Card, Card>(cards.get(i), courseCard));
+                result.add(new Pair<Card, Card>(courseCard, cards.get(i)));
             }
         }
 
@@ -325,8 +347,15 @@ public class CourseHolder {
     //// Interfaces
 
     public interface CourseHolderListener {
-        void onLoaded(CourseHolder holder);
-        void onCourseRemoved(CourseHolder holder, Course course);
-        //void onCourseUpdated(CourseHolder holder, Course course, List<Card> addedCards, List<Card> updatedCards, List<Card> removedCards);
+        void onLoaded(@NonNull CourseHolder holder);
+        void onCoursesAdded(@NonNull CourseHolder holder, @NonNull List<Course> courses);
+        void onCoursesRemoved(@NonNull CourseHolder holder, @NonNull List<Course> courses);
+        void onCourseUpdated(@NonNull CourseHolder holder, @NonNull Course course, @NonNull UpdateBatch batch);
+    }
+
+    public class UpdateBatch {
+        public @NonNull List<Card> removedCards = new ArrayList<>();
+        public @NonNull List<Card> addedCards = new ArrayList<>();
+        public @NonNull List<Card> updatedCards = new ArrayList<>();
     }
 }

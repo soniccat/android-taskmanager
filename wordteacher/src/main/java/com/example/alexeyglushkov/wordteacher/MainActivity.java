@@ -417,7 +417,17 @@ public class MainActivity extends BaseActivity implements
     }
 
     @Override
-    public void onCourseRemoved(CourseHolder holder, Course course) {
+    public void onCoursesAdded(@NonNull CourseHolder holder, @NonNull List<Course> courses) {
+        onCourseHolderChanged();
+    }
+
+    @Override
+    public void onCoursesRemoved(@NonNull CourseHolder holder, @NonNull List<Course> courses) {
+        onCourseHolderChanged();
+    }
+
+    @Override
+    public void onCourseUpdated(@NonNull CourseHolder holder, @NonNull Course course, @NonNull CourseHolder.UpdateBatch batch) {
         onCourseHolderChanged();
     }
 

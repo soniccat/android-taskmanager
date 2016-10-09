@@ -184,13 +184,26 @@ public class CourseListFragment extends BaseListFragment<Course> implements Sort
     // CourseHolder.CourseHolderListener
 
     @Override
-    public void onLoaded(CourseHolder holder) {
+    public void onLoaded(@NonNull CourseHolder holder) {
         onHolderLoaded();
     }
 
     @Override
-    public void onCourseRemoved(CourseHolder holder, Course course) {
+    public void onCoursesAdded(@NonNull CourseHolder holder, @NonNull List<Course> courses) {
         reload();
+    }
+
+    @Override
+    public void onCoursesRemoved(@NonNull CourseHolder holder, @NonNull List<Course> courses) {
+        reload();
+    }
+
+    @Override
+    public void onCourseUpdated(@NonNull CourseHolder holder, @NonNull Course course, @NonNull CourseHolder.UpdateBatch batch) {
+        int index = getCourseAdapter().getItems().indexOf(course);
+        if (index != -1) {
+            getCourseAdapter().notifyItemRangeChanged(index, 1);
+        }
     }
 
     //// Setters
