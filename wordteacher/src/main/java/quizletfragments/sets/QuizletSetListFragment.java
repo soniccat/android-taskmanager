@@ -45,13 +45,11 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
     @Override
     public void onViewStateRestored(@Nullable final Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        this.savedInstanceState = savedInstanceState;
-
         getQuizletService().addListener(this);
+
+        this.savedInstanceState = savedInstanceState;
         if (getQuizletService().getState() != QuizletService.State.Unitialized) {
             handleLoadedSets();
-        } else {
-            showLoading();
         }
     }
 
@@ -74,11 +72,6 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
         handleLoadedSets();
     }
 
-    @Override
-    public void onLoadError(QuizletService service, Error error) {
-
-    }
-
     //// Actions
 
     private void handleLoadedSets() {
@@ -92,8 +85,17 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> impleme
     // QuizletService.QuizletServiceListener
 
     @Override
-    public void onLoaded(QuizletService service) {
-        onQuizletServiceLoaded();
+    public void onStateChanged(QuizletService service, QuizletService.State oldState) {
+        if (service.getState() == QuizletService.State.Loading) {
+            showLoading();
+        } else {
+            onQuizletServiceLoaded();
+        }
+    }
+
+    @Override
+    public void onLoadError(QuizletService service, Error error) {
+        hideLoading();
     }
 
     //// Creation Methods

@@ -7,4 +7,6 @@
 
     <color name="positiveProgress">#a21c931c</color>
     <color name="negativeProgress">#bbfc4545</color>
+
+    <color name="list_refreshing_bg">#323232</color>
 </resources>

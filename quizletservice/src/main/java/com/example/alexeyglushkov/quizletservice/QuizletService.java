@@ -22,13 +22,16 @@ import java.util.List;
  * Created by alexeyglushkov on 26.03.16.
  */
 public class QuizletService extends SimpleService {
+
+    // on error we return back to the state before loading
     public enum State {
         Unitialized,
         Restored,
-        Loaded
+        Loaded,
+        Loading
     }
 
-    static final String server = "https://api.quizlet.com/2.0";
+    static private final String SERVER = "https://api.quizlet.com/2.0";
 
     private List<QuizletSet> sets = new ArrayList<>();
     private WeakRefList<QuizletServiceListener> listeners = new WeakRefList<>();
@@ -45,9 +48,9 @@ public class QuizletService extends SimpleService {
 
     //// Events
 
-    private void onSetsLoaded() {
+    private void onStateChanged(State oldState) {
         for (WeakReference<QuizletServiceListener> ref : listeners) {
-            ref.get().onLoaded(this);
+            ref.get().onStateChanged(this, oldState);
         }
     }
 
@@ -57,25 +60,17 @@ public class QuizletService extends SimpleService {
         }
     }
 
-    //// ActionsaddListener
-
-    public void addListener(QuizletServiceListener listener) {
-        if (!listeners.contains(listener)) {
-            listeners.add(new WeakReference<>(listener));
-        }
-    }
-
-    public void removeListener(QuizletServiceListener listener) {
-        listeners.remove(listener);
-    }
+    //// Actions
 
     public void loadSets(CachableHttpLoadTask.CacheMode cacheMode) {
         ServiceCommand.CommandCallback callback = createLoadCallback(State.Loaded);
+        setState(State.Loading);
         runCommand(createSetsCommandProxy(callback, cacheMode), true, callback);
     }
 
     public void restore() {
         ServiceCommand.CommandCallback callback = createLoadCallback(State.Restored);
+        setState(State.Loading);
         runCommand(createSetsCommandProxy(callback, CachableHttpLoadTask.CacheMode.ONLY_LOAD_FROM_CACHE), false, callback);
     }
 
@@ -91,7 +86,7 @@ public class QuizletService extends SimpleService {
 
     @NonNull
     private QuizletSetsCommand createSetsCommand(final ServiceCommand.CommandCallback callback, final CachableHttpLoadTask.CacheMode cacheMode) {
-        final QuizletSetsCommand command = getQuizletCommandProvider().getLoadSetsCommand(server, getOAuthCredentials().getUserId(), cacheMode);
+        final QuizletSetsCommand command = getQuizletCommandProvider().getLoadSetsCommand(SERVER, getOAuthCredentials().getUserId(), cacheMode);
         command.setServiceCommandCallback(new ServiceCommand.CommandCallback() {
             @Override
             public void onCompleted(Error error) {
@@ -115,21 +110,43 @@ public class QuizletService extends SimpleService {
         return command;
     }
 
+    // Listeners
+
+    public void addListener(QuizletServiceListener listener) {
+        if (!listeners.contains(listener)) {
+            listeners.add(new WeakReference<>(listener));
+        }
+    }
+
+    public void removeListener(QuizletServiceListener listener) {
+        listeners.remove(listener);
+    }
+
     //// Creation Methods
 
     @NonNull
     private ServiceCommand.CommandCallback createLoadCallback(final State successState) {
+        final State oldState = this.state;
         return new ServiceCommand.CommandCallback() {
             @Override
             public void onCompleted(Error error) {
                 if (error == null) {
-                    state = successState;
-                    onSetsLoaded();
+                    setState(successState);
+
                 } else {
+                    setState(oldState);
                     onSetsLoadError(error);
                 }
             }
         };
+    }
+
+    //// Setters
+
+    private void setState(State state) {
+        State oldState = this.state;
+        this.state = state;
+        onStateChanged(oldState);
     }
 
     //// Getters
@@ -196,7 +213,7 @@ public class QuizletService extends SimpleService {
     //// Interfaces
 
     public interface QuizletServiceListener {
-        void onLoaded(QuizletService service);
+        void onStateChanged(QuizletService service, State oldState);
         void onLoadError(QuizletService service, Error error);
     }
 }

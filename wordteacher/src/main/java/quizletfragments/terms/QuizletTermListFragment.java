@@ -54,8 +54,6 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
         if (getQuizletService().getState() != QuizletService.State.Unitialized) {
             handleLoadedSets();
             reload();
-        } else {
-            showLoading();
         }
     }
 
@@ -85,13 +83,17 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
     // QuizletService.QuizletServiceListener
 
     @Override
-    public void onLoaded(QuizletService service) {
-        handleLoadedSets();
+    public void onStateChanged(QuizletService service, QuizletService.State oldState) {
+        if (service.getState() == QuizletService.State.Loading) {
+            showLoading();
+        } else {
+            handleLoadedSets();
+        }
     }
 
     @Override
     public void onLoadError(QuizletService service, Error error) {
-
+        hideLoading();
     }
 
     //// Creation Methods

@@ -400,7 +400,7 @@ public class MainActivity extends BaseActivity implements
     // QuizletService.QuizletServiceListener
 
     @Override
-    public void onLoaded(QuizletService service) {
+    public void onStateChanged(QuizletService service, QuizletService.State oldState) {
         handleLoadedQuizletSets();
     }
 

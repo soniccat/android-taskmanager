@@ -11,4 +11,6 @@
     <string name="menu_hint_clue">Ask for a clue</string>
 
     <string name="title_activity_authorization">Authorization</string>
+
+    <string name="list_refreshing">Refreshing…</string>
 </resources>
