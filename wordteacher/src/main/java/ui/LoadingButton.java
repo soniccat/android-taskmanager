@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
@@ -12,6 +13,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
+import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 import com.example.alexeyglushkov.wordteacher.R;
 
 /**
@@ -29,6 +32,8 @@ public class LoadingButton extends FrameLayout {
     private ImageView cancelIcon;
     private ProgressBar progress;
 
+    private ProgressListener progressListener;
+
     public LoadingButton(Context context) {
         super(context);
     }
@@ -41,6 +46,41 @@ public class LoadingButton extends FrameLayout {
         icon = (ImageView)findViewById(R.id.icon);
         cancelIcon = (ImageView)findViewById(R.id.cancel_icon);
         progress = (ProgressBar)findViewById(R.id.progress);
+    }
+
+    public ProgressListener startLoading() {
+        showLoading();
+        progress.setIndeterminate(true);
+        progress.setMax(100);
+        progress.setSecondaryProgress(100);
+
+        return new ProgressListener() {
+            @Override
+            public void onProgressChanged(Object sender, ProgressInfo progressInfo) {
+                float currentValue = progressInfo.getNormalizedValue();
+                if (currentValue != -1.0f) {
+                    progress.setIndeterminate(false);
+                    progress.setProgress((int)(100 * currentValue));
+                    Log.d("test", "progress " + currentValue);
+
+                    if (currentValue == 1.0f) {
+                        hideLoading();
+                    }
+                }
+            }
+        };
+    }
+
+    private void showLoading() {
+        progress.setVisibility(View.VISIBLE);
+        icon.setVisibility(View.INVISIBLE);
+        cancelIcon.setVisibility(View.VISIBLE);
+    }
+
+    private void hideLoading() {
+        progress.setVisibility(View.INVISIBLE);
+        icon.setVisibility(View.VISIBLE);
+        cancelIcon.setVisibility(View.INVISIBLE);
     }
 
     public void hide() {

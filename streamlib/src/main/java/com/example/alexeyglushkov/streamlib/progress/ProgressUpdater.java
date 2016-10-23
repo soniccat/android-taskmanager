@@ -24,7 +24,7 @@ public class ProgressUpdater implements ProgressInfo {
     }
 
     public float getNormalizedValue() {
-        return currentValue/contentSize;
+        return contentSize != 0 ? currentValue/contentSize : -1.0f;
     }
 
     public void append(float change) {

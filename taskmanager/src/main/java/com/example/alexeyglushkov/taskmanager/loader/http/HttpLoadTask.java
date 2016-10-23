@@ -60,7 +60,7 @@ public class HttpLoadTask extends SimpleTask {
         try {
             connection.connect();
 
-            int length = connection.getContentLength();
+            int length = 386020;//connection.getContentLength();
             if (length != -1) {
                 setContentLength(length);
             }

@@ -3,6 +3,7 @@ package com.example.alexeyglushkov.taskmanager.task;
 import android.os.Looper;
 
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
+import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 import com.example.alexeyglushkov.tools.HandlerTools;
 
@@ -304,7 +305,7 @@ public abstract class TaskImpl implements Task, TaskPrivate {
                 public void run() {
                     for (ProgressListener l : progressListeners) {
                         if (l != null) {
-                            l.onTaskProgressChanged(TaskImpl.this, progressInfo);
+                            l.onProgressChanged(TaskImpl.this, progressInfo);
                         }
                     }
                 }

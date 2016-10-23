@@ -31,6 +31,9 @@ import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.service.CachableHttpLoadTask;
+import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
+import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
+import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
 import java.util.ArrayList;
@@ -167,10 +170,6 @@ public class MainActivity extends BaseActivity implements
 
     private void onFabPressed() {
         loadQuizletSets();
-
-        loadingButton.showLoading();
-
-        Snackbar.make(getCurrentFragmentView(), "abc", Snackbar.LENGTH_LONG).show();
     }
 
     private void onSortOrderChanged(Preferences.SortOrder sortOrder, Sortable fragment) {
@@ -281,7 +280,7 @@ public class MainActivity extends BaseActivity implements
 
     private void loadQuizletSets() {
         CachableHttpLoadTask.CacheMode cacheMode = CachableHttpLoadTask.CacheMode.ONLY_STORE_TO_CACHE;
-        getQuizletService().loadSets(cacheMode);
+        getQuizletService().loadSets(cacheMode, loadingButton.startLoading());
     }
 
     private void handleLoadedQuizletSets() {

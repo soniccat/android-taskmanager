@@ -1,6 +1,7 @@
 package com.example.alexeyglushkov.taskmanager.task;
 
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
+import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 
 /**
  * Created by alexeyglushkov on 20.09.14.
@@ -171,9 +172,5 @@ public interface Task extends TaskContainer {
 
     interface StatusListener {
         void onTaskStatusChanged(Task task, Status oldStatus, Status newStatus);
-    }
-
-    interface ProgressListener {
-        void onTaskProgressChanged(Task task, ProgressInfo progressInfo);
     }
 }

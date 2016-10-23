@@ -11,6 +11,8 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.service.CachableHttpLoadTask;
 import com.example.alexeyglushkov.service.SimpleService;
+import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
+import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.WeakRefList;
 
 import java.lang.ref.WeakReference;
@@ -62,38 +64,40 @@ public class QuizletService extends SimpleService {
 
     //// Actions
 
-    public void loadSets(CachableHttpLoadTask.CacheMode cacheMode) {
+    public void loadSets(CachableHttpLoadTask.CacheMode cacheMode, ProgressListener progressListener) {
         ServiceCommand.CommandCallback callback = createLoadCallback(State.Loaded);
         setState(State.Loading);
-        runCommand(createSetsCommandProxy(callback, cacheMode), true, callback);
+        runCommand(createSetsCommandProxy(callback, cacheMode, progressListener), true, callback);
     }
 
-    public void restore() {
+    public void restore(ProgressListener progressListener) {
         ServiceCommand.CommandCallback callback = createLoadCallback(State.Restored);
         setState(State.Loading);
-        runCommand(createSetsCommandProxy(callback, CachableHttpLoadTask.CacheMode.ONLY_LOAD_FROM_CACHE), false, callback);
+        runCommand(createSetsCommandProxy(callback, CachableHttpLoadTask.CacheMode.ONLY_LOAD_FROM_CACHE, progressListener), false, callback);
     }
 
     @NonNull
-    private ServiceCommandProxy createSetsCommandProxy(final ServiceCommand.CommandCallback callback, final CachableHttpLoadTask.CacheMode cacheMode) {
+    private ServiceCommandProxy createSetsCommandProxy(final ServiceCommand.CommandCallback callback, final CachableHttpLoadTask.CacheMode cacheMode, final ProgressListener progressListener) {
         return new ServiceCommandProxy() {
             @Override
             public ServiceCommand getServiceCommand() {
-                return createSetsCommand(callback, cacheMode);
+                return createSetsCommand(callback, cacheMode, progressListener);
             }
         };
     }
 
     @NonNull
-    private QuizletSetsCommand createSetsCommand(final ServiceCommand.CommandCallback callback, final CachableHttpLoadTask.CacheMode cacheMode) {
-        final QuizletSetsCommand command = getQuizletCommandProvider().getLoadSetsCommand(SERVER, getOAuthCredentials().getUserId(), cacheMode);
+    private QuizletSetsCommand createSetsCommand(final ServiceCommand.CommandCallback callback, final CachableHttpLoadTask.CacheMode cacheMode, final ProgressListener progressListener) {
+        final QuizletSetsCommand command = getQuizletCommandProvider().getLoadSetsCommand(SERVER, getOAuthCredentials().getUserId(), cacheMode, progressListener);
         command.setServiceCommandCallback(new ServiceCommand.CommandCallback() {
             @Override
             public void onCompleted(Error error) {
 
                 // TODO: try to put this logic in SimpleService with option
                 if (command.getResponseCode() == 401) {
-                    authorizeAndRun(createSetsCommand(callback, cacheMode), callback);
+
+                    //TODO: call here clear or sth instead of recreation
+                    authorizeAndRun(createSetsCommand(callback, cacheMode, progressListener), callback);
 
                 } else {
                     if (error == null) {
