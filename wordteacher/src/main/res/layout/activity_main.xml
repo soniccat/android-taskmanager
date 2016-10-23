@@ -31,19 +31,40 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <!--
+    <FrameLayout
+        android:id="@+id/statusView"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="bottom"
+        android:background="@color/list_refreshing_bg"
+        app:layout_dodgeInsetEdges="bottom">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="14sp"
+            android:textColor="@android:color/white"
+            android:text="@string/list_refreshing"/>
+    </FrameLayout>
+    -->
+
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-    <android.support.design.widget.FloatingActionButton
+
+    <ui.LoadingButton
         android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_quizlet"
-        app:layout_behavior=".AppBarFloatingActionBehavior"/>
+        android:layout_gravity="bottom|end"
+        app:layout_anchorGravity="bottom"
+        android:background="@drawable/round_bg"
+        app:layout_behavior=".LoadingButtonBehavior"
+        app:layout_dodgeInsetEdges="bottom"/>
 
 </android.support.design.widget.CoordinatorLayout>
