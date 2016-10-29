@@ -58,12 +58,9 @@
 
     <ui.LoadingButton
         android:id="@+id/fab"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_margin="@dimen/fab_margin"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_gravity="bottom|end"
-        app:layout_anchorGravity="bottom"
-        android:background="@drawable/round_bg"
         app:layout_behavior=".LoadingButtonBehavior"
         app:layout_dodgeInsetEdges="bottom"/>
 

@@ -83,4 +83,10 @@ public interface TaskPrivate extends Task {
     // Caller: Task
     //
     void setTaskResult(Object result);
+
+    // To reset loaded data and states to load it again
+    //
+    // Caller:
+    //
+    void clear();
 }

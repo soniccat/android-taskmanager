@@ -64,24 +64,43 @@ public class QuizletService extends SimpleService {
 
     //// Actions
 
-    public void loadSets(CachableHttpLoadTask.CacheMode cacheMode, ProgressListener progressListener) {
+    public ServiceCommandProxy loadSets(CachableHttpLoadTask.CacheMode cacheMode, ProgressListener progressListener) {
         ServiceCommand.CommandCallback callback = createLoadCallback(State.Loaded);
         setState(State.Loading);
-        runCommand(createSetsCommandProxy(callback, cacheMode, progressListener), true, callback);
+
+        ServiceCommandProxy proxy = createSetsCommandProxy(callback, cacheMode, progressListener);
+        runCommand(proxy, true, callback);
+
+        return proxy;
     }
 
-    public void restore(ProgressListener progressListener) {
+    public ServiceCommandProxy restore(ProgressListener progressListener) {
         ServiceCommand.CommandCallback callback = createLoadCallback(State.Restored);
         setState(State.Loading);
-        runCommand(createSetsCommandProxy(callback, CachableHttpLoadTask.CacheMode.ONLY_LOAD_FROM_CACHE, progressListener), false, callback);
+
+        ServiceCommandProxy proxy = createSetsCommandProxy(callback, CachableHttpLoadTask.CacheMode.ONLY_LOAD_FROM_CACHE, progressListener);
+        runCommand(proxy, false, callback);
+
+        return proxy;
     }
 
     @NonNull
     private ServiceCommandProxy createSetsCommandProxy(final ServiceCommand.CommandCallback callback, final CachableHttpLoadTask.CacheMode cacheMode, final ProgressListener progressListener) {
         return new ServiceCommandProxy() {
+            private ServiceCommand cmd = null;
+
             @Override
             public ServiceCommand getServiceCommand() {
-                return createSetsCommand(callback, cacheMode, progressListener);
+                if (cmd == null) {
+                    cmd = createSetsCommand(callback, cacheMode, progressListener);
+                }
+
+                return cmd;
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return cmd == null;
             }
         };
     }
@@ -95,9 +114,8 @@ public class QuizletService extends SimpleService {
 
                 // TODO: try to put this logic in SimpleService with option
                 if (command.getResponseCode() == 401) {
-
-                    //TODO: call here clear or sth instead of recreation
-                    authorizeAndRun(createSetsCommand(callback, cacheMode, progressListener), callback);
+                    command.clear();
+                    authorizeAndRun(command, callback);
 
                 } else {
                     if (error == null) {

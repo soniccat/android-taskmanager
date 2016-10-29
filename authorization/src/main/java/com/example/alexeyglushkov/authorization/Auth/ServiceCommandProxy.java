@@ -5,4 +5,5 @@ package com.example.alexeyglushkov.authorization.Auth;
  */
 public interface ServiceCommandProxy {
     ServiceCommand getServiceCommand();
+    boolean isEmpty();
 }

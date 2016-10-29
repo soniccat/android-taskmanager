@@ -93,4 +93,14 @@ public class HttpServiceTask extends CachableHttpLoadTask implements IServiceTas
     public ServiceCommand getServiceCommand() {
         return this;
     }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
+    public void cancel() {
+        cancelTask(null);
+    }
 }

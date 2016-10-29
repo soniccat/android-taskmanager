@@ -31,8 +31,11 @@ public class LoadingButton extends FrameLayout {
     private ImageView icon;
     private ImageView cancelIcon;
     private ProgressBar progress;
+    private boolean isLoading;
 
-    private ProgressListener progressListener;
+    //private ProgressListener progressListener;
+    private StartListener startListener;
+    private CancelListener cancelListener;
 
     public LoadingButton(Context context) {
         super(context);
@@ -46,30 +49,63 @@ public class LoadingButton extends FrameLayout {
         icon = (ImageView)findViewById(R.id.icon);
         cancelIcon = (ImageView)findViewById(R.id.cancel_icon);
         progress = (ProgressBar)findViewById(R.id.progress);
+
+        bindClickListener();
     }
+
+    private void bindClickListener() {
+        setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isLoading) {
+                    if (cancelListener != null) {
+                        cancelListener.onCancel();
+                    }
+                } else {
+                    if (startListener != null) {
+                        startListener.onStart();
+                    }
+                }
+            }
+        });
+    }
+
+    //// Actions
 
     public ProgressListener startLoading() {
         showLoading();
+
+        isLoading = true;
         progress.setIndeterminate(true);
         progress.setMax(100);
-        progress.setSecondaryProgress(100);
 
         return new ProgressListener() {
             @Override
             public void onProgressChanged(Object sender, ProgressInfo progressInfo) {
                 float currentValue = progressInfo.getNormalizedValue();
                 if (currentValue != -1.0f) {
-                    progress.setIndeterminate(false);
+                    if (progress.isIndeterminate()) {
+                        progress.setIndeterminate(false);
+                        progress.setSecondaryProgress(100);
+                    }
+
                     progress.setProgress((int)(100 * currentValue));
                     Log.d("test", "progress " + currentValue);
 
                     if (currentValue == 1.0f) {
-                        hideLoading();
+                        stopLoading();
                     }
                 }
             }
         };
     }
+
+    public void stopLoading() {
+        isLoading = false;
+        hideLoading();
+    }
+
+    // Updating UI
 
     private void showLoading() {
         progress.setVisibility(View.VISIBLE);
@@ -145,6 +181,24 @@ public class LoadingButton extends FrameLayout {
         startAnimation(anim);
     }
 
+    //// Setters
+
+    public void setStartListener(StartListener startListener) {
+        this.startListener = startListener;
+    }
+
+    public void setCancelListener(CancelListener cancelListener) {
+        this.cancelListener = cancelListener;
+    }
+
+    //// Getters
+
+    public boolean isLoading() {
+        return isLoading;
+    }
+
+    // States
+
     private boolean isOrWillBeShown() {
         if (this.getVisibility() != View.VISIBLE) {
             // If we not currently visible, return true if we're animating to be shown
@@ -163,5 +217,15 @@ public class LoadingButton extends FrameLayout {
             // Otherwise if we're not visible, return true if we're not animating to be shown
             return mAnimState != ANIM_STATE_SHOWING;
         }
+    }
+
+    //// Interfaces
+
+    public interface StartListener {
+        void onStart();
+    }
+
+    public interface CancelListener {
+        void onCancel();
     }
 }

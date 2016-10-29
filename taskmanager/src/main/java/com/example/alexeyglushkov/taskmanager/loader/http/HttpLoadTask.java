@@ -138,4 +138,12 @@ public class HttpLoadTask extends SimpleTask {
     public int getResponseCode() {
         return responseCode;
     }
+
+    @Override
+    public void clear() {
+        super.clear();
+
+        handledData = null;
+        responseCode = 0;
+    }
 }

@@ -49,4 +49,14 @@ public abstract class ServiceTask extends SimpleTask implements IServiceTask {
     public ServiceCommand getServiceCommand() {
         return this;
     }
+
+    @Override
+    public void cancel() {
+        cancelTask(null);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
 }

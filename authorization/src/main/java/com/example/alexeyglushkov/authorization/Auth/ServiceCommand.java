@@ -7,7 +7,7 @@ import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnection
  */
 
 // A Service command represents an url request.
-// The command can be started only once. If you want to repeat it you should create new one.
+// The command can be started only once. If you want to repeat it you should create new one or call clear before.
 
 // It could be a great idea to consider to implement also Task interface to be able to use it with
 // TaskManager
@@ -23,6 +23,9 @@ public interface ServiceCommand extends ServiceCommandProxy{
     Error getCommandError();
     boolean isCancelled();
     void setServiceCommandCallback(CommandCallback callback);
+
+    void cancel();
+    void clear();
 
     interface CommandCallback {
         void onCompleted(Error error);

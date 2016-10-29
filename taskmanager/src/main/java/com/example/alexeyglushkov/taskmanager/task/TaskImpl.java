@@ -268,6 +268,20 @@ public abstract class TaskImpl implements Task, TaskPrivate {
     }
 
     @Override
+    public void clear() {
+        Assert.assertTrue(Tasks.isTaskCompleted(this));
+
+        taskStatus = Status.NotStarted;
+        cancellationInfo = null;
+        needCancelTask = false;
+        isCancelled = false;
+        error = null;
+        result = null;
+        startDate = null;
+        finishDate = null;
+    }
+
+    @Override
     public TaskPrivate getPrivate() {
         return this;
     }

@@ -3,6 +3,7 @@ package com.example.alexeyglushkov.wordteacher;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -24,10 +25,12 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
+import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProxy;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.service.CachableHttpLoadTask;
@@ -154,9 +157,9 @@ public class MainActivity extends BaseActivity implements
 
     private void initFloatingButton() {
         loadingButton = (LoadingButton) findViewById(R.id.fab);
-        loadingButton.setOnClickListener(new View.OnClickListener() {
+        loadingButton.setStartListener(new LoadingButton.StartListener() {
             @Override
-            public void onClick(View view) {
+            public void onStart() {
                 onFabPressed();
             }
         });
@@ -280,7 +283,19 @@ public class MainActivity extends BaseActivity implements
 
     private void loadQuizletSets() {
         CachableHttpLoadTask.CacheMode cacheMode = CachableHttpLoadTask.CacheMode.ONLY_STORE_TO_CACHE;
-        getQuizletService().loadSets(cacheMode, loadingButton.startLoading());
+        final ServiceCommandProxy commandProxy = getQuizletService().loadSets(cacheMode, loadingButton.startLoading());
+
+        loadingButton.setCancelListener(new LoadingButton.CancelListener() {
+            @Override
+            public void onCancel() {
+                ServiceCommand cmd = commandProxy.getServiceCommand();
+
+                // while authorization it could be null
+                if (cmd != null) {
+                    cmd.cancel();
+                }
+            }
+        });
     }
 
     private void handleLoadedQuizletSets() {

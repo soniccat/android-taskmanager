@@ -31,6 +31,11 @@ public class ProgressUpdater implements ProgressInfo {
         currentValue += change;
 
         boolean isSignificantChange = (currentValue - lastTriggeredValue) / contentSize > progressMinChange;
+
+        if (currentValue > contentSize) {
+            currentValue = contentSize;
+        }
+
         if (progressMinChange == 0 || currentValue == contentSize || isSignificantChange) {
             lastTriggeredValue = currentValue;
 
