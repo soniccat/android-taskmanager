@@ -20,7 +20,7 @@ public interface Authorizer {
         public enum Reason {
             InnerError,
             UnknownError,
-            Cancelled,
+            Cancelled, // TODO: think about how to use with CancelError class
             NotAuthorized // for services
         }
 

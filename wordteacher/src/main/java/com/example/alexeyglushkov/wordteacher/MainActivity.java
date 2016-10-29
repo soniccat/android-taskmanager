@@ -34,6 +34,7 @@ import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProxy;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.service.CachableHttpLoadTask;
+import com.example.alexeyglushkov.streamlib.CancelError;
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 import com.example.alexeyglushkov.taskmanager.task.Task;
@@ -292,7 +293,7 @@ public class MainActivity extends BaseActivity implements
 
                 // while authorization it could be null
                 if (cmd != null) {
-                    cmd.cancel();
+                    getQuizletService().cancel(cmd);
                 }
             }
         });
@@ -435,7 +436,7 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void onLoadError(QuizletService service, Error error) {
-        boolean isCancelled = false;
+        boolean isCancelled = error instanceof CancelError;
         if (error instanceof Authorizer.AuthError) {
             isCancelled = ((Authorizer.AuthError)error).getReason() == Authorizer.AuthError.Reason.Cancelled;
         }

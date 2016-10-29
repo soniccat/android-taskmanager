@@ -50,6 +50,11 @@ public class DropboxUploadCommand extends ServiceTask implements IServiceTask {
             public float getNormalizedValue() {
                 return (float)bytes/(float)total;
             }
+
+            @Override
+            public boolean isCancelled() {
+                return false;
+            }
         };
 
         getPrivate().triggerProgressListeners(info);

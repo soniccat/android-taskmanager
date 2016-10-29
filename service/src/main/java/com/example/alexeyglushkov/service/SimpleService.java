@@ -119,6 +119,10 @@ public class SimpleService implements Service {
         authHandler = new Handler(authThread.getLooper());
     }
 
+    public void cancel(ServiceCommand cmd) {
+        commandRunner.cancel(cmd);
+    }
+
     private void runAsync(Runnable runnable) {
         HandlerTools.runOnHandlerThread(getAuthHandler(), runnable);
     }

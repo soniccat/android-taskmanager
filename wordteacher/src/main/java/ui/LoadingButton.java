@@ -70,6 +70,34 @@ public class LoadingButton extends FrameLayout {
         });
     }
 
+    //// Events
+
+    private void onProgress(ProgressInfo progressInfo) {
+        float currentValue = progressInfo.getNormalizedValue();
+        if (currentValue != -1.0f) {
+            if (progress.isIndeterminate()) {
+                progress.setIndeterminate(false);
+                progress.setSecondaryProgress(100);
+            }
+
+            progress.setProgress((int) (100 * currentValue));
+            Log.d("test", "progress " + currentValue);
+
+            if (currentValue == 1.0f) {
+                stopLoading();
+            }
+        }
+    }
+
+    private void onCancel() {
+        stopLoading();
+    }
+
+    public void stopLoading() {
+        isLoading = false;
+        hideLoading();
+    }
+
     //// Actions
 
     public ProgressListener startLoading() {
@@ -82,27 +110,14 @@ public class LoadingButton extends FrameLayout {
         return new ProgressListener() {
             @Override
             public void onProgressChanged(Object sender, ProgressInfo progressInfo) {
-                float currentValue = progressInfo.getNormalizedValue();
-                if (currentValue != -1.0f) {
-                    if (progress.isIndeterminate()) {
-                        progress.setIndeterminate(false);
-                        progress.setSecondaryProgress(100);
-                    }
+                if (progressInfo.isCancelled()) {
+                    onCancel();
 
-                    progress.setProgress((int)(100 * currentValue));
-                    Log.d("test", "progress " + currentValue);
-
-                    if (currentValue == 1.0f) {
-                        stopLoading();
-                    }
+                } else {
+                    onProgress(progressInfo);
                 }
             }
         };
-    }
-
-    public void stopLoading() {
-        isLoading = false;
-        hideLoading();
     }
 
     // Updating UI

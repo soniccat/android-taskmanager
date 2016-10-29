@@ -24,7 +24,6 @@ public interface ServiceCommand extends ServiceCommandProxy{
     boolean isCancelled();
     void setServiceCommandCallback(CommandCallback callback);
 
-    void cancel();
     void clear();
 
     interface CommandCallback {

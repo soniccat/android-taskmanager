@@ -10,6 +10,7 @@ public class ProgressUpdater implements ProgressInfo {
     private float progressMinChange; // from 0 to 1
     private float currentValue;
     private float lastTriggeredValue;
+    private boolean isCancelled;
 
     ProgressUpdaterListener listener;
 
@@ -46,9 +47,15 @@ public class ProgressUpdater implements ProgressInfo {
     }
 
     public void cancel(Object info) {
+        isCancelled = true;
+
         if (this.listener != null) {
             this.listener.onProgressCancelled(this, info);
         }
+    }
+
+    public boolean isCancelled() {
+        return isCancelled;
     }
 
     public void setContentSize(float contentSize) {

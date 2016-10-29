@@ -51,11 +51,6 @@ public abstract class ServiceTask extends SimpleTask implements IServiceTask {
     }
 
     @Override
-    public void cancel() {
-        cancelTask(null);
-    }
-
-    @Override
     public boolean isEmpty() {
         return false;
     }

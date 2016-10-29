@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 
+import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
 import com.example.alexeyglushkov.streamlib.readersandwriters.StringReader;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
@@ -22,6 +23,8 @@ public class HttpLoadTask extends SimpleTask {
     protected HTTPConnectionStreamReader streamReader;
     protected Object handledData; // TODO: use result object and api
     protected int responseCode;
+
+    protected ProgressUpdater progressUpdater;
 
     public HttpLoadTask(HttpURLConnectionProvider provider, HTTPConnectionStreamReader streamReader) {
         super();
@@ -68,16 +71,19 @@ public class HttpLoadTask extends SimpleTask {
             responseCode = connection.getResponseCode();
             Log.d("HttpLoadTask", "HttpLoadingContext: The response is: " + responseCode + "\n");
 
-            streamReader.setProgressUpdater(getPrivate().createProgressUpdater(contentLength));
+            progressUpdater = getPrivate().createProgressUpdater(contentLength);
+            streamReader.setProgressUpdater(progressUpdater);
             streamReader.handleConnectionResponse(connection);
 
-            //TODO: handle cancellation well
             stream = new BufferedInputStream(connection.getInputStream());
             Object data = handleStream(stream);
-            if (data instanceof Error) {
-                setError((Error) data);
-            } else {
-                setHandledData(data);
+
+            if (!isCancelled) {
+                if (data instanceof Error) {
+                    setError((Error) data);
+                } else {
+                    setHandledData(data);
+                }
             }
 
         } catch (Exception e) {
@@ -145,5 +151,19 @@ public class HttpLoadTask extends SimpleTask {
 
         handledData = null;
         responseCode = 0;
+        progressUpdater = null;
+    }
+
+    @Override
+    public void cancelTask(Object info) {
+        if (progressUpdater != null) {
+            ProgressUpdater updater = progressUpdater;
+            progressUpdater = null;
+
+            setIsCancelled();
+            updater.cancel(info);
+        } else {
+            super.cancelTask(info);
+        }
     }
 }

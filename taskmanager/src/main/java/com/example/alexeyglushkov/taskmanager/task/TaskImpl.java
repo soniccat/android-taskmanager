@@ -2,6 +2,7 @@ package com.example.alexeyglushkov.taskmanager.task;
 
 import android.os.Looper;
 
+import com.example.alexeyglushkov.streamlib.CancelError;
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
@@ -296,6 +297,7 @@ public abstract class TaskImpl implements Task, TaskPrivate {
 
             @Override
             public void onProgressCancelled(ProgressUpdater updater, Object info) {
+                triggerProgressListeners(updater);
                 cancelTask(info);
             }
         });
@@ -325,6 +327,11 @@ public abstract class TaskImpl implements Task, TaskPrivate {
                 }
             });
         }
+    }
+
+    protected void setIsCancelled() {
+        error = new CancelError();
+        isCancelled = true;
     }
 
     @Override

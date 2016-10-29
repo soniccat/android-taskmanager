@@ -11,13 +11,11 @@ import java.io.InputStream;
  * Created by alexeyglushkov on 25.01.15.
  */
 public class ByteArrayReader implements InputStreamReader {
-
-    //TODO: think about cancellation
     private ByteArrayHandler byteArrayHandler;
     private ProgressUpdater progressUpdater;
 
-    boolean keepByteArray;
-    byte[] byteArray;
+    private boolean keepByteArray;
+    private byte[] byteArray;
 
     public ByteArrayReader(ByteArrayHandler handler, boolean keepByteArray) {
         byteArrayHandler = handler;
@@ -41,7 +39,7 @@ public class ByteArrayReader implements InputStreamReader {
         }
 
         Object result = null;
-        if (byteArrayHandler != null) {
+        if (byteArrayHandler != null && byteArray != null) {
             result = byteArrayHandler.handleByteArrayBuffer(byteArray);
         } else {
             result = byteArray;
@@ -59,6 +57,10 @@ public class ByteArrayReader implements InputStreamReader {
 
             if (progressUpdater != null) {
                 progressUpdater.append(nRead);
+
+                if (progressUpdater.isCancelled()) {
+                    return null;
+                }
             }
         }
 

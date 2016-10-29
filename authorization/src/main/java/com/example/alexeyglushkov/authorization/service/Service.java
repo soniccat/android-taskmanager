@@ -24,4 +24,6 @@ public interface Service {
     void runCommand(ServiceCommandProxy proxy);
     void runCommand(ServiceCommandProxy proxy, boolean canSignIn);
     void runCommand(ServiceCommandProxy proxy, boolean canSignIn, ServiceCommand.CommandCallback authCompletion);
+
+    public void cancel(ServiceCommand cmd);
 }

@@ -46,6 +46,11 @@ public class DropboxDownloadCommand extends ServiceTask {
             public float getNormalizedValue() {
                 return (float)bytes/(float)total;
             }
+
+            @Override
+            public boolean isCancelled() {
+                return false;
+            }
         };
 
         getPrivate().triggerProgressListeners(info);

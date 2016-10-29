@@ -6,4 +6,5 @@ package com.example.alexeyglushkov.streamlib.progress;
 public interface ProgressInfo {
     float getCurrentValue();
     float getNormalizedValue();
+    boolean isCancelled();
 }
