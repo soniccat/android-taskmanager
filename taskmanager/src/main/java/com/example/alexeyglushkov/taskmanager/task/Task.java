@@ -17,7 +17,6 @@ import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 //
 // All setters mustn't be called after starting the task
 
-    // TODO: add getter for the result object
 public interface Task extends TaskContainer {
 
     // Set the callback to handle the result.

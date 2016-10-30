@@ -161,6 +161,11 @@ public class HttpLoadTask extends SimpleTask {
     }
 
     @Override
+    public boolean canBeCancelledImmediately() {
+        return true;
+    }
+
+    @Override
     public void clear() {
         super.clear();
 

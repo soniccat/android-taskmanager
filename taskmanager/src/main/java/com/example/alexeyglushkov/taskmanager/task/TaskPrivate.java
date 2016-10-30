@@ -89,4 +89,11 @@ public interface TaskPrivate extends Task {
     // Caller:
     //
     void clear();
+
+    // Flag shows that the command could be removed from the queue before finishing
+    // It make sense to keep it false for a task that can affect performance if it is being cancelled
+    //
+    // Caller: TaskManager
+    //
+    boolean canBeCancelledImmediately();
 }

@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.util.SparseArray;
 
+import com.example.alexeyglushkov.streamlib.CancelError;
 import com.example.alexeyglushkov.tools.HandlerTools;
 
 import junit.framework.Assert;
@@ -146,9 +147,21 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
                     final Task.Callback oldCallBack = task.getTaskCallback();
                     task.setTaskCallback(new Task.Callback() {
                         @Override
-                        public void onCompleted(boolean cancelled) {
-                            triggerOnTaskRemoved(task, true);
-                            handleTaskCompletionOnThread(task, oldCallBack, cancelled);
+                        public void onCompleted(final boolean cancelled) {
+                            final Task.Callback thisCallback = this;
+
+                            HandlerTools.runOnHandlerThread(handler, new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (task.getTaskCallback() != thisCallback) {
+                                        // can happen if canBeCancelledImmediately returns true
+                                        return;
+                                    }
+
+                                    triggerOnTaskRemoved(task, true);
+                                    handleTaskCompletionOnThread(task, oldCallBack, cancelled);
+                                }
+                            });
                         }
                     });
 
@@ -560,9 +573,16 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         Task.Callback callback = new Task.Callback() {
             @Override
             public void onCompleted(final boolean cancelled) {
+                final Task.Callback thisCallback = this;
+
                 HandlerTools.runOnHandlerThread(handler, new Runnable() {
                     @Override
                     public void run() {
+                        if (task.getTaskCallback() != thisCallback) {
+                            // can happen if canBeCancelledImmediately returns true
+                            return;
+                        }
+
                         logTask(task, cancelled ? "Task onCompleted (Cancelled)" : "Task onCompleted");
                         handleTaskCompletionOnThread(task, originalCallback, cancelled);
                     }
@@ -590,6 +610,11 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         Log.d("tag", "task status " + task.getTaskStatus().toString());
         task.getPrivate().setTaskStatus(status);
         task.getPrivate().clearAllListeners();
+        task.setTaskCallback(callback); // return original callback
+
+        if (isCancelled) {
+            task.getPrivate().setTaskError(new CancelError());
+        }
 
         HandlerTools.runOnHandlerThread(callbackHandler, new Runnable() {
             @Override
@@ -608,16 +633,21 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         }
     }
 
-    void cancelTaskOnThread(Task task, final Object info) {
+    private void cancelTaskOnThread(Task task, final Object info) {
         checkHandlerThread();
 
         if (!task.getPrivate().getNeedCancelTask()) {
             Task.Status st = task.getTaskStatus();
             task.getPrivate().cancelTask(info);
 
-            if (st == Task.Status.Waiting || st == Task.Status.NotStarted || st == Task.Status.Blocked) {
-                handleTaskCompletionOnThread(task, task.getTaskCallback(), true);
-                logTask(task, "Cancelled");
+            if (st == Task.Status.Waiting || st == Task.Status.NotStarted || st == Task.Status.Blocked || task.getPrivate().canBeCancelledImmediately()) {
+                if (st == Task.Status.Started) {
+                    task.getTaskCallback().onCompleted(true); // to get an original callback
+
+                } else {
+                    handleTaskCompletionOnThread(task, task.getTaskCallback(), true);
+                    logTask(task, "Cancelled");
+                }
             }
         }
     }

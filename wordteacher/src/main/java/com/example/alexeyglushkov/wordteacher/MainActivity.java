@@ -289,11 +289,9 @@ public class MainActivity extends BaseActivity implements
         loadingButton.setCancelListener(new LoadingButton.CancelListener() {
             @Override
             public void onCancel() {
-                ServiceCommand cmd = commandProxy.getServiceCommand();
-
                 // while authorization it could be null
-                if (cmd != null) {
-                    getQuizletService().cancel(cmd);
+                if (!commandProxy.isEmpty()) {
+                    getQuizletService().cancel(commandProxy.getServiceCommand());
                 }
             }
         });

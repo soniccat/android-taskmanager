@@ -115,6 +115,7 @@ public class QuizletService extends SimpleService {
                 // TODO: try to put this logic in SimpleService with option
                 if (command.getResponseCode() == 401) {
                     command.clear();
+
                     authorizeAndRun(command, callback);
 
                 } else {

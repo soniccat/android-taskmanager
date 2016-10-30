@@ -330,8 +330,12 @@ public abstract class TaskImpl implements Task, TaskPrivate {
     }
 
     protected void setIsCancelled() {
-        error = new CancelError();
         isCancelled = true;
+    }
+
+    @Override
+    public boolean canBeCancelledImmediately() {
+        return false;
     }
 
     @Override
@@ -342,7 +346,6 @@ public abstract class TaskImpl implements Task, TaskPrivate {
     private void callStartCallback() {
         if (startCallback != null) {
             startCallback.onCompleted(isCancelled);
-            startCallback = null;
         }
     }
 
