@@ -1,13 +1,8 @@
 package com.example.alexeyglushkov.dropboxservice;
 
 import com.dropbox.client2.DropboxAPI;
-import com.dropbox.client2.exception.DropboxException;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTask;
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 
 /**
  * Created by alexeyglushkov on 17.07.16.
@@ -25,14 +20,14 @@ public class DropboxDownloadCommand extends ServiceTask {
     }
 
     @Override
-    public void startTask() {
+    public void startTask(Callback callback) {
         try {
             helper.downloadFileOrDir(srcPath, destPath, getProgressListener());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        getPrivate().handleTaskCompletion();
+        getPrivate().handleTaskCompletion(callback);
     }
 
     private void triggerProgressListeners(final long bytes, final long total) {
@@ -50,6 +45,11 @@ public class DropboxDownloadCommand extends ServiceTask {
             @Override
             public boolean isCancelled() {
                 return false;
+            }
+
+            @Override
+            public boolean isFinished() {
+                return getNormalizedValue() == 1.0f;
             }
         };
 

@@ -26,7 +26,7 @@ public class FileLoadTask extends SimpleTask {
         this.handler = handler;
     }
 
-    public void startTask() {
+    public void startTask(Callback callback) {
         if (context == null) {
             return;
         }
@@ -59,7 +59,7 @@ public class FileLoadTask extends SimpleTask {
             }
         }
 
-        getPrivate().handleTaskCompletion();
+        getPrivate().handleTaskCompletion(callback);
     }
 
     public Object getHandledData() {

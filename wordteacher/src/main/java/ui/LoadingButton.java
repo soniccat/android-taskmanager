@@ -82,10 +82,10 @@ public class LoadingButton extends FrameLayout {
 
             progress.setProgress((int) (100 * currentValue));
             Log.d("test", "progress " + currentValue);
+        }
 
-            if (currentValue == 1.0f) {
-                stopLoading();
-            }
+        if (progressInfo.isFinished()) {
+            stopLoading();
         }
     }
 

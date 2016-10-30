@@ -5,7 +5,7 @@ import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
  */
 public class TestTask extends SimpleTask {
     @Override
-    public void startTask() {
+    public void startTask(Callback callback) {
 
     }
 

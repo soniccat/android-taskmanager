@@ -9,7 +9,6 @@ import com.example.alexeyglushkov.taskmanager.loader.http.HttpBytesLoadTask;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpURLConnectionProvider;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 
 /**
  * Created by alexeyglushkov on 26.11.15.
@@ -59,7 +58,7 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
     }
 
     @Override
-    public void startTask() {
+    public void startTask(Callback callback) {
         boolean canLoadTask = true;
         if (cache != null && canLoadFromCache()) {
             try {
@@ -72,9 +71,9 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
 
         if (canLoadTask) {
             needStore = cacheMode != CacheMode.IGNORE_CACHE;
-            super.startTask();
+            super.startTask(callback);
         } else {
-            getPrivate().handleTaskCompletion();
+            getPrivate().handleTaskCompletion(callback);
         }
     }
 

@@ -56,14 +56,14 @@ public class HttpLoadTask extends SimpleTask {
         this.contentLength = contentLength;
     }
 
-    public void startTask() {
+    public void startTask(Callback callback) {
         InputStream stream = null;
         HttpURLConnection connection = provider.getUrlConnection();
 
         try {
             connection.connect();
 
-            int length = 386020;//connection.getContentLength();
+            int length = connection.getContentLength(); //386020
             if (length != -1) {
                 setContentLength(length);
             }
@@ -118,7 +118,7 @@ public class HttpLoadTask extends SimpleTask {
             setIsCancelled();
         }
 
-        getPrivate().handleTaskCompletion();
+        getPrivate().handleTaskCompletion(callback);
     }
 
     @NonNull

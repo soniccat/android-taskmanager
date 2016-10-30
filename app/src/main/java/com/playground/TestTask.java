@@ -14,7 +14,7 @@ public class TestTask extends SimpleTask {
         this.workTime = workTime;
     }
 
-    public void startTask() {
+    public void startTask(Callback callback) {
         int chunkCount = (int)((float)workTime / (float)chunkTimeSize);
         for (int i=0; i<chunkCount; ++i) {
             try {

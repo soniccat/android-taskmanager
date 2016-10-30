@@ -1,13 +1,9 @@
 package com.example.alexeyglushkov.dropboxservice;
 
 import com.dropbox.client2.DropboxAPI;
-import com.dropbox.client2.ProgressListener;
 import com.example.alexeyglushkov.authtaskmanager.IServiceTask;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTask;
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
-
-import java.io.File;
-import java.io.FileInputStream;
 
 /**
  * Created by alexeyglushkov on 10.07.16.
@@ -28,7 +24,7 @@ public class DropboxUploadCommand extends ServiceTask implements IServiceTask {
     }
 
     @Override
-    public void startTask() {
+    public void startTask(Callback callback) {
         try {
             // TODO: read whole bytes is needed to upload to show progress
             helper.uploadFileOrDirectory(this.srcPath, this.dstPath, getProgressListener());
@@ -36,7 +32,7 @@ public class DropboxUploadCommand extends ServiceTask implements IServiceTask {
             e.printStackTrace();
         }
 
-        getPrivate().handleTaskCompletion();
+        getPrivate().handleTaskCompletion(callback);
     }
 
     private void triggerProgressListeners(final long bytes, final long total) {
@@ -54,6 +50,11 @@ public class DropboxUploadCommand extends ServiceTask implements IServiceTask {
             @Override
             public boolean isCancelled() {
                 return false;
+            }
+
+            @Override
+            public boolean isFinished() {
+                return getNormalizedValue() == 1.0f;
             }
         };
 

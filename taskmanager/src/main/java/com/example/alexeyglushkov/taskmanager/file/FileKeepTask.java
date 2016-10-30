@@ -21,7 +21,7 @@ public class FileKeepTask extends SimpleTask {
         this.writer = writer;
     }
 
-    public void startTask() {
+    public void startTask(Callback callback) {
         if (context == null) {
             return;
         }
@@ -50,7 +50,7 @@ public class FileKeepTask extends SimpleTask {
             }
         }
 
-        getPrivate().handleTaskCompletion();
+        getPrivate().handleTaskCompletion(callback);
         return;
     }
 }

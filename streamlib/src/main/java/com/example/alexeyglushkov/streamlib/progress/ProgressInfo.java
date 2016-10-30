@@ -7,4 +7,5 @@ public interface ProgressInfo {
     float getCurrentValue();
     float getNormalizedValue();
     boolean isCancelled();
+    boolean isFinished();
 }

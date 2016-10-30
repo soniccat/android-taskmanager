@@ -3,7 +3,6 @@ package main;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.os.Build;
 import android.support.annotation.NonNull;
 
 import com.dropbox.client2.DropboxAPI;
@@ -21,10 +20,8 @@ import com.example.alexeyglushkov.dropboxservice.ContextProvider;
 import com.example.alexeyglushkov.dropboxservice.DropboxAccount;
 import com.example.alexeyglushkov.dropboxservice.DropboxCommandProvider;
 import com.example.alexeyglushkov.dropboxservice.DropboxFileMerger;
-import com.example.alexeyglushkov.dropboxservice.DropboxHelper;
 import com.example.alexeyglushkov.dropboxservice.DropboxService;
 import com.example.alexeyglushkov.dropboxservice.DropboxServiceTaskProvider;
-import com.example.alexeyglushkov.dropboxservice.DropboxSyncCommand;
 import com.example.alexeyglushkov.dropboxservice.FileMerger;
 import com.example.alexeyglushkov.dropboxservice.FileObjectMerger;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
@@ -37,7 +34,6 @@ import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 import junit.framework.Assert;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.UUID;
 
 import authorization.AuthActivityProxy;
@@ -125,11 +121,11 @@ public class MainApplication extends Application {
     public void cleanCache() {
         final Task cleanTask = new SimpleTask() {
             @Override
-            public void startTask() {
+            public void startTask(Callback callback) {
                 StorageCleaner cleaner = new DiskStorageCleaner();
                 cleaner.clean(getStorageProvider());
 
-                getPrivate().handleTaskCompletion();
+                getPrivate().handleTaskCompletion(callback);
             }
         };
 

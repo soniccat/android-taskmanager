@@ -91,7 +91,7 @@ public class MainActivity extends BaseActivity {
     private void showAuthorization() {
         Task authTask = new SimpleTask() {
             @Override
-            public void startTask() {
+            public void startTask(Callback callback) {
                 final Account account = Networks.createAccount(Networks.Network.Quizlet);
                 account.authorize(new Authorizer.AuthorizerCompletion() {
                     @Override

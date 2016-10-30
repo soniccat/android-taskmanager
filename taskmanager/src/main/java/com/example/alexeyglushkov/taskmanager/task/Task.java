@@ -144,10 +144,11 @@ public interface Task extends TaskContainer {
 
     // Start the task
     // It's from private part but must be implemented on this level
+    // Transfer callback from TaskManager
     //
     // Caller: TaskManager
     //
-    void startTask();
+    void startTask(Callback callback);
 
     enum Status {
         NotStarted, //not started

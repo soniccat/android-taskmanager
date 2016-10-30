@@ -1,7 +1,6 @@
 package model;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 
 import com.example.alexeyglushkov.cachemanager.StorageEntry;
@@ -222,10 +221,10 @@ public class CourseHolder {
     public Task getLoadCourseListTask() {
         final Task task = new SimpleTask() {
             @Override
-            public void startTask() {
+            public void startTask(Callback callback) {
                 ArrayList<Course> courses = loadCourses();
                 getPrivate().setTaskResult(courses);
-                handleTaskCompletion();
+                handleTaskCompletion(callback);
             }
         };
 

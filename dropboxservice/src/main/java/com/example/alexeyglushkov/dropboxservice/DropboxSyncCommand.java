@@ -47,7 +47,7 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
     //// Actions
 
     @Override
-    public void startTask() {
+    public void startTask(Callback callback) {
         try {
             syncFileOrDir(localPath, dropboPath, getProgressListener());
 
@@ -56,7 +56,7 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
             setTaskError(new Error("Dropbox Sync Error", e));
         }
 
-        getPrivate().handleTaskCompletion();
+        getPrivate().handleTaskCompletion(callback);
     }
 
     // src - local path, dest - dropbox path
@@ -259,6 +259,11 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
             @Override
             public boolean isCancelled() {
                 return false;
+            }
+
+            @Override
+            public boolean isFinished() {
+                return getNormalizedValue() == 1.0f;
             }
         };
 

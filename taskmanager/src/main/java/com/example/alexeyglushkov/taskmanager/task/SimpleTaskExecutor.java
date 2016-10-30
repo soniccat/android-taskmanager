@@ -34,11 +34,11 @@ public class SimpleTaskExecutor implements TaskExecutor {
 
     @Override
     public void executeTask(final Task task) {
-        Task.Callback callback = task.getTaskCallback();
+        final Task.Callback callback = task.getTaskCallback();
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                task.startTask();
+                task.startTask(callback);
             }
         });
     }

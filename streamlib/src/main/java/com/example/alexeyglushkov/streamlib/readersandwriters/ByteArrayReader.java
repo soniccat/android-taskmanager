@@ -64,6 +64,10 @@ public class ByteArrayReader implements InputStreamReader {
             }
         }
 
+        if (progressUpdater != null) {
+            progressUpdater.finish();
+        }
+
         return result.toByteArray();
     }
 

@@ -2,7 +2,6 @@ package com.example.alexeyglushkov.taskmanager.task;
 
 import android.os.Looper;
 
-import com.example.alexeyglushkov.streamlib.CancelError;
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
@@ -13,7 +12,6 @@ import junit.framework.Assert;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.logging.Handler;
 
 /**
  * Created by alexeyglushkov on 23.07.15.
@@ -339,13 +337,9 @@ public abstract class TaskImpl implements Task, TaskPrivate {
     }
 
     @Override
-    public void handleTaskCompletion() {
-        callStartCallback();
-    }
-
-    private void callStartCallback() {
-        if (startCallback != null) {
-            startCallback.onCompleted(isCancelled);
+    public void handleTaskCompletion(Callback callback) {
+        if (callback != null) {
+            callback.onCompleted(isCancelled);
         }
     }
 
