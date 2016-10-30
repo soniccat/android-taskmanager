@@ -14,8 +14,8 @@ import com.example.alexeyglushkov.wordteacher.R;
 
 import java.util.List;
 
-import listfragment.BaseListAdaptor;
-import listfragment.BaseListFragment;
+import listfragment.listmodule.view.BaseListAdaptor;
+import listfragment.listmodule.view.BaseListFragment;
 import listfragment.CompareStrategyFactory;
 import listfragment.NullStorableListProvider;
 import main.MainApplication;
@@ -26,11 +26,9 @@ import tools.Sortable;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> implements Sortable, QuizletService.QuizletServiceListener {
+public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
 
     //// Creation, initialization, restoration
-
-    private Bundle savedInstanceState;
 
     public static QuizletTermListFragment create() {
         QuizletTermListFragment fragment = new QuizletTermListFragment();
@@ -43,57 +41,6 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_quizlet_cards, container, false);
-    }
-
-    @Override
-    public void onViewStateRestored(@Nullable final Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        this.savedInstanceState = savedInstanceState;
-
-        getQuizletService().addListener(this);
-        if (getQuizletService().getState() != QuizletService.State.Unitialized) {
-            handleLoadedSets();
-            reload();
-        }
-    }
-
-    private void restoreIfNeeded() {
-        if (this.savedInstanceState != null || provider instanceof NullStorableListProvider) {
-            provider = providerFactory.restore(this.savedInstanceState);
-            this.savedInstanceState = null;
-        }
-    }
-
-    //// Events
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        getQuizletService().removeListener(this);
-    }
-
-    private void handleLoadedSets() {
-        hideLoading();
-        restoreIfNeeded();
-        reload();
-    }
-
-    //// Interface Methods
-
-    // QuizletService.QuizletServiceListener
-
-    @Override
-    public void onStateChanged(QuizletService service, QuizletService.State oldState) {
-        if (service.getState() == QuizletService.State.Loading) {
-            showLoading();
-        } else {
-            handleLoadedSets();
-        }
-    }
-
-    @Override
-    public void onLoadError(QuizletService service, Error error) {
-        hideLoading();
     }
 
     //// Creation Methods
@@ -117,74 +64,5 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> imple
         });
 
         return adapter;
-    }
-
-    @NonNull
-    protected QuizletTermListFactory createProviderFactory() {
-        return new QuizletTermListFactory(getQuizletService());
-    }
-
-    @Override
-    public CompareStrategyFactory<QuizletTerm> createCompareStrategyFactory() {
-        return new QuizletTermCompareStrategyFactory();
-    }
-
-    //// Setters
-
-    // Set Data
-
-    public void setTermSet(QuizletSet set) {
-        provider = providerFactory.createFromObject(set);
-    }
-
-    public void setTerms(List<QuizletTerm> terms) {
-        provider = providerFactory.createFromList(terms);
-    }
-
-    // Set UI
-
-    @Override
-    public void setSortOrder(Preferences.SortOrder sortOrder) {
-        setCompareStrategy(getCompareStrategyFactory().createStrategy(sortOrder));
-        reload();
-    }
-
-    //// Getters
-
-    // Get App Data
-
-    private MainApplication getMainApplication() {
-        return MainApplication.instance;
-    }
-
-    public QuizletService getQuizletService() {
-        return getMainApplication().getQuizletService();
-    }
-
-    // Get Data
-
-    @Override
-    public Preferences.SortOrder getSortOrder() {
-        return getCompareStrategy().getSortOrder();
-    }
-
-    public QuizletSet getParentSet() {
-        QuizletSet parentSet = null;
-        if (provider instanceof QuizletSetTermListProvider) {
-            QuizletSetTermListProvider setProvider = (QuizletSetTermListProvider)provider;
-            parentSet = setProvider.getSet();
-        }
-
-        return parentSet;
-    }
-
-    // Cast Getters
-
-    private QuizletTermCompareStrategyFactory getCompareStrategyFactory() {
-        return (QuizletTermCompareStrategyFactory)compareStrategyFactory;
-    }
-
-    private SortOrderCompareStrategy getCompareStrategy() {
-        return (SortOrderCompareStrategy)compareStrategy;
     }
 }

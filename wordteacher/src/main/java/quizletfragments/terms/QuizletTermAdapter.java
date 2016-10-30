@@ -10,12 +10,7 @@ import android.widget.TextView;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.wordteacher.R;
 
-import junit.framework.Assert;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import listfragment.BaseListAdaptor;
+import listfragment.listmodule.view.BaseListAdaptor;
 
 /**
  * Created by alexeyglushkov on 03.05.16.

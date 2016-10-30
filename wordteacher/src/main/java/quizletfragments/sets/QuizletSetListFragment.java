@@ -11,8 +11,8 @@ import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.wordteacher.R;
 
-import listfragment.BaseListAdaptor;
-import listfragment.BaseListFragment;
+import listfragment.listmodule.view.BaseListAdaptor;
+import listfragment.listmodule.view.BaseListFragment;
 import listfragment.CompareStrategyFactory;
 import listfragment.NullStorableListProvider;
 import main.MainApplication;

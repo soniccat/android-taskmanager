@@ -8,16 +8,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.alexeyglushkov.taskmanager.task.WeakRefList;
 import com.example.alexeyglushkov.tools.TimeTools;
 import com.example.alexeyglushkov.wordteacher.R;
 
-import java.lang.ref.WeakReference;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import listfragment.BaseListAdaptor;
+import listfragment.listmodule.view.BaseListAdaptor;
 import model.Card;
 import model.CardProgress;
 import tools.DeleteTouchHelper;

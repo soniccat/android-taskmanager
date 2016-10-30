@@ -1,4 +1,4 @@
-package listfragment;
+package listfragment.listmodule.view;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,45 +14,35 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import listfragment.CompareStrategy;
+import listfragment.CompareStrategyFactory;
+import listfragment.NullCompareStrategyFactory;
+import listfragment.StorableListProviderFactory;
+import listfragment.listmodule.presenter.ListPresenterInterface;
+
 /**
  * Created by alexeyglushkov on 23.07.16.
  */
-public abstract class BaseListFragment<T> extends Fragment {
+public abstract class BaseListFragment<T> extends Fragment implements ListViewInterface<T> {
+    private ListPresenterInterface eventHandler;
+
     protected RecyclerView recyclerView;
     protected View loader;
 
     protected BaseListAdaptor adapter;
     protected Listener<T> listener;
 
-    protected StorableListProviderFactory<T> providerFactory;
-    protected StorableListProvider<T> provider = new NullStorableListProvider<>();
-
-    protected CompareStrategyFactory<T> compareStrategyFactory = new NullCompareStrategyFactory<>();
-    protected CompareStrategy<T> compareStrategy;
-
     //// Creation, initialization, restoration
 
-    private void initializeIfNeeded() {
-        if (providerFactory == null) {
-            initialize();
-        }
-    }
-
     protected void initialize() {
-        providerFactory = createProviderFactory();
-        compareStrategyFactory = createCompareStrategyFactory();
+        eventHandler.initialize();
         adapter = createAdapter();
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        initializeIfNeeded();
-
-        if (savedInstanceState != null) {
-            compareStrategy = compareStrategyFactory.restore(savedInstanceState);
-        }
+        eventHandler.onViewCreated(savedInstanceState);
     }
 
     @Override
@@ -71,24 +61,19 @@ public abstract class BaseListFragment<T> extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        provider.store(outState);
-        storeCompareStrategyIfNeeded(outState);
+        eventHandler.store(outState);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        eventHandler.onViewStateRestored(savedInstanceState);
     }
 
     // Init methods
 
-    protected CompareStrategyFactory<T> createCompareStrategyFactory() {
-        return new NullCompareStrategyFactory<>();
-    }
-
     private void applyAdapter() {
         recyclerView.setAdapter(adapter);
-    }
-
-    private void storeCompareStrategyIfNeeded(Bundle outState) {
-        if (compareStrategy != null) {
-            compareStrategy.store(outState);
-        }
     }
 
     //// Events
@@ -96,6 +81,8 @@ public abstract class BaseListFragment<T> extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        eventHandler.onDestroyView();
+
         recyclerView = null;
 
         adapter.cleanup();
@@ -106,20 +93,14 @@ public abstract class BaseListFragment<T> extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        // clear here to support onSaveInstanceState
-        providerFactory = null;
-        provider = null;
-
-        compareStrategyFactory = null;
-        compareStrategy = null;
+        eventHandler.onDestroy();
     }
 
     //// Actions
 
-    public void reload() {
+    public void reload(List<T> items) {
         if (getView() != null) {
-            setAdapterItems(getSortedItems(getItems()));
+            setAdapterItems(items);
         }
     }
 
@@ -135,15 +116,6 @@ public abstract class BaseListFragment<T> extends Fragment {
         }
     }
 
-    private void sortItems(List<T> inItems, final CompareStrategy<T> compareStrategy) {
-        Collections.sort(inItems, new Comparator<T>() {
-            @Override
-            public int compare(T lhs, T rhs) {
-                return compareStrategy.compare(lhs, rhs);
-            }
-        });
-    }
-
     // Update UI
 
     public void showLoading() {
@@ -157,17 +129,11 @@ public abstract class BaseListFragment<T> extends Fragment {
     //// Creation Methods
 
     protected abstract BaseListAdaptor createAdapter();
-    protected abstract StorableListProviderFactory<T> createProviderFactory();
 
     //// Setters
 
     public void setListener(Listener<T> listener) {
         this.listener = listener;
-    }
-
-    public void setCompareStrategy(CompareStrategy<T> compareStrategy) {
-        this.compareStrategy = compareStrategy;
-        reload();
     }
 
     // UI Setters
@@ -183,37 +149,12 @@ public abstract class BaseListFragment<T> extends Fragment {
         return listener;
     }
 
-    // Data Getters
-
-    protected List<T> getItems() {
-        return provider.getList();
-    }
-
-    protected List<T> getSortedItems(List<T> inItems) {
-        List<T> result = null;
-        if (compareStrategy != null) {
-            result = new ArrayList<>(inItems);
-            sortItems(result, compareStrategy);
-
-        } else {
-            result = inItems;
-        }
-
-        return result;
-    }
-
     //// UI Getters
 
     private View getDataView(int index) {
         RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(index);
         View view = holder.itemView;
         return view;
-    }
-
-    // Statuses
-
-    public boolean hasItems() {
-        return getItems().size() > 0;
     }
 
     //// Inner Interfaces
@@ -223,5 +164,4 @@ public abstract class BaseListFragment<T> extends Fragment {
         void onRowMenuClicked(T data, View view);
         void onRowViewDeleted(T data);
     }
-
 }

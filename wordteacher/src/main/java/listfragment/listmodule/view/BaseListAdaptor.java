@@ -1,4 +1,4 @@
-package listfragment;
+package listfragment.listmodule.view;
 
 import android.support.v7.widget.RecyclerView;
 

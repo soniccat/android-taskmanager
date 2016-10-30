@@ -2,14 +2,10 @@ package listfragment;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.PopupMenu;
 import android.view.View;
 
-import com.example.alexeyglushkov.wordteacher.R;
-
-import model.Card;
-import model.Course;
+import listfragment.listmodule.view.BaseListFragment;
 
 /**
  * Created by alexeyglushkov on 24.07.16.

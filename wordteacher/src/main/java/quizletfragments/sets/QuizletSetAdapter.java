@@ -12,11 +12,9 @@ import com.example.alexeyglushkov.wordteacher.R;
 
 import junit.framework.Assert;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
-import listfragment.BaseListAdaptor;
+import listfragment.listmodule.view.BaseListAdaptor;
 
 /**
  * Created by alexeyglushkov on 02.05.16.
