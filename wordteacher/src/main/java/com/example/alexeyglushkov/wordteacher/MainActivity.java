@@ -444,6 +444,8 @@ public class MainActivity extends BaseActivity implements
         if (!isCancelled) {
             showLoadErrorSnackBar(error);
         }
+
+        loadingButton.stopLoading();
     }
 
     // CourseHolder.CourseHolderListener

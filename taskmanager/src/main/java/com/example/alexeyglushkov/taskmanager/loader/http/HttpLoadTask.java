@@ -71,18 +71,29 @@ public class HttpLoadTask extends SimpleTask {
             responseCode = connection.getResponseCode();
             Log.d("HttpLoadTask", "HttpLoadingContext: The response is: " + responseCode + "\n");
 
-            progressUpdater = getPrivate().createProgressUpdater(contentLength);
-            streamReader.setProgressUpdater(progressUpdater);
-            streamReader.handleConnectionResponse(connection);
+            synchronized (this) {
+                progressUpdater = getPrivate().createProgressUpdater(contentLength);
+                streamReader.setProgressUpdater(progressUpdater);
+            }
 
-            stream = new BufferedInputStream(connection.getInputStream());
-            Object data = handleStream(stream);
+            if (needCancelTask) {
+                setIsCancelled();
 
-            if (!isCancelled) {
-                if (data instanceof Error) {
-                    setError((Error) data);
+            } else {
+                streamReader.handleConnectionResponse(connection);
+
+                stream = new BufferedInputStream(connection.getInputStream());
+                Object data = handleStream(stream);
+
+                if (needCancelTask) {
+                    setIsCancelled();
+
                 } else {
-                    setHandledData(data);
+                    if (data instanceof Error) {
+                        setError((Error) data);
+                    } else {
+                        setHandledData(data);
+                    }
                 }
             }
 
@@ -101,6 +112,10 @@ public class HttpLoadTask extends SimpleTask {
             }
 
             connection.disconnect();
+        }
+
+        if (needCancelTask) {
+            setIsCancelled();
         }
 
         getPrivate().handleTaskCompletion();
@@ -157,11 +172,12 @@ public class HttpLoadTask extends SimpleTask {
     @Override
     public void cancelTask(Object info) {
         if (progressUpdater != null) {
-            ProgressUpdater updater = progressUpdater;
-            progressUpdater = null;
+            synchronized (this) {
+                ProgressUpdater updater = progressUpdater;
+                progressUpdater = null;
 
-            setIsCancelled();
-            updater.cancel(info);
+                updater.cancel(info);
+            }
         } else {
             super.cancelTask(info);
         }

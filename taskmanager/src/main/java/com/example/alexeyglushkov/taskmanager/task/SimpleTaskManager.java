@@ -563,7 +563,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
                 HandlerTools.runOnHandlerThread(handler, new Runnable() {
                     @Override
                     public void run() {
-                        logTask(task, cancelled ? "Task onCompleted" : "Task onCompleted (Cancelled)");
+                        logTask(task, cancelled ? "Task onCompleted (Cancelled)" : "Task onCompleted");
                         handleTaskCompletionOnThread(task, originalCallback, cancelled);
                     }
                 });
