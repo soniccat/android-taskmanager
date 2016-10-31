@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.wordteacher;
+package stackfragment.view;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -9,6 +9,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.alexeyglushkov.wordteacher.R;
 
 import java.util.List;
 
