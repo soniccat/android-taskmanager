@@ -66,14 +66,16 @@ public class QuizletStackFragment extends StackFragment implements Sortable {
     // Show UI Actions
 
     private void showSetFragment() {
-        QuizletSetListFragment setFragment = QuizletSetListFragment.create();
+        /*QuizletSetListFragment setFragment = QuizletSetListFragment.create();
         setFragment.setSortOrder(Preferences.getQuizletSetSortOrder());
         setFragment.setListener(createSetMenuListener());
 
         addFragment(setFragment, null);
+        */
     }
 
     private void showWordFragment(QuizletSet set) {
+        /*
         QuizletTermListFragment fragment = QuizletTermListFragment.create();
         fragment.setSortOrder(Preferences.getQuizletTermSortOrder());
         fragment.setListener(createTermMenuListener());
@@ -84,15 +86,18 @@ public class QuizletStackFragment extends StackFragment implements Sortable {
             public void onFinished() {
             }
         });
+        */
     }
 
     // Update Data Actions
 
     public void reloadSets() {
+        /*
         QuizletSetListFragment setFragment = getSetFragment();
         if (setFragment != null) {
             setFragment.reload();
         }
+        */
     }
 
     //// Creation methods
@@ -214,9 +219,9 @@ public class QuizletStackFragment extends StackFragment implements Sortable {
 
     public String getTitle() {
         String title = null;
-        if (getBackStackSize() > 0) {
+        /*if (getBackStackSize() > 0) {
             title = getCardsFragment().getParentSet().getTitle();
-        } else {
+        } else*/ {
             title = DEFAULT_TITLE;
         }
 
@@ -242,8 +247,10 @@ public class QuizletStackFragment extends StackFragment implements Sortable {
     // Statuses
 
     public boolean hasData() {
-        QuizletSetListFragment setFragment = getSetFragment();
-        return setFragment.hasItems();
+        //QuizletSetListFragment setFragment = getSetFragment();
+        //return setFragment.hasItems();
+
+        return false;
     }
 
     //// Interfaces

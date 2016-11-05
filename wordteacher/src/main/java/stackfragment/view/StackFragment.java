@@ -12,22 +12,67 @@ import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.wordteacher.R;
 
+import junit.framework.Assert;
+
 import java.util.List;
+
+import stackfragment.StackModuleItemView;
 
 /**
  * Created by alexeyglushkov on 03.05.16.
  */
-public class StackFragment extends Fragment implements FragmentManager.OnBackStackChangedListener {
+public class StackFragment extends Fragment implements FragmentManager.OnBackStackChangedListener, StackFragmentView {
 
     protected Listener listener;
 
-    public void setListener(Listener listener) {
-        this.listener = listener;
+    //// Creation
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
-    private boolean isReadyToAddFragment() {
-        return getActivity() != null && getView() != null;
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_container, container, false);
     }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        getChildFragmentManager().addOnBackStackChangedListener(this);
+    }
+
+    //// Events
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+    }
+
+    public void onBackStackChanged() {
+        listener.onBackStackChanged();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        getChildFragmentManager().removeOnBackStackChangedListener(this);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    //// Actions
 
     protected void addFragment(Fragment fragment, final TransactionCallback callback) {
         boolean needSaveState = getAttachedFragment() != null;
@@ -75,48 +120,49 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
         getChildFragmentManager().popBackStack();
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+    //// Interfaces
+
+    // StackFragmentView
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
+    public void pushView(StackModuleItemView view, final StackFragmentView.Callback callback) {
+        Assert.assertTrue(view instanceof Fragment);
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_container, container, false);
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        getChildFragmentManager().addOnBackStackChangedListener(this);
+        addFragment((Fragment) view, new TransactionCallback() {
+            @Override
+            public void onFinished() {
+                callback.finished();
+            }
+        });
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    public void popView(final StackFragmentView.Callback callback) {
+        popFragment(new TransactionCallback() {
+            @Override
+            public void onFinished() {
+                callback.finished();
+            }
+        });
     }
 
-    public void onBackStackChanged() {
-        listener.onBackStackChanged();
+    //// Inner Interfaces
+
+    public interface Listener {
+        void onBackStackChanged();
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        getChildFragmentManager().removeOnBackStackChangedListener(this);
+    public interface TransactionCallback {
+        void onFinished();
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+    //// Setters
+
+    public void setListener(Listener listener) {
+        this.listener = listener;
     }
+
+    //// Getters
 
     public Fragment getTopFragment() {
         // calling findFragmentById when view is null is error prone
@@ -160,11 +206,9 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
         return list != null && index < list.size() ? list.get(index) : null;
     }
 
-    public interface Listener {
-        void onBackStackChanged();
-    }
+    // States
 
-    public interface TransactionCallback {
-        void onFinished();
+    private boolean isReadyToAddFragment() {
+        return getActivity() != null && getView() != null;
     }
 }

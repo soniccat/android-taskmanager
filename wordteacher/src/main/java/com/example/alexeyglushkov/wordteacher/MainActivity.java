@@ -365,10 +365,12 @@ public class MainActivity extends BaseActivity implements
             stackFragment.reloadSets();
         }
 
+        /*
         QuizletTermListFragment termFragment = getTermListQuizletFragment();
         if (termFragment != null) {
             termFragment.reload();
         }
+        */
     }
 
     private void updateCoursesIfNeeded() {
@@ -612,11 +614,15 @@ public class MainActivity extends BaseActivity implements
 
     @NonNull
     private QuizletTermListFragment createQuzletTermListFragment() {
+        /*
         final QuizletTermListFragment fragment = QuizletTermListFragment.create();
         fragment.setSortOrder(Preferences.getQuizletTermSortOrder());
         fragment.setListener(createMenuListener());
 
         return fragment;
+        */
+
+        return null;
     }
 
     @NonNull

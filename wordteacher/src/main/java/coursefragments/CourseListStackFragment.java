@@ -71,18 +71,18 @@ public class CourseListStackFragment extends StackFragment implements Sortable {
     //// Actions
 
     public void reloadCourses() {
-        CourseListFragment courseListFragment = getCourseFragment();
+        /*CourseListFragment courseListFragment = getCourseFragment();
         if (courseListFragment != null) {
             applyPendingOperation(courseListFragment);
             courseListFragment.reload();
-        }
+        }*/
     }
 
     public void reloadCards() {
-        CardListFragment cardFragment = getCardListFragment();
+        /*CardListFragment cardFragment = getCardListFragment();
         if (cardFragment != null) {
             cardFragment.reload();
-        }
+        }*/
     }
 
     public void applyPendingOperation(CourseListFragment fragment) {
@@ -242,10 +242,10 @@ public class CourseListStackFragment extends StackFragment implements Sortable {
 
     public boolean hasCourses() {
         boolean result = false;
-        CourseListFragment courseListFragment = getCourseFragment();
+        /*CourseListFragment courseListFragment = getCourseFragment();
         if (courseListFragment != null) {
             result = courseListFragment.hasItems();
-        }
+        }*/
 
         return result;
     }
