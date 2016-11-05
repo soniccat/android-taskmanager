@@ -93,20 +93,22 @@ public class CourseListStackFragment extends StackFragment implements Sortable {
     // Show UI Actions
 
     private void showCourseFragment() {
+        /*
         CourseListFragment courseListFragment = CourseListFragment.create();
         courseListFragment.setSortOrder(Preferences.getCourseListSortOrder());
         courseListFragment.setListener(getMenuCourseListener());
 
         addFragment(courseListFragment, null);
+        */
     }
 
     public void showCardListFragment(Course course) {
-        CardListFragment fragment = CardListFragment.create();
+        /*CardListFragment fragment = CardListFragment.create();
         fragment.setSortOrder(Preferences.getCardListSortOrder());
         fragment.setListener(getMenuCardsListener());
         fragment.setParentCourse(course);
 
-        addFragment(fragment, null);
+        addFragment(fragment, null);*/
     }
 
     //// Creation Methods
@@ -215,12 +217,12 @@ public class CourseListStackFragment extends StackFragment implements Sortable {
 
     public @NonNull String getTitle() {
         String title = null;
-        if (getBackStackSize() > 0) {
+        /*if (getBackStackSize() > 0) {
             Course course = getCardListFragment().getParentCourse();
             if (course != null) {
                 title = course.getTitle();
             }
-        } else {
+        } else*/ {
             title = DEFAULT_TITLE;
         }
 

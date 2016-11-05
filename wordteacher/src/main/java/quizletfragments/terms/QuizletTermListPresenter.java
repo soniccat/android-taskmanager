@@ -25,22 +25,7 @@ import tools.Sortable;
 public class QuizletTermListPresenter extends BaseListPresenter<QuizletTerm> implements Sortable, QuizletService.QuizletServiceListener {
     private Bundle savedInstanceState;
 
-    //// Actions
-
-    private void handleLoadedSets() {
-        view.hideLoading();
-        restoreIfNeeded();
-        view.reload(getItems());
-    }
-
-    private void restoreIfNeeded() {
-        if (this.savedInstanceState != null || provider instanceof NullStorableListProvider) {
-            provider = providerFactory.restore(this.savedInstanceState);
-            this.savedInstanceState = null;
-        }
-    }
-
-    //// Overrides
+    //// Events
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
@@ -60,6 +45,23 @@ public class QuizletTermListPresenter extends BaseListPresenter<QuizletTerm> imp
         super.onDestroyView();
         getQuizletService().removeListener(this);
     }
+
+    //// Actions
+
+    private void handleLoadedSets() {
+        view.hideLoading();
+        restoreIfNeeded();
+        view.reload(getItems());
+    }
+
+    private void restoreIfNeeded() {
+        if (this.savedInstanceState != null || provider instanceof NullStorableListProvider) {
+            provider = providerFactory.restore(this.savedInstanceState);
+            this.savedInstanceState = null;
+        }
+    }
+
+    //// Overrides
 
     @NonNull
     protected QuizletTermListFactory createProviderFactory() {

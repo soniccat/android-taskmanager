@@ -65,6 +65,14 @@ public abstract class BaseListPresenter<T> implements ListPresenterInterface, Li
     }
 
     @Override
+    public void onResume() {
+    }
+
+    @Override
+    public void onPause() {
+    }
+
+    @Override
     public void onDestroyView() {
     }
 

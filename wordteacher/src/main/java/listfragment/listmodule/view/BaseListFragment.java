@@ -70,13 +70,23 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
         eventHandler.onViewStateRestored(savedInstanceState);
     }
 
-    // Init methods
-
     private void applyAdapter() {
         recyclerView.setAdapter(adapter);
     }
 
     //// Events
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        eventHandler.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        eventHandler.onPause();
+    }
 
     @Override
     public void onDestroyView() {
@@ -102,6 +112,16 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
         if (getView() != null) {
             setAdapterItems(items);
         }
+    }
+
+    public void updateRow(int index) {
+        if (index < adapter.items.size()) {
+            adapter.notifyItemRangeChanged(index, 1);
+        }
+    }
+
+    public void updateRows() {
+        adapter.notifyItemRangeChanged(0, adapter.getItemCount());
     }
 
     public void deleteView(T data) {

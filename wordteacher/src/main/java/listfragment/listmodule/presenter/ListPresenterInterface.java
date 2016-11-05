@@ -12,6 +12,9 @@ public interface ListPresenterInterface {
 
     void onViewCreated(Bundle savedInstanceState);
     void onViewStateRestored(Bundle savedInstanceState);
+
+    void onResume();
+    void onPause();
     void onDestroyView();
     void onDestroy();
 }
