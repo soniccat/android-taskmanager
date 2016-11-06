@@ -1,12 +1,14 @@
 package stackmodule.presenter;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import pagermodule.PagerModuleItem;
 import pagermodule.PagerModuleItemView;
+import pagermodule.view.PagerModuleItemWithTitle;
 import stackmodule.StackModuleFactory;
 import stackmodule.StackModuleItem;
 import stackmodule.StackModuleListener;
@@ -16,7 +18,7 @@ import stackmodule.view.StackView;
  * Created by alexeyglushkov on 30.10.16.
  */
 
-public class StackPresenter implements StackPresenterInterface, PagerModuleItem {
+public class StackPresenter implements StackPresenterInterface, PagerModuleItem, PagerModuleItemWithTitle {
     private StackModuleFactory factory;
     private StackModuleListener listener;
 
@@ -70,6 +72,20 @@ public class StackPresenter implements StackPresenterInterface, PagerModuleItem 
 
     //// Interfaces
 
+    // PagerModuleItemWithTitle
+
+    @Override
+    public String getTitle() {
+        StackModuleItem item = getTopModule();
+        String result = null;
+        if (item instanceof PagerModuleItemWithTitle) {
+            result = ((PagerModuleItemWithTitle)item).getTitle();
+        }
+
+        return result;
+    }
+
+
     // PagerModuleItem
 
     @Override
@@ -108,5 +124,10 @@ public class StackPresenter implements StackPresenterInterface, PagerModuleItem 
     @Override
     public StackModuleItem getModuleAtIndex(int i) {
         return items.get(i);
+    }
+
+    private @Nullable StackModuleItem getTopModule() {
+        int size = getSize();
+        return size > 0 ? getModuleAtIndex(size - 1) : null;
     }
 }

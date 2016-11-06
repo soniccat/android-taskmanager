@@ -17,6 +17,7 @@ import listmodule.StorableListProviderFactory;
 import listmodule.ListModuleInterface;
 import listmodule.view.ListViewInterface;
 import main.Preferences;
+import pagermodule.view.PagerModuleItemWithTitle;
 import stackmodule.StackModuleItem;
 import stackmodule.StackModuleItemView;
 
@@ -24,7 +25,7 @@ import stackmodule.StackModuleItemView;
  * Created by alexeyglushkov on 30.10.16.
  */
 
-public abstract class BaseListPresenter<T> implements ListPresenterInterface, ListModuleInterface, StackModuleItem {
+public abstract class BaseListPresenter<T> implements ListPresenterInterface, ListModuleInterface, StackModuleItem, PagerModuleItemWithTitle {
     protected StorableListProviderFactory<T> providerFactory;
     protected StorableListProvider<T> provider = new NullStorableListProvider<>();
 
@@ -112,6 +113,13 @@ public abstract class BaseListPresenter<T> implements ListPresenterInterface, Li
     }
 
     //// Interfaces
+
+    // PagerModuleItemWithTitle
+
+    @Override
+    public String getTitle() {
+        return null;
+    }
 
     // StackModuleItem
 

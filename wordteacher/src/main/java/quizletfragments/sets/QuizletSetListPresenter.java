@@ -63,6 +63,13 @@ public class QuizletSetListPresenter extends BaseListPresenter<QuizletSet> imple
 
     //// Interface methods
 
+    // PagerModuleItemWithTitle
+
+    @Override
+    public String getTitle() {
+        return "Sets";
+    }
+
     // QuizletService.QuizletServiceListener
 
     @Override
