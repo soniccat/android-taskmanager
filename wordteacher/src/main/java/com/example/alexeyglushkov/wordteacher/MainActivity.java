@@ -313,21 +313,18 @@ public class MainActivity extends BaseActivity implements
             errorString = getString(R.string.error_load_error);
         }
 
-        View view = getCurrentFragmentView();
-        if (view != null) {
-            Snackbar.make(view, errorString, Snackbar.LENGTH_LONG).show();
-        }
+        Snackbar.make(getRootView(), errorString, Snackbar.LENGTH_LONG).show();
         Log.e(ERROR_TAG, error.getMessage());
     }
 
     private void showAppExceptionSnackBar(@NonNull Exception ex) {
         String errorString = ex.getMessage();
-        View view = getCurrentFragmentView();
-        if (view != null) {
-            Snackbar.make(getCurrentFragmentView(), errorString, Snackbar.LENGTH_LONG).show();
-        }
-
+        Snackbar.make(getRootView(), errorString, Snackbar.LENGTH_LONG).show();
         Log.e(ERROR_TAG, ex.getMessage());
+    }
+
+    private View getRootView() {
+        return findViewById(R.id.root);
     }
 
     private void startLearnNewWords(@NonNull Course course) {
@@ -371,7 +368,7 @@ public class MainActivity extends BaseActivity implements
     private void updateSets() {
         StackModule stackModule = getQuizletStackModule();
         if (stackModule != null) {
-            stackModule.reloadSets();
+            //stackModule.reloadSets();
         }
 
         ListModuleInterface listModule = getTermListQuizletModule();
@@ -389,7 +386,7 @@ public class MainActivity extends BaseActivity implements
     private void updateCourses() {
         StackModule stackModule = getCourseListStackModule();
         if (stackModule != null) {
-            stackModule.reloadCourses();
+            //stackModule.reloadCourses();
         }
     }
 
@@ -595,7 +592,7 @@ public class MainActivity extends BaseActivity implements
             @Nullable
             @Override
             public ViewGroup getDialogContainer() {
-                return (ViewGroup) getCurrentFragmentView();
+                return null;//(ViewGroup) getCurrentFragmentView();
             }
 
             @Override
