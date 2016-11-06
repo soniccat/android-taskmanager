@@ -3,6 +3,8 @@ package stackmodule.presenter;
 import java.util.ArrayList;
 import java.util.List;
 
+import pagermodule.PagerModuleItem;
+import pagermodule.PagerModuleItemView;
 import stackmodule.StackModuleFactory;
 import stackmodule.StackModule;
 import stackmodule.StackModuleItem;
@@ -13,12 +15,18 @@ import stackmodule.view.StackView;
  * Created by alexeyglushkov on 30.10.16.
  */
 
-public class StackPresenter implements StackModule, StackPresenterInterface {
+public class StackPresenter implements StackPresenterInterface, PagerModuleItem {
     private StackModuleFactory factory;
     private StackModuleListener listener;
 
     private StackView view;
     private List<StackModuleItem> items = new ArrayList<>();
+
+    @Override
+    public void initialize() {
+        StackModuleItem module = factory.rootModule(this);
+        push(module, null);
+    }
 
     @Override
     public void setListener(StackModuleListener listener) {
@@ -33,8 +41,11 @@ public class StackPresenter implements StackModule, StackPresenterInterface {
     @Override
     public void push(Object obj, StackView.Callback callback) {
         StackModuleItem item = factory.moduleFromObject(obj, this);
-        items.add(item);
+        push(item, callback);
+    }
 
+    private void push(StackModuleItem item, StackView.Callback callback) {
+        items.add(item);
         view.pushView(item.getView(), callback);
     }
 
@@ -44,8 +55,22 @@ public class StackPresenter implements StackModule, StackPresenterInterface {
         view.popView(callback);
     }
 
-    //// Getters
+    //// Interfaces
 
+    // PagerModuleItem
+
+    @Override
+    public PagerModuleItemView getView() {
+        return view;
+    }
+
+    //// Setters
+
+    public void setView(StackView view) {
+        this.view = view;
+    }
+
+    //// Getters
 
     @Override
     public int getSize() {

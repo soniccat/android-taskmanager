@@ -17,12 +17,14 @@ import listmodule.StorableListProviderFactory;
 import listmodule.ListModuleInterface;
 import listmodule.view.ListViewInterface;
 import main.Preferences;
+import stackmodule.StackModuleItem;
+import stackmodule.StackModuleItemView;
 
 /**
  * Created by alexeyglushkov on 30.10.16.
  */
 
-public abstract class BaseListPresenter<T> implements ListPresenterInterface, ListModuleInterface {
+public abstract class BaseListPresenter<T> implements ListPresenterInterface, ListModuleInterface, StackModuleItem {
     protected StorableListProviderFactory<T> providerFactory;
     protected StorableListProvider<T> provider = new NullStorableListProvider<>();
 
@@ -111,6 +113,18 @@ public abstract class BaseListPresenter<T> implements ListPresenterInterface, Li
 
     //// Interfaces
 
+    // StackModuleItem
+
+    @Override
+    public Object getObject() {
+        return null;
+    }
+
+    @Override
+    public StackModuleItemView getView() {
+        return view;
+    }
+
     // ListModuleInterface
 
     @Override
@@ -127,6 +141,10 @@ public abstract class BaseListPresenter<T> implements ListPresenterInterface, Li
     public void setCompareStrategy(CompareStrategy<T> compareStrategy) {
         this.compareStrategy = compareStrategy;
         view.reload(getItems());
+    }
+
+    public void setView(ListViewInterface view) {
+        this.view = view;
     }
 
     //// Getters

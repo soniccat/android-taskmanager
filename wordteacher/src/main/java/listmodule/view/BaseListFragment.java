@@ -18,7 +18,7 @@ import listmodule.presenter.ListPresenterInterface;
  * Created by alexeyglushkov on 23.07.16.
  */
 public abstract class BaseListFragment<T> extends Fragment implements ListViewInterface<T> {
-    private ListPresenterInterface eventHandler;
+    private ListPresenterInterface presenter;
 
     protected RecyclerView recyclerView;
     protected View loader;
@@ -29,14 +29,13 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
     //// Creation, initialization, restoration
 
     protected void initialize() {
-        eventHandler.initialize();
         adapter = createAdapter();
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        eventHandler.onViewCreated(savedInstanceState);
+        presenter.onViewCreated(savedInstanceState);
     }
 
     @Override
@@ -55,13 +54,13 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        eventHandler.store(outState);
+        presenter.store(outState);
     }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        eventHandler.onViewStateRestored(savedInstanceState);
+        presenter.onViewStateRestored(savedInstanceState);
     }
 
     private void applyAdapter() {
@@ -73,19 +72,19 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
     @Override
     public void onResume() {
         super.onResume();
-        eventHandler.onResume();
+        presenter.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        eventHandler.onPause();
+        presenter.onPause();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        eventHandler.onDestroyView();
+        presenter.onDestroyView();
 
         recyclerView = null;
 
@@ -97,7 +96,7 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
     @Override
     public void onDestroy() {
         super.onDestroy();
-        eventHandler.onDestroy();
+        presenter.onDestroy();
     }
 
     //// Actions
@@ -148,6 +147,10 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
 
     public void setListener(Listener<T> listener) {
         this.listener = listener;
+    }
+
+    public void setPresenter(ListPresenterInterface presenter) {
+        this.presenter = presenter;
     }
 
     // UI Setters

@@ -43,14 +43,13 @@ import model.CourseHolder;
 import pagermodule.PagerModule;
 import pagermodule.PagerModuleListener;
 import pagermodule.presenter.StatePagerPresenter;
-import pagermodule.view.PagerAdapter;
+import pagermodule.view.PagerView;
 import pagermodule.view.PagerViewImp;
 import stackmodule.StackModule;
-import stackmodule.view.StackFragment;
 import tools.Sortable;
 import quizletfragments.terms.QuizletTermFragmentMenuListener;
 import quizletfragments.terms.QuizletTermListFragment;
-import quizletfragments.QuizletStackFragment;
+import quizletfragments.stack.QuizletStackFragment;
 import tools.UITools;
 import ui.LoadingButton;
 
@@ -145,11 +144,20 @@ public class MainActivity extends BaseActivity implements
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(pager);
 
+        createPagerModule(pager);
+        pagerModule.reload();
+    }
+
+    private void createPagerModule(ViewPager pager) {
+        MainPagerFactory factory = new MainPagerFactory();
+
         StatePagerPresenter pagerPresenter = new StatePagerPresenter();
         pagerPresenter.setListener(this);
+        pagerPresenter.setFactory(factory);
 
         PagerViewImp pagerView = new PagerViewImp(pager, getSupportFragmentManager());
         pagerView.setPresenter(pagerPresenter);
+        pagerPresenter.setView(pagerView);
 
         pagerModule = pagerPresenter;
     }
@@ -424,7 +432,7 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public int getPageCount() {
-        return 3;
+        return 1;
     }
 
     @Override

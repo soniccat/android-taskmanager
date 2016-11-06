@@ -17,12 +17,14 @@ import junit.framework.Assert;
 import java.util.List;
 
 import stackmodule.StackModuleItemView;
+import stackmodule.presenter.StackPresenter;
 
 /**
  * Created by alexeyglushkov on 03.05.16.
  */
 public class StackFragment extends Fragment implements FragmentManager.OnBackStackChangedListener, StackView {
 
+    protected StackPresenter presenter;
     protected Listener listener;
 
     //// Creation
@@ -160,6 +162,10 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
 
     public void setListener(Listener listener) {
         this.listener = listener;
+    }
+
+    public void setPresenter(StackPresenter presenter) {
+        this.presenter = presenter;
     }
 
     //// Getters

@@ -9,6 +9,8 @@ import stackmodule.StackModuleListener;
  */
 
 public interface StackPresenterInterface extends StackModule {
+    void initialize();
+
     void setListener(StackModuleListener listener);
     void setFactory(StackModuleFactory factory);
 }

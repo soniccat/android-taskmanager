@@ -1,24 +1,14 @@
 package pagermodule.view;
 
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-
-import com.example.alexeyglushkov.wordteacher.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import coursefragments.CourseListStackFragment;
 import pagermodule.presenter.PagerPresenter;
-import quizletfragments.QuizletStackFragment;
 
 /**
  * Created by alexeyglushkov on 05.11.16.
@@ -71,7 +61,7 @@ public class PagerViewImp implements PagerView, PagerAdapter.Listener, ViewPager
             PagerModuleItemWithTitle fragmentWithTitle = (PagerModuleItemWithTitle)fragment;
             title = fragmentWithTitle.getTitle();
 
-        } else {
+        } else if (index < defaultTitles.size()){
             title = defaultTitles.get(index);
         }
 

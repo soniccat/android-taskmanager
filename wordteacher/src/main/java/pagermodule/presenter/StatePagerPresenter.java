@@ -48,15 +48,20 @@ public class StatePagerPresenter implements PagerPresenter {
     }
 
     private void updateItems(int size) {
-        for (int i = 0; i < size; ++i) {
+        for (int i = 0; i < items.size(); ++i) {
             int index = items.indexOfKey(i);
             if (needRemove(index)) {
                 items.removeAt(i);
-
-            } else {
-                PagerModuleItem module = factory.moduleAtIndex(index, this);
-                items.put(index, module);
             }
+        }
+
+        for (int i = currentIndex - (fillCount - 1); i < currentIndex + fillCount; ++i) {
+            if (i < 0 || i >= size || items.get(i) != null) {
+                continue;
+            }
+
+            PagerModuleItem module = factory.moduleAtIndex(i, this);
+            items.put(i, module);
         }
     }
 
