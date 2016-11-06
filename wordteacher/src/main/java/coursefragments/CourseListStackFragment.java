@@ -44,17 +44,17 @@ public class CourseListStackFragment extends StackFragment implements Sortable {
     }
 
     private void restoreCardListListener() {
-        CardListFragment cardFragment = getCardListFragment();
+        /*CardListFragment cardFragment = getCardListFragment();
         if (cardFragment != null) {
             cardFragment.setListener(getMenuCardsListener());
-        }
+        }*/
     }
 
     private void restoreCourseListListener() {
-        CourseListFragment setFragment = getCourseFragment();
+        /*CourseListFragment setFragment = getCourseFragment();
         if (setFragment != null) {
             setFragment.setListener(getMenuCourseListener());
-        }
+        }*/
     }
 
     //// Events
@@ -113,6 +113,7 @@ public class CourseListStackFragment extends StackFragment implements Sortable {
 
     //// Creation Methods
 
+    /*
     private CourseListFragmentMenuListener getMenuCourseListener() {
         return new CourseListFragmentMenuListener(getContext(), getCourseHolder(), new CourseListFragmentMenuListener.Listener() {
             @Override
@@ -150,7 +151,9 @@ public class CourseListStackFragment extends StackFragment implements Sortable {
             }
         });
     }
+    */
 
+    /*
     private CardListFragmentMenuListener getMenuCardsListener() {
         return new CardListFragmentMenuListener(getContext(), getCourseHolder(), new CardListFragmentMenuListener.Listener() {
             @Override
@@ -180,7 +183,7 @@ public class CourseListStackFragment extends StackFragment implements Sortable {
                 return getView();
             }
         });
-    }
+    }*/
 
     //// Interfaces
 
@@ -254,9 +257,9 @@ public class CourseListStackFragment extends StackFragment implements Sortable {
 
     // Cast Getters
 
-    private CourseListStackFragment.Listener getCourseListener() {
+    /*private CourseListStackFragment.Listener getCourseListener() {
         return (CourseListStackFragment.Listener)listener;
-    }
+    }*/
 
     //// Inner Interfaces
 

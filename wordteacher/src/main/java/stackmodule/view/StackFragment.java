@@ -23,9 +23,7 @@ import stackmodule.presenter.StackPresenter;
  * Created by alexeyglushkov on 03.05.16.
  */
 public class StackFragment extends Fragment implements FragmentManager.OnBackStackChangedListener, StackView {
-
     protected StackPresenter presenter;
-    protected Listener listener;
 
     //// Creation
 
@@ -43,8 +41,15 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         getChildFragmentManager().addOnBackStackChangedListener(this);
+
+        presenter.onViewCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        presenter.onViewStateRestored(savedInstanceState);
     }
 
     //// Events
@@ -60,7 +65,7 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
     }
 
     public void onBackStackChanged() {
-        listener.onBackStackChanged();
+        presenter.onBackStackChanged();
     }
 
     @Override
@@ -133,7 +138,9 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
         addFragment((Fragment) view, new TransactionCallback() {
             @Override
             public void onFinished() {
-                callback.finished();
+                if (callback != null) {
+                    callback.finished();
+                }
             }
         });
     }
@@ -143,7 +150,9 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
         popFragment(new TransactionCallback() {
             @Override
             public void onFinished() {
-                callback.finished();
+                if (callback != null) {
+                    callback.finished();
+                }
             }
         });
     }
@@ -159,10 +168,6 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
     }
 
     //// Setters
-
-    public void setListener(Listener listener) {
-        this.listener = listener;
-    }
 
     public void setPresenter(StackPresenter presenter) {
         this.presenter = presenter;

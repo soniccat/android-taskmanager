@@ -39,7 +39,7 @@ public class QuizletStackFragment extends StackFragment implements Sortable {
     }
 
     private void restoreListeners() {
-        QuizletSetListFragment setFragment = getSetFragment();
+        /*QuizletSetListFragment setFragment = getSetFragment();
         if (setFragment != null) {
             setFragment.setListener(createSetMenuListener());
         }
@@ -47,7 +47,7 @@ public class QuizletStackFragment extends StackFragment implements Sortable {
         QuizletTermListFragment cardsFragment = getCardsFragment();
         if (cardsFragment != null) {
             cardsFragment.setListener(createTermMenuListener());
-        }
+        }*/
     }
 
     //// Events
@@ -102,6 +102,7 @@ public class QuizletStackFragment extends StackFragment implements Sortable {
 
     //// Creation methods
 
+    /*
     @NonNull
     private QuizletSetFragmentMenuListener createSetMenuListener() {
         return new QuizletSetFragmentMenuListener(getContext(), getCourseHolder(), new QuizletSetFragmentMenuListener.Listener<QuizletSet>() {
@@ -141,7 +142,9 @@ public class QuizletStackFragment extends StackFragment implements Sortable {
             }
         });
     }
+    */
 
+    /*
     private QuizletTermFragmentMenuListener createTermMenuListener() {
         return new QuizletTermFragmentMenuListener(getContext(), getCourseHolder(), new QuizletTermFragmentMenuListener.Listener<QuizletTerm>() {
             @Override
@@ -180,12 +183,9 @@ public class QuizletStackFragment extends StackFragment implements Sortable {
             }
         });
     }
+    */
 
     //// Setters
-
-    public void setListener(Listener listener) {
-        this.listener = listener;
-    }
 
     // Set UI
 
@@ -240,9 +240,9 @@ public class QuizletStackFragment extends StackFragment implements Sortable {
 
     // Cast Getters
 
-    private QuizletStackFragment.Listener getQuizletListener() {
+    /*private QuizletStackFragment.Listener getQuizletListener() {
         return (QuizletStackFragment.Listener)this.listener;
-    }
+    }*/
 
     // Statuses
 

@@ -1,12 +1,13 @@
 package stackmodule.presenter;
 
+import android.os.Bundle;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import pagermodule.PagerModuleItem;
 import pagermodule.PagerModuleItemView;
 import stackmodule.StackModuleFactory;
-import stackmodule.StackModule;
 import stackmodule.StackModuleItem;
 import stackmodule.StackModuleListener;
 import stackmodule.view.StackView;
@@ -22,21 +23,33 @@ public class StackPresenter implements StackPresenterInterface, PagerModuleItem 
     private StackView view;
     private List<StackModuleItem> items = new ArrayList<>();
 
+    //// Creation
+
     @Override
+    public void onViewCreated(Bundle savedInstanceState) {
+    }
+
+    @Override
+    public void onViewStateRestored(Bundle savedInstanceState) {
+        if (items.size() == 0) {
+            initialize();
+        }
+    }
+
     public void initialize() {
         StackModuleItem module = factory.rootModule(this);
         push(module, null);
     }
 
-    @Override
-    public void setListener(StackModuleListener listener) {
-        this.listener = listener;
+    //// Events
+
+    public void onBackStackChanged() {
+        if (listener != null) {
+            listener.onBackStackChanged();
+        }
     }
 
-    @Override
-    public void setFactory(StackModuleFactory factory) {
-        this.factory = factory;
-    }
+    //// Action
 
     @Override
     public void push(Object obj, StackView.Callback callback) {
@@ -68,6 +81,16 @@ public class StackPresenter implements StackPresenterInterface, PagerModuleItem 
 
     public void setView(StackView view) {
         this.view = view;
+    }
+
+    @Override
+    public void setListener(StackModuleListener listener) {
+        this.listener = listener;
+    }
+
+    @Override
+    public void setFactory(StackModuleFactory factory) {
+        this.factory = factory;
     }
 
     //// Getters

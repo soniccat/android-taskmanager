@@ -5,5 +5,5 @@ package stackmodule;
  */
 
 public interface StackModuleListener {
-    void didStackChanged();
+    void onBackStackChanged();
 }

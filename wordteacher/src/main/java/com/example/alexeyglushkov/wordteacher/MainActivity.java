@@ -118,7 +118,7 @@ public class MainActivity extends BaseActivity implements
 
     private void restoreFragmentListener(Fragment fragment) {
         // while restoration pagerAdapter could be null
-        if (fragment instanceof QuizletStackFragment) {
+        /*if (fragment instanceof QuizletStackFragment) {
             QuizletStackFragment cardsFragment = (QuizletStackFragment)fragment;
             cardsFragment.setListener(this);
 
@@ -129,7 +129,7 @@ public class MainActivity extends BaseActivity implements
         } else if (fragment instanceof CourseListStackFragment) {
             CourseListStackFragment courseFragment = (CourseListStackFragment) fragment;
             courseFragment.setListener(this);
-        }
+        }*/
     }
 
     // UI creation and initialization
@@ -629,13 +629,14 @@ public class MainActivity extends BaseActivity implements
         };
     }
 
+    /*
     @NonNull
     private QuizletStackFragment createQuizletStackFragment() {
         QuizletStackFragment fragment = new QuizletStackFragment();
         fragment.setListener(this);
 
         return fragment;
-    }
+    }*/
 
     @NonNull
     private QuizletTermListFragment createQuzletTermListFragment() {
@@ -652,10 +653,11 @@ public class MainActivity extends BaseActivity implements
 
     @NonNull
     private CourseListStackFragment createCourseStackFragment() {
-        CourseListStackFragment fragment = new CourseListStackFragment();
+        /*CourseListStackFragment fragment = new CourseListStackFragment();
         fragment.setListener(this);
 
-        return fragment;
+        return fragment;*/
+        return null;
     }
 
     //// Setters
