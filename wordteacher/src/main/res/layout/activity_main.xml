@@ -55,7 +55,6 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-
     <ui.LoadingButton
         android:id="@+id/fab"
         android:layout_width="80dp"

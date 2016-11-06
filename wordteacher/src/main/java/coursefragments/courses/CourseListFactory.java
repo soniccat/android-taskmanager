@@ -6,8 +6,8 @@ import junit.framework.Assert;
 
 import java.util.List;
 
-import listfragment.StorableListProvider;
-import listfragment.StorableListProviderFactory;
+import listmodule.StorableListProvider;
+import listmodule.StorableListProviderFactory;
 import model.Course;
 import model.CourseHolder;
 

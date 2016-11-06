@@ -8,9 +8,7 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 
 import java.util.List;
 
-import listfragment.SimpleListProvider;
-import listfragment.StorableListProvider;
-import listfragment.StorableListProviderFactory;
+import listmodule.StorableListProvider;
 
 /**
  * Created by alexeyglushkov on 07.08.16.

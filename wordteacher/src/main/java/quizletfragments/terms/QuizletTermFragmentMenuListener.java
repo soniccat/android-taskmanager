@@ -5,9 +5,7 @@ import android.support.v7.widget.PopupMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 
-import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.wordteacher.R;
 import com.example.alexeyglushkov.wordteacher.RenameAlert;
@@ -15,7 +13,6 @@ import com.example.alexeyglushkov.wordteacher.RenameAlert;
 import java.util.ArrayList;
 import java.util.List;
 
-import listfragment.ListMenuListener;
 import model.Card;
 import model.Course;
 import model.CourseHolder;

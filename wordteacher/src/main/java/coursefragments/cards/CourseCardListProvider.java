@@ -2,12 +2,10 @@ package coursefragments.cards;
 
 import android.os.Bundle;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import listfragment.SimpleStorableListProvider;
-import listfragment.StorableListProvider;
+import listmodule.StorableListProvider;
 import model.Card;
 import model.Course;
 import model.CourseHolder;

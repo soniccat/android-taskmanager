@@ -3,8 +3,8 @@ package tools;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import listfragment.CompareStrategy;
-import listfragment.CompareStrategyFactory;
+import listmodule.CompareStrategy;
+import listmodule.CompareStrategyFactory;
 import main.Preferences;
 
 /**

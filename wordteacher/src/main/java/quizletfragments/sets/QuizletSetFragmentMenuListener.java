@@ -1,26 +1,16 @@
 package quizletfragments.sets;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.PopupMenu;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.wordteacher.R;
-import com.example.alexeyglushkov.wordteacher.RenameAlert;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import listfragment.ListMenuListener;
 import model.Card;
 import model.Course;
 import model.CourseHolder;

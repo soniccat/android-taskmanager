@@ -1,9 +1,6 @@
 package coursefragments.courses;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -12,18 +9,9 @@ import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.wordteacher.R;
 
-import java.util.List;
-
-import listfragment.listmodule.view.BaseListAdaptor;
-import listfragment.listmodule.view.BaseListFragment;
-import listfragment.CompareStrategyFactory;
-import listfragment.NullStorableListProvider;
-import main.MainApplication;
-import main.Preferences;
+import listmodule.view.BaseListAdaptor;
+import listmodule.view.BaseListFragment;
 import model.Course;
-import model.CourseHolder;
-import tools.SortOrderCompareStrategy;
-import tools.Sortable;
 
 /**
  * Created by alexeyglushkov on 08.05.16.

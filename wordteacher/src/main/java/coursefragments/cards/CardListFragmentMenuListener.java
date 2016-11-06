@@ -7,8 +7,7 @@ import android.view.MenuItem;
 
 import com.example.alexeyglushkov.wordteacher.R;
 
-import listfragment.DeleteMenuListener;
-import listfragment.ListMenuListener;
+import listmodule.DeleteMenuListener;
 import model.Card;
 import model.CourseHolder;
 

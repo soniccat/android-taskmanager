@@ -9,8 +9,8 @@ import junit.framework.Assert;
 
 import java.util.List;
 
-import listfragment.StorableListProvider;
-import listfragment.StorableListProviderFactory;
+import listmodule.StorableListProvider;
+import listmodule.StorableListProviderFactory;
 
 /**
  * Created by alexeyglushkov on 20.08.16.

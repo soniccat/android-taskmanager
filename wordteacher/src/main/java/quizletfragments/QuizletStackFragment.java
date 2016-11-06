@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
-import stackfragment.view.StackFragment;
+import stackmodule.view.StackFragment;
 
 import main.MainApplication;
 import main.Preferences;

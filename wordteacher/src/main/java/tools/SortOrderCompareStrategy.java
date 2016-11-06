@@ -2,7 +2,7 @@ package tools;
 
 import android.os.Bundle;
 
-import listfragment.SimpleCompareStrategy;
+import listmodule.SimpleCompareStrategy;
 import main.Preferences;
 
 /**

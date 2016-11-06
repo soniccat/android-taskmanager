@@ -1,7 +1,6 @@
 package quizletfragments.terms;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
@@ -9,7 +8,7 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import java.util.ArrayList;
 import java.util.List;
 
-import listfragment.SimpleStorableListProvider;
+import listmodule.SimpleStorableListProvider;
 
 /**
  * Created by alexeyglushkov on 07.08.16.

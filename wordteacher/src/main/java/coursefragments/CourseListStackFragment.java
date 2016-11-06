@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
 
-import stackfragment.view.StackFragment;
+import stackmodule.view.StackFragment;
 
 import coursefragments.cards.CardListFragment;
 import coursefragments.cards.CardListFragmentMenuListener;

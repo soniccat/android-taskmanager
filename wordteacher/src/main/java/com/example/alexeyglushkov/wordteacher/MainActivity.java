@@ -33,13 +33,20 @@ import java.util.List;
 
 import coursefragments.CourseListStackFragment;
 import learning.LearnActivity;
+import listmodule.ListModuleInterface;
 import main.BaseActivity;
 import main.MainApplication;
 import main.Preferences;
 import model.Card;
 import model.Course;
 import model.CourseHolder;
-import stackfragment.view.StackFragment;
+import pagermodule.PagerModule;
+import pagermodule.PagerModuleListener;
+import pagermodule.presenter.StatePagerPresenter;
+import pagermodule.view.PagerAdapter;
+import pagermodule.view.PagerViewImp;
+import stackmodule.StackModule;
+import stackmodule.view.StackFragment;
 import tools.Sortable;
 import quizletfragments.terms.QuizletTermFragmentMenuListener;
 import quizletfragments.terms.QuizletTermListFragment;
@@ -49,7 +56,7 @@ import ui.LoadingButton;
 
 // TODO: consider moving content to fragment
 public class MainActivity extends BaseActivity implements
-        MainPageAdapter.Listener,
+        PagerModuleListener,
         QuizletStackFragment.Listener,
         CourseListStackFragment.Listener,
         QuizletService.QuizletServiceListener,
@@ -60,9 +67,9 @@ public class MainActivity extends BaseActivity implements
 
     private @NonNull Toolbar toolbar;
     private @NonNull TabLayout tabLayout;
-    private @NonNull ViewPager pager;
-    private @NonNull MainPageAdapter pagerAdapter;
     private @NonNull LoadingButton loadingButton;
+
+    private PagerModule pagerModule;
 
     //// Creation, initialization, restoration
 
@@ -134,15 +141,17 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void initPager() {
-        pager = (ViewPager)findViewById(R.id.pager);
-        pager.addOnPageChangeListener(createPageListener());
-
-        pagerAdapter = new MainPageAdapter(getSupportFragmentManager());
-        pagerAdapter.setListener(this);
-        pager.setAdapter(pagerAdapter);
-
+        ViewPager pager = (ViewPager)findViewById(R.id.pager);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(pager);
+
+        StatePagerPresenter pagerPresenter = new StatePagerPresenter();
+        pagerPresenter.setListener(this);
+
+        PagerViewImp pagerView = new PagerViewImp(pager, getSupportFragmentManager());
+        pagerView.setPresenter(pagerPresenter);
+
+        pagerModule = pagerPresenter;
     }
 
     private void initFloatingButton() {
@@ -257,11 +266,11 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void onBackPressed() {
-        final Fragment frag = getCurrentFragment();
-        if (frag != null && frag.isVisible() && frag instanceof StackFragment) {
-            StackFragment stackFragment = (StackFragment)frag;
-            if (stackFragment.getBackStackSize() > 0) {
-                stackFragment.popFragment(null);
+        final Object module = getCurrentModule();
+        if (module != null && module instanceof StackModule) {
+            StackModule stackModule = (StackModule)module;
+            if (stackModule.getSize() > 0) {
+                stackModule.pop(null);
                 return;
             }
         }
@@ -360,36 +369,34 @@ public class MainActivity extends BaseActivity implements
     // Update data actions
 
     private void updateSets() {
-        QuizletStackFragment stackFragment = getQuizletStackFragment();
-        if (stackFragment != null) {
-            stackFragment.reloadSets();
+        StackModule stackModule = getQuizletStackModule();
+        if (stackModule != null) {
+            stackModule.reloadSets();
         }
 
-        /*
-        QuizletTermListFragment termFragment = getTermListQuizletFragment();
-        if (termFragment != null) {
-            termFragment.reload();
+        ListModuleInterface listModule = getTermListQuizletModule();
+        if (listModule != null) {
+            listModule.reload();
         }
-        */
     }
 
     private void updateCoursesIfNeeded() {
-        if (getCourseListStackFragment() != null) {
+        if (getCourseListStackModule() != null) {
             updateCourses();
         }
     }
 
     private void updateCourses() {
-        CourseListStackFragment stackFragment = getCourseListStackFragment();
-        if (stackFragment != null) {
-            stackFragment.reloadCourses();
+        StackModule stackModule = getCourseListStackModule();
+        if (stackModule != null) {
+            stackModule.reloadCourses();
         }
     }
 
     // Update UI actions
 
     private void updateToolbarBackButton() {
-        StackFragment stackFragment = getStackContainer(pager.getCurrentItem());
+        /*StackFragment stackFragment = getStackContainer(pager.getCurrentItem());
 
         boolean needShowBackButton = false;
         if (stackFragment != null) {
@@ -407,14 +414,25 @@ public class MainActivity extends BaseActivity implements
             });
         } else {
             toolbar.setNavigationIcon(null);
-        }
+        }*/
     }
 
     private void updateTabs() {
-        pagerAdapter.notifyDataSetChanged();
+        //pagerAdapter.notifyDataSetChanged();
     }
 
-    //// Callbacks
+    //// Interface
+
+    // PagerModuleListener
+
+    @Override
+    public int getPageCount() {
+        return 3;
+    }
+
+    @Override
+    public void onCurrentPageChanged() {
+    }
 
     // QuizletService.QuizletServiceListener
 
@@ -461,6 +479,7 @@ public class MainActivity extends BaseActivity implements
 
     // QuizletStackCardsFragment.Listener
 
+    /*
     @Override
     public int getFragmentCount() {
         return 3;
@@ -505,6 +524,7 @@ public class MainActivity extends BaseActivity implements
 
         return title;
     }
+    */
 
     // QuizletStackFragment.Listener
 
@@ -636,10 +656,12 @@ public class MainActivity extends BaseActivity implements
     //// Setters
 
     private void setSortOrder(Preferences.SortOrder sortOrder) {
-        Sortable sortableFragment = (Sortable)getCurrentFragment();
-        if (sortableFragment != null) {
-            sortableFragment.setSortOrder(sortOrder);
-            onSortOrderChanged(sortOrder, sortableFragment);
+        Object module = getCurrentModule();
+
+        if (module instanceof Sortable) {
+            Sortable sortable = (Sortable)module;
+            sortable.setSortOrder(sortOrder);
+            onSortOrderChanged(sortOrder, sortable);
         }
     }
 
@@ -686,10 +708,11 @@ public class MainActivity extends BaseActivity implements
 
     private Preferences.SortOrder getCurrentSortOrder() {
         Preferences.SortOrder sortOrder = Preferences.SortOrder.BY_NAME;
-        Fragment fragment = getCurrentFragment();
-        if (fragment instanceof Sortable) {
-            Sortable sortableFragment = (Sortable)fragment;
-            sortOrder = sortableFragment.getSortOrder();
+        Object module = getCurrentModule();
+
+        if (module instanceof Sortable) {
+            Sortable sortableModule = (Sortable)module;
+            sortOrder = sortableModule.getSortOrder();
         }
 
         return sortOrder;
@@ -698,46 +721,48 @@ public class MainActivity extends BaseActivity implements
     // UI getters
 
     @Nullable
-    private Fragment getCurrentFragment() {
-        return getFragment(pager.getCurrentItem());
+    private Object getCurrentModule() {
+        return getModule(pagerModule.getCurrentIndex());
     }
 
+    /*
     @Nullable
     private View getCurrentFragmentView() {
         Fragment fragment = pagerAdapter.getFragment(pager.getCurrentItem());
         return fragment != null ? fragment.getView() : null;
     }
+    */
 
     @Nullable
-    private QuizletStackFragment getQuizletStackFragment() {
-        return (QuizletStackFragment)getStackContainer(0);
+    private StackModule getQuizletStackModule() {
+        return getStackModule(0);
     }
 
     @Nullable
-    private CourseListStackFragment getCourseListStackFragment() {
-        return (CourseListStackFragment)getStackContainer(2);
+    private StackModule getCourseListStackModule() {
+        return getStackModule(2);
     }
 
     @Nullable
-    private StackFragment getStackContainer(int position) {
-        StackFragment result = null;
+    private StackModule getStackModule(int position) {
+        StackModule result = null;
 
-        Fragment fragment = getFragment(position);
-        if (fragment instanceof StackFragment) {
-            result = (StackFragment)fragment;
+        Object module = getModule(position);
+        if (module instanceof StackModule) {
+            result = (StackModule)module;
         }
 
         return result;
     }
 
     @Nullable
-    private QuizletTermListFragment getTermListQuizletFragment() {
-        return (QuizletTermListFragment)getFragment(1);
+    private ListModuleInterface getTermListQuizletModule() {
+        return (ListModuleInterface)getModule(1);
     }
 
     @Nullable
-    private Fragment getFragment(int i) {
-        return pagerAdapter.getFragment(i);
+    private Object getModule(int i) {
+        return pagerModule.getModuleAtIndex( i);
     }
 
     // Statuses

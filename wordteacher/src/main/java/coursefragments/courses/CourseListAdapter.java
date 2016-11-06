@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import listfragment.listmodule.view.BaseListAdaptor;
+import listmodule.view.BaseListAdaptor;
 import model.Card;
 import model.CardProgress;
 import tools.DeleteTouchHelper;

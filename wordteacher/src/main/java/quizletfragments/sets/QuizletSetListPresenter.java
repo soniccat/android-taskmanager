@@ -7,9 +7,9 @@ import android.support.annotation.Nullable;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 
-import listfragment.CompareStrategyFactory;
-import listfragment.NullStorableListProvider;
-import listfragment.listmodule.presenter.BaseListPresenter;
+import listmodule.CompareStrategyFactory;
+import listmodule.NullStorableListProvider;
+import listmodule.presenter.BaseListPresenter;
 import main.MainApplication;
 import main.Preferences;
 import tools.SortOrderCompareStrategy;

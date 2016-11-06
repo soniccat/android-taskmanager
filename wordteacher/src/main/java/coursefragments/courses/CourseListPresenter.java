@@ -9,9 +9,9 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-import listfragment.CompareStrategyFactory;
-import listfragment.NullStorableListProvider;
-import listfragment.listmodule.presenter.BaseListPresenter;
+import listmodule.CompareStrategyFactory;
+import listmodule.NullStorableListProvider;
+import listmodule.presenter.BaseListPresenter;
 import main.MainApplication;
 import main.Preferences;
 import model.Course;

@@ -1,15 +1,9 @@
 package quizletfragments.sets;
 
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 
-import listfragment.CompareStrategy;
-import listfragment.CompareStrategyFactory;
 import main.Preferences;
 import tools.LongTools;
-import tools.SortOrderCompareStrategy;
 import tools.SortOrderCompareStrategyFactory;
 
 /**

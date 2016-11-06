@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import listfragment.SimpleStorableListProvider;
+import listmodule.SimpleStorableListProvider;
 import model.Course;
 import model.CourseHolder;
 

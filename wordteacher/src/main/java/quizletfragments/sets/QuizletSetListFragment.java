@@ -1,24 +1,15 @@
 package quizletfragments.sets;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.wordteacher.R;
 
-import listfragment.listmodule.view.BaseListAdaptor;
-import listfragment.listmodule.view.BaseListFragment;
-import listfragment.CompareStrategyFactory;
-import listfragment.NullStorableListProvider;
-import main.MainApplication;
-import main.Preferences;
-import tools.SortOrderCompareStrategy;
-import tools.Sortable;
+import listmodule.view.BaseListAdaptor;
+import listmodule.view.BaseListFragment;
 
 /**
  * Created by alexeyglushkov on 07.08.16.

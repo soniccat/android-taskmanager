@@ -6,9 +6,8 @@ import junit.framework.Assert;
 
 import java.util.List;
 
-import coursefragments.courses.CourseListProvider;
-import listfragment.StorableListProvider;
-import listfragment.StorableListProviderFactory;
+import listmodule.StorableListProvider;
+import listmodule.StorableListProviderFactory;
 import model.Card;
 import model.Course;
 import model.CourseHolder;
