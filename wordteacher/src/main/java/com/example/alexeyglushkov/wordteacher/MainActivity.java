@@ -277,7 +277,7 @@ public class MainActivity extends BaseActivity implements
         final Object module = getCurrentModule();
         if (module != null && module instanceof StackModule) {
             StackModule stackModule = (StackModule)module;
-            if (stackModule.getSize() > 0) {
+            if (stackModule.getSize() > 1) {
                 stackModule.pop(null);
                 return;
             }

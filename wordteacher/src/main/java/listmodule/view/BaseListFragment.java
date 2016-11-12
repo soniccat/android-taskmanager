@@ -29,7 +29,17 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
     //// Creation, initialization, restoration
 
     protected void initialize() {
+        initializeAdapter();
+    }
+
+    private void initializeAdapter() {
         adapter = createAdapter();
+    }
+
+    private void initializeAdapterIfNeeded() {
+        if (adapter == null) {
+            initializeAdapter();
+        }
     }
 
     @Override
@@ -42,6 +52,7 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        initializeAdapterIfNeeded();
         recyclerView = (RecyclerView)view.findViewById(R.id.recyclerView);
         loader = view.findViewById(R.id.loader);
 
@@ -90,13 +101,13 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
 
         adapter.cleanup();
         adapter = null;
-        listener = null;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         presenter.onDestroy();
+        listener = null;
     }
 
     //// Actions

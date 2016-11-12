@@ -15,6 +15,7 @@ import listmodule.NullStorableListProvider;
 import listmodule.presenter.BaseListPresenter;
 import main.MainApplication;
 import main.Preferences;
+import pagermodule.PagerModuleItemWithTitle;
 import tools.SortOrderCompareStrategy;
 import tools.Sortable;
 
@@ -22,7 +23,7 @@ import tools.Sortable;
  * Created by alexeyglushkov on 30.10.16.
  */
 
-public class QuizletTermListPresenter extends BaseListPresenter<QuizletTerm> implements Sortable, QuizletService.QuizletServiceListener {
+public class QuizletTermListPresenter extends BaseListPresenter<QuizletTerm> implements Sortable, PagerModuleItemWithTitle, QuizletService.QuizletServiceListener {
     private Bundle savedInstanceState;
 
     //// Events
@@ -89,6 +90,14 @@ public class QuizletTermListPresenter extends BaseListPresenter<QuizletTerm> imp
     @Override
     public void onLoadError(QuizletService service, Error error) {
         view.hideLoading();
+    }
+
+    // PagerModuleItemWithTitle
+
+    @Override
+    public String getTitle() {
+        QuizletSet set = getParentSet();
+        return set != null ? set.getTitle() : null;
     }
 
     // Sortable

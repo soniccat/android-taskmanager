@@ -35,12 +35,16 @@ public abstract class BaseListPresenter<T> implements ListPresenterInterface, Li
     protected ListViewInterface view;
 
     //// Initialization
-
+    public BaseListPresenter() {
+        initialize();
+    }
+/*
     public void initializeIfNeeded() {
         if (providerFactory == null) {
             initialize();
         }
     }
+    */
 
     public void initialize() {
         providerFactory = createProviderFactory();
@@ -56,7 +60,7 @@ public abstract class BaseListPresenter<T> implements ListPresenterInterface, Li
     //// Events
 
     public void onViewCreated(Bundle savedInstanceState) {
-        initializeIfNeeded();
+        //initializeIfNeeded();
 
         if (savedInstanceState != null) {
             compareStrategy = compareStrategyFactory.restore(savedInstanceState);
