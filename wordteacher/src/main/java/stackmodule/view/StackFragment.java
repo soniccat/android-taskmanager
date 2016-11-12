@@ -16,6 +16,7 @@ import junit.framework.Assert;
 
 import java.util.List;
 
+import listmodule.presenter.ListPresenterInterface;
 import stackmodule.StackModuleItemView;
 import stackmodule.presenter.StackPresenter;
 
@@ -24,12 +25,23 @@ import stackmodule.presenter.StackPresenter;
  */
 public class StackFragment extends Fragment implements FragmentManager.OnBackStackChangedListener, StackView {
     protected StackPresenter presenter;
+    protected Class presenterClass;
 
     //// Creation
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (presenter == null && savedInstanceState != null) {
+            try {
+                presenterClass = Class.forName(savedInstanceState.getString("presenterClass"));
+                if (presenterClass != null) {
+                    presenter = (StackPresenter) presenterClass.newInstance();
+                }
+            } catch (Exception e) {
+            }
+        }
     }
 
     @Nullable
@@ -49,7 +61,7 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        presenter.onViewStateRestored(savedInstanceState);
+        presenter.onViewStateRestored(this, savedInstanceState);
     }
 
     //// Events
@@ -77,6 +89,8 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putString("presenterClass", presenterClass.getName());
+        presenter.onSaveInstanceState(outState);
     }
 
     //// Actions
@@ -171,6 +185,7 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
 
     public void setPresenter(StackPresenter presenter) {
         this.presenter = presenter;
+        this.presenterClass = presenter.getClass();
     }
 
     //// Getters

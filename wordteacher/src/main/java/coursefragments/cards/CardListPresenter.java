@@ -9,6 +9,7 @@ import java.util.List;
 import listmodule.CompareStrategyFactory;
 import listmodule.NullStorableListProvider;
 import listmodule.presenter.BaseListPresenter;
+import listmodule.view.ListViewInterface;
 import main.MainApplication;
 import main.Preferences;
 import model.Card;
@@ -28,8 +29,8 @@ public class CardListPresenter extends BaseListPresenter<Card> implements Sortab
     //// Creation, initialization, restoration
 
     @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
+    public void onViewStateRestored(ListViewInterface view, @Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(view, savedInstanceState);
 
         this.savedInstanceState = savedInstanceState;
 

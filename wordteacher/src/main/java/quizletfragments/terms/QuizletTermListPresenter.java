@@ -13,6 +13,7 @@ import java.util.List;
 import listmodule.CompareStrategyFactory;
 import listmodule.NullStorableListProvider;
 import listmodule.presenter.BaseListPresenter;
+import listmodule.view.ListViewInterface;
 import main.MainApplication;
 import main.Preferences;
 import pagermodule.PagerModuleItemWithTitle;
@@ -29,8 +30,8 @@ public class QuizletTermListPresenter extends BaseListPresenter<QuizletTerm> imp
     //// Events
 
     @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
+    public void onViewStateRestored(ListViewInterface view, @Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(view, savedInstanceState);
 
         this.savedInstanceState = savedInstanceState;
 

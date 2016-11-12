@@ -29,10 +29,25 @@ public class StackPresenter implements StackPresenterInterface, PagerModuleItem,
 
     @Override
     public void onViewCreated(Bundle savedInstanceState) {
+        if (factory == null && savedInstanceState != null) {
+            try {
+                Class factoryClass = Class.forName(savedInstanceState.getString("factoryClass"));
+                if (factoryClass != null) {
+                    factory = (StackModuleFactory) factoryClass.newInstance();
+                }
+            } catch (Exception e) {
+            }
+        }
     }
 
     @Override
-    public void onViewStateRestored(Bundle savedInstanceState) {
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString("factoryClass", factory.getClass().getName());
+    }
+
+    @Override
+    public void onViewStateRestored(StackView view, Bundle savedInstanceState) {
+        setView(view);
         if (items.size() == 0) {
             initialize();
         }

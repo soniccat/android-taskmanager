@@ -10,6 +10,7 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import listmodule.CompareStrategyFactory;
 import listmodule.NullStorableListProvider;
 import listmodule.presenter.BaseListPresenter;
+import listmodule.view.ListViewInterface;
 import main.MainApplication;
 import main.Preferences;
 import tools.SortOrderCompareStrategy;
@@ -24,8 +25,8 @@ public class QuizletSetListPresenter extends BaseListPresenter<QuizletSet> imple
     private Bundle savedInstanceState;
 
     @Override
-    public void onViewStateRestored(@Nullable final Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
+    public void onViewStateRestored(ListViewInterface view, @Nullable final Bundle savedInstanceState) {
+        super.onViewStateRestored(view, savedInstanceState);
         getQuizletService().addListener(this);
 
         this.savedInstanceState = savedInstanceState;
