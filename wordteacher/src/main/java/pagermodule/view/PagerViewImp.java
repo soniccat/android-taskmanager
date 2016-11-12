@@ -8,6 +8,7 @@ import android.support.v4.view.ViewPager;
 import java.util.ArrayList;
 import java.util.List;
 
+import pagermodule.PagerModuleItemWithTitle;
 import pagermodule.presenter.PagerPresenter;
 
 /**
@@ -40,6 +41,17 @@ public class PagerViewImp implements PagerView, PagerAdapter.Listener, ViewPager
 
     //// Interface
 
+    // PagerView
+
+    public void updateView(int index) {
+        pagerAdapter.notifyDataSetChanged();
+    }
+
+    public void setItemCount(int itemCount) {
+        this.itemCount = itemCount;
+        pagerAdapter.notifyDataSetChanged();
+    }
+
     // PagerAdapter.Listener
 
     @Override
@@ -54,14 +66,8 @@ public class PagerViewImp implements PagerView, PagerAdapter.Listener, ViewPager
 
     @Override
     public String getTitleAtIndex(int index) {
-        String title = null;
-        Fragment fragment = getFragmentAtIndex(index);
-
-        if (fragment != null && fragment instanceof PagerModuleItemWithTitle) {
-            PagerModuleItemWithTitle fragmentWithTitle = (PagerModuleItemWithTitle)fragment;
-            title = fragmentWithTitle.getTitle();
-
-        } else if (index < defaultTitles.size()){
+        String title = presenter.getViewTitleAtIndex(index);
+        if (title == null && index < defaultTitles.size()){
             title = defaultTitles.get(index);
         }
 
@@ -87,11 +93,6 @@ public class PagerViewImp implements PagerView, PagerAdapter.Listener, ViewPager
 
     public void setDefaultTitles(List<String> defaultTitles) {
         this.defaultTitles = defaultTitles;
-    }
-
-    public void setItemCount(int itemCount) {
-        this.itemCount = itemCount;
-        pagerAdapter.notifyDataSetChanged();
     }
 
     public void setPresenter(PagerPresenter presenter) {

@@ -8,6 +8,7 @@ import pagermodule.PagerModuleItem;
 import quizletfragments.QuizletStackModuleFactory;
 import stackmodule.StackModule;
 import stackmodule.StackModuleFactory;
+import stackmodule.StackModuleListener;
 import stackmodule.presenter.StackPresenter;
 import stackmodule.view.StackFragment;
 
@@ -17,7 +18,7 @@ import stackmodule.view.StackFragment;
 
 public class MainPagerFactory implements PagerModuleFactory {
     @Override
-    public PagerModuleItem moduleAtIndex(int i, PagerModule stackModule) {
+    public PagerModuleItem moduleAtIndex(int i, final PagerModule stackModule) {
         PagerModuleItem item = null;
         switch (i) {
             case 0:
@@ -27,6 +28,12 @@ public class MainPagerFactory implements PagerModuleFactory {
                 StackPresenter stackPresenter = new StackPresenter();
                 stackPresenter.setFactory(factory);
                 stackPresenter.setView(view);
+                stackPresenter.setListener(new StackModuleListener() {
+                    @Override
+                    public void onBackStackChanged() {
+                        stackModule.updatePage(0);
+                    }
+                });
                 view.setPresenter(stackPresenter);
 
                 item = stackPresenter;

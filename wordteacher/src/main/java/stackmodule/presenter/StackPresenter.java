@@ -8,7 +8,7 @@ import java.util.List;
 
 import pagermodule.PagerModuleItem;
 import pagermodule.PagerModuleItemView;
-import pagermodule.view.PagerModuleItemWithTitle;
+import pagermodule.PagerModuleItemWithTitle;
 import stackmodule.StackModuleFactory;
 import stackmodule.StackModuleItem;
 import stackmodule.StackModuleListener;

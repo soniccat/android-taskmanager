@@ -1,5 +1,7 @@
 package pagermodule.presenter;
 
+import android.support.annotation.Nullable;
+
 import pagermodule.PagerModule;
 import pagermodule.PagerModuleFactory;
 import pagermodule.PagerModuleItem;
@@ -18,5 +20,7 @@ public interface PagerPresenter extends PagerModule {
 
     void onPageChanged(int i);
 
+    // to request by view
     PagerModuleItemView getViewAtIndex(int i);
+    @Nullable String getViewTitleAtIndex(int i);
 }

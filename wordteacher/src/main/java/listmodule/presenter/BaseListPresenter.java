@@ -17,7 +17,7 @@ import listmodule.StorableListProviderFactory;
 import listmodule.ListModuleInterface;
 import listmodule.view.ListViewInterface;
 import main.Preferences;
-import pagermodule.view.PagerModuleItemWithTitle;
+import pagermodule.PagerModuleItemWithTitle;
 import stackmodule.StackModuleItem;
 import stackmodule.StackModuleItemView;
 

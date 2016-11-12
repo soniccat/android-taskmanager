@@ -1,5 +1,6 @@
 package pagermodule.presenter;
 
+import android.support.annotation.Nullable;
 import android.util.SparseArray;
 
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.List;
 import pagermodule.PagerModuleFactory;
 import pagermodule.PagerModuleItem;
 import pagermodule.PagerModuleItemView;
+import pagermodule.PagerModuleItemWithTitle;
 import pagermodule.PagerModuleListener;
 import pagermodule.view.PagerView;
 import stackmodule.StackModuleFactory;
@@ -69,6 +71,10 @@ public class StatePagerPresenter implements PagerPresenter {
         return i <= currentIndex - fillCount || i >= currentIndex + fillCount;
     }
 
+    public void updatePage(int i) {
+        view.updateView(i);
+    }
+
     //// Setter
 
     @Override
@@ -107,5 +113,17 @@ public class StatePagerPresenter implements PagerPresenter {
     @Override
     public PagerModuleItemView getViewAtIndex(int i) {
         return getModuleAtIndex(i).getView();
+    }
+
+    @Override
+    @Nullable public String getViewTitleAtIndex(int i) {
+        PagerModuleItem item = getModuleAtIndex(i);
+        String str = null;
+
+        if (item instanceof PagerModuleItemWithTitle) {
+            str = ((PagerModuleItemWithTitle)item).getTitle();
+        }
+
+        return str;
     }
 }

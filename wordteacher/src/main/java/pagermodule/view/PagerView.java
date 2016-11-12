@@ -6,4 +6,5 @@ package pagermodule.view;
 
 public interface PagerView {
     void setItemCount(int itemCount);
+    void updateView(int index);
 }

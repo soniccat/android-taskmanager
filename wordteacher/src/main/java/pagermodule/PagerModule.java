@@ -13,4 +13,6 @@ public interface PagerModule {
 
     int getCurrentIndex();
     PagerModuleItem getModuleAtIndex(int i);
+
+    void updatePage(int i); // to update title
 }
