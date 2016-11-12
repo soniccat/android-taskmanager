@@ -23,6 +23,15 @@ public class QuizletStackModuleFactory implements StackModuleFactory {
     public StackModuleItem rootModule(final StackModule stackModule) {
         QuizletSetListPresenter listPresenter = new QuizletSetListPresenter();
         QuizletSetListFragment fragment = QuizletSetListFragment.create();
+        setSetListFragmentListener(fragment, stackModule);
+
+        listPresenter.setView(fragment);
+        fragment.setPresenter(listPresenter);
+
+        return listPresenter;
+    }
+
+    private void setSetListFragmentListener(QuizletSetListFragment fragment, final StackModule stackModule) {
         fragment.setListener(new BaseListFragment.Listener<QuizletSet>() {
             @Override
             public void onRowClicked(QuizletSet data) {
@@ -37,17 +46,22 @@ public class QuizletStackModuleFactory implements StackModuleFactory {
             public void onRowViewDeleted(QuizletSet data) {
             }
         });
-
-        listPresenter.setView(fragment);
-        fragment.setPresenter(listPresenter);
-
-        return listPresenter;
     }
 
     @Override
     public StackModuleItem moduleFromObject(Object object, StackModule stackModule) {
         QuizletTermListPresenter listPresenter = new QuizletTermListPresenter();
         QuizletTermListFragment fragment = QuizletTermListFragment.create();
+        setTermListFragmentListener(fragment);
+
+        listPresenter.setView(fragment);
+        fragment.setPresenter(listPresenter);
+        listPresenter.setTermSet((QuizletSet) object);
+
+        return listPresenter;
+    }
+
+    private void setTermListFragmentListener(QuizletTermListFragment fragment) {
         fragment.setListener(new BaseListFragment.Listener<QuizletTerm>() {
             @Override
             public void onRowClicked(QuizletTerm data) {
@@ -61,18 +75,21 @@ public class QuizletStackModuleFactory implements StackModuleFactory {
             public void onRowViewDeleted(QuizletTerm data) {
             }
         });
-
-        listPresenter.setView(fragment);
-        fragment.setPresenter(listPresenter);
-        listPresenter.setTermSet((QuizletSet) object);
-
-        return listPresenter;
     }
 
     @Override
-    public StackModuleItem restoreModule(Object object, StackModule stackModule) {
+    public StackModuleItem restoreModule(Object viewObject, StackModule stackModule) {
+        StackModuleItem item = null;
+        if (viewObject instanceof QuizletSetListFragment) {
+            QuizletSetListFragment setListFragment = (QuizletSetListFragment)viewObject;
+            item = (StackModuleItem)setListFragment.getPresenter();
+            setSetListFragmentListener(setListFragment, stackModule);
 
+        } else if (viewObject instanceof QuizletTermListFragment) {
+            QuizletTermListFragment termListFragment = (QuizletTermListFragment)viewObject;
+            item = (StackModuleItem)termListFragment.getPresenter();
+        }
 
-        return null;
+        return item;
     }
 }

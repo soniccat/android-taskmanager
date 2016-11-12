@@ -7,5 +7,5 @@ package stackmodule;
 public interface StackModuleFactory {
     StackModuleItem rootModule(StackModule stackModule);
     StackModuleItem moduleFromObject(Object object, StackModule stackModule);
-    StackModuleItem restoreModule(Object object, StackModule stackModule);
+    StackModuleItem restoreModule(Object viewObject, StackModule stackModule);
 }

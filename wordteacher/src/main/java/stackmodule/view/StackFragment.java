@@ -14,6 +14,7 @@ import com.example.alexeyglushkov.wordteacher.R;
 
 import junit.framework.Assert;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import listmodule.presenter.ListPresenterInterface;
@@ -61,7 +62,16 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        presenter.onViewStateRestored(this, savedInstanceState);
+
+        List<Object> childs = new ArrayList<>();
+        List<Fragment> fragments = getChildFragmentManager().getFragments();
+        if (fragments != null) {
+            for (Fragment fragment : getChildFragmentManager().getFragments()) {
+                childs.add(fragment);
+            }
+        }
+
+        presenter.onViewStateRestored(this, childs, savedInstanceState);
     }
 
     //// Events

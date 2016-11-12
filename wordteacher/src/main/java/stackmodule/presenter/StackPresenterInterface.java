@@ -2,6 +2,8 @@ package stackmodule.presenter;
 
 import android.os.Bundle;
 
+import java.util.List;
+
 import stackmodule.StackModule;
 import stackmodule.StackModuleFactory;
 import stackmodule.StackModuleListener;
@@ -15,7 +17,7 @@ public interface StackPresenterInterface extends StackModule {
     void onBackStackChanged();
     void onViewCreated(Bundle savedInstanceState);
     void onSaveInstanceState(Bundle outState);
-    void onViewStateRestored(StackView view, Bundle savedInstanceState);
+    void onViewStateRestored(StackView view, List<Object> childs, Bundle savedInstanceState);
 
     void setListener(StackModuleListener listener);
     void setFactory(StackModuleFactory factory);

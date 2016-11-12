@@ -46,8 +46,13 @@ public class StackPresenter implements StackPresenterInterface, PagerModuleItem,
     }
 
     @Override
-    public void onViewStateRestored(StackView view, Bundle savedInstanceState) {
+    public void onViewStateRestored(StackView view, List<Object> childs, Bundle savedInstanceState) {
         setView(view);
+        for (int i=0; i<childs.size(); ++i) {
+            StackModuleItem item = factory.restoreModule(childs.get(i), this);
+            items.add(item);
+        }
+
         if (items.size() == 0) {
             initialize();
         }

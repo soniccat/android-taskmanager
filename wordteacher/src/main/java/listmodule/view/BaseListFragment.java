@@ -19,7 +19,6 @@ import listmodule.presenter.ListPresenterInterface;
  */
 public abstract class BaseListFragment<T> extends Fragment implements ListViewInterface<T> {
     private ListPresenterInterface presenter;
-    protected Class presenterClass; // to restore presenter
 
     protected RecyclerView recyclerView;
     protected View loader;
@@ -49,7 +48,7 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
 
         if (presenter == null && savedInstanceState != null) {
             try {
-                presenterClass = Class.forName(savedInstanceState.getString("presenterClass"));
+                Class presenterClass = Class.forName(savedInstanceState.getString("presenterClass"));
                 if (presenterClass != null) {
                     presenter = (ListPresenterInterface) presenterClass.newInstance();
                 }
@@ -77,7 +76,7 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("presenterClass", presenterClass.getName());
+        outState.putString("presenterClass", presenter.getClass().getName());
         presenter.store(outState);
     }
 
@@ -175,7 +174,10 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
 
     public void setPresenter(ListPresenterInterface presenter) {
         this.presenter = presenter;
-        this.presenterClass = presenter.getClass();
+    }
+
+    public ListPresenterInterface getPresenter() {
+        return presenter;
     }
 
     // UI Setters
