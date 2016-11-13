@@ -70,7 +70,10 @@ public class PagerViewImp implements PagerView, PagerAdapter.Listener, ViewPager
 
         for (int i=0; i<fragments.size(); ++i) {
             int key = fragments.keyAt(i);
-            childs.put(key, fragments.get(key));
+            Fragment fr = fragments.get(key);
+            if (fr != null) {
+                childs.put(key, fr);
+            }
         }
 
         presenter.onViewStateRestored(this, childs, savedInstanceState);

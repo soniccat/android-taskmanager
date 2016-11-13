@@ -66,7 +66,9 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
         List<Fragment> fragments = getChildFragmentManager().getFragments();
         if (fragments != null) {
             for (Fragment fragment : getChildFragmentManager().getFragments()) {
-                childs.add(fragment);
+                if (fragment != null) {
+                    childs.add(fragment);
+                }
             }
         }
 
