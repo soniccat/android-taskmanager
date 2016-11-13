@@ -1,15 +1,18 @@
 package pagermodule.view;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.util.SparseArray;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import pagermodule.PagerModuleItemWithTitle;
 import pagermodule.presenter.PagerPresenter;
+import stackmodule.presenter.StackPresenter;
 
 /**
  * Created by alexeyglushkov on 05.11.16.
@@ -31,12 +34,46 @@ public class PagerViewImp implements PagerView, PagerAdapter.Listener, ViewPager
         initialize(manager);
     }
 
+    public void onViewCreated(Bundle savedInstanceState) {
+        if (presenter == null && savedInstanceState != null) {
+            try {
+                Class presenterClass = Class.forName(savedInstanceState.getString("presenterClass"));
+                if (presenterClass != null) {
+                    presenter = (PagerPresenter) presenterClass.newInstance();
+                    presenter.setView(this);
+                }
+            } catch (Exception e) {
+            }
+        }
+
+        presenter.onViewCreated(savedInstanceState);
+    }
+
     public void initialize(FragmentManager fragmentManager) {
         viewPager.addOnPageChangeListener(this);
 
         pagerAdapter = new PagerAdapter(fragmentManager);
         pagerAdapter.setListener(this);
         viewPager.setAdapter(pagerAdapter);
+    }
+
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString("presenterClass", presenter.getClass().getName());
+        presenter.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        // TODO: create an util method
+        SparseArray<Fragment> fragments = pagerAdapter.getFragments();
+        SparseArray<Object> childs = new SparseArray<>();
+
+        for (int i=0; i<fragments.size(); ++i) {
+            int key = fragments.keyAt(i);
+            childs.put(key, fragments.get(key));
+        }
+
+        presenter.onViewStateRestored(this, childs, savedInstanceState);
     }
 
     //// Interface
@@ -97,5 +134,13 @@ public class PagerViewImp implements PagerView, PagerAdapter.Listener, ViewPager
 
     public void setPresenter(PagerPresenter presenter) {
         this.presenter = presenter;
+        this.presenter.setView(this);
+    }
+
+    //// Getter
+
+
+    public PagerPresenter getPresenter() {
+        return presenter;
     }
 }

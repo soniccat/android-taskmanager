@@ -1,5 +1,6 @@
 package pagermodule.presenter;
 
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
 
@@ -29,6 +30,38 @@ public class StatePagerPresenter implements PagerPresenter {
     private int currentIndex;
     private int fillCount = 2;
     private SparseArray<PagerModuleItem> items = new SparseArray<>();
+
+    //// Creation and restoration
+
+    @Override
+    public void onViewCreated(Bundle savedInstanceState) {
+        if (factory == null && savedInstanceState != null) {
+            try {
+                Class factoryClass = Class.forName(savedInstanceState.getString("factoryClass"));
+                if (factoryClass != null) {
+                    factory = (PagerModuleFactory) factoryClass.newInstance();
+                }
+            } catch (Exception e) {
+            }
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString("factoryClass", factory.getClass().getName());
+    }
+
+    @Override
+    public void onViewStateRestored(PagerView view, SparseArray<Object> childs, Bundle savedInstanceState) {
+        setView(view);
+        for (int i=0; i<childs.size(); ++i) {
+            int key = childs.keyAt(i);
+
+            PagerModuleItem item = factory.restoreModule(key, childs.get(i), this);
+            items.put(key, item);
+        }
+    }
+
 
     //// Events
 
@@ -125,5 +158,10 @@ public class StatePagerPresenter implements PagerPresenter {
         }
 
         return str;
+    }
+
+    @Override
+    public PagerView getView() {
+        return view;
     }
 }

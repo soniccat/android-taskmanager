@@ -68,6 +68,13 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         if (bundle != null) {
             SparceArrayTools.storeSparceArray(titles, bundle, 0);
         }
+
+        int[] fragmentKeys = new int[fragments.size()];
+        for (int i=0; i<fragments.size(); ++i) {
+            fragmentKeys[i] = fragments.keyAt(i);
+        }
+
+        bundle.putIntArray("PagerAdapter_fragmentKeys", fragmentKeys);
         return bundle;
     }
 
@@ -76,6 +83,13 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         super.restoreState(state, loader);
         Bundle bundle = (Bundle)state;
         titles = SparceArrayTools.readSparceArray(bundle, 0);
+
+        int[] fragmentKeys = bundle.getIntArray("PagerAdapter_fragmentKeys");
+        for (int i = 0; i < fragmentKeys.length; ++i) {
+            int key = fragmentKeys[i];
+            Fragment fr = (Fragment) instantiateItem(null, key);
+            fragments.put(key, fr);
+        }
     }
 
     public @Nullable Fragment getFragment(int i) {
@@ -84,6 +98,10 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     private int getFragmentIndex(Fragment fragment) {
         return fragments.indexOfValue(fragment);
+    }
+
+    public SparseArray<Fragment> getFragments() {
+        return fragments;
     }
 
     public interface Listener {

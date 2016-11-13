@@ -52,7 +52,7 @@ public class QuizletStackModuleFactory implements StackModuleFactory {
     public StackModuleItem moduleFromObject(Object object, StackModule stackModule) {
         QuizletTermListPresenter listPresenter = new QuizletTermListPresenter();
         QuizletTermListFragment fragment = QuizletTermListFragment.create();
-        setTermListFragmentListener(fragment);
+        setTermListFragmentListener(fragment, stackModule);
 
         listPresenter.setView(fragment);
         fragment.setPresenter(listPresenter);
@@ -61,7 +61,7 @@ public class QuizletStackModuleFactory implements StackModuleFactory {
         return listPresenter;
     }
 
-    private void setTermListFragmentListener(QuizletTermListFragment fragment) {
+    private void setTermListFragmentListener(QuizletTermListFragment fragment, StackModule stackModule) {
         fragment.setListener(new BaseListFragment.Listener<QuizletTerm>() {
             @Override
             public void onRowClicked(QuizletTerm data) {
@@ -88,6 +88,7 @@ public class QuizletStackModuleFactory implements StackModuleFactory {
         } else if (viewObject instanceof QuizletTermListFragment) {
             QuizletTermListFragment termListFragment = (QuizletTermListFragment)viewObject;
             item = (StackModuleItem)termListFragment.getPresenter();
+            setTermListFragmentListener(termListFragment, stackModule);
         }
 
         return item;

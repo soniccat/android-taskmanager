@@ -26,7 +26,6 @@ import stackmodule.presenter.StackPresenter;
  */
 public class StackFragment extends Fragment implements FragmentManager.OnBackStackChangedListener, StackView {
     protected StackPresenter presenter;
-    protected Class presenterClass;
 
     //// Creation
 
@@ -36,7 +35,7 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
 
         if (presenter == null && savedInstanceState != null) {
             try {
-                presenterClass = Class.forName(savedInstanceState.getString("presenterClass"));
+                Class presenterClass = Class.forName(savedInstanceState.getString("presenterClass"));
                 if (presenterClass != null) {
                     presenter = (StackPresenter) presenterClass.newInstance();
                 }
@@ -99,7 +98,7 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("presenterClass", presenterClass.getName());
+        outState.putString("presenterClass", presenter.getClass().getName());
         presenter.onSaveInstanceState(outState);
     }
 
@@ -195,7 +194,6 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
 
     public void setPresenter(StackPresenter presenter) {
         this.presenter = presenter;
-        this.presenterClass = presenter.getClass();
     }
 
     //// Getters
@@ -240,6 +238,10 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
     protected Fragment getFragment(int index) {
         List<Fragment> list = getChildFragmentManager().getFragments();
         return list != null && index < list.size() ? list.get(index) : null;
+    }
+
+    public StackPresenter getPresenter() {
+        return presenter;
     }
 
     // States

@@ -18,7 +18,7 @@ import stackmodule.view.StackFragment;
 
 public class MainPagerFactory implements PagerModuleFactory {
     @Override
-    public PagerModuleItem moduleAtIndex(int i, final PagerModule stackModule) {
+    public PagerModuleItem moduleAtIndex(int i, final PagerModule pagerModule) {
         PagerModuleItem item = null;
         switch (i) {
             case 0:
@@ -28,12 +28,7 @@ public class MainPagerFactory implements PagerModuleFactory {
                 StackPresenter stackPresenter = new StackPresenter();
                 stackPresenter.setFactory(factory);
                 stackPresenter.setView(view);
-                stackPresenter.setListener(new StackModuleListener() {
-                    @Override
-                    public void onBackStackChanged() {
-                        stackModule.updatePage(0);
-                    }
-                });
+                setStackListener(pagerModule, stackPresenter);
                 view.setPresenter(stackPresenter);
 
                 item = stackPresenter;
@@ -47,8 +42,26 @@ public class MainPagerFactory implements PagerModuleFactory {
         return item;
     }
 
+    private void setStackListener(final PagerModule pagerModule, StackPresenter stackPresenter) {
+        stackPresenter.setListener(new StackModuleListener() {
+            @Override
+            public void onBackStackChanged() {
+                pagerModule.updatePage(0);
+            }
+        });
+    }
+
     @Override
-    public PagerModuleItem restoreModule(int i, PagerModule stackModule) {
-        return null;
+    public PagerModuleItem restoreModule(int i, Object viewObject, PagerModule pagerModule) {
+        PagerModuleItem item = null;
+
+        if (i == 0) {
+            StackFragment view = (StackFragment)viewObject;
+            setStackListener(pagerModule, view.getPresenter());
+
+            item = view.getPresenter();
+        }
+
+        return item;
     }
 }

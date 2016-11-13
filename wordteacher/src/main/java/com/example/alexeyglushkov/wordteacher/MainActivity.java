@@ -42,6 +42,7 @@ import model.Course;
 import model.CourseHolder;
 import pagermodule.PagerModule;
 import pagermodule.PagerModuleListener;
+import pagermodule.presenter.PagerPresenter;
 import pagermodule.presenter.StatePagerPresenter;
 import pagermodule.view.PagerView;
 import pagermodule.view.PagerViewImp;
@@ -79,7 +80,7 @@ public class MainActivity extends BaseActivity implements
         setContentView(R.layout.activity_main);
 
         setToolbar();
-        initPager();
+        initPager(savedInstanceState);
         initFloatingButton();
 
         if (savedInstanceState != null) {
@@ -116,6 +117,24 @@ public class MainActivity extends BaseActivity implements
         });
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        PagerPresenter pagerPresenter = (PagerPresenter)pagerModule;
+        pagerPresenter.getView().onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        PagerPresenter pagerPresenter = (PagerPresenter)pagerModule;
+        pagerPresenter.getView().onRestoreInstanceState(savedInstanceState);
+
+        pagerModule.reload();
+    }
+
     private void restoreFragmentListener(Fragment fragment) {
         // while restoration pagerAdapter could be null
         /*if (fragment instanceof QuizletStackFragment) {
@@ -139,27 +158,39 @@ public class MainActivity extends BaseActivity implements
         setSupportActionBar(toolbar);
     }
 
-    private void initPager() {
+    private void initPager(Bundle savedInstanceState) {
         ViewPager pager = (ViewPager)findViewById(R.id.pager);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(pager);
 
-        createPagerModule(pager);
-        pagerModule.reload();
+        createPagerModule(pager, savedInstanceState);
+
+        if (savedInstanceState == null) {
+            pagerModule.reload();
+        }
     }
 
-    private void createPagerModule(ViewPager pager) {
-        MainPagerFactory factory = new MainPagerFactory();
-
-        StatePagerPresenter pagerPresenter = new StatePagerPresenter();
-        pagerPresenter.setListener(this);
-        pagerPresenter.setFactory(factory);
-
+    private void createPagerModule(ViewPager pager, Bundle savedInstanceState) {
         PagerViewImp pagerView = new PagerViewImp(pager, getSupportFragmentManager());
-        pagerView.setPresenter(pagerPresenter);
-        pagerPresenter.setView(pagerView);
 
-        pagerModule = pagerPresenter;
+        if (savedInstanceState == null) {
+            MainPagerFactory factory = new MainPagerFactory();
+
+            StatePagerPresenter pagerPresenter = new StatePagerPresenter();
+            pagerPresenter.setFactory(factory);
+
+            pagerView.setPresenter(pagerPresenter);
+            pagerPresenter.setView(pagerView);
+            pagerView.onViewCreated(null);
+
+        } else {
+            pagerView.onViewCreated(savedInstanceState);
+        }
+
+        PagerPresenter presenter = pagerView.getPresenter();
+        presenter.setListener(this);
+
+        pagerModule = presenter;
     }
 
     private void initFloatingButton() {

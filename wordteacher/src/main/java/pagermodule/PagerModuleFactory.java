@@ -9,5 +9,5 @@ import stackmodule.StackModuleItem;
 
 public interface PagerModuleFactory {
     PagerModuleItem moduleAtIndex(int i, PagerModule stackModule);
-    PagerModuleItem restoreModule(int i, PagerModule stackModule);
+    PagerModuleItem restoreModule(int i, Object viewObject, PagerModule stackModule);
 }
