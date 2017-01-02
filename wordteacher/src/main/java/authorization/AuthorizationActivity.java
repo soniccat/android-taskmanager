@@ -61,8 +61,10 @@ public class AuthorizationActivity extends AppCompatActivity implements OAuthWeb
     public void finish() {
         super.finish();
 
-        AuthActivityProxy.setCurrentActivity(null);
-        AuthActivityProxy.setCurrentCallback(null);
+        if (AuthActivityProxy.getCurrentActivity() == this) {
+            AuthActivityProxy.setCurrentActivity(null);
+            AuthActivityProxy.setCurrentCallback(null);
+        }
     }
 
     @Override
