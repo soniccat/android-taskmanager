@@ -150,4 +150,8 @@ public class StackPresenter implements StackPresenterInterface, PagerModuleItem,
         int size = getSize();
         return size > 0 ? getModuleAtIndex(size - 1) : null;
     }
+
+    public StackModuleFactory getFactory() {
+        return factory;
+    }
 }

@@ -19,6 +19,9 @@ import stackmodule.StackModuleItem;
  */
 
 public class QuizletStackModuleFactory implements StackModuleFactory {
+    private BaseListFragment.Listener<QuizletSet> quizletSetListener;
+    private BaseListFragment.Listener<QuizletTerm> quizletTermListener;
+
     @Override
     public StackModuleItem rootModule(final StackModule stackModule) {
         QuizletSetListPresenter listPresenter = new QuizletSetListPresenter();
@@ -40,10 +43,16 @@ public class QuizletStackModuleFactory implements StackModuleFactory {
 
             @Override
             public void onRowMenuClicked(QuizletSet data, View view) {
+                if (quizletSetListener != null) {
+                    quizletSetListener.onRowMenuClicked(data, view);
+                }
             }
 
             @Override
             public void onRowViewDeleted(QuizletSet data) {
+                if (quizletSetListener != null) {
+                    quizletSetListener.onRowViewDeleted(data);
+                }
             }
         });
     }
@@ -65,14 +74,23 @@ public class QuizletStackModuleFactory implements StackModuleFactory {
         fragment.setListener(new BaseListFragment.Listener<QuizletTerm>() {
             @Override
             public void onRowClicked(QuizletTerm data) {
+                if (quizletTermListener != null) {
+                    quizletTermListener.onRowClicked(data);
+                }
             }
 
             @Override
             public void onRowMenuClicked(QuizletTerm data, View view) {
+                if (quizletTermListener != null) {
+                    quizletTermListener.onRowMenuClicked(data, view);
+                }
             }
 
             @Override
             public void onRowViewDeleted(QuizletTerm data) {
+                if (quizletTermListener != null) {
+                    quizletTermListener.onRowViewDeleted(data);
+                }
             }
         });
     }
@@ -92,5 +110,15 @@ public class QuizletStackModuleFactory implements StackModuleFactory {
         }
 
         return item;
+    }
+
+    //// Setters
+
+    public void setQuizletSetListener(BaseListFragment.Listener<QuizletSet> quizletSetListener) {
+        this.quizletSetListener = quizletSetListener;
+    }
+
+    public void setQuizletTermListener(BaseListFragment.Listener<QuizletTerm> quizletTermListener) {
+        this.quizletTermListener = quizletTermListener;
     }
 }

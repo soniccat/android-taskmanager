@@ -164,4 +164,8 @@ public class StatePagerPresenter implements PagerPresenter {
     public PagerView getView() {
         return view;
     }
+
+    public PagerModuleFactory getFactory() {
+        return factory;
+    }
 }

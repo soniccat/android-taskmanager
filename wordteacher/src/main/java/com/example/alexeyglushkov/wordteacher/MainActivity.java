@@ -23,6 +23,7 @@ import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProxy;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
+import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.service.CachableHttpLoadTask;
 import com.example.alexeyglushkov.streamlib.CancelError;
@@ -46,6 +47,7 @@ import pagermodule.presenter.PagerPresenter;
 import pagermodule.presenter.StatePagerPresenter;
 import pagermodule.view.PagerView;
 import pagermodule.view.PagerViewImp;
+import quizletfragments.sets.QuizletSetFragmentMenuListener;
 import stackmodule.StackModule;
 import tools.Sortable;
 import quizletfragments.terms.QuizletTermFragmentMenuListener;
@@ -129,8 +131,10 @@ public class MainActivity extends BaseActivity implements
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
-        PagerPresenter pagerPresenter = (PagerPresenter)pagerModule;
+        StatePagerPresenter pagerPresenter = (StatePagerPresenter)pagerModule;
         pagerPresenter.getView().onRestoreInstanceState(savedInstanceState);
+        MainPagerFactory factory = (MainPagerFactory)pagerPresenter.getFactory();
+        factory.setQuizletSetListener(createSetMenuListener());
 
         pagerModule.reload();
     }
@@ -175,6 +179,7 @@ public class MainActivity extends BaseActivity implements
 
         if (savedInstanceState == null) {
             MainPagerFactory factory = new MainPagerFactory();
+            factory.setQuizletSetListener(createSetMenuListener());
 
             StatePagerPresenter pagerPresenter = new StatePagerPresenter();
             pagerPresenter.setFactory(factory);
@@ -602,6 +607,43 @@ public class MainActivity extends BaseActivity implements
     }
 
     //// Creation methods
+
+    @NonNull
+    private QuizletSetFragmentMenuListener createSetMenuListener() {
+        return new QuizletSetFragmentMenuListener(this, getCourseHolder(), new QuizletSetFragmentMenuListener.Listener<QuizletSet>() {
+            @Override
+            public void onRowClicked(QuizletSet set) {
+                // Handled inside QuizletStackModuleFactory
+            }
+
+            @Override
+            public void onDataDeletionCancelled(QuizletSet data) {
+            }
+
+            @Override
+            public void onDataDeleted(QuizletSet data, Exception exception) {
+            }
+
+            @Override
+            public void onCourseCreated(Course course, Exception exception) {
+                MainActivity.this.onCourseChanged(course, exception);
+            }
+
+            @Override
+            public void onCardsAdded(Course course, Exception exception) {
+                MainActivity.this.onCourseChanged(course, exception);
+            }
+
+            @Override
+            public ViewGroup getDialogContainer() {
+                return (ViewGroup) getRootView();
+            }
+
+            @Override
+            public void onCourseChanged(Course course) {
+            }
+        });
+    }
 
     @NonNull
     private QuizletTermFragmentMenuListener createMenuListener() {
