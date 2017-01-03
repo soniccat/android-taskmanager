@@ -114,6 +114,11 @@ public class PagerViewImp implements PagerView, PagerAdapter.Listener, ViewPager
         return title;
     }
 
+    @Override
+    public void onPagerAdapterStateRestored(int count) {
+        itemCount = count; // store to have ViewPager restored correctly
+    }
+
     // ViewPager.OnPageChangeListener
 
     @Override

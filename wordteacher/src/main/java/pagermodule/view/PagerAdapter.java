@@ -75,6 +75,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         }
 
         bundle.putIntArray("PagerAdapter_fragmentKeys", fragmentKeys);
+        bundle.putInt("PagerAdapter_getCount", getCount());
         return bundle;
     }
 
@@ -90,6 +91,9 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
             Fragment fr = (Fragment) instantiateItem(null, key);
             fragments.put(key, fr);
         }
+
+        int pageCount = bundle.getInt("PagerAdapter_getCount");
+        listener.onPagerAdapterStateRestored(pageCount);
     }
 
     public @Nullable Fragment getFragment(int i) {
@@ -108,5 +112,6 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         int getFragmentCount();
         Fragment getFragmentAtIndex(int index);
         String getTitleAtIndex(int index);
+        void onPagerAdapterStateRestored(int count);
     }
 }
