@@ -147,7 +147,7 @@ public class CourseListStackFragment extends StackFragment implements Sortable {
 
             @Override
             public View getSnackBarViewContainer() {
-                return getView();
+                return getStackModuleItemView();
             }
         });
     }
@@ -180,7 +180,7 @@ public class CourseListStackFragment extends StackFragment implements Sortable {
 
             @Override
             public View getSnackBarViewContainer() {
-                return getView();
+                return getStackModuleItemView();
             }
         });
     }*/

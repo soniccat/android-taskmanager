@@ -6,5 +6,5 @@ package stackmodule;
 
 public interface StackModuleItem {
     Object getObject();
-    StackModuleItemView getView();
+    StackModuleItemView getStackModuleItemView();
 }

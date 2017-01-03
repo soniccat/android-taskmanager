@@ -133,7 +133,7 @@ public class QuizletStackFragment extends StackFragment implements Sortable {
 
             @Override
             public ViewGroup getDialogContainer() {
-                return (ViewGroup) getView();
+                return (ViewGroup) getStackModuleItemView();
             }
 
             @Override
@@ -164,7 +164,7 @@ public class QuizletStackFragment extends StackFragment implements Sortable {
 
             @Override
             public ViewGroup getDialogContainer() {
-                return (ViewGroup) getView();
+                return (ViewGroup) getStackModuleItemView();
             }
 
             @Override

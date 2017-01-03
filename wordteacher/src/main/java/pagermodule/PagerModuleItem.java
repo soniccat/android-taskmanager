@@ -5,5 +5,5 @@ package pagermodule;
  */
 
 public interface PagerModuleItem {
-    PagerModuleItemView getView();
+    PagerModuleItemView getPagerModuleItemView();
 }

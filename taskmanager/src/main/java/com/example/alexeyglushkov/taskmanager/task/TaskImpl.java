@@ -1,6 +1,7 @@
 package com.example.alexeyglushkov.taskmanager.task;
 
 import android.os.Looper;
+import android.util.Log;
 
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
@@ -68,6 +69,8 @@ public abstract class TaskImpl implements Task, TaskPrivate {
     public void setTaskStatus(Task.Status status) {
         Task.Status oldStatus = this.taskStatus;
         this.taskStatus = status;
+
+        Log.d("TaskImpl", "setTaskStatus " + Thread.currentThread()); //TODO: CRASH: get concurrent access crash in triggerStatusListeners
         triggerStatusListeners(oldStatus, this.taskStatus);
     }
 

@@ -4,19 +4,12 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import pagermodule.PagerModuleFactory;
 import pagermodule.PagerModuleItem;
 import pagermodule.PagerModuleItemView;
 import pagermodule.PagerModuleItemWithTitle;
 import pagermodule.PagerModuleListener;
 import pagermodule.view.PagerView;
-import stackmodule.StackModuleFactory;
-import stackmodule.StackModuleItem;
-import stackmodule.StackModuleListener;
-import stackmodule.view.StackView;
 
 /**
  * Created by alexeyglushkov on 05.11.16.
@@ -145,7 +138,7 @@ public class StatePagerPresenter implements PagerPresenter {
 
     @Override
     public PagerModuleItemView getViewAtIndex(int i) {
-        return getModuleAtIndex(i).getView();
+        return getModuleAtIndex(i).getPagerModuleItemView();
     }
 
     @Override

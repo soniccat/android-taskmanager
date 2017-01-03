@@ -203,6 +203,7 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
 
     //// Inner Interfaces
 
+    // TODO: think about calling it for presenter
     public interface Listener<T> {
         void onRowClicked(T data);
         void onRowMenuClicked(T data, View view);

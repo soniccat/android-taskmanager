@@ -81,7 +81,7 @@ public class StackPresenter implements StackPresenterInterface, PagerModuleItem,
 
     private void push(StackModuleItem item, StackView.Callback callback) {
         items.add(item);
-        view.pushView(item.getView(), callback);
+        view.pushView(item.getStackModuleItemView(), callback);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class StackPresenter implements StackPresenterInterface, PagerModuleItem,
     // PagerModuleItem
 
     @Override
-    public PagerModuleItemView getView() {
+    public PagerModuleItemView getPagerModuleItemView() {
         return view;
     }
 

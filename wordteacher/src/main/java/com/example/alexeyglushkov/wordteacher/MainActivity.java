@@ -45,7 +45,6 @@ import pagermodule.PagerModule;
 import pagermodule.PagerModuleListener;
 import pagermodule.presenter.PagerPresenter;
 import pagermodule.presenter.StatePagerPresenter;
-import pagermodule.view.PagerView;
 import pagermodule.view.PagerViewImp;
 import quizletfragments.sets.QuizletSetFragmentMenuListener;
 import stackmodule.StackModule;
@@ -135,6 +134,7 @@ public class MainActivity extends BaseActivity implements
         pagerPresenter.getView().onRestoreInstanceState(savedInstanceState);
         MainPagerFactory factory = (MainPagerFactory)pagerPresenter.getFactory();
         factory.setQuizletSetListener(createSetMenuListener());
+        factory.setQuizletTermListener(createTermMenuListener());
 
         pagerModule.reload();
     }
@@ -147,7 +147,7 @@ public class MainActivity extends BaseActivity implements
 
         } else if (fragment instanceof QuizletTermListFragment) {
             QuizletTermListFragment quizletFragment = (QuizletTermListFragment) fragment;
-            quizletFragment.setListener(createMenuListener());
+            quizletFragment.setListener(createTermMenuListener());
 
         } else if (fragment instanceof CourseListStackFragment) {
             CourseListStackFragment courseFragment = (CourseListStackFragment) fragment;
@@ -180,6 +180,7 @@ public class MainActivity extends BaseActivity implements
         if (savedInstanceState == null) {
             MainPagerFactory factory = new MainPagerFactory();
             factory.setQuizletSetListener(createSetMenuListener());
+            factory.setQuizletTermListener(createTermMenuListener());
 
             StatePagerPresenter pagerPresenter = new StatePagerPresenter();
             pagerPresenter.setFactory(factory);
@@ -468,7 +469,7 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public int getPageCount() {
-        return 1;
+        return 2;
     }
 
     @Override
@@ -608,6 +609,8 @@ public class MainActivity extends BaseActivity implements
 
     //// Creation methods
 
+    // TODO: move it somewhere
+
     @NonNull
     private QuizletSetFragmentMenuListener createSetMenuListener() {
         return new QuizletSetFragmentMenuListener(this, getCourseHolder(), new QuizletSetFragmentMenuListener.Listener<QuizletSet>() {
@@ -646,7 +649,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     @NonNull
-    private QuizletTermFragmentMenuListener createMenuListener() {
+    private QuizletTermFragmentMenuListener createTermMenuListener() {
         return new QuizletTermFragmentMenuListener(this, getCourseHolder(), new QuizletTermFragmentMenuListener.Listener<QuizletTerm>() {
             @Override
             public void onRowClicked(QuizletTerm data) {
@@ -716,7 +719,7 @@ public class MainActivity extends BaseActivity implements
         /*
         final QuizletTermListFragment fragment = QuizletTermListFragment.create();
         fragment.setSortOrder(Preferences.getQuizletTermSortOrder());
-        fragment.setListener(createMenuListener());
+        fragment.setListener(createTermMenuListener());
 
         return fragment;
         */
@@ -809,7 +812,7 @@ public class MainActivity extends BaseActivity implements
     @Nullable
     private View getCurrentFragmentView() {
         Fragment fragment = pagerAdapter.getFragment(pager.getCurrentItem());
-        return fragment != null ? fragment.getView() : null;
+        return fragment != null ? fragment.getStackModuleItemView() : null;
     }
     */
 

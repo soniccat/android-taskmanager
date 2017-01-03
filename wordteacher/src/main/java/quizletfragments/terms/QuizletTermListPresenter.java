@@ -24,7 +24,10 @@ import tools.Sortable;
  * Created by alexeyglushkov on 30.10.16.
  */
 
-public class QuizletTermListPresenter extends BaseListPresenter<QuizletTerm> implements Sortable, PagerModuleItemWithTitle, QuizletService.QuizletServiceListener {
+public class QuizletTermListPresenter extends BaseListPresenter<QuizletTerm>
+        implements Sortable,
+        PagerModuleItemWithTitle, 
+        QuizletService.QuizletServiceListener {
     private Bundle savedInstanceState;
 
     //// Events
@@ -98,7 +101,7 @@ public class QuizletTermListPresenter extends BaseListPresenter<QuizletTerm> imp
     @Override
     public String getTitle() {
         QuizletSet set = getParentSet();
-        return set != null ? set.getTitle() : null;
+        return set != null ? set.getTitle() : "CARDS";
     }
 
     // Sortable

@@ -11,6 +11,8 @@ import pagermodule.PagerModule;
 import pagermodule.PagerModuleFactory;
 import pagermodule.PagerModuleItem;
 import quizletfragments.QuizletStackModuleFactory;
+import quizletfragments.terms.QuizletTermListFragment;
+import quizletfragments.terms.QuizletTermListPresenter;
 import stackmodule.StackModule;
 import stackmodule.StackModuleFactory;
 import stackmodule.StackModuleListener;
@@ -29,13 +31,12 @@ public class MainPagerFactory implements PagerModuleFactory {
     public PagerModuleItem moduleAtIndex(int i, final PagerModule pagerModule) {
         PagerModuleItem item = null;
         switch (i) {
-            case 0:
+            case 0: {
                 QuizletStackModuleFactory factory = new QuizletStackModuleFactory();
-                factory.setQuizletSetListener(quizletSetListener);
-                factory.setQuizletTermListener(quizletTermListener);
+                factory.setQuizletSetListener(createQuizletSetListener());
+                factory.setQuizletTermListener(createQuizletTermListener());
 
                 StackFragment view = new StackFragment();
-
                 StackPresenter stackPresenter = new StackPresenter();
                 stackPresenter.setFactory(factory);
                 stackPresenter.setView(view);
@@ -44,8 +45,18 @@ public class MainPagerFactory implements PagerModuleFactory {
 
                 item = stackPresenter;
                 break;
-            case 1:
+            }
+            case 1: {
+                QuizletTermListPresenter listPresenter = new QuizletTermListPresenter();
+                QuizletTermListFragment view = QuizletTermListFragment.create();
+                view.setListener(createQuizletTermListener());
+
+                listPresenter.setView(view);
+                view.setPresenter(listPresenter);
+
+                item = listPresenter;
                 break;
+            }
             case 2:
                 break;
         }
@@ -72,11 +83,18 @@ public class MainPagerFactory implements PagerModuleFactory {
 
             QuizletStackModuleFactory factory = (QuizletStackModuleFactory)presenter.getFactory();
             factory.setQuizletSetListener(createQuizletSetListener());
-            factory.setQuizletTermListener(quizletTermListener);
+            factory.setQuizletTermListener(createQuizletTermListener());
 
             setStackListener(pagerModule, view.getPresenter());
 
-            item = view.getPresenter();
+            item = presenter;
+
+        } else if (i == 1) {
+            QuizletTermListFragment view = (QuizletTermListFragment)viewObject;
+            QuizletTermListPresenter presenter = (QuizletTermListPresenter)view.getPresenter();
+            view.setListener(createQuizletTermListener());
+
+            item = presenter;
         }
 
         return item;
