@@ -1,12 +1,10 @@
 package quizletfragments;
 
-import android.view.View;
-
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 
-import listmodule.view.BaseListFragment;
 import listmodule.view.SimpleListFragment;
+import listmodule.view.SimpleListFragmentListenerAdapter;
 import quizletfragments.sets.QuizletSetListFragment;
 import quizletfragments.sets.QuizletSetListPresenter;
 import quizletfragments.terms.QuizletTermListFragment;
@@ -36,24 +34,11 @@ public class QuizletStackModuleFactory implements StackModuleFactory {
     }
 
     private void bindSetListPresenterListener(QuizletSetListPresenter presenter, final StackModule stackModule) {
-        presenter.setListener(new SimpleListFragment.Listener<QuizletSet>() {
+        presenter.setListener(new SimpleListFragmentListenerAdapter<QuizletSet>(createQuizletSetListenerProvider()) {
             @Override
             public void onRowClicked(QuizletSet data) {
                 stackModule.push(data, null);
-            }
-
-            @Override
-            public void onRowMenuClicked(QuizletSet data, View view) {
-                if (quizletSetListener != null) {
-                    quizletSetListener.onRowMenuClicked(data, view);
-                }
-            }
-
-            @Override
-            public void onRowViewDeleted(QuizletSet data) {
-                if (quizletSetListener != null) {
-                    quizletSetListener.onRowViewDeleted(data);
-                }
+                super.onRowClicked(data);
             }
         });
     }
@@ -72,28 +57,7 @@ public class QuizletStackModuleFactory implements StackModuleFactory {
     }
 
     private void bindTermListPresenterListener(QuizletTermListPresenter presenter, StackModule stackModule) {
-        presenter.setListener(new SimpleListFragment.Listener<QuizletTerm>() {
-            @Override
-            public void onRowClicked(QuizletTerm data) {
-                if (quizletTermListener != null) {
-                    quizletTermListener.onRowClicked(data);
-                }
-            }
-
-            @Override
-            public void onRowMenuClicked(QuizletTerm data, View view) {
-                if (quizletTermListener != null) {
-                    quizletTermListener.onRowMenuClicked(data, view);
-                }
-            }
-
-            @Override
-            public void onRowViewDeleted(QuizletTerm data) {
-                if (quizletTermListener != null) {
-                    quizletTermListener.onRowViewDeleted(data);
-                }
-            }
-        });
+        presenter.setListener(new SimpleListFragmentListenerAdapter<QuizletTerm>(createQuizletTermListenerProvider()));
     }
 
     @Override
@@ -113,6 +77,28 @@ public class QuizletStackModuleFactory implements StackModuleFactory {
         }
 
         return item;
+    }
+
+    //// Creation methods
+
+    private SimpleListFragmentListenerAdapter.ListenerProvider<QuizletSet> createQuizletSetListenerProvider() {
+        // we return provider because listener is null at the moment of restoration and will be set later
+        return new SimpleListFragmentListenerAdapter.ListenerProvider<QuizletSet>() {
+            @Override
+            public SimpleListFragment.Listener<QuizletSet> getListener() {
+                return quizletSetListener;
+            }
+        };
+    }
+
+    private SimpleListFragmentListenerAdapter.ListenerProvider<QuizletTerm> createQuizletTermListenerProvider() {
+        // we return provider because listener is null at the moment of restoration and will be set later
+        return new SimpleListFragmentListenerAdapter.ListenerProvider<QuizletTerm>() {
+            @Override
+            public SimpleListFragment.Listener<QuizletTerm> getListener() {
+                return quizletTermListener;
+            }
+        };
     }
 
     //// Setters

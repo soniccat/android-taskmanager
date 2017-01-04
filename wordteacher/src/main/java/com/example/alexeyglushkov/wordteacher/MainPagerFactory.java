@@ -8,6 +8,7 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 
 import listmodule.view.BaseListFragment;
 import listmodule.view.SimpleListFragment;
+import listmodule.view.SimpleListFragmentListenerAdapter;
 import pagermodule.PagerModule;
 import pagermodule.PagerModuleFactory;
 import pagermodule.PagerModuleItem;
@@ -113,54 +114,33 @@ public class MainPagerFactory implements PagerModuleFactory {
     }
 
     private SimpleListFragment.Listener<QuizletSet> createQuizletSetListener() {
-        return new SimpleListFragment.Listener<QuizletSet>() {
-            @Override
-            public void onRowClicked(QuizletSet data) {
-                if (quizletSetListener != null) {
-                    quizletSetListener.onRowClicked(data);
-                }
-            }
-
-            @Override
-            public void onRowMenuClicked(QuizletSet data, View view) {
-                if (quizletSetListener != null) {
-                    quizletSetListener.onRowMenuClicked(data, view);
-                }
-            }
-
-            @Override
-            public void onRowViewDeleted(QuizletSet data) {
-                if (quizletSetListener != null) {
-                    quizletSetListener.onRowViewDeleted(data);
-                }
-            }
-        };
+        return new SimpleListFragmentListenerAdapter<>(createQuizletSetListenerProvider());
     }
 
     private SimpleListFragment.Listener<QuizletTerm> createQuizletTermListener() {
-        return new SimpleListFragment.Listener<QuizletTerm>() {
-            @Override
-            public void onRowClicked(QuizletTerm data) {
-                if (quizletTermListener != null) {
-                    quizletTermListener.onRowClicked(data);
-                }
-            }
+        return new SimpleListFragmentListenerAdapter<>(createQuizletTermListenerProvider());
+    }
 
+    private SimpleListFragmentListenerAdapter.ListenerProvider<QuizletSet> createQuizletSetListenerProvider() {
+        // we return provider because listener is null at the moment of restoration and will be set later
+        return new SimpleListFragmentListenerAdapter.ListenerProvider<QuizletSet>() {
             @Override
-            public void onRowMenuClicked(QuizletTerm data, View view) {
-                if (quizletTermListener != null) {
-                    quizletTermListener.onRowMenuClicked(data, view);
-                }
-            }
-
-            @Override
-            public void onRowViewDeleted(QuizletTerm data) {
-                if (quizletTermListener != null) {
-                    quizletTermListener.onRowViewDeleted(data);
-                }
+            public SimpleListFragment.Listener<QuizletSet> getListener() {
+                return quizletSetListener;
             }
         };
     }
+
+    private SimpleListFragmentListenerAdapter.ListenerProvider<QuizletTerm> createQuizletTermListenerProvider() {
+        // we return provider because listener is null at the moment of restoration and will be set later
+        return new SimpleListFragmentListenerAdapter.ListenerProvider<QuizletTerm>() {
+            @Override
+            public SimpleListFragment.Listener<QuizletTerm> getListener() {
+                return quizletTermListener;
+            }
+        };
+    }
+
 
     //// Setters
 
