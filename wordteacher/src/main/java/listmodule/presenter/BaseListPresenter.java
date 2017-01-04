@@ -29,7 +29,6 @@ import stackmodule.StackModuleItemView;
 
 public abstract class BaseListPresenter<T>
         implements ListPresenterInterface,
-        ListModuleInterface,
         StackModuleItem,
         PagerModuleItem,
         PagerModuleItemWithTitle {
