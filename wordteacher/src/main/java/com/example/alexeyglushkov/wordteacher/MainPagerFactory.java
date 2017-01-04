@@ -6,7 +6,7 @@ import android.view.View;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 
-import listmodule.view.BaseListFragment;
+import listmodule.view.SimpleListFragment;
 import pagermodule.PagerModule;
 import pagermodule.PagerModuleFactory;
 import pagermodule.PagerModuleItem;
@@ -23,8 +23,8 @@ import stackmodule.view.StackFragment;
 
 public class MainPagerFactory implements PagerModuleFactory {
     private StackModuleListener stackModuleListener;
-    private BaseListFragment.Listener<QuizletSet> quizletSetListener;
-    private BaseListFragment.Listener<QuizletTerm> quizletTermListener;
+    private SimpleListFragment.Listener<QuizletSet> quizletSetListener;
+    private SimpleListFragment.Listener<QuizletTerm> quizletTermListener;
 
     //// Interfaces
 
@@ -77,7 +77,7 @@ public class MainPagerFactory implements PagerModuleFactory {
 
     private PagerModuleItem restoreQuizletTermListModule(QuizletTermListFragment view) {
         QuizletTermListPresenter presenter = (QuizletTermListPresenter)view.getPresenter();
-        view.setListener(createQuizletTermListener());
+        presenter.setListener(createQuizletTermListener());
 
         return presenter;
     }
@@ -87,9 +87,9 @@ public class MainPagerFactory implements PagerModuleFactory {
     @NonNull
     private PagerModuleItem createQuizletTermsModule() {
         QuizletTermListPresenter listPresenter = new QuizletTermListPresenter();
-        QuizletTermListFragment view = QuizletTermListFragment.create();
-        view.setListener(createQuizletTermListener());
+        listPresenter.setListener(createQuizletTermListener());
 
+        QuizletTermListFragment view = QuizletTermListFragment.create();
         listPresenter.setView(view);
         view.setPresenter(listPresenter);
         return listPresenter;
@@ -111,8 +111,8 @@ public class MainPagerFactory implements PagerModuleFactory {
         return stackPresenter;
     }
 
-    private BaseListFragment.Listener<QuizletSet> createQuizletSetListener() {
-        return new BaseListFragment.Listener<QuizletSet>() {
+    private SimpleListFragment.Listener<QuizletSet> createQuizletSetListener() {
+        return new SimpleListFragment.Listener<QuizletSet>() {
             @Override
             public void onRowClicked(QuizletSet data) {
                 if (quizletSetListener != null) {
@@ -136,8 +136,8 @@ public class MainPagerFactory implements PagerModuleFactory {
         };
     }
 
-    private BaseListFragment.Listener<QuizletTerm> createQuizletTermListener() {
-        return new BaseListFragment.Listener<QuizletTerm>() {
+    private SimpleListFragment.Listener<QuizletTerm> createQuizletTermListener() {
+        return new SimpleListFragment.Listener<QuizletTerm>() {
             @Override
             public void onRowClicked(QuizletTerm data) {
                 if (quizletTermListener != null) {
@@ -180,11 +180,11 @@ public class MainPagerFactory implements PagerModuleFactory {
         this.stackModuleListener = stackModuleListener;
     }
 
-    public void setQuizletSetListener(BaseListFragment.Listener<QuizletSet> quizletSetListener) {
+    public void setQuizletSetListener(SimpleListFragment.Listener<QuizletSet> quizletSetListener) {
         this.quizletSetListener = quizletSetListener;
     }
 
-    public void setQuizletTermListener(BaseListFragment.Listener<QuizletTerm> quizletTermListener) {
+    public void setQuizletTermListener(SimpleListFragment.Listener<QuizletTerm> quizletTermListener) {
         this.quizletTermListener = quizletTermListener;
     }
 }

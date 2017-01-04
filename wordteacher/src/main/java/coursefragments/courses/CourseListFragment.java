@@ -9,14 +9,14 @@ import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.wordteacher.R;
 
-import listmodule.view.BaseListAdaptor;
-import listmodule.view.BaseListFragment;
+import listmodule.view.SimpleListAdaptor;
+import listmodule.view.SimpleListFragment;
 import model.Course;
 
 /**
  * Created by alexeyglushkov on 08.05.16.
  */
-public class CourseListFragment extends BaseListFragment<Course> {
+public class CourseListFragment extends SimpleListFragment<Course> {
 
     //// Creation, initialization, restoration
 
@@ -44,7 +44,7 @@ public class CourseListFragment extends BaseListFragment<Course> {
     //// Creation Methods
 
     @Override
-    protected BaseListAdaptor createAdapter() {
+    protected SimpleListAdaptor createAdapter() {
         return createCourseAdapter();
     }
 
@@ -52,17 +52,17 @@ public class CourseListFragment extends BaseListFragment<Course> {
         CourseListAdapter adapter = new CourseListAdapter(new CourseListAdapter.Listener() {
             @Override
             public void onCourseClicked(View view, Course course) {
-                CourseListFragment.this.getListener().onRowClicked(course);
+                CourseListFragment.this.getPresenter().onRowClicked(course);
             }
 
             @Override
             public void onCourseMenuClicked(View view, Course course) {
-                CourseListFragment.this.getListener().onRowMenuClicked(course, view);
+                CourseListFragment.this.getPresenter().onRowMenuClicked(course, view);
             }
 
             @Override
             public void onCourseViewDeleted(View view, Course course) {
-                CourseListFragment.this.getListener().onRowViewDeleted(course);
+                CourseListFragment.this.getPresenter().onRowViewDeleted(course);
             }
         });
 

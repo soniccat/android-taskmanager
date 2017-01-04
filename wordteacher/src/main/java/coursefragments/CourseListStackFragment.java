@@ -86,8 +86,8 @@ public class CourseListStackFragment extends StackFragment implements Sortable {
     }
 
     public void applyPendingOperation(CourseListFragment fragment) {
-        CourseListFragmentMenuListener listener = (CourseListFragmentMenuListener)fragment.getListener();
-        listener.applyPendingOperation();
+        //CourseListFragmentMenuListener listener = (CourseListFragmentMenuListener)fragment.getListener();
+        //listener.applyPendingOperation();
     }
 
     // Show UI Actions

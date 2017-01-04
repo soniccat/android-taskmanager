@@ -5,12 +5,12 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.PopupMenu;
 import android.view.View;
 
-import listmodule.view.BaseListFragment;
+import listmodule.view.SimpleListFragment;
 
 /**
  * Created by alexeyglushkov on 24.07.16.
  */
-public abstract class ListMenuListener<T> implements BaseListFragment.Listener<T> {
+public abstract class ListMenuListener<T> implements SimpleListFragment.Listener<T> {
     protected @NonNull Context context;
     protected @NonNull Listener listener;
 

@@ -10,6 +10,7 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import listmodule.CompareStrategyFactory;
 import listmodule.NullStorableListProvider;
 import listmodule.presenter.BaseListPresenter;
+import listmodule.presenter.SimpleListPresenter;
 import listmodule.view.ListViewInterface;
 import main.MainApplication;
 import main.Preferences;
@@ -20,7 +21,9 @@ import tools.Sortable;
  * Created by alexeyglushkov on 30.10.16.
  */
 
-public class QuizletSetListPresenter extends BaseListPresenter<QuizletSet> implements Sortable, QuizletService.QuizletServiceListener {
+public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet> implements
+        Sortable,
+        QuizletService.QuizletServiceListener {
 
     private Bundle savedInstanceState;
 

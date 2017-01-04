@@ -8,13 +8,13 @@ import android.view.ViewGroup;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.wordteacher.R;
 
-import listmodule.view.BaseListAdaptor;
-import listmodule.view.BaseListFragment;
+import listmodule.view.SimpleListAdaptor;
+import listmodule.view.SimpleListFragment;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
+public class QuizletTermListFragment extends SimpleListFragment<QuizletTerm> {
 
     //// Creation, initialization, restoration
 
@@ -34,7 +34,7 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
     //// Creation Methods
 
     @Override
-    protected BaseListAdaptor createAdapter() {
+    protected SimpleListAdaptor createAdapter() {
         return createTermAdapter();
     }
 
@@ -42,12 +42,12 @@ public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
         QuizletTermAdapter adapter = new QuizletTermAdapter(new QuizletTermAdapter.Listener() {
             @Override
             public void onTermClicked(View view, QuizletTerm card) {
-                QuizletTermListFragment.this.getListener().onRowClicked(card);
+                QuizletTermListFragment.this.getPresenter().onRowClicked(card);
             }
 
             @Override
             public void onMenuClicked(View view, QuizletTerm card) {
-                QuizletTermListFragment.this.getListener().onRowMenuClicked(card, view);
+                QuizletTermListFragment.this.getPresenter().onRowMenuClicked(card, view);
             }
         });
 

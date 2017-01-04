@@ -10,14 +10,14 @@ import android.widget.TextView;
 
 import com.example.alexeyglushkov.wordteacher.R;
 
-import listmodule.view.BaseListAdaptor;
+import listmodule.view.SimpleListAdaptor;
 import tools.DeleteTouchHelper;
 import model.Card;
 
 /**
  * Created by alexeyglushkov on 03.05.16.
  */
-public class CardListAdapter extends BaseListAdaptor<CardListAdapter.Holder, Card> implements DeleteTouchHelper.Listener {
+public class CardListAdapter extends SimpleListAdaptor<CardListAdapter.Holder, Card> implements DeleteTouchHelper.Listener {
     private Listener listener;
     private ItemTouchHelper deleteTouchHelper;
 

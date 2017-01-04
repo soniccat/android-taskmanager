@@ -10,12 +10,12 @@ import android.widget.TextView;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.wordteacher.R;
 
-import listmodule.view.BaseListAdaptor;
+import listmodule.view.SimpleListAdaptor;
 
 /**
  * Created by alexeyglushkov on 03.05.16.
  */
-public class QuizletTermAdapter extends BaseListAdaptor<QuizletTermAdapter.Holder, QuizletTerm> {
+public class QuizletTermAdapter extends SimpleListAdaptor<QuizletTermAdapter.Holder, QuizletTerm> {
     private Listener listener;
 
     //// Initialization

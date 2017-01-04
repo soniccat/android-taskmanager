@@ -13,6 +13,7 @@ import java.util.List;
 import listmodule.CompareStrategyFactory;
 import listmodule.NullStorableListProvider;
 import listmodule.presenter.BaseListPresenter;
+import listmodule.presenter.SimpleListPresenter;
 import listmodule.view.ListViewInterface;
 import main.MainApplication;
 import main.Preferences;
@@ -24,7 +25,7 @@ import tools.Sortable;
  * Created by alexeyglushkov on 30.10.16.
  */
 
-public class QuizletTermListPresenter extends BaseListPresenter<QuizletTerm>
+public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
         implements Sortable,
         PagerModuleItemWithTitle, 
         QuizletService.QuizletServiceListener {

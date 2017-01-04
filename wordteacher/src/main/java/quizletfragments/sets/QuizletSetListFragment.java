@@ -8,13 +8,13 @@ import android.view.ViewGroup;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.wordteacher.R;
 
-import listmodule.view.BaseListAdaptor;
-import listmodule.view.BaseListFragment;
+import listmodule.view.SimpleListAdaptor;
+import listmodule.view.SimpleListFragment;
 
 /**
  * Created by alexeyglushkov on 07.08.16.
  */
-public class QuizletSetListFragment extends BaseListFragment<QuizletSet> {
+public class QuizletSetListFragment extends SimpleListFragment<QuizletSet> {
 
     //// Creation, initialization, restoration
 
@@ -34,7 +34,7 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> {
     //// Creation Methods
 
     @Override
-    protected BaseListAdaptor createAdapter() {
+    protected SimpleListAdaptor createAdapter() {
         return createSetAdapter();
     }
 
@@ -42,12 +42,12 @@ public class QuizletSetListFragment extends BaseListFragment<QuizletSet> {
         QuizletSetAdapter adapter = new QuizletSetAdapter(new QuizletSetAdapter.Listener() {
             @Override
             public void onSetClicked(View view, QuizletSet set) {
-                QuizletSetListFragment.this.getListener().onRowClicked(set);
+                QuizletSetListFragment.this.getPresenter().onRowClicked(set);
             }
 
             @Override
             public void onMenuClicked(View view, QuizletSet set) {
-                QuizletSetListFragment.this.getListener().onRowMenuClicked(set, view);
+                QuizletSetListFragment.this.getPresenter().onRowMenuClicked(set, view);
             }
         });
 

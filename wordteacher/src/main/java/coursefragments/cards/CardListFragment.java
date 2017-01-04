@@ -8,14 +8,14 @@ import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.wordteacher.R;
 
-import listmodule.view.BaseListAdaptor;
-import listmodule.view.BaseListFragment;
+import listmodule.view.SimpleListAdaptor;
+import listmodule.view.SimpleListFragment;
 import model.Card;
 
 /**
  * Created by alexeyglushkov on 30.07.16.
  */
-public class CardListFragment extends BaseListFragment<Card> {
+public class CardListFragment extends SimpleListFragment<Card> {
 
     //// Creation, initialization, restoration
 
@@ -35,7 +35,7 @@ public class CardListFragment extends BaseListFragment<Card> {
     //// Creation Methods
 
     @Override
-    protected BaseListAdaptor createAdapter() {
+    protected SimpleListAdaptor createAdapter() {
         return createCardAdapter();
     }
 
@@ -43,17 +43,17 @@ public class CardListFragment extends BaseListFragment<Card> {
         CardListAdapter adapter = new CardListAdapter(new CardListAdapter.Listener() {
             @Override
             public void onCardClicked(View view, Card card) {
-                CardListFragment.this.getListener().onRowClicked(card);
+                CardListFragment.this.getPresenter().onRowClicked(card);
             }
 
             @Override
             public void onMenuClicked(View view, Card card) {
-                CardListFragment.this.getListener().onRowMenuClicked(card, view);
+                CardListFragment.this.getPresenter().onRowMenuClicked(card, view);
             }
 
             @Override
             public void onCardViewDeleted(View view, Card card) {
-                CardListFragment.this.getListener().onRowViewDeleted(card);
+                CardListFragment.this.getPresenter().onRowViewDeleted(card);
             }
         });
 

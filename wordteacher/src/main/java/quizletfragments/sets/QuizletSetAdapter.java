@@ -14,14 +14,14 @@ import junit.framework.Assert;
 
 import java.util.Locale;
 
-import listmodule.view.BaseListAdaptor;
+import listmodule.view.SimpleListAdaptor;
 
 /**
  * Created by alexeyglushkov on 02.05.16.
  */
 
 // TODO: move methods to the base class
-public class QuizletSetAdapter extends BaseListAdaptor<QuizletSetAdapter.Holder, QuizletSet>{
+public class QuizletSetAdapter extends SimpleListAdaptor<QuizletSetAdapter.Holder, QuizletSet> {
     Listener listener;
 
     public QuizletSetAdapter(Listener listener) {

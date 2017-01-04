@@ -13,18 +13,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import listmodule.presenter.ListPresenterInterface;
+import listmodule.presenter.SimpleListPresenter;
 
 /**
  * Created by alexeyglushkov on 23.07.16.
  */
-public abstract class BaseListFragment<T> extends Fragment implements ListViewInterface<T> {
-    private ListPresenterInterface presenter;
+public abstract class SimpleListFragment<T> extends Fragment implements ListViewInterface<T> {
+    private SimpleListPresenter<T> presenter;
 
     protected RecyclerView recyclerView;
     protected View loader;
 
-    protected BaseListAdaptor adapter;
-    protected Listener<T> listener;
+    protected SimpleListAdaptor adapter;
 
     //// Creation, initialization, restoration
 
@@ -50,7 +50,7 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
             try {
                 Class presenterClass = Class.forName(savedInstanceState.getString("presenterClass"));
                 if (presenterClass != null) {
-                    presenter = (ListPresenterInterface) presenterClass.newInstance();
+                    presenter = (SimpleListPresenter<T>) presenterClass.newInstance();
                 }
             } catch (Exception e) {
             }
@@ -119,7 +119,6 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
     public void onDestroy() {
         super.onDestroy();
         presenter.onDestroy();
-        listener = null;
     }
 
     //// Actions
@@ -164,19 +163,15 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
 
     //// Creation Methods
 
-    protected abstract BaseListAdaptor createAdapter();
+    protected abstract SimpleListAdaptor createAdapter();
 
     //// Setters
 
-    public void setListener(Listener<T> listener) {
-        this.listener = listener;
-    }
-
-    public void setPresenter(ListPresenterInterface presenter) {
+    public void setPresenter(SimpleListPresenter<T> presenter) {
         this.presenter = presenter;
     }
 
-    public ListPresenterInterface getPresenter() {
+    public SimpleListPresenter<T> getPresenter() {
         return presenter;
     }
 
@@ -189,11 +184,7 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
 
     //// Getters
 
-    public Listener<T> getListener() {
-        return listener;
-    }
-
-    //// UI Getters
+    // UI Getters
 
     private View getDataView(int index) {
         RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(index);

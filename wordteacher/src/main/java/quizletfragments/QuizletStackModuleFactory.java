@@ -5,7 +5,7 @@ import android.view.View;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 
-import listmodule.view.BaseListFragment;
+import listmodule.view.SimpleListFragment;
 import quizletfragments.sets.QuizletSetListFragment;
 import quizletfragments.sets.QuizletSetListPresenter;
 import quizletfragments.terms.QuizletTermListFragment;
@@ -19,14 +19,14 @@ import stackmodule.StackModuleItem;
  */
 
 public class QuizletStackModuleFactory implements StackModuleFactory {
-    private BaseListFragment.Listener<QuizletSet> quizletSetListener;
-    private BaseListFragment.Listener<QuizletTerm> quizletTermListener;
+    private SimpleListFragment.Listener<QuizletSet> quizletSetListener;
+    private SimpleListFragment.Listener<QuizletTerm> quizletTermListener;
 
     @Override
     public StackModuleItem rootModule(final StackModule stackModule) {
         QuizletSetListPresenter listPresenter = new QuizletSetListPresenter();
         QuizletSetListFragment fragment = QuizletSetListFragment.create();
-        setSetListFragmentListener(fragment, stackModule);
+        bindSetListPresenterListener(listPresenter, stackModule);
 
         listPresenter.setView(fragment);
         fragment.setPresenter(listPresenter);
@@ -34,8 +34,8 @@ public class QuizletStackModuleFactory implements StackModuleFactory {
         return listPresenter;
     }
 
-    private void setSetListFragmentListener(QuizletSetListFragment fragment, final StackModule stackModule) {
-        fragment.setListener(new BaseListFragment.Listener<QuizletSet>() {
+    private void bindSetListPresenterListener(QuizletSetListPresenter presenter, final StackModule stackModule) {
+        presenter.setListener(new SimpleListFragment.Listener<QuizletSet>() {
             @Override
             public void onRowClicked(QuizletSet data) {
                 stackModule.push(data, null);
@@ -61,7 +61,7 @@ public class QuizletStackModuleFactory implements StackModuleFactory {
     public StackModuleItem moduleFromObject(Object object, StackModule stackModule) {
         QuizletTermListPresenter listPresenter = new QuizletTermListPresenter();
         QuizletTermListFragment fragment = QuizletTermListFragment.create();
-        setTermListFragmentListener(fragment, stackModule);
+        bindTermListPresenterListener(listPresenter, stackModule);
 
         listPresenter.setView(fragment);
         fragment.setPresenter(listPresenter);
@@ -70,8 +70,8 @@ public class QuizletStackModuleFactory implements StackModuleFactory {
         return listPresenter;
     }
 
-    private void setTermListFragmentListener(QuizletTermListFragment fragment, StackModule stackModule) {
-        fragment.setListener(new BaseListFragment.Listener<QuizletTerm>() {
+    private void bindTermListPresenterListener(QuizletTermListPresenter presenter, StackModule stackModule) {
+        presenter.setListener(new SimpleListFragment.Listener<QuizletTerm>() {
             @Override
             public void onRowClicked(QuizletTerm data) {
                 if (quizletTermListener != null) {
@@ -100,13 +100,15 @@ public class QuizletStackModuleFactory implements StackModuleFactory {
         StackModuleItem item = null;
         if (viewObject instanceof QuizletSetListFragment) {
             QuizletSetListFragment setListFragment = (QuizletSetListFragment)viewObject;
-            item = (StackModuleItem)setListFragment.getPresenter();
-            setSetListFragmentListener(setListFragment, stackModule);
+            QuizletSetListPresenter setListPresenter = (QuizletSetListPresenter)setListFragment.getPresenter();
+            bindSetListPresenterListener(setListPresenter, stackModule);
+            item = setListPresenter;
 
         } else if (viewObject instanceof QuizletTermListFragment) {
             QuizletTermListFragment termListFragment = (QuizletTermListFragment)viewObject;
-            item = (StackModuleItem)termListFragment.getPresenter();
-            setTermListFragmentListener(termListFragment, stackModule);
+            QuizletTermListPresenter termListPresenter = (QuizletTermListPresenter)termListFragment.getPresenter();
+            bindTermListPresenterListener(termListPresenter, stackModule);
+            item = termListPresenter;
         }
 
         return item;
@@ -114,11 +116,11 @@ public class QuizletStackModuleFactory implements StackModuleFactory {
 
     //// Setters
 
-    public void setQuizletSetListener(BaseListFragment.Listener<QuizletSet> quizletSetListener) {
+    public void setQuizletSetListener(SimpleListFragment.Listener<QuizletSet> quizletSetListener) {
         this.quizletSetListener = quizletSetListener;
     }
 
-    public void setQuizletTermListener(BaseListFragment.Listener<QuizletTerm> quizletTermListener) {
+    public void setQuizletTermListener(SimpleListFragment.Listener<QuizletTerm> quizletTermListener) {
         this.quizletTermListener = quizletTermListener;
     }
 }
