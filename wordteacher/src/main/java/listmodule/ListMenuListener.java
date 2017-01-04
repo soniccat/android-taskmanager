@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.PopupMenu;
 import android.view.View;
 
+import listmodule.view.BaseListFragment;
 import listmodule.view.SimpleListFragment;
 
 /**

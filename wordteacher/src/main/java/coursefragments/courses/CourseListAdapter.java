@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import listmodule.view.SimpleListAdaptor;
+import listmodule.view.BaseListAdaptor;
 import model.Card;
 import model.CardProgress;
 import tools.DeleteTouchHelper;
@@ -24,7 +24,7 @@ import model.Course;
 /**
  * Created by alexeyglushkov on 08.05.16.
  */
-public class CourseListAdapter extends SimpleListAdaptor<CourseListAdapter.ViewHolder, Course> implements DeleteTouchHelper.Listener {
+public class CourseListAdapter extends BaseListAdaptor<CourseListAdapter.ViewHolder, Course> implements DeleteTouchHelper.Listener {
     private Listener listener;
     private ItemTouchHelper deleteTouchHelper;
 

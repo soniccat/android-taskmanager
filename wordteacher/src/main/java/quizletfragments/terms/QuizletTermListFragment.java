@@ -8,13 +8,13 @@ import android.view.ViewGroup;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.wordteacher.R;
 
-import listmodule.view.SimpleListAdaptor;
-import listmodule.view.SimpleListFragment;
+import listmodule.view.BaseListAdaptor;
+import listmodule.view.BaseListFragment;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class QuizletTermListFragment extends SimpleListFragment<QuizletTerm> {
+public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
 
     //// Creation, initialization, restoration
 
@@ -34,7 +34,7 @@ public class QuizletTermListFragment extends SimpleListFragment<QuizletTerm> {
     //// Creation Methods
 
     @Override
-    protected SimpleListAdaptor createAdapter() {
+    protected BaseListAdaptor createAdapter() {
         return createTermAdapter();
     }
 

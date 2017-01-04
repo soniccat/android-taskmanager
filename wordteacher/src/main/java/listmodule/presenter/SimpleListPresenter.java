@@ -2,7 +2,7 @@ package listmodule.presenter;
 
 import android.view.View;
 
-import listmodule.StorableListProviderFactory;
+import listmodule.view.BaseListFragment;
 import listmodule.view.SimpleListFragment;
 
 /**

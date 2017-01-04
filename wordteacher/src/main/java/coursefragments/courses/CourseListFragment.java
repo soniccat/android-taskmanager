@@ -9,14 +9,14 @@ import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.wordteacher.R;
 
-import listmodule.view.SimpleListAdaptor;
-import listmodule.view.SimpleListFragment;
+import listmodule.view.BaseListAdaptor;
+import listmodule.view.BaseListFragment;
 import model.Course;
 
 /**
  * Created by alexeyglushkov on 08.05.16.
  */
-public class CourseListFragment extends SimpleListFragment<Course> {
+public class CourseListFragment extends BaseListFragment<Course> {
 
     //// Creation, initialization, restoration
 
@@ -44,7 +44,7 @@ public class CourseListFragment extends SimpleListFragment<Course> {
     //// Creation Methods
 
     @Override
-    protected SimpleListAdaptor createAdapter() {
+    protected BaseListAdaptor createAdapter() {
         return createCourseAdapter();
     }
 

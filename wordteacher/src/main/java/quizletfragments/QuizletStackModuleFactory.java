@@ -5,6 +5,7 @@ import android.view.View;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 
+import listmodule.view.BaseListFragment;
 import listmodule.view.SimpleListFragment;
 import quizletfragments.sets.QuizletSetListFragment;
 import quizletfragments.sets.QuizletSetListPresenter;
