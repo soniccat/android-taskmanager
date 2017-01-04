@@ -101,7 +101,7 @@ public class QuizletTermListPresenter extends BaseListPresenter<QuizletTerm>
     @Override
     public String getTitle() {
         QuizletSet set = getParentSet();
-        return set != null ? set.getTitle() : "CARDS";
+        return set != null ? set.getTitle() : "Cards";
     }
 
     // Sortable

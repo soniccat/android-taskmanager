@@ -138,6 +138,7 @@ public class MainActivity extends BaseActivity implements
         factory.setQuizletTermListener(createTermMenuListener());
 
         pagerModule.reload();
+        updateToolbarBackButton();
     }
 
     private void restoreFragmentListener(Fragment fragment) {
