@@ -42,12 +42,14 @@ import model.Card;
 import model.Course;
 import model.CourseHolder;
 import pagermodule.PagerModule;
+import pagermodule.PagerModuleItem;
 import pagermodule.PagerModuleListener;
 import pagermodule.presenter.PagerPresenter;
 import pagermodule.presenter.StatePagerPresenter;
 import pagermodule.view.PagerViewImp;
 import quizletfragments.sets.QuizletSetFragmentMenuListener;
 import stackmodule.StackModule;
+import stackmodule.StackModuleListener;
 import tools.Sortable;
 import quizletfragments.terms.QuizletTermFragmentMenuListener;
 import quizletfragments.terms.QuizletTermListFragment;
@@ -58,8 +60,6 @@ import ui.LoadingButton;
 // TODO: consider moving content to fragment
 public class MainActivity extends BaseActivity implements
         PagerModuleListener,
-        QuizletStackFragment.Listener,
-        CourseListStackFragment.Listener,
         QuizletService.QuizletServiceListener,
         CourseHolder.CourseHolderListener {
 
@@ -133,6 +133,7 @@ public class MainActivity extends BaseActivity implements
         StatePagerPresenter pagerPresenter = (StatePagerPresenter)pagerModule;
         pagerPresenter.getView().onRestoreInstanceState(savedInstanceState);
         MainPagerFactory factory = (MainPagerFactory)pagerPresenter.getFactory();
+        factory.setStackModuleListener(createStackModuleListener());
         factory.setQuizletSetListener(createSetMenuListener());
         factory.setQuizletTermListener(createTermMenuListener());
 
@@ -179,6 +180,7 @@ public class MainActivity extends BaseActivity implements
 
         if (savedInstanceState == null) {
             MainPagerFactory factory = new MainPagerFactory();
+            factory.setStackModuleListener(createStackModuleListener());
             factory.setQuizletSetListener(createSetMenuListener());
             factory.setQuizletTermListener(createTermMenuListener());
 
@@ -302,7 +304,6 @@ public class MainActivity extends BaseActivity implements
 
     // Backstack
 
-    @Override
     public void onBackStackChanged() {
         updateToolbarBackButton();
         updateTabs();
@@ -438,13 +439,9 @@ public class MainActivity extends BaseActivity implements
     // Update UI actions
 
     private void updateToolbarBackButton() {
-        /*StackFragment stackFragment = getStackContainer(pager.getCurrentItem());
+        StackModule module = getStackModule(pagerModule.getCurrentIndex());
 
-        boolean needShowBackButton = false;
-        if (stackFragment != null) {
-            needShowBackButton = stackFragment.getBackStackSize() > 0;
-        }
-
+        boolean needShowBackButton = module != null && module.getSize() > 1;
         if (needShowBackButton) {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -456,7 +453,7 @@ public class MainActivity extends BaseActivity implements
             });
         } else {
             toolbar.setNavigationIcon(null);
-        }*/
+        }
     }
 
     private void updateTabs() {
@@ -570,7 +567,6 @@ public class MainActivity extends BaseActivity implements
 
     // QuizletStackFragment.Listener
 
-    @Override
     public void onCourseChanged(Course course, @Nullable Exception exception) {
         if (exception != null) {
             showAppExceptionSnackBar(exception);
@@ -592,7 +588,6 @@ public class MainActivity extends BaseActivity implements
 
     // CourseStackFragment.Listener
 
-    @Override
     public void onCourseClicked(@NonNull Course course) {
         List<Card> cards = course.getReadyToLearnCards();
         if (cards.size() > 0) {
@@ -602,7 +597,6 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
-    @Override
     public void onLearnNewWordsClick(@NonNull Course course) {
         startLearnNewWords(course);
     }
@@ -610,6 +604,15 @@ public class MainActivity extends BaseActivity implements
     //// Creation methods
 
     // TODO: move it somewhere
+
+    private StackModuleListener createStackModuleListener() {
+        return new StackModuleListener() {
+            @Override
+            public void onBackStackChanged() {
+                MainActivity.this.onBackStackChanged();
+            }
+        };
+    }
 
     @NonNull
     private QuizletSetFragmentMenuListener createSetMenuListener() {
@@ -804,7 +807,7 @@ public class MainActivity extends BaseActivity implements
     // UI getters
 
     @Nullable
-    private Object getCurrentModule() {
+    private PagerModuleItem getCurrentModule() {
         return getModule(pagerModule.getCurrentIndex());
     }
 
@@ -844,7 +847,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     @Nullable
-    private Object getModule(int i) {
+    private PagerModuleItem getModule(int i) {
         return pagerModule.getModuleAtIndex( i);
     }
 

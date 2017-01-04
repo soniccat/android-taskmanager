@@ -2,7 +2,6 @@ package com.example.alexeyglushkov.wordteacher;
 
 import android.support.annotation.NonNull;
 import android.view.View;
-import android.widget.StackView;
 
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
@@ -14,8 +13,6 @@ import pagermodule.PagerModuleItem;
 import quizletfragments.QuizletStackModuleFactory;
 import quizletfragments.terms.QuizletTermListFragment;
 import quizletfragments.terms.QuizletTermListPresenter;
-import stackmodule.StackModule;
-import stackmodule.StackModuleFactory;
 import stackmodule.StackModuleListener;
 import stackmodule.presenter.StackPresenter;
 import stackmodule.view.StackFragment;
@@ -25,6 +22,7 @@ import stackmodule.view.StackFragment;
  */
 
 public class MainPagerFactory implements PagerModuleFactory {
+    private StackModuleListener stackModuleListener;
     private BaseListFragment.Listener<QuizletSet> quizletSetListener;
     private BaseListFragment.Listener<QuizletTerm> quizletTermListener;
 
@@ -73,7 +71,7 @@ public class MainPagerFactory implements PagerModuleFactory {
         factory.setQuizletSetListener(createQuizletSetListener());
         factory.setQuizletTermListener(createQuizletTermListener());
 
-        setStackListener(pagerModule, view.getPresenter());
+        bindStackListener(pagerModule, view.getPresenter());
         return presenter;
     }
 
@@ -107,7 +105,7 @@ public class MainPagerFactory implements PagerModuleFactory {
         StackPresenter stackPresenter = new StackPresenter();
         stackPresenter.setFactory(factory);
         stackPresenter.setView(view);
-        setStackListener(pagerModule, stackPresenter);
+        bindStackListener(pagerModule, stackPresenter);
         view.setPresenter(stackPresenter);
 
         return stackPresenter;
@@ -165,13 +163,21 @@ public class MainPagerFactory implements PagerModuleFactory {
 
     //// Setters
 
-    private void setStackListener(final PagerModule pagerModule, StackPresenter stackPresenter) {
+    private void bindStackListener(final PagerModule pagerModule, StackPresenter stackPresenter) {
         stackPresenter.setListener(new StackModuleListener() {
             @Override
             public void onBackStackChanged() {
                 pagerModule.updatePage(0);
+
+                if (stackModuleListener != null) {
+                    stackModuleListener.onBackStackChanged();
+                }
             }
         });
+    }
+
+    public void setStackModuleListener(StackModuleListener stackModuleListener) {
+        this.stackModuleListener = stackModuleListener;
     }
 
     public void setQuizletSetListener(BaseListFragment.Listener<QuizletSet> quizletSetListener) {
