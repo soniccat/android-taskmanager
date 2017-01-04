@@ -61,6 +61,8 @@ public abstract class BaseListPresenter<T>
     public void onViewCreated(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             compareStrategy = compareStrategyFactory.restore(savedInstanceState);
+        } else if (compareStrategy == null) {
+            compareStrategy = compareStrategyFactory.createDefault();
         }
     }
 

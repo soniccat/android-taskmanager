@@ -30,6 +30,11 @@ public abstract class SortOrderCompareStrategyFactory<T> implements CompareStrat
     }
 
     @Override
+    public CompareStrategy<T> createDefault() {
+        return createSortOrderStrategy();
+    }
+
+    @Override
     public CompareStrategy<T> restore(Bundle bundle) {
         CompareStrategy<T> strategy = createSortOrderStrategy();
         strategy.restore(bundle);

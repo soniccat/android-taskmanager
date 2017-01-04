@@ -5,6 +5,7 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 
 import listmodule.view.SimpleListFragment;
 import listmodule.view.SimpleListFragmentListenerAdapter;
+import main.Preferences;
 import quizletfragments.sets.QuizletSetListFragment;
 import quizletfragments.sets.QuizletSetListPresenter;
 import quizletfragments.terms.QuizletTermListFragment;
@@ -30,6 +31,7 @@ public class QuizletStackModuleFactory implements StackModuleFactory {
         listPresenter.setView(fragment);
         fragment.setPresenter(listPresenter);
 
+        listPresenter.setSortOrder(Preferences.getQuizletSetSortOrder());
         return listPresenter;
     }
 
@@ -53,6 +55,7 @@ public class QuizletStackModuleFactory implements StackModuleFactory {
         fragment.setPresenter(listPresenter);
         listPresenter.setTermSet((QuizletSet) object);
 
+        listPresenter.setSortOrder(Preferences.getQuizletTermSortOrder());
         return listPresenter;
     }
 

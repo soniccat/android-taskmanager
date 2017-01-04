@@ -31,6 +31,7 @@ import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import coursefragments.CourseListStackFragment;
 import learning.LearnActivity;
@@ -48,6 +49,8 @@ import pagermodule.presenter.PagerPresenter;
 import pagermodule.presenter.StatePagerPresenter;
 import pagermodule.view.PagerViewImp;
 import quizletfragments.sets.QuizletSetFragmentMenuListener;
+import quizletfragments.sets.QuizletSetListPresenter;
+import quizletfragments.terms.QuizletTermListPresenter;
 import stackmodule.StackModule;
 import stackmodule.StackModuleListener;
 import tools.Sortable;
@@ -222,10 +225,15 @@ public class MainActivity extends BaseActivity implements
         loadQuizletSets();
     }
 
-    private void onSortOrderChanged(Preferences.SortOrder sortOrder, Sortable fragment) {
-        if (fragment instanceof QuizletTermListFragment) {
+    private void onSortOrderChanged(Preferences.SortOrder sortOrder, Sortable module) {
+        if (module instanceof QuizletTermListPresenter) {
             Preferences.setQuizletTermSortOrder(sortOrder);
+
+        } else if (module instanceof QuizletSetListPresenter) {
+            Preferences.setQuizletSetSortOrder(sortOrder);
         }
+
+        supportInvalidateOptionsMenu();
     }
 
     private void onCourseHolderChanged() {
@@ -472,6 +480,7 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void onCurrentPageChanged() {
+        supportInvalidateOptionsMenu();
     }
 
     // QuizletService.QuizletServiceListener
@@ -745,6 +754,11 @@ public class MainActivity extends BaseActivity implements
     private void setSortOrder(Preferences.SortOrder sortOrder) {
         Object module = getCurrentModule();
 
+        if (module instanceof StackModule) {
+            StackModule stackModule = (StackModule)module;
+            module = stackModule.getModuleAtIndex(stackModule.getSize()-1);
+        }
+
         if (module instanceof Sortable) {
             Sortable sortable = (Sortable)module;
             sortable.setSortOrder(sortOrder);
@@ -796,6 +810,11 @@ public class MainActivity extends BaseActivity implements
     private Preferences.SortOrder getCurrentSortOrder() {
         Preferences.SortOrder sortOrder = Preferences.SortOrder.BY_NAME;
         Object module = getCurrentModule();
+
+        if (module instanceof StackModule) {
+            StackModule stackModule = (StackModule)module;
+            module = stackModule.getModuleAtIndex(stackModule.getSize()-1);
+        }
 
         if (module instanceof Sortable) {
             Sortable sortableModule = (Sortable)module;

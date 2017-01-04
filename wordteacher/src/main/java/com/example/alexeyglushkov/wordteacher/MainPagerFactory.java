@@ -9,6 +9,7 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import listmodule.view.BaseListFragment;
 import listmodule.view.SimpleListFragment;
 import listmodule.view.SimpleListFragmentListenerAdapter;
+import main.Preferences;
 import pagermodule.PagerModule;
 import pagermodule.PagerModuleFactory;
 import pagermodule.PagerModuleItem;
@@ -94,6 +95,8 @@ public class MainPagerFactory implements PagerModuleFactory {
         QuizletTermListFragment view = QuizletTermListFragment.create();
         listPresenter.setView(view);
         view.setPresenter(listPresenter);
+
+        listPresenter.setSortOrder(Preferences.getQuizletTermSortOrder());
         return listPresenter;
     }
 
