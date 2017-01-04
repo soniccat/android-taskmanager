@@ -1,5 +1,6 @@
 package com.example.alexeyglushkov.wordteacher;
 
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.StackView;
 
@@ -27,34 +28,20 @@ public class MainPagerFactory implements PagerModuleFactory {
     private BaseListFragment.Listener<QuizletSet> quizletSetListener;
     private BaseListFragment.Listener<QuizletTerm> quizletTermListener;
 
+    //// Interfaces
+
+    // PgerModuleFactory
+
     @Override
     public PagerModuleItem moduleAtIndex(int i, final PagerModule pagerModule) {
         PagerModuleItem item = null;
         switch (i) {
             case 0: {
-                QuizletStackModuleFactory factory = new QuizletStackModuleFactory();
-                factory.setQuizletSetListener(createQuizletSetListener());
-                factory.setQuizletTermListener(createQuizletTermListener());
-
-                StackFragment view = new StackFragment();
-                StackPresenter stackPresenter = new StackPresenter();
-                stackPresenter.setFactory(factory);
-                stackPresenter.setView(view);
-                setStackListener(pagerModule, stackPresenter);
-                view.setPresenter(stackPresenter);
-
-                item = stackPresenter;
+                item = createQuizletStackModule(pagerModule);
                 break;
             }
             case 1: {
-                QuizletTermListPresenter listPresenter = new QuizletTermListPresenter();
-                QuizletTermListFragment view = QuizletTermListFragment.create();
-                view.setListener(createQuizletTermListener());
-
-                listPresenter.setView(view);
-                view.setPresenter(listPresenter);
-
-                item = listPresenter;
+                item = createQuizletTermsModule();
                 break;
             }
             case 2:
@@ -64,43 +51,67 @@ public class MainPagerFactory implements PagerModuleFactory {
         return item;
     }
 
-    private void setStackListener(final PagerModule pagerModule, StackPresenter stackPresenter) {
-        stackPresenter.setListener(new StackModuleListener() {
-            @Override
-            public void onBackStackChanged() {
-                pagerModule.updatePage(0);
-            }
-        });
-    }
-
     @Override
     public PagerModuleItem restoreModule(int i, Object viewObject, PagerModule pagerModule) {
         PagerModuleItem item = null;
 
         if (i == 0) {
-            StackFragment view = (StackFragment)viewObject;
-            StackPresenter presenter = view.getPresenter();
-
-            QuizletStackModuleFactory factory = (QuizletStackModuleFactory)presenter.getFactory();
-            factory.setQuizletSetListener(createQuizletSetListener());
-            factory.setQuizletTermListener(createQuizletTermListener());
-
-            setStackListener(pagerModule, view.getPresenter());
-
-            item = presenter;
+            item = restoreQuizletStackModule((StackFragment) viewObject, pagerModule);
 
         } else if (i == 1) {
-            QuizletTermListFragment view = (QuizletTermListFragment)viewObject;
-            QuizletTermListPresenter presenter = (QuizletTermListPresenter)view.getPresenter();
-            view.setListener(createQuizletTermListener());
-
-            item = presenter;
+            item = restoreQuizletTermListModule((QuizletTermListFragment) viewObject);
         }
 
         return item;
     }
 
+    @NonNull
+    private PagerModuleItem restoreQuizletStackModule(StackFragment view, PagerModule pagerModule) {
+        StackPresenter presenter = view.getPresenter();
+
+        QuizletStackModuleFactory factory = (QuizletStackModuleFactory)presenter.getFactory();
+        factory.setQuizletSetListener(createQuizletSetListener());
+        factory.setQuizletTermListener(createQuizletTermListener());
+
+        setStackListener(pagerModule, view.getPresenter());
+        return presenter;
+    }
+
+    private PagerModuleItem restoreQuizletTermListModule(QuizletTermListFragment view) {
+        QuizletTermListPresenter presenter = (QuizletTermListPresenter)view.getPresenter();
+        view.setListener(createQuizletTermListener());
+
+        return presenter;
+    }
+
     //// Creation methods
+
+    @NonNull
+    private PagerModuleItem createQuizletTermsModule() {
+        QuizletTermListPresenter listPresenter = new QuizletTermListPresenter();
+        QuizletTermListFragment view = QuizletTermListFragment.create();
+        view.setListener(createQuizletTermListener());
+
+        listPresenter.setView(view);
+        view.setPresenter(listPresenter);
+        return listPresenter;
+    }
+
+    @NonNull
+    private PagerModuleItem createQuizletStackModule(PagerModule pagerModule) {
+        QuizletStackModuleFactory factory = new QuizletStackModuleFactory();
+        factory.setQuizletSetListener(createQuizletSetListener());
+        factory.setQuizletTermListener(createQuizletTermListener());
+
+        StackFragment view = new StackFragment();
+        StackPresenter stackPresenter = new StackPresenter();
+        stackPresenter.setFactory(factory);
+        stackPresenter.setView(view);
+        setStackListener(pagerModule, stackPresenter);
+        view.setPresenter(stackPresenter);
+
+        return stackPresenter;
+    }
 
     private BaseListFragment.Listener<QuizletSet> createQuizletSetListener() {
         return new BaseListFragment.Listener<QuizletSet>() {
@@ -153,6 +164,15 @@ public class MainPagerFactory implements PagerModuleFactory {
     }
 
     //// Setters
+
+    private void setStackListener(final PagerModule pagerModule, StackPresenter stackPresenter) {
+        stackPresenter.setListener(new StackModuleListener() {
+            @Override
+            public void onBackStackChanged() {
+                pagerModule.updatePage(0);
+            }
+        });
+    }
 
     public void setQuizletSetListener(BaseListFragment.Listener<QuizletSet> quizletSetListener) {
         this.quizletSetListener = quizletSetListener;
