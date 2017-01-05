@@ -12,6 +12,7 @@ import java.util.List;
 import listmodule.CompareStrategyFactory;
 import listmodule.NullStorableListProvider;
 import listmodule.presenter.BaseListPresenter;
+import listmodule.presenter.SimpleListPresenter;
 import listmodule.view.ListViewInterface;
 import main.MainApplication;
 import main.Preferences;
@@ -24,7 +25,8 @@ import tools.Sortable;
  * Created by alexeyglushkov on 05.11.16.
  */
 
-public class CourseListPresenter extends BaseListPresenter<Course> implements Sortable, CourseHolder.CourseHolderListener {
+public class CourseListPresenter extends SimpleListPresenter<Course> implements Sortable, CourseHolder.CourseHolderListener {
+    public static String DEFAULT_TITLE = "Courses";
 
     static final int MSG_REFRESH = 0;
     static final int REFRESH_INTERVAL = 60 * 1000;
@@ -77,7 +79,6 @@ public class CourseListPresenter extends BaseListPresenter<Course> implements So
     }
 
     //// Events
-
 
     @Override
     public void onResume() {
@@ -173,6 +174,13 @@ public class CourseListPresenter extends BaseListPresenter<Course> implements So
         if (index != -1) {
             view.updateRow(index);
         }
+    }
+
+    // PagerModuleItemWithTitle
+
+    @Override
+    public String getTitle() {
+        return DEFAULT_TITLE;
     }
 
     //// Setters

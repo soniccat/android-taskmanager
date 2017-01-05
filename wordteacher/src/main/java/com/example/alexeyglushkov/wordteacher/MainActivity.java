@@ -30,10 +30,12 @@ import com.example.alexeyglushkov.streamlib.CancelError;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
 import coursefragments.CourseListStackFragment;
+import coursefragments.courses.CourseListPresenter;
 import learning.LearnActivity;
 import listmodule.ListModuleInterface;
 import main.BaseActivity;
@@ -181,6 +183,7 @@ public class MainActivity extends BaseActivity implements
 
     private void createPagerModule(ViewPager pager, Bundle savedInstanceState) {
         PagerViewImp pagerView = new PagerViewImp(pager, getSupportFragmentManager());
+        pagerView.setDefaultTitles(new ArrayList<>(Arrays.asList(new String[]{QuizletSetListPresenter.DEFAULT_TITLE, QuizletTermListPresenter.DEFAULT_TITLE, CourseListPresenter.DEFAULT_TITLE})));
 
         if (savedInstanceState == null) {
             MainPagerFactory factory = new MainPagerFactory();
@@ -475,7 +478,7 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public int getPageCount() {
-        return 2;
+        return 3;
     }
 
     @Override
@@ -689,7 +692,7 @@ public class MainActivity extends BaseActivity implements
             @Nullable
             @Override
             public ViewGroup getDialogContainer() {
-                return null;//(ViewGroup) getCurrentFragmentView();
+                return (ViewGroup) getRootView();
             }
 
             @Override
@@ -813,7 +816,9 @@ public class MainActivity extends BaseActivity implements
 
         if (module instanceof StackModule) {
             StackModule stackModule = (StackModule)module;
-            module = stackModule.getModuleAtIndex(stackModule.getSize()-1);
+            if (stackModule.getSize() > 0) {
+                module = stackModule.getModuleAtIndex(stackModule.getSize() - 1);
+            }
         }
 
         if (module instanceof Sortable) {

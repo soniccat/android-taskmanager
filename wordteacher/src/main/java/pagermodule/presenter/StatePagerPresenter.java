@@ -21,6 +21,7 @@ public class StatePagerPresenter implements PagerPresenter {
 
     private PagerView view;
     private int currentIndex;
+    private int size;
     private int fillCount = 2;
     private SparseArray<PagerModuleItem> items = new SparseArray<>();
 
@@ -45,12 +46,13 @@ public class StatePagerPresenter implements PagerPresenter {
     }
 
     @Override
-    public void onViewStateRestored(PagerView view, SparseArray<Object> childs, Bundle savedInstanceState) {
+    public void onViewStateRestored(PagerView view, int currentIndex, SparseArray<Object> childs, Bundle savedInstanceState) {
+        this.currentIndex = currentIndex;
         setView(view);
         for (int i=0; i<childs.size(); ++i) {
             int key = childs.keyAt(i);
 
-            PagerModuleItem item = factory.restoreModule(key, childs.get(i), this);
+            PagerModuleItem item = factory.restoreModule(key, childs.get(key), this);
             items.put(key, item);
         }
     }
@@ -69,7 +71,7 @@ public class StatePagerPresenter implements PagerPresenter {
 
     @Override
     public void reload() {
-        int size = listener.getPageCount();
+        size = listener.getPageCount();
         updateItems(size);
 
         view.setItemCount(size);
@@ -77,9 +79,8 @@ public class StatePagerPresenter implements PagerPresenter {
 
     private void updateItems(int size) {
         for (int i = 0; i < items.size(); ++i) {
-            int index = items.indexOfKey(i);
-            if (needRemove(index)) {
-                items.removeAt(i);
+            if (needRemove(i)) {
+                items.remove(i);
             }
         }
 
@@ -88,9 +89,14 @@ public class StatePagerPresenter implements PagerPresenter {
                 continue;
             }
 
-            PagerModuleItem module = factory.moduleAtIndex(i, this);
-            items.put(i, module);
+            loadModule(i);
         }
+    }
+
+    private PagerModuleItem loadModule(int i) {
+        PagerModuleItem module = factory.moduleAtIndex(i, this);
+        items.put(i, module);
+        return module;
     }
 
     private boolean needRemove(int i) {
@@ -131,6 +137,15 @@ public class StatePagerPresenter implements PagerPresenter {
         return currentIndex;
     }
 
+    private PagerModuleItem requireModuleAtIndex(int i) {
+        PagerModuleItem item = getModuleAtIndex(i);
+        if (item == null) {
+            item = loadModule(i);
+        }
+
+        return item;
+    }
+
     @Override
     public PagerModuleItem getModuleAtIndex(int i) {
         return items.get(i);
@@ -138,7 +153,7 @@ public class StatePagerPresenter implements PagerPresenter {
 
     @Override
     public PagerModuleItemView getViewAtIndex(int i) {
-        return getModuleAtIndex(i).getPagerModuleItemView();
+        return requireModuleAtIndex(i).getPagerModuleItemView();
     }
 
     @Override

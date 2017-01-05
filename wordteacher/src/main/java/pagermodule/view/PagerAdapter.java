@@ -55,7 +55,9 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         String title = listener.getTitleAtIndex(position);
-        if (title != null) {
+        if (title == null) {
+            title = titles.get(position);
+        } else {
             titles.put(position, title);
         }
 

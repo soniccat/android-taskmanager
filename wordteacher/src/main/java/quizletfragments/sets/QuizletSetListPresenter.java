@@ -25,6 +25,8 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet> imp
         Sortable,
         QuizletService.QuizletServiceListener {
 
+    public static String DEFAULT_TITLE = "Sets";
+
     private Bundle savedInstanceState;
 
     @Override
@@ -71,7 +73,7 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet> imp
 
     @Override
     public String getTitle() {
-        return "Sets";
+        return DEFAULT_TITLE;
     }
 
     // QuizletService.QuizletServiceListener

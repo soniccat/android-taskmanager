@@ -29,6 +29,8 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
         implements Sortable,
         PagerModuleItemWithTitle, 
         QuizletService.QuizletServiceListener {
+    public static String DEFAULT_TITLE = "Cards";
+
     private Bundle savedInstanceState;
 
     //// Events
@@ -102,7 +104,7 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
     @Override
     public String getTitle() {
         QuizletSet set = getParentSet();
-        return set != null ? set.getTitle() : "Cards";
+        return set != null ? set.getTitle() : DEFAULT_TITLE;
     }
 
     // Sortable

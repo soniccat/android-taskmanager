@@ -9,6 +9,7 @@ import java.util.List;
 import listmodule.CompareStrategyFactory;
 import listmodule.NullStorableListProvider;
 import listmodule.presenter.BaseListPresenter;
+import listmodule.presenter.SimpleListPresenter;
 import listmodule.view.ListViewInterface;
 import main.MainApplication;
 import main.Preferences;
@@ -22,7 +23,7 @@ import tools.Sortable;
  * Created by alexeyglushkov on 05.11.16.
  */
 
-public class CardListPresenter extends BaseListPresenter<Card> implements Sortable, CourseHolder.CourseHolderListener {
+public class CardListPresenter extends SimpleListPresenter<Card> implements Sortable, CourseHolder.CourseHolderListener {
 
     private Bundle savedInstanceState;
 

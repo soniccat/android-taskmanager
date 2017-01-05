@@ -21,7 +21,7 @@ import stackmodule.view.StackView;
 public interface PagerPresenter extends PagerModule {
     void onViewCreated(Bundle savedInstanceState);
     void onSaveInstanceState(Bundle outState);
-    void onViewStateRestored(PagerView view, SparseArray<Object> childs, Bundle savedInstanceState);
+    void onViewStateRestored(PagerView view, int currentIndex, SparseArray<Object> childs, Bundle savedInstanceState);
 
     void setView(PagerView view);
     PagerView getView();

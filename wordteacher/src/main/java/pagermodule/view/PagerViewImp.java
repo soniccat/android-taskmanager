@@ -10,9 +10,7 @@ import android.util.SparseArray;
 import java.util.ArrayList;
 import java.util.List;
 
-import pagermodule.PagerModuleItemWithTitle;
 import pagermodule.presenter.PagerPresenter;
-import stackmodule.presenter.StackPresenter;
 
 /**
  * Created by alexeyglushkov on 05.11.16.
@@ -76,7 +74,7 @@ public class PagerViewImp implements PagerView, PagerAdapter.Listener, ViewPager
             }
         }
 
-        presenter.onViewStateRestored(this, childs, savedInstanceState);
+        presenter.onViewStateRestored(this, viewPager.getCurrentItem(), childs, savedInstanceState);
     }
 
     //// Interface

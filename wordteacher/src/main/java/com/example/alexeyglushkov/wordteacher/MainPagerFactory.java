@@ -6,10 +6,13 @@ import android.view.View;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 
+import coursefragments.CourseStackModuleFactory;
 import listmodule.view.BaseListFragment;
 import listmodule.view.SimpleListFragment;
 import listmodule.view.SimpleListFragmentListenerAdapter;
 import main.Preferences;
+import model.Card;
+import model.Course;
 import pagermodule.PagerModule;
 import pagermodule.PagerModuleFactory;
 import pagermodule.PagerModuleItem;
@@ -28,6 +31,8 @@ public class MainPagerFactory implements PagerModuleFactory {
     private StackModuleListener stackModuleListener;
     private SimpleListFragment.Listener<QuizletSet> quizletSetListener;
     private SimpleListFragment.Listener<QuizletTerm> quizletTermListener;
+    private SimpleListFragment.Listener<Course> courseListListener;
+    private SimpleListFragment.Listener<Card> cardListListener;
 
     //// Interfaces
 
@@ -46,6 +51,7 @@ public class MainPagerFactory implements PagerModuleFactory {
                 break;
             }
             case 2:
+                item = createCourseStackModule(pagerModule);
                 break;
         }
 
@@ -61,6 +67,9 @@ public class MainPagerFactory implements PagerModuleFactory {
 
         } else if (i == 1) {
             item = restoreQuizletTermListModule((QuizletTermListFragment) viewObject);
+
+        } else if (i == 2) {
+            item = restoreCourseStackModule((StackFragment) viewObject, pagerModule);
         }
 
         return item;
@@ -82,6 +91,17 @@ public class MainPagerFactory implements PagerModuleFactory {
         QuizletTermListPresenter presenter = (QuizletTermListPresenter)view.getPresenter();
         presenter.setListener(createQuizletTermListener());
 
+        return presenter;
+    }
+
+    private PagerModuleItem restoreCourseStackModule(StackFragment view, PagerModule pagerModule) {
+        StackPresenter presenter = view.getPresenter();
+
+        CourseStackModuleFactory factory = (CourseStackModuleFactory)presenter.getFactory();
+        factory.setCourseListListener(createCourseListener());
+        factory.setCardListListener(createCardListener());
+
+        bindStackListener(pagerModule, view.getPresenter());
         return presenter;
     }
 
@@ -116,12 +136,34 @@ public class MainPagerFactory implements PagerModuleFactory {
         return stackPresenter;
     }
 
+    @NonNull
+    private PagerModuleItem createCourseStackModule(PagerModule pagerModule) {
+        CourseStackModuleFactory factory = new CourseStackModuleFactory();
+
+        StackFragment view = new StackFragment();
+        StackPresenter stackPresenter = new StackPresenter();
+        stackPresenter.setFactory(factory);
+        stackPresenter.setView(view);
+        bindStackListener(pagerModule, stackPresenter);
+        view.setPresenter(stackPresenter);
+
+        return stackPresenter;
+    }
+
     private SimpleListFragment.Listener<QuizletSet> createQuizletSetListener() {
         return new SimpleListFragmentListenerAdapter<>(createQuizletSetListenerProvider());
     }
 
     private SimpleListFragment.Listener<QuizletTerm> createQuizletTermListener() {
         return new SimpleListFragmentListenerAdapter<>(createQuizletTermListenerProvider());
+    }
+
+    private SimpleListFragment.Listener<Course> createCourseListener() {
+        return new SimpleListFragmentListenerAdapter<Course>(createCourseListenerProvider());
+    }
+
+    private SimpleListFragment.Listener<Card> createCardListener() {
+        return new SimpleListFragmentListenerAdapter<>(createCardListenerProvider());
     }
 
     private SimpleListFragmentListenerAdapter.ListenerProvider<QuizletSet> createQuizletSetListenerProvider() {
@@ -144,6 +186,25 @@ public class MainPagerFactory implements PagerModuleFactory {
         };
     }
 
+    private SimpleListFragmentListenerAdapter.ListenerProvider<Course> createCourseListenerProvider() {
+        // we return provider because listener is null at the moment of restoration and will be set later
+        return new SimpleListFragmentListenerAdapter.ListenerProvider<Course>() {
+            @Override
+            public SimpleListFragment.Listener<Course> getListener() {
+                return courseListListener;
+            }
+        };
+    }
+
+    private SimpleListFragmentListenerAdapter.ListenerProvider<Card> createCardListenerProvider() {
+        // we return provider because listener is null at the moment of restoration and will be set later
+        return new SimpleListFragmentListenerAdapter.ListenerProvider<Card>() {
+            @Override
+            public SimpleListFragment.Listener<Card> getListener() {
+                return cardListListener;
+            }
+        };
+    }
 
     //// Setters
 
