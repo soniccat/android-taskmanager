@@ -183,7 +183,6 @@ public class MainActivity extends BaseActivity implements
 
     private void createPagerModule(ViewPager pager, Bundle savedInstanceState) {
         PagerViewImp pagerView = new PagerViewImp(pager, getSupportFragmentManager());
-        pagerView.setDefaultTitles(new ArrayList<>(Arrays.asList(new String[]{QuizletSetListPresenter.DEFAULT_TITLE, QuizletTermListPresenter.DEFAULT_TITLE, CourseListPresenter.DEFAULT_TITLE})));
 
         if (savedInstanceState == null) {
             MainPagerFactory factory = new MainPagerFactory();
@@ -192,6 +191,7 @@ public class MainActivity extends BaseActivity implements
             factory.setQuizletTermListener(createTermMenuListener());
 
             StatePagerPresenter pagerPresenter = new StatePagerPresenter();
+            pagerPresenter.setDefaultTitles(new ArrayList<>(Arrays.asList(new String[]{QuizletSetListPresenter.DEFAULT_TITLE, QuizletTermListPresenter.DEFAULT_TITLE, CourseListPresenter.DEFAULT_TITLE})));
             pagerPresenter.setFactory(factory);
 
             pagerView.setPresenter(pagerPresenter);
@@ -701,6 +701,8 @@ public class MainActivity extends BaseActivity implements
             }
         });
     }
+
+
 
     @NonNull
     private ViewPager.OnPageChangeListener createPageListener() {

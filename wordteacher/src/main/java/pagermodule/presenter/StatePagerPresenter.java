@@ -4,6 +4,11 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
 
+import com.example.alexeyglushkov.tools.SparceArrayTools;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import pagermodule.PagerModuleFactory;
 import pagermodule.PagerModuleItem;
 import pagermodule.PagerModuleItemView;
@@ -25,6 +30,9 @@ public class StatePagerPresenter implements PagerPresenter {
     private int fillCount = 2;
     private SparseArray<PagerModuleItem> items = new SparseArray<>();
 
+    private SparseArray<String> titles = new SparseArray<>(); // keep last titles because fragment could be fully unloaded
+    private ArrayList<String> defaultTitles = new ArrayList<>();
+
     //// Creation and restoration
 
     @Override
@@ -43,6 +51,8 @@ public class StatePagerPresenter implements PagerPresenter {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putString("factoryClass", factory.getClass().getName());
+        SparceArrayTools.storeSparceArray(titles, outState, 0);
+        outState.putStringArrayList("defaultTitles", defaultTitles);
     }
 
     @Override
@@ -55,6 +65,9 @@ public class StatePagerPresenter implements PagerPresenter {
             PagerModuleItem item = factory.restoreModule(key, childs.get(key), this);
             items.put(key, item);
         }
+
+        titles = SparceArrayTools.readSparceArray(savedInstanceState, 0);
+        defaultTitles = savedInstanceState.getStringArrayList("defaultTitles");
     }
 
 
@@ -130,6 +143,10 @@ public class StatePagerPresenter implements PagerPresenter {
         this.factory = factory;
     }
 
+    public void setDefaultTitles(ArrayList<String> defaultTitles) {
+        this.defaultTitles = defaultTitles;
+    }
+
     //// Getter
 
     @Override
@@ -163,6 +180,15 @@ public class StatePagerPresenter implements PagerPresenter {
 
         if (item instanceof PagerModuleItemWithTitle) {
             str = ((PagerModuleItemWithTitle)item).getTitle();
+            if (str != null) {
+                titles.put(i, str);
+            }
+
+        } else if (titles.get(i) != null) {
+            str = titles.get(i);
+
+        } else if (defaultTitles.get(i) != null) {
+            str = defaultTitles.get(i);
         }
 
         return str;

@@ -70,13 +70,13 @@ public class CourseStackModuleFactory implements StackModuleFactory {
     @Override
     public StackModuleItem restoreModule(Object viewObject, StackModule stackModule) {
         StackModuleItem item = null;
-        if (viewObject instanceof QuizletSetListFragment) {
+        if (viewObject instanceof CourseListFragment) {
             CourseListFragment setListFragment = (CourseListFragment)viewObject;
             CourseListPresenter setListPresenter = (CourseListPresenter)setListFragment.getPresenter();
             bindSetListPresenterListener(setListPresenter, stackModule);
             item = setListPresenter;
 
-        } else if (viewObject instanceof QuizletTermListFragment) {
+        } else if (viewObject instanceof CardListFragment) {
             CardListFragment termListFragment = (CardListFragment)viewObject;
             CardListPresenter termListPresenter = (CardListPresenter)termListFragment.getPresenter();
             bindTermListPresenterListener(termListPresenter, stackModule);

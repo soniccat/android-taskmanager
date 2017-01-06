@@ -16,8 +16,6 @@ import com.example.alexeyglushkov.tools.SparceArrayTools;
  */
 public class PagerAdapter extends FragmentStatePagerAdapter {
 
-    // keep last titles because fragment could be fully unloaded
-    private SparseArray<String> titles = new SparseArray<>();
     private SparseArray<Fragment> fragments = new SparseArray<>();
     private Listener listener;
 
@@ -54,23 +52,12 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        String title = listener.getTitleAtIndex(position);
-        if (title == null) {
-            title = titles.get(position);
-        } else {
-            titles.put(position, title);
-        }
-
-        return title;
+        return listener.getTitleAtIndex(position);
     }
 
     @Override
     public Parcelable saveState() {
         Bundle bundle = (Bundle)super.saveState();
-        if (bundle != null) {
-            SparceArrayTools.storeSparceArray(titles, bundle, 0);
-        }
-
         int[] fragmentKeys = new int[fragments.size()];
         for (int i=0; i<fragments.size(); ++i) {
             fragmentKeys[i] = fragments.keyAt(i);
@@ -85,8 +72,6 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public void restoreState(Parcelable state, ClassLoader loader) {
         super.restoreState(state, loader);
         Bundle bundle = (Bundle)state;
-        titles = SparceArrayTools.readSparceArray(bundle, 0);
-
         int[] fragmentKeys = bundle.getIntArray("PagerAdapter_fragmentKeys");
         for (int i = 0; i < fragmentKeys.length; ++i) {
             int key = fragmentKeys[i];

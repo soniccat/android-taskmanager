@@ -20,8 +20,6 @@ public class PagerViewImp implements PagerView, PagerAdapter.Listener, ViewPager
     private PagerPresenter presenter;
     private int itemCount;
 
-    private List<String> defaultTitles = new ArrayList<>();
-
     private @NonNull ViewPager viewPager;
     private @NonNull PagerAdapter pagerAdapter;
 
@@ -104,12 +102,7 @@ public class PagerViewImp implements PagerView, PagerAdapter.Listener, ViewPager
 
     @Override
     public String getTitleAtIndex(int index) {
-        String title = presenter.getViewTitleAtIndex(index);
-        if (title == null && index < defaultTitles.size()){
-            title = defaultTitles.get(index);
-        }
-
-        return title;
+        return presenter.getViewTitleAtIndex(index);
     }
 
     @Override
@@ -133,10 +126,6 @@ public class PagerViewImp implements PagerView, PagerAdapter.Listener, ViewPager
     }
 
     //// Setter
-
-    public void setDefaultTitles(List<String> defaultTitles) {
-        this.defaultTitles = defaultTitles;
-    }
 
     public void setPresenter(PagerPresenter presenter) {
         this.presenter = presenter;
