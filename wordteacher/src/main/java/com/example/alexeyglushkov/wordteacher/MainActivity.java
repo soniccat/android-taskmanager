@@ -29,12 +29,10 @@ import com.example.alexeyglushkov.service.CachableHttpLoadTask;
 import com.example.alexeyglushkov.streamlib.CancelError;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import coursefragments.CourseListStackFragment;
 import coursefragments.cards.CardListPresenter;
 import coursefragments.courses.CourseListPresenterMenuListener;
 import coursefragments.courses.CourseListPresenter;
@@ -796,15 +794,6 @@ public class MainActivity extends BaseActivity implements
         return fragment;
         */
 
-        return null;
-    }
-
-    @NonNull
-    private CourseListStackFragment createCourseStackFragment() {
-        /*CourseListStackFragment fragment = new CourseListStackFragment();
-        fragment.setListener(this);
-
-        return fragment;*/
         return null;
     }
 
