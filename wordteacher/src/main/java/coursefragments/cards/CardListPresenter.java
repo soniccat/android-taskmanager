@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
+
 import java.util.List;
 
 import listmodule.CompareStrategyFactory;
@@ -25,6 +27,7 @@ import tools.Sortable;
 
 public class CardListPresenter extends SimpleListPresenter<Card> implements Sortable, CourseHolder.CourseHolderListener {
 
+    public static String DEFAULT_TITLE = "Cards";
     private Bundle savedInstanceState;
 
     //// Creation, initialization, restoration
@@ -82,6 +85,15 @@ public class CardListPresenter extends SimpleListPresenter<Card> implements Sort
     public CompareStrategyFactory<Card> createCompareStrategyFactory() {
         return new CardCompareStrategyFactory();
     }
+
+    // PagerModuleItemWithTitle
+
+    @Override
+    public String getTitle() {
+        Course set = getParentCourse();
+        return set != null ? set.getTitle() : DEFAULT_TITLE;
+    }
+
 
     // Sortable
 

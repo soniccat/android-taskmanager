@@ -139,6 +139,8 @@ public class MainPagerFactory implements PagerModuleFactory {
     @NonNull
     private PagerModuleItem createCourseStackModule(PagerModule pagerModule) {
         CourseStackModuleFactory factory = new CourseStackModuleFactory();
+        factory.setCourseListListener(createCourseListener());
+        factory.setCardListListener(createCardListener());
 
         StackFragment view = new StackFragment();
         StackPresenter stackPresenter = new StackPresenter();

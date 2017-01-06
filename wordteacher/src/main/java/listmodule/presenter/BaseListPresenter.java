@@ -30,7 +30,6 @@ import stackmodule.StackModuleItemView;
 public abstract class BaseListPresenter<T>
         implements ListPresenterInterface,
         StackModuleItem,
-        PagerModuleItem,
         PagerModuleItemWithTitle {
     protected StorableListProviderFactory<T> providerFactory;
     protected StorableListProvider<T> provider = new NullStorableListProvider<>();

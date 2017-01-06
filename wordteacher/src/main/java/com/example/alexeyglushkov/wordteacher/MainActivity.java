@@ -704,12 +704,11 @@ public class MainActivity extends BaseActivity implements
         });
     }
 
-    private CourseListPresenterMenuListener createMenuCourseListener(ListModuleInterface presenter) {
-        final WeakReference<ListModuleInterface> presenterRef = new WeakReference<>(presenter);
+    private CourseListPresenterMenuListener createMenuCourseListener() {
         return new CourseListPresenterMenuListener(this, getCourseHolder(), new CourseListPresenterMenuListener.Listener() {
             @Override
             public void onCourseDeleteClicked(Course course) {
-                ListModuleInterface listModule = presenterRef.get();
+                ListModuleInterface listModule = getCourseListModule();
                 if (listModule != null) {
                     listModule.delete(course);
                 }
@@ -735,7 +734,7 @@ public class MainActivity extends BaseActivity implements
 
             @Override
             public void onDataDeletionCancelled(Course course) {
-                ListModuleInterface listModule = presenterRef.get();
+                ListModuleInterface listModule = getCourseListModule();
                 if (listModule != null) {
                     listModule.reload();
                 }
@@ -902,6 +901,11 @@ public class MainActivity extends BaseActivity implements
     @Nullable
     private StackModule getCourseListStackModule() {
         return getStackModule(2);
+    }
+
+    private ListModuleInterface getCourseListModule() {
+        StackModule stackModule = getCourseListStackModule();
+        return stackModule != null && stackModule.getSize() > 0 ? (ListModuleInterface)stackModule.getModuleAtIndex(0) : null;
     }
 
     @Nullable

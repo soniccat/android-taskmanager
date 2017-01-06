@@ -40,13 +40,7 @@ public class CourseStackModuleFactory implements StackModuleFactory {
     }
 
     private void bindSetListPresenterListener(CourseListPresenter presenter, final StackModule stackModule) {
-        presenter.setListener(new SimpleListFragmentListenerAdapter<Course>(createCourseListListenerProvider()) {
-            @Override
-            public void onRowClicked(Course data) {
-                stackModule.push(data, null);
-                super.onRowClicked(data);
-            }
-        });
+        presenter.setListener(new SimpleListFragmentListenerAdapter<>(createCourseListListenerProvider()));
     }
 
     @Override
@@ -76,7 +70,7 @@ public class CourseStackModuleFactory implements StackModuleFactory {
             bindSetListPresenterListener(setListPresenter, stackModule);
             item = setListPresenter;
 
-        } else if (viewObject instanceof CardListFragment) {
+        } else if (viewObject instanceof QuizletTermListFragment) {
             CardListFragment termListFragment = (CardListFragment)viewObject;
             CardListPresenter termListPresenter = (CardListPresenter)termListFragment.getPresenter();
             bindTermListPresenterListener(termListPresenter, stackModule);
