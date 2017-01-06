@@ -232,4 +232,12 @@ public class MainPagerFactory implements PagerModuleFactory {
     public void setQuizletTermListener(SimpleListFragment.Listener<QuizletTerm> quizletTermListener) {
         this.quizletTermListener = quizletTermListener;
     }
+
+    public void setCourseListListener(SimpleListFragment.Listener<Course> courseListListener) {
+        this.courseListListener = courseListListener;
+    }
+
+    public void setCardListListener(SimpleListFragment.Listener<Card> cardListListener) {
+        this.cardListListener = cardListListener;
+    }
 }

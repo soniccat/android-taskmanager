@@ -141,6 +141,7 @@ public class MainActivity extends BaseActivity implements
         factory.setStackModuleListener(createStackModuleListener());
         factory.setQuizletSetListener(createSetMenuListener());
         factory.setQuizletTermListener(createTermMenuListener());
+        factory.setCourseListListener(createMenuCourseListener());
 
         pagerModule.reload();
         updateToolbarBackButton();
@@ -189,6 +190,7 @@ public class MainActivity extends BaseActivity implements
             factory.setStackModuleListener(createStackModuleListener());
             factory.setQuizletSetListener(createSetMenuListener());
             factory.setQuizletTermListener(createTermMenuListener());
+            factory.setCourseListListener(createMenuCourseListener());
 
             StatePagerPresenter pagerPresenter = new StatePagerPresenter();
             pagerPresenter.setDefaultTitles(new ArrayList<>(Arrays.asList(new String[]{QuizletSetListPresenter.DEFAULT_TITLE, QuizletTermListPresenter.DEFAULT_TITLE, CourseListPresenter.DEFAULT_TITLE})));
@@ -702,7 +704,7 @@ public class MainActivity extends BaseActivity implements
         });
     }
 
-    private CourseListPresenterMenuListener getMenuCourseListener(ListModuleInterface presenter) {
+    private CourseListPresenterMenuListener createMenuCourseListener(ListModuleInterface presenter) {
         final WeakReference<ListModuleInterface> presenterRef = new WeakReference<>(presenter);
         return new CourseListPresenterMenuListener(this, getCourseHolder(), new CourseListPresenterMenuListener.Listener() {
             @Override
@@ -715,7 +717,10 @@ public class MainActivity extends BaseActivity implements
 
             @Override
             public void onShowCourseContentClicked(Course course) {
-                showCardListFragment(course);
+                StackModule module = getStackModule(pagerModule.getCurrentIndex());
+                if (module != null) {
+                    module.push(course, null);
+                }
             }
 
             @Override
@@ -730,7 +735,10 @@ public class MainActivity extends BaseActivity implements
 
             @Override
             public void onDataDeletionCancelled(Course course) {
-                reloadCourses();
+                ListModuleInterface listModule = presenterRef.get();
+                if (listModule != null) {
+                    listModule.reload();
+                }
             }
 
             @Override
@@ -739,7 +747,7 @@ public class MainActivity extends BaseActivity implements
 
             @Override
             public View getSnackBarViewContainer() {
-                return getStackModuleItemView();
+                return getRootView();
             }
         });
     }
