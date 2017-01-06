@@ -28,17 +28,13 @@ import tools.Sortable;
 public class CourseListPresenter extends SimpleListPresenter<Course> implements Sortable, CourseHolder.CourseHolderListener {
     public static String DEFAULT_TITLE = "Courses";
 
-    static final int MSG_REFRESH = 0;
-    static final int REFRESH_INTERVAL = 60 * 1000;
+    private static final int MSG_REFRESH = 0;
+    private static final int REFRESH_INTERVAL = 60 * 1000;
 
-    private @NonNull
-    Handler refreshHandler;
-
-    private @Nullable
-    Bundle savedInstanceState;
+    private @NonNull Handler refreshHandler;
+    private @Nullable Bundle savedInstanceState;
 
     //// Creation, initialization, restoration
-
 
     @Override
     public void initialize() {
@@ -101,15 +97,15 @@ public class CourseListPresenter extends SimpleListPresenter<Course> implements 
         reload();
     }
 
-    public void scheduleRefresh() {
+    private void scheduleRefresh() {
         refreshHandler.sendEmptyMessageDelayed(MSG_REFRESH, REFRESH_INTERVAL);
     }
 
-    public void invalidateRefreshSchedule() {
+    private void invalidateRefreshSchedule() {
         refreshHandler.removeMessages(MSG_REFRESH);
     }
 
-    public void refresh() {
+    private void refresh() {
         view.updateRows();
         scheduleRefresh();
     }
