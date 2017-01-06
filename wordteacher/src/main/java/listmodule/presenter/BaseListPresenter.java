@@ -49,6 +49,15 @@ public abstract class BaseListPresenter<T>
         compareStrategyFactory = createCompareStrategyFactory();
     }
 
+    private void initStrategyIfNeeded(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            compareStrategy = compareStrategyFactory.restore(savedInstanceState);
+
+        } else if (compareStrategy == null) {
+            compareStrategy = compareStrategyFactory.createDefault();
+        }
+    }
+
     protected CompareStrategyFactory<T> createCompareStrategyFactory() {
         return new NullCompareStrategyFactory<>();
     }
@@ -57,12 +66,13 @@ public abstract class BaseListPresenter<T>
 
     //// Events
 
+    @Override
+    public void onCreated(Bundle savedInstanceState) {
+        initStrategyIfNeeded(savedInstanceState);
+    }
+
+    @Override
     public void onViewCreated(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            compareStrategy = compareStrategyFactory.restore(savedInstanceState);
-        } else if (compareStrategy == null) {
-            compareStrategy = compareStrategyFactory.createDefault();
-        }
     }
 
     @Override

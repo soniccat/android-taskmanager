@@ -39,21 +39,11 @@ public class CourseListPresenter extends SimpleListPresenter<Course> implements 
 
     //// Creation, initialization, restoration
 
+
     @Override
     public void initialize() {
         super.initialize();
-
-        refreshHandler = new Handler(Looper.myLooper(), new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message msg) {
-                if (msg.what == MSG_REFRESH) {
-                    refresh();
-                    return true;
-                }
-
-                return false;
-            }
-        });
+        refreshHandler = createRefreshHandler();
     }
 
     @Override
@@ -97,7 +87,6 @@ public class CourseListPresenter extends SimpleListPresenter<Course> implements 
         super.onDestroyView();
         getCourseHolder().removeListener(this);
         invalidateRefreshSchedule();
-        refreshHandler = null;
     }
 
     private void onHolderLoaded() {
@@ -135,6 +124,20 @@ public class CourseListPresenter extends SimpleListPresenter<Course> implements 
     @Override
     public CompareStrategyFactory<Course> createCompareStrategyFactory() {
         return new CourseCompareStrategyFactory();
+    }
+
+    private Handler createRefreshHandler() {
+        return new Handler(Looper.myLooper(), new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                if (msg.what == MSG_REFRESH) {
+                    refresh();
+                    return true;
+                }
+
+                return false;
+            }
+        });
     }
 
     //// Interfaces

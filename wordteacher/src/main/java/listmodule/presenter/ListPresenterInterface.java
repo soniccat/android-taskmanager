@@ -13,6 +13,7 @@ public interface ListPresenterInterface extends ListModuleInterface {
     void initialize();
     void store(Bundle bundle);
 
+    void onCreated(Bundle savedInstanceState);
     void onViewCreated(Bundle savedInstanceState);
     void onViewStateRestored(ListViewInterface view, Bundle savedInstanceState);
 

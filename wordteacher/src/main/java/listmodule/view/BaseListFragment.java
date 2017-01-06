@@ -55,7 +55,7 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
             }
         }
 
-        presenter.onViewCreated(savedInstanceState);
+        presenter.onCreated(savedInstanceState);
     }
 
     @Override
@@ -70,6 +70,7 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
         recyclerView.setLayoutManager(layoutManager);
 
         applyAdapter();
+        presenter.onViewCreated(savedInstanceState);
     }
 
     @Override
