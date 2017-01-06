@@ -9,4 +9,5 @@ import main.Preferences;
 public interface ListModuleInterface {
     void reload();
     void setSortOrder(Preferences.SortOrder order);
+    void delete(Object data);
 }

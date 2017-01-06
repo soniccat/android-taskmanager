@@ -18,7 +18,7 @@ import listmodule.presenter.SimpleListPresenter;
  * Created by alexeyglushkov on 23.07.16.
  */
 public abstract class BaseListFragment<T> extends Fragment implements ListViewInterface<T> {
-    private SimpleListPresenter<T> presenter;
+    private SimpleListPresenter<T> presenter; //TODO: use BaseListPresenter
 
     protected RecyclerView recyclerView;
     protected View loader;
@@ -134,6 +134,16 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
         }
     }
 
+    @Override
+    public void deleteRow(int index) {
+        View view = getDataView(index);
+        if (view != null) {
+            int position = recyclerView.getChildLayoutPosition(view);
+            adapter.deleteDataAtIndex(index);
+            adapter.notifyItemRemoved(position);
+        }
+    }
+
     public void updateRows() {
         adapter.notifyItemRangeChanged(0, adapter.getItemCount());
     }
@@ -141,12 +151,7 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
     public void deleteView(T data) {
         int index = adapter.getDataIndex(data);
         if (index != -1) {
-            View view = getDataView(index);
-            if (view != null) {
-                int position = recyclerView.getChildLayoutPosition(view);
-                adapter.deleteDataAtIndex(index);
-                adapter.notifyItemRemoved(position);
-            }
+            deleteRow(index);
         }
     }
 

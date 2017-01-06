@@ -12,6 +12,7 @@ import stackmodule.StackModuleItemView;
 public interface ListViewInterface<T> extends StackModuleItemView, PagerModuleItemView {
     void reload(List<T> items);
     void updateRow(int index);
+    void deleteRow(int index);
     void updateRows();
 
     void showLoading();

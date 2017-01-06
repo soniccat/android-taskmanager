@@ -1,6 +1,7 @@
 package listmodule;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 
@@ -59,6 +60,7 @@ public abstract class DeleteMenuListener<T> extends ListMenuListener<T> {
 
     protected abstract void deleteData(T data) throws Exception;
 
+    @NonNull
     public Listener getListener() {
         return (Listener)this.listener;
     }

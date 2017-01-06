@@ -1,11 +1,14 @@
 package coursefragments.courses;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.PopupMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.alexeyglushkov.wordteacher.R;
+
+import java.lang.ref.WeakReference;
 
 import listmodule.DeleteMenuListener;
 import model.Course;
@@ -14,13 +17,26 @@ import model.CourseHolder;
 /**
  * Created by alexeyglushkov on 13.06.16.
  */
-public class CourseListFragmentMenuListener extends DeleteMenuListener<Course> {
+public class CourseListPresenterMenuListener extends DeleteMenuListener<Course> {
     private CourseHolder courseHolder;
 
-    public CourseListFragmentMenuListener(Context context, CourseHolder courseHolder, Listener listener) {
+    public CourseListPresenterMenuListener(Context context, CourseHolder courseHolder, Listener listener) {
         super(context, listener);
         this.courseHolder = courseHolder;
     }
+
+    //// Events
+
+    public void onCourseViewDeleted(final Course course) {
+        deleteDataWithSnackbar(course);
+    }
+
+    @Override
+    public void onRowViewDeleted(Course data) {
+        onCourseViewDeleted(data);
+    }
+
+    //// Actions
 
     protected void fillMenu(final Course course, PopupMenu popupMenu) {
         if (course.getNotStartedCards().size() > 0) {
@@ -47,23 +63,19 @@ public class CourseListFragmentMenuListener extends DeleteMenuListener<Course> {
         });
     }
 
-    public void onCourseViewDeleted(final Course course) {
-        deleteDataWithSnackbar(course);
-    }
-
-    @Override
-    public void onRowViewDeleted(Course data) {
-        onCourseViewDeleted(data);
-    }
-
     @Override
     protected void deleteData(Course data) throws Exception {
         courseHolder.removeCourse(data);
     }
 
+    //// Getters
+
+    @NonNull
     public Listener getListener() {
         return (Listener)this.listener;
     }
+
+    //// Interfaces
 
     public interface Listener extends DeleteMenuListener.Listener<Course> {
         void onCourseDeleteClicked(Course data); // expect row deletion from ui

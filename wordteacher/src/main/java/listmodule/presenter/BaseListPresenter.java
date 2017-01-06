@@ -155,6 +155,14 @@ public abstract class BaseListPresenter<T>
     public void setSortOrder(Preferences.SortOrder order) {
     }
 
+    @Override
+    public void delete(Object data) {
+        int index = getItems().indexOf(data);
+        if (index != -1) {
+            view.deleteRow(index);
+        }
+    }
+
     //// Setter
 
     public void setCompareStrategy(CompareStrategy<T> compareStrategy) {

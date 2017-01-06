@@ -29,12 +29,13 @@ import com.example.alexeyglushkov.service.CachableHttpLoadTask;
 import com.example.alexeyglushkov.streamlib.CancelError;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Stack;
 
 import coursefragments.CourseListStackFragment;
+import coursefragments.courses.CourseListPresenterMenuListener;
 import coursefragments.courses.CourseListPresenter;
 import learning.LearnActivity;
 import listmodule.ListModuleInterface;
@@ -58,7 +59,6 @@ import stackmodule.StackModuleListener;
 import tools.Sortable;
 import quizletfragments.terms.QuizletTermFragmentMenuListener;
 import quizletfragments.terms.QuizletTermListFragment;
-import quizletfragments.stack.QuizletStackFragment;
 import tools.UITools;
 import ui.LoadingButton;
 
@@ -702,7 +702,47 @@ public class MainActivity extends BaseActivity implements
         });
     }
 
+    private CourseListPresenterMenuListener getMenuCourseListener(ListModuleInterface presenter) {
+        final WeakReference<ListModuleInterface> presenterRef = new WeakReference<>(presenter);
+        return new CourseListPresenterMenuListener(this, getCourseHolder(), new CourseListPresenterMenuListener.Listener() {
+            @Override
+            public void onCourseDeleteClicked(Course course) {
+                ListModuleInterface listModule = presenterRef.get();
+                if (listModule != null) {
+                    listModule.delete(course);
+                }
+            }
 
+            @Override
+            public void onShowCourseContentClicked(Course course) {
+                showCardListFragment(course);
+            }
+
+            @Override
+            public void onRowClicked(Course course) {
+                MainActivity.this.onCourseClicked(course);
+            }
+
+            @Override
+            public void onLearnNewWordsClick(Course course) {
+                MainActivity.this.onLearnNewWordsClick(course);
+            }
+
+            @Override
+            public void onDataDeletionCancelled(Course course) {
+                reloadCourses();
+            }
+
+            @Override
+            public void onDataDeleted(Course course, Exception exception) {
+            }
+
+            @Override
+            public View getSnackBarViewContainer() {
+                return getStackModuleItemView();
+            }
+        });
+    }
 
     @NonNull
     private ViewPager.OnPageChangeListener createPageListener() {

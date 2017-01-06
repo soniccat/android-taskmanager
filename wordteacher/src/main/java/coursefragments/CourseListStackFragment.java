@@ -8,12 +8,9 @@ import android.view.View;
 import stackmodule.view.StackFragment;
 
 import coursefragments.cards.CardListFragment;
-import coursefragments.cards.CardListFragmentMenuListener;
 import coursefragments.courses.CourseListFragment;
-import coursefragments.courses.CourseListFragmentMenuListener;
 import main.MainApplication;
 import main.Preferences;
-import model.Card;
 import model.Course;
 import model.CourseHolder;
 import tools.Sortable;
@@ -118,7 +115,7 @@ public class CourseListStackFragment extends StackFragment implements Sortable {
         return new CourseListFragmentMenuListener(getContext(), getCourseHolder(), new CourseListFragmentMenuListener.Listener() {
             @Override
             public void onCourseDeleteClicked(Course course) {
-                getCourseFragment().deleteView(course);
+                getCourseFragment().delete(course);
             }
 
             @Override
@@ -158,7 +155,7 @@ public class CourseListStackFragment extends StackFragment implements Sortable {
         return new CardListFragmentMenuListener(getContext(), getCourseHolder(), new CardListFragmentMenuListener.Listener() {
             @Override
             public void onCardDeleteClicked(Card data) {
-                getCardListFragment().deleteView(data);
+                getCardListFragment().delete(data);
             }
 
             @Override
