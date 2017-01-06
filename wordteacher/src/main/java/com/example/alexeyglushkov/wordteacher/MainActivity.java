@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import coursefragments.CourseListStackFragment;
+import coursefragments.cards.CardListPresenter;
 import coursefragments.courses.CourseListPresenterMenuListener;
 import coursefragments.courses.CourseListPresenter;
 import learning.LearnActivity;
@@ -236,6 +237,12 @@ public class MainActivity extends BaseActivity implements
 
         } else if (module instanceof QuizletSetListPresenter) {
             Preferences.setQuizletSetSortOrder(sortOrder);
+
+        } else if (module instanceof CourseListPresenter) {
+            Preferences.setCourseListSortOrder(sortOrder);
+
+        } else if (module instanceof CardListPresenter) {
+            Preferences.setCardListSortOrder(sortOrder);
         }
 
         supportInvalidateOptionsMenu();
