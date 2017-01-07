@@ -9,7 +9,6 @@ import java.util.List;
 
 import listmodule.CompareStrategyFactory;
 import listmodule.NullStorableListProvider;
-import listmodule.presenter.BaseListPresenter;
 import listmodule.presenter.SimpleListPresenter;
 import listmodule.view.ListViewInterface;
 import main.MainApplication;

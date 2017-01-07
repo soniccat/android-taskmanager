@@ -55,7 +55,6 @@ public class CardListAdapter extends BaseListAdaptor<CardListAdapter.Holder, Car
 
     //// Actions
 
-
     @Override
     public void cleanup() {
         super.cleanup();
@@ -86,13 +85,13 @@ public class CardListAdapter extends BaseListAdaptor<CardListAdapter.Holder, Car
         notifyItemRemoved(position);
     }
 
-    public class Holder extends RecyclerView.ViewHolder {
-        public View cardView;
-        public TextView nameTextview;
-        public TextView wordCountTextView;
-        public ImageView menuButton;
+    class Holder extends RecyclerView.ViewHolder {
+        private View cardView;
+        private TextView nameTextview;
+        private TextView wordCountTextView;
+        private ImageView menuButton;
 
-        public Holder(View itemView) {
+        private Holder(View itemView) {
             super(itemView);
             cardView = itemView.findViewById(R.id.card);
             nameTextview = (TextView)itemView.findViewById(R.id.name);

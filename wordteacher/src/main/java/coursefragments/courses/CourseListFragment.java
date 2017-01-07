@@ -33,14 +33,6 @@ public class CourseListFragment extends BaseListFragment<Course> {
         return inflater.inflate(R.layout.fragment_quizlet_cards, container, false);
     }
 
-    //// Actions
-    
-    // Refreshing
-
-    public void reloadCells() {
-        adapter.notifyItemRangeChanged(0, adapter.getItemCount());
-    }
-
     //// Creation Methods
 
     @Override
@@ -67,11 +59,5 @@ public class CourseListFragment extends BaseListFragment<Course> {
         });
 
         return adapter;
-    }
-
-    //// Getters
-
-    private CourseListAdapter getCourseAdapter() {
-        return (CourseListAdapter)adapter;
     }
 }
