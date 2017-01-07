@@ -10,18 +10,22 @@ import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
+import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProxy;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.service.CachableHttpLoadTask;
 import com.example.alexeyglushkov.streamlib.CancelError;
+import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
+import java.lang.ref.Reference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import coursefragments.cards.CardListPresenter;
 import coursefragments.courses.CourseListPresenter;
 import coursefragments.courses.CourseListPresenterMenuListener;
 import learning.LearnActivity;
@@ -106,7 +110,109 @@ public class MainPresenterImp implements
         loadQuizletSets();
     }
 
+    @Override
+    public void onStartPressed() {
+        startLearnActivity(getReadyCards());
+    }
+
+    @Override
+    public void onDropboxPressed() {
+        syncWithDropbox();
+    }
+
+    private void onCourseHolderChanged() {
+        view.invalidateToolbar();
+    }
+
+    public void onCourseChanged(Course course, @Nullable Exception exception) {
+        if (exception != null) {
+            view.showException(exception);
+        }
+
+        updateCoursesIfNeeded();
+        onCourseHolderChanged();
+    }
+
+    public void onCourseClicked(@NonNull Course course) {
+        List<Card> cards = course.getReadyToLearnCards();
+        if (cards.size() > 0) {
+            startLearnActivity(cards);
+        } else if (course.getCards().size() > 0){
+            startLearnActivity(course.getCards());
+        }
+    }
+
+    public void onLearnNewWordsClick(@NonNull Course course) {
+        startLearnNewWords(course);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == LearnActivity.ACTIVITY_RESULT) {
+            updateCoursesIfNeeded();
+            view.invalidateToolbar();
+        }
+    }
+
+    public void onSortOrderSelected(Preferences.SortOrder order) {
+        if (getCurrentSortOrder() == order) {
+            order = order.getInverse();
+        }
+
+        setSortOrder(order);
+    }
+
+    private void onSortOrderChanged(Preferences.SortOrder sortOrder, Sortable module) {
+        if (module instanceof QuizletTermListPresenter) {
+            Preferences.setQuizletTermSortOrder(sortOrder);
+
+        } else if (module instanceof QuizletSetListPresenter) {
+            Preferences.setQuizletSetSortOrder(sortOrder);
+
+        } else if (module instanceof CourseListPresenter) {
+            Preferences.setCourseListSortOrder(sortOrder);
+
+        } else if (module instanceof CardListPresenter) {
+            Preferences.setCardListSortOrder(sortOrder);
+        }
+
+        view.invalidateToolbar();
+    }
+
     //// Actions
+
+    // Update data actions
+
+    private void updateSets() {
+        StackModule stackModule = getQuizletStackModule();
+        if (stackModule != null) {
+            //stackModule.reloadSets();
+        }
+
+        ListModuleInterface listModule = getTermListQuizletModule();
+        if (listModule != null) {
+            listModule.reload();
+        }
+    }
+
+    private void updateCoursesIfNeeded() {
+        if (getCourseListStackModule() != null) {
+            updateCourses();
+        }
+    }
+
+    private void updateCourses() {
+        StackModule stackModule = getCourseListStackModule();
+        if (stackModule != null) {
+            //stackModule.reloadCourses();
+        }
+    }
+
+    //
+
+    private void handleLoadedQuizletSets() {
+        forceLoadSetsIfNeeded();
+    }
 
     private void forceLoadSetsIfNeeded() {
         if (getQuizletService().getState() == QuizletService.State.Restored) {
@@ -116,17 +222,20 @@ public class MainPresenterImp implements
 
     private void loadQuizletSets() {
         CachableHttpLoadTask.CacheMode cacheMode = CachableHttpLoadTask.CacheMode.ONLY_STORE_TO_CACHE;
-        final ServiceCommandProxy commandProxy = getQuizletService().loadSets(cacheMode, view.startProgress());
+        final ServiceCommandProxy[] cmdWrapper = new ServiceCommandProxy[1];
 
-        view.startProgress(new MainView.ProgressCallback() {
+        ProgressListener progressListener = view.startProgress(new MainView.ProgressCallback() {
             @Override
             public void onCancelled() {
-                // while authorization it could be null
-                if (!commandProxy.isEmpty()) {
-                    getQuizletService().cancel(commandProxy.getServiceCommand());
+                // while authorization it could be empty
+                if (cmdWrapper[0] != null && !cmdWrapper[0].isEmpty()) {
+                    getQuizletService().cancel(cmdWrapper[0].getServiceCommand());
                 }
             }
         });
+
+        ServiceCommandProxy commandProxy = getQuizletService().loadSets(cacheMode, progressListener);
+        cmdWrapper[0] = commandProxy;
     }
 
     private void updateToolbarBackButton() {
@@ -157,6 +266,15 @@ public class MainPresenterImp implements
         activityIntent.putExtra(LearnActivity.EXTRA_DEFINITION_TO_TERM, true);
 
         view.startActivityForResult(activityIntent, LearnActivity.ACTIVITY_RESULT);
+    }
+
+    private void syncWithDropbox() {
+        getMainApplication().getDropboxService().sync(getCourseHolder().getDirectory().getPath(), "/CoursesTest/", new ServiceCommand.CommandCallback() {
+            @Override
+            public void onCompleted(Error error) {
+                getTaskManager().addTask(getCourseHolder().getLoadCourseListTask());
+            }
+        });
     }
 
     // Backstack
@@ -208,7 +326,7 @@ public class MainPresenterImp implements
         }
 
         if (!isCancelled) {
-            showLoadErrorSnackBar(error);
+            view.showLoadError(error);
         }
 
         loadingButton.stopLoading();
@@ -372,12 +490,12 @@ public class MainPresenterImp implements
 
             @Override
             public void onRowClicked(Course course) {
-                MainActivity.this.onCourseClicked(course);
+                MainPresenterImp.this.onCourseClicked(course);
             }
 
             @Override
             public void onLearnNewWordsClick(Course course) {
-                MainActivity.this.onLearnNewWordsClick(course);
+                MainPresenterImp.this.onLearnNewWordsClick(course);
             }
 
             @Override
@@ -400,6 +518,21 @@ public class MainPresenterImp implements
     }
 
     //// Setters
+
+    private void setSortOrder(Preferences.SortOrder sortOrder) {
+        Object module = getCurrentModule();
+
+        if (module instanceof StackModule) {
+            StackModule stackModule = (StackModule)module;
+            module = stackModule.getModuleAtIndex(stackModule.getSize()-1);
+        }
+
+        if (module instanceof Sortable) {
+            Sortable sortable = (Sortable)module;
+            sortable.setSortOrder(sortOrder);
+            onSortOrderChanged(sortOrder, sortable);
+        }
+    }
 
     public void setView(MainView view) {
         this.view = view;

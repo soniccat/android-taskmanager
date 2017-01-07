@@ -3,6 +3,7 @@ package com.example.alexeyglushkov.wordteacher;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 
@@ -13,6 +14,8 @@ import pagermodule.view.PagerView;
  */
 
 public interface MainView {
+    void showLoadError(@NonNull Error error);
+    void showException(@NonNull Exception ex);
     void showToolbarBackButton();
     void hideToolbarBackButton();
     void invalidateToolbar();

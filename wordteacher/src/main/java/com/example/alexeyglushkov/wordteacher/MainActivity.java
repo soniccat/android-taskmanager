@@ -13,44 +13,14 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 
-import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
-import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
-import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProxy;
-import com.example.alexeyglushkov.quizletservice.QuizletService;
-import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
-import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
-import com.example.alexeyglushkov.service.CachableHttpLoadTask;
-import com.example.alexeyglushkov.streamlib.CancelError;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
-import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import coursefragments.cards.CardListPresenter;
-import coursefragments.courses.CourseListPresenterMenuListener;
-import coursefragments.courses.CourseListPresenter;
-import learning.LearnActivity;
-import listmodule.ListModuleInterface;
 import main.BaseActivity;
-import main.MainApplication;
 import main.Preferences;
-import model.Card;
-import model.Course;
-import model.CourseHolder;
-import pagermodule.PagerModuleListener;
 import pagermodule.view.PagerView;
 import pagermodule.view.PagerViewImp;
-import quizletfragments.sets.QuizletSetFragmentMenuListener;
-import quizletfragments.sets.QuizletSetListPresenter;
-import quizletfragments.terms.QuizletTermListPresenter;
-import stackmodule.StackModule;
-import stackmodule.StackModuleListener;
-import tools.Sortable;
-import quizletfragments.terms.QuizletTermFragmentMenuListener;
 import ui.LoadingButton;
 
 // TODO: consider moving content to fragment
@@ -124,57 +94,10 @@ public class MainActivity extends BaseActivity implements
 
     //// Events
 
-    private void onSortOrderChanged(Preferences.SortOrder sortOrder, Sortable module) {
-        if (module instanceof QuizletTermListPresenter) {
-            Preferences.setQuizletTermSortOrder(sortOrder);
-
-        } else if (module instanceof QuizletSetListPresenter) {
-            Preferences.setQuizletSetSortOrder(sortOrder);
-
-        } else if (module instanceof CourseListPresenter) {
-            Preferences.setCourseListSortOrder(sortOrder);
-
-        } else if (module instanceof CardListPresenter) {
-            Preferences.setCardListSortOrder(sortOrder);
-        }
-
-        supportInvalidateOptionsMenu();
-    }
-
-    private void onCourseHolderChanged() {
-        supportInvalidateOptionsMenu();
-    }
-
-    public void onCourseChanged(Course course, @Nullable Exception exception) {
-        if (exception != null) {
-            showAppExceptionSnackBar(exception);
-        }
-
-        updateCoursesIfNeeded();
-        onCourseHolderChanged();
-    }
-
-    public void onCourseClicked(@NonNull Course course) {
-        List<Card> cards = course.getReadyToLearnCards();
-        if (cards.size() > 0) {
-            startLearnActivity(cards);
-        } else if (course.getCards().size() > 0){
-            startLearnActivity(course.getCards());
-        }
-    }
-
-    public void onLearnNewWordsClick(@NonNull Course course) {
-        startLearnNewWords(course);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == LearnActivity.ACTIVITY_RESULT) {
-            updateCoursesIfNeeded();
-            supportInvalidateOptionsMenu();
-        }
+        presenter.onActivityResult(requestCode, resultCode, data);
     }
 
     // Menu Event
@@ -228,20 +151,20 @@ public class MainActivity extends BaseActivity implements
         if (id == R.id.action_settings) {
             return true;
         } else if (id == R.id.action_sync_with_dropbox) {
-            syncWithDropbox();
+            presenter.onDropboxPressed();
 
         } else if (id == R.id.learn_ready_words) {
-            startLearnActivity(getReadyCards());
+            presenter.onStartPressed();
             return true;
 
         } else if (id == R.id.sort_by_name) {
-            applySortOrder(Preferences.SortOrder.BY_NAME);
+            presenter.onSortOrderSelected(Preferences.SortOrder.BY_NAME);
         } else if (id == R.id.sort_by_create_date) {
-            applySortOrder(Preferences.SortOrder.BY_CREATE_DATE_INV);
+            presenter.onSortOrderSelected(Preferences.SortOrder.BY_CREATE_DATE_INV);
         } /*else if (id == R.id.sort_by_publish_date) {
-            applySortOrder(Preferences.SortOrder.BY_PUBLISH_DATE);
+            onSortOrderSelected(Preferences.SortOrder.BY_PUBLISH_DATE);
         } else if (id == R.id.sort_by_modify_date) {
-            applySortOrder(Preferences.SortOrder.BY_MODIFY_DATE);
+            onSortOrderSelected(Preferences.SortOrder.BY_MODIFY_DATE);
         }*/
 
         return super.onOptionsItemSelected(item);
@@ -270,10 +193,6 @@ public class MainActivity extends BaseActivity implements
         return loadingButton.startLoading();
     }
 
-    private void handleLoadedQuizletSets() {
-        forceLoadSetsIfNeeded();
-    }
-
     private void showLoadErrorSnackBar(Error error) {
         String errorString;
         if (error instanceof Authorizer.AuthError) {
@@ -286,7 +205,12 @@ public class MainActivity extends BaseActivity implements
         Log.e(ERROR_TAG, error.getMessage());
     }
 
-    private void showAppExceptionSnackBar(@NonNull Exception ex) {
+    @Override
+    public void showLoadError(@NonNull Error error) {
+        showLoadErrorSnackBar(error);
+    }
+
+    public void showException(@NonNull Exception ex) {
         String errorString = ex.getMessage();
         Snackbar.make(getRootView(), errorString, Snackbar.LENGTH_LONG).show();
         Log.e(ERROR_TAG, ex.getMessage());
@@ -294,50 +218,6 @@ public class MainActivity extends BaseActivity implements
 
     private View getRootView() {
         return findViewById(R.id.root);
-    }
-
-    private void applySortOrder(Preferences.SortOrder order) {
-        if (getCurrentSortOrder() == order) {
-            order = order.getInverse();
-        }
-
-        setSortOrder(order);
-    }
-
-    private void syncWithDropbox() {
-        getMainApplication().getDropboxService().sync(getCourseHolder().getDirectory().getPath(), "/CoursesTest/", new ServiceCommand.CommandCallback() {
-            @Override
-            public void onCompleted(Error error) {
-                getTaskManager().addTask(getCourseHolder().getLoadCourseListTask());
-            }
-        });
-    }
-
-    // Update data actions
-
-    private void updateSets() {
-        StackModule stackModule = getQuizletStackModule();
-        if (stackModule != null) {
-            //stackModule.reloadSets();
-        }
-
-        ListModuleInterface listModule = getTermListQuizletModule();
-        if (listModule != null) {
-            listModule.reload();
-        }
-    }
-
-    private void updateCoursesIfNeeded() {
-        if (getCourseListStackModule() != null) {
-            updateCourses();
-        }
-    }
-
-    private void updateCourses() {
-        StackModule stackModule = getCourseListStackModule();
-        if (stackModule != null) {
-            //stackModule.reloadCourses();
-        }
     }
 
     // Update UI actions
@@ -369,21 +249,6 @@ public class MainActivity extends BaseActivity implements
     }
 
     //// Setters
-
-    private void setSortOrder(Preferences.SortOrder sortOrder) {
-        Object module = getCurrentModule();
-
-        if (module instanceof StackModule) {
-            StackModule stackModule = (StackModule)module;
-            module = stackModule.getModuleAtIndex(stackModule.getSize()-1);
-        }
-
-        if (module instanceof Sortable) {
-            Sortable sortable = (Sortable)module;
-            sortable.setSortOrder(sortOrder);
-            onSortOrderChanged(sortOrder, sortable);
-        }
-    }
 
     public void setPresenter(MainPresenter presenter) {
         this.presenter = presenter;
