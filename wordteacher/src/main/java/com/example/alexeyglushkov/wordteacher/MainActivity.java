@@ -88,10 +88,6 @@ public class MainActivity extends BaseActivity implements
         initPager(savedInstanceState);
         initFloatingButton();
 
-        if (savedInstanceState != null) {
-            setOnViewRestoredCallback();
-        }
-
         getCourseHolder().addListener(this);
         getQuizletService().addListener(this);
         forceLoadSetsIfNeeded();
@@ -102,17 +98,6 @@ public class MainActivity extends BaseActivity implements
         super.onDestroy();
         getCourseHolder().removeListener(this);
         getQuizletService().removeListener(this);
-    }
-
-    private void setOnViewRestoredCallback() {
-        UITools.runAfterRender(this, new UITools.PreDrawRunnable() {
-            @Override
-            public boolean run() {
-                // here pagerAdapter will be restored
-                updateTabs();
-                return true;
-            }
-        });
     }
 
     @Override
@@ -227,6 +212,38 @@ public class MainActivity extends BaseActivity implements
         supportInvalidateOptionsMenu();
     }
 
+    public void onCourseChanged(Course course, @Nullable Exception exception) {
+        if (exception != null) {
+            showAppExceptionSnackBar(exception);
+        }
+
+        updateCoursesIfNeeded();
+        onCourseHolderChanged();
+    }
+
+    public void onCourseClicked(@NonNull Course course) {
+        List<Card> cards = course.getReadyToLearnCards();
+        if (cards.size() > 0) {
+            startLearnActivity(cards);
+        } else if (course.getCards().size() > 0){
+            startLearnActivity(course.getCards());
+        }
+    }
+
+    public void onLearnNewWordsClick(@NonNull Course course) {
+        startLearnNewWords(course);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == LearnActivity.ACTIVITY_RESULT) {
+            updateCoursesIfNeeded();
+            supportInvalidateOptionsMenu();
+        }
+    }
+
     // Menu Event
 
     @Override
@@ -302,7 +319,6 @@ public class MainActivity extends BaseActivity implements
 
     public void onBackStackChanged() {
         updateToolbarBackButton();
-        updateTabs();
         supportInvalidateOptionsMenu();
     }
 
@@ -452,10 +468,6 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
-    private void updateTabs() {
-        //pagerAdapter.notifyDataSetChanged();
-    }
-
     //// Interface
 
     // PagerModuleListener
@@ -511,91 +523,6 @@ public class MainActivity extends BaseActivity implements
     @Override
     public void onCourseUpdated(@NonNull CourseHolder holder, @NonNull Course course, @NonNull CourseHolder.UpdateBatch batch) {
         onCourseHolderChanged();
-    }
-
-    // QuizletStackCardsFragment.Listener
-
-    /*
-    @Override
-    public int getFragmentCount() {
-        return 3;
-    }
-
-    @Override
-    public Fragment getFragmentAtIndex(int index) {
-        Fragment fragment;
-        if (index == 0) {
-            fragment = createQuizletStackFragment();
-        } else if (index == 1) {
-            fragment = createQuzletTermListFragment();
-        } else {
-            fragment = createCourseStackFragment();
-        }
-
-        return fragment;
-    }
-
-    @Nullable
-    @Override
-    public String getTitleAtIndex(int index, boolean isDefault) {
-        String title = null;
-        if (index == 0) {
-            QuizletStackFragment quizletStackFragment = getQuizletStackFragment();
-            if (quizletStackFragment != null) {
-                title = quizletStackFragment.getTitle();
-            } else if (isDefault) {
-                title = QuizletStackFragment.DEFAULT_TITLE;
-            }
-
-        } else if (index == 1) {
-            title = "Cards";
-        } else {
-            CourseListStackFragment courseListStackFragment = getCourseListStackFragment();
-            if (courseListStackFragment != null) {
-                title = courseListStackFragment.getTitle();
-            } else if (isDefault) {
-                title = CourseListStackFragment.DEFAULT_TITLE;
-            }
-        }
-
-        return title;
-    }
-    */
-
-    // QuizletStackFragment.Listener
-
-    public void onCourseChanged(Course course, @Nullable Exception exception) {
-        if (exception != null) {
-            showAppExceptionSnackBar(exception);
-        }
-
-        updateCoursesIfNeeded();
-        onCourseHolderChanged();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == LearnActivity.ACTIVITY_RESULT) {
-            updateCoursesIfNeeded();
-            supportInvalidateOptionsMenu();
-        }
-    }
-
-    // CourseStackFragment.Listener
-
-    public void onCourseClicked(@NonNull Course course) {
-        List<Card> cards = course.getReadyToLearnCards();
-        if (cards.size() > 0) {
-            startLearnActivity(cards);
-        } else if (course.getCards().size() > 0){
-            startLearnActivity(course.getCards());
-        }
-    }
-
-    public void onLearnNewWordsClick(@NonNull Course course) {
-        startLearnNewWords(course);
     }
 
     //// Creation methods
@@ -752,28 +679,6 @@ public class MainActivity extends BaseActivity implements
         };
     }
 
-    /*
-    @NonNull
-    private QuizletStackFragment createQuizletStackFragment() {
-        QuizletStackFragment fragment = new QuizletStackFragment();
-        fragment.setListener(this);
-
-        return fragment;
-    }*/
-
-    @NonNull
-    private QuizletTermListFragment createQuzletTermListFragment() {
-        /*
-        final QuizletTermListFragment fragment = QuizletTermListFragment.create();
-        fragment.setSortOrder(Preferences.getQuizletTermSortOrder());
-        fragment.setListener(createTermMenuListener());
-
-        return fragment;
-        */
-
-        return null;
-    }
-
     //// Setters
 
     private void setSortOrder(Preferences.SortOrder sortOrder) {
@@ -858,14 +763,6 @@ public class MainActivity extends BaseActivity implements
         return getModule(pagerModule.getCurrentIndex());
     }
 
-    /*
-    @Nullable
-    private View getCurrentFragmentView() {
-        Fragment fragment = pagerAdapter.getFragment(pager.getCurrentItem());
-        return fragment != null ? fragment.getStackModuleItemView() : null;
-    }
-    */
-
     @Nullable
     private StackModule getQuizletStackModule() {
         return getStackModule(0);
@@ -919,14 +816,5 @@ public class MainActivity extends BaseActivity implements
 
     private boolean isSortByPublishDate(Preferences.SortOrder sortOrder) {
         return sortOrder == Preferences.SortOrder.BY_PUBLISH_DATE || sortOrder == Preferences.SortOrder.BY_PUBLISH_DATE_INV;
-    }
-
-    class Behavior extends CoordinatorLayout.Behavior {
-        public Behavior() {
-        }
-
-        public Behavior(Context context, AttributeSet attrs) {
-            super(context, attrs);
-        }
     }
 }
