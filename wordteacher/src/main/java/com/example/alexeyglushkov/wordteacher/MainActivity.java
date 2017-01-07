@@ -89,7 +89,6 @@ public class MainActivity extends BaseActivity implements
         initFloatingButton();
 
         if (savedInstanceState != null) {
-            restoreListeners();
             setOnViewRestoredCallback();
         }
 
@@ -103,12 +102,6 @@ public class MainActivity extends BaseActivity implements
         super.onDestroy();
         getCourseHolder().removeListener(this);
         getQuizletService().removeListener(this);
-    }
-
-    private void restoreListeners() {
-        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-            restoreFragmentListener(fragment);
-        }
     }
 
     private void setOnViewRestoredCallback() {
@@ -144,22 +137,6 @@ public class MainActivity extends BaseActivity implements
 
         pagerModule.reload();
         updateToolbarBackButton();
-    }
-
-    private void restoreFragmentListener(Fragment fragment) {
-        // while restoration pagerAdapter could be null
-        /*if (fragment instanceof QuizletStackFragment) {
-            QuizletStackFragment cardsFragment = (QuizletStackFragment)fragment;
-            cardsFragment.setListener(this);
-
-        } else if (fragment instanceof QuizletTermListFragment) {
-            QuizletTermListFragment quizletFragment = (QuizletTermListFragment) fragment;
-            quizletFragment.setListener(createTermMenuListener());
-
-        } else if (fragment instanceof CourseListStackFragment) {
-            CourseListStackFragment courseFragment = (CourseListStackFragment) fragment;
-            courseFragment.setListener(this);
-        }*/
     }
 
     // UI creation and initialization

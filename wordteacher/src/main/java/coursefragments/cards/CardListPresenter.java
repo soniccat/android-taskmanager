@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 
 import java.util.List;
 

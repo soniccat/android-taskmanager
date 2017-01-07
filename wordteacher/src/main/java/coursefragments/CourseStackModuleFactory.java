@@ -1,7 +1,5 @@
 package coursefragments;
 
-import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
-
 import coursefragments.cards.CardListFragment;
 import coursefragments.cards.CardListPresenter;
 import coursefragments.courses.CourseListFragment;
@@ -11,9 +9,6 @@ import listmodule.view.SimpleListFragmentListenerAdapter;
 import main.Preferences;
 import model.Card;
 import model.Course;
-import quizletfragments.sets.QuizletSetListFragment;
-import quizletfragments.terms.QuizletTermListFragment;
-import quizletfragments.terms.QuizletTermListPresenter;
 import stackmodule.StackModule;
 import stackmodule.StackModuleFactory;
 import stackmodule.StackModuleItem;
@@ -70,7 +65,7 @@ public class CourseStackModuleFactory implements StackModuleFactory {
             bindSetListPresenterListener(setListPresenter, stackModule);
             item = setListPresenter;
 
-        } else if (viewObject instanceof QuizletTermListFragment) {
+        } else if (viewObject instanceof CardListFragment) {
             CardListFragment termListFragment = (CardListFragment)viewObject;
             CardListPresenter termListPresenter = (CardListPresenter)termListFragment.getPresenter();
             bindTermListPresenterListener(termListPresenter, stackModule);
