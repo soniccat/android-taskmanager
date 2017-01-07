@@ -52,7 +52,6 @@ public class QuizletSetAdapter extends BaseListAdaptor<QuizletSetAdapter.Holder,
 
     //// Actions
 
-
     @Override
     public void cleanup() {
         super.cleanup();

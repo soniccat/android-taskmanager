@@ -136,7 +136,7 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
 
     //// Getters
 
-    public QuizletSet getParentSet() {
+    private QuizletSet getParentSet() {
         QuizletSet parentSet = null;
         if (provider instanceof QuizletSetTermListProvider) {
             QuizletSetTermListProvider setProvider = (QuizletSetTermListProvider)provider;
@@ -152,7 +152,7 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
         return MainApplication.instance;
     }
 
-    public QuizletService getQuizletService() {
+    private QuizletService getQuizletService() {
         return getMainApplication().getQuizletService();
     }
 

@@ -10,11 +10,12 @@ import com.example.alexeyglushkov.wordteacher.R;
 
 import listmodule.view.BaseListAdaptor;
 import listmodule.view.BaseListFragment;
+import listmodule.view.SimpleListFragment;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class QuizletTermListFragment extends BaseListFragment<QuizletTerm> {
+public class QuizletTermListFragment extends SimpleListFragment<QuizletTerm> {
 
     //// Creation, initialization, restoration
 

@@ -10,12 +10,13 @@ import com.example.alexeyglushkov.wordteacher.R;
 
 import listmodule.view.BaseListAdaptor;
 import listmodule.view.BaseListFragment;
+import listmodule.view.SimpleListFragment;
 import model.Card;
 
 /**
  * Created by alexeyglushkov on 30.07.16.
  */
-public class CardListFragment extends BaseListFragment<Card> {
+public class CardListFragment extends SimpleListFragment<Card> {
 
     //// Creation, initialization, restoration
 

@@ -12,13 +12,14 @@ import com.example.alexeyglushkov.wordteacher.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import listmodule.presenter.BaseListPresenter;
 import listmodule.presenter.SimpleListPresenter;
 
 /**
  * Created by alexeyglushkov on 23.07.16.
  */
 public abstract class BaseListFragment<T> extends Fragment implements ListViewInterface<T> {
-    private SimpleListPresenter<T> presenter; //TODO: use BaseListPresenter
+    private BaseListPresenter<T> presenter;
 
     protected RecyclerView recyclerView;
     protected View loader;
@@ -176,7 +177,7 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
         this.presenter = presenter;
     }
 
-    public SimpleListPresenter<T> getPresenter() {
+    public BaseListPresenter<T> getPresenter() {
         return presenter;
     }
 

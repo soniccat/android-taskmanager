@@ -10,6 +10,7 @@ import android.util.SparseArray;
 import java.util.ArrayList;
 import java.util.List;
 
+import pagermodule.PagerModule;
 import pagermodule.presenter.PagerPresenter;
 
 /**
@@ -127,13 +128,13 @@ public class PagerViewImp implements PagerView, PagerAdapter.Listener, ViewPager
 
     //// Setter
 
+    @Override
     public void setPresenter(PagerPresenter presenter) {
         this.presenter = presenter;
         this.presenter.setView(this);
     }
 
     //// Getter
-
 
     public PagerPresenter getPresenter() {
         return presenter;
