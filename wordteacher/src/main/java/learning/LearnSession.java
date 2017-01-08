@@ -6,9 +6,8 @@ import android.os.Parcelable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-import coursefragments.cards.CardListProvider;
+import courselistmodules.cardlistmodule.presenter.CardListProvider;
 import model.Card;
 import model.CourseHolder;
 

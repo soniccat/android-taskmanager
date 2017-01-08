@@ -1,9 +1,9 @@
-package coursefragments;
+package courselistmodules;
 
-import coursefragments.cards.CardListFragment;
-import coursefragments.cards.CardListPresenter;
-import coursefragments.courses.CourseListFragment;
-import coursefragments.courses.CourseListPresenter;
+import courselistmodules.cardlistmodule.view.CardListFragment;
+import courselistmodules.cardlistmodule.presenter.CardListPresenter;
+import courselistmodules.courselistmodule.view.CourseListFragment;
+import courselistmodules.courselistmodule.presenter.CourseListPresenter;
 import listmodule.view.SimpleListFragment;
 import listmodule.view.SimpleListFragmentListenerAdapter;
 import main.Preferences;

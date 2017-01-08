@@ -1,9 +1,11 @@
-package coursefragments.cards;
+package courselistmodules.courselistmodule.presenter;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
 
 import java.util.List;
 
@@ -13,7 +15,6 @@ import listmodule.presenter.SimpleListPresenter;
 import listmodule.view.ListViewInterface;
 import main.MainApplication;
 import main.Preferences;
-import model.Card;
 import model.Course;
 import model.CourseHolder;
 import tools.SortOrderCompareStrategy;
@@ -23,12 +24,22 @@ import tools.Sortable;
  * Created by alexeyglushkov on 05.11.16.
  */
 
-public class CardListPresenter extends SimpleListPresenter<Card> implements Sortable, CourseHolder.CourseHolderListener {
+public class CourseListPresenter extends SimpleListPresenter<Course> implements Sortable, CourseHolder.CourseHolderListener {
+    public static String DEFAULT_TITLE = "Courses";
 
-    public static String DEFAULT_TITLE = "Cards";
-    private Bundle savedInstanceState;
+    private static final int MSG_REFRESH = 0;
+    private static final int REFRESH_INTERVAL = 60 * 1000;
+
+    private @NonNull Handler refreshHandler;
+    private @Nullable Bundle savedInstanceState;
 
     //// Creation, initialization, restoration
+
+    @Override
+    public void initialize() {
+        super.initialize();
+        refreshHandler = createRefreshHandler();
+    }
 
     @Override
     public void onViewStateRestored(ListViewInterface view, @Nullable Bundle savedInstanceState) {
@@ -39,6 +50,7 @@ public class CardListPresenter extends SimpleListPresenter<Card> implements Sort
         getCourseHolder().addListener(this);
         if (getCourseHolder().getState() != CourseHolder.State.Unitialized) {
             handleLoadedCourses();
+            reload();
         } else {
             view.showLoading();
         }
@@ -54,9 +66,22 @@ public class CardListPresenter extends SimpleListPresenter<Card> implements Sort
     //// Events
 
     @Override
+    public void onResume() {
+        super.onResume();
+        scheduleRefresh();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        invalidateRefreshSchedule();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         getCourseHolder().removeListener(this);
+        invalidateRefreshSchedule();
     }
 
     private void onHolderLoaded() {
@@ -71,88 +96,97 @@ public class CardListPresenter extends SimpleListPresenter<Card> implements Sort
         reload();
     }
 
-    //// Interface
+    private void scheduleRefresh() {
+        refreshHandler.sendEmptyMessageDelayed(MSG_REFRESH, REFRESH_INTERVAL);
+    }
 
-    // BaseListPresenter
+    private void invalidateRefreshSchedule() {
+        refreshHandler.removeMessages(MSG_REFRESH);
+    }
+
+    private void refresh() {
+        view.updateRows();
+        scheduleRefresh();
+    }
+
+    //// Creation Methods
 
     @NonNull
-    protected CardListFactory createProviderFactory() {
-        return new CardListFactory(getCourseHolder());
+    protected CourseListProviderFactory createProviderFactory() {
+        return new CourseListProviderFactory(getCourseHolder());
     }
-
-    public CompareStrategyFactory<Card> createCompareStrategyFactory() {
-        return new CardCompareStrategyFactory();
-    }
-
-    // PagerModuleItemWithTitle
 
     @Override
-    public String getTitle() {
-        Course set = getParentCourse();
-        return set != null ? set.getTitle() : DEFAULT_TITLE;
+    public CompareStrategyFactory<Course> createCompareStrategyFactory() {
+        return new CourseCompareStrategyFactory();
     }
 
+    private Handler createRefreshHandler() {
+        return new Handler(Looper.myLooper(), new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                if (msg.what == MSG_REFRESH) {
+                    refresh();
+                    return true;
+                }
+
+                return false;
+            }
+        });
+    }
+
+    //// Interfaces
 
     // Sortable
-
-    @Override
-    public void setSortOrder(Preferences.SortOrder sortOrder) {
-        setCompareStrategy(getCompareStrategyFactory().createStrategy(sortOrder));
-        reload();
-    }
 
     @Override
     public Preferences.SortOrder getSortOrder() {
         return getCompareStrategy().getSortOrder();
     }
 
+    public void setSortOrder(Preferences.SortOrder sortOrder) {
+        setCompareStrategy(getCompareStrategyFactory().createStrategy(sortOrder));
+        reload();
+    }
+
     // CourseHolder.CourseHolderListener
 
     @Override
-    public void onLoaded(CourseHolder holder) {
+    public void onLoaded(@NonNull CourseHolder holder) {
         onHolderLoaded();
     }
 
     @Override
     public void onCoursesAdded(@NonNull CourseHolder holder, @NonNull List<Course> courses) {
-        Course parentCourse = getParentCourse();
-        if (!isExplicitCardList() && parentCourse == null) {
-            reload();
-        }
+        reload();
     }
 
     @Override
     public void onCoursesRemoved(@NonNull CourseHolder holder, @NonNull List<Course> courses) {
-        Course parentCourse = getParentCourse();
-        if (parentCourse != null) {
-            if (courses.contains(getParentCourse())) {
-                provider = new NullStorableListProvider<>();
-                reload();
-            }
-        } else {
-            reload();
-        }
+        reload();
     }
 
     @Override
     public void onCourseUpdated(@NonNull CourseHolder holder, @NonNull Course course, @NonNull CourseHolder.UpdateBatch batch) {
-        Course parentCourse = getParentCourse();
-        if (parentCourse != null) {
-            if (course.equals(parentCourse)) {
-                reload();
-            }
-        } else {
-            reload();
+        int index = getItems().indexOf(course);
+        if (index != -1) {
+            view.updateRow(index);
         }
+    }
+
+    // PagerModuleItemWithTitle
+
+    @Override
+    public String getTitle() {
+        return DEFAULT_TITLE;
     }
 
     //// Setters
 
     // Data Setters
 
-    public void setParentCourse(Course course) {
-        provider = providerFactory.createFromObject(course);
-        reload();
+    public void setCourses(List<Course> courses) {
+        provider = providerFactory.createFromList(courses);
     }
 
     //// Getters
@@ -167,29 +201,10 @@ public class CardListPresenter extends SimpleListPresenter<Card> implements Sort
         return getMainApplication().getCourseHolder();
     }
 
-    // Data Getters
-
-    public @Nullable
-    Course getParentCourse() {
-        Course result = null;
-        if (provider instanceof CourseCardListProvider) {
-            CourseCardListProvider courseProvider = (CourseCardListProvider)provider;
-            result = courseProvider.getCourse();
-        }
-
-        return result;
-    }
-
-    // State Getters
-
-    private boolean isExplicitCardList() {
-        return provider instanceof CardListProvider;
-    }
-
     // Cast Getters
 
-    private CardCompareStrategyFactory getCompareStrategyFactory() {
-        return (CardCompareStrategyFactory)compareStrategyFactory;
+    private CourseCompareStrategyFactory getCompareStrategyFactory() {
+        return (CourseCompareStrategyFactory)compareStrategyFactory;
     }
 
     private SortOrderCompareStrategy getCompareStrategy() {

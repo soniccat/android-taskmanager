@@ -1,4 +1,4 @@
-package coursefragments.courses;
+package courselistmodules.courselistmodule.presenter;
 
 import android.os.Bundle;
 

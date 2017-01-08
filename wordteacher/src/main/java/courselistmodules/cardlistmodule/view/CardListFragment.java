@@ -1,4 +1,4 @@
-package coursefragments.cards;
+package courselistmodules.cardlistmodule.view;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import com.example.alexeyglushkov.wordteacher.R;
 
 import listmodule.view.BaseListAdaptor;
-import listmodule.view.BaseListFragment;
 import listmodule.view.SimpleListFragment;
 import model.Card;
 

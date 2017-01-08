@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 
-import coursefragments.CourseStackModuleFactory;
+import courselistmodules.CourseStackModuleFactory;
 import listmodule.view.SimpleListFragment;
 import listmodule.view.SimpleListFragmentListenerAdapter;
 import main.Preferences;

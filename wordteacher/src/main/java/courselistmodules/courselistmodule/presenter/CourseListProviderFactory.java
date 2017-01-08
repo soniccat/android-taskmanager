@@ -1,4 +1,4 @@
-package coursefragments.courses;
+package courselistmodules.courselistmodule.presenter;
 
 import android.os.Bundle;
 
@@ -14,11 +14,11 @@ import model.CourseHolder;
 /**
  * Created by alexeyglushkov on 21.08.16.
  */
-public class CourseListFactory implements StorableListProviderFactory<Course> {
+public class CourseListProviderFactory implements StorableListProviderFactory<Course> {
     private CourseHolder holder;
 
     //// Initialization
-    public CourseListFactory(CourseHolder holder) {
+    public CourseListProviderFactory(CourseHolder holder) {
         Assert.assertNotNull(holder);
         this.holder = holder;
     }

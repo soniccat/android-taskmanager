@@ -1,4 +1,4 @@
-package coursefragments.cards;
+package courselistmodules.cardlistmodule.presenter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

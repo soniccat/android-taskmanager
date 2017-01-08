@@ -1,4 +1,4 @@
-package coursefragments.cards;
+package courselistmodules.cardlistmodule.view;
 
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;

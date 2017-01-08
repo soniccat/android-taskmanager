@@ -1,16 +1,13 @@
 package learning;
 
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import coursefragments.cards.CardListProvider;
+import courselistmodules.cardlistmodule.presenter.CardListProvider;
 import main.MainApplication;
 import model.Card;
 import model.Course;

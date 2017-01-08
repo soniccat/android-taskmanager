@@ -1,4 +1,4 @@
-package coursefragments.courses;
+package courselistmodules.courselistmodule.presenter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -7,8 +7,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.alexeyglushkov.wordteacher.R;
-
-import java.lang.ref.WeakReference;
 
 import listmodule.DeleteMenuListener;
 import model.Course;

@@ -23,10 +23,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import coursefragments.cards.CardListPresenterMenuListener;
-import coursefragments.cards.CardListPresenter;
-import coursefragments.courses.CourseListPresenter;
-import coursefragments.courses.CourseListPresenterMenuListener;
+import courselistmodules.cardlistmodule.presenter.CardListPresenterMenuListener;
+import courselistmodules.cardlistmodule.presenter.CardListPresenter;
+import courselistmodules.courselistmodule.presenter.CourseListPresenter;
+import courselistmodules.courselistmodule.presenter.CourseListPresenterMenuListener;
 import learning.LearnActivity;
 import listmodule.ListModuleInterface;
 import main.MainApplication;

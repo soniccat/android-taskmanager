@@ -71,8 +71,8 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
     //// Overrides
 
     @NonNull
-    protected QuizletTermListFactory createProviderFactory() {
-        return new QuizletTermListFactory(getQuizletService());
+    protected QuizletTermListProviderFactory createProviderFactory() {
+        return new QuizletTermListProviderFactory(getQuizletService());
     }
 
     @Override

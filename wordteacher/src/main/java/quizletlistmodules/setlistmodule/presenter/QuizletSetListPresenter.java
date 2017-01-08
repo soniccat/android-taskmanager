@@ -92,8 +92,8 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet> imp
     }
 
     @NonNull
-    protected QuizletSetListFactory createProviderFactory() {
-        return new QuizletSetListFactory(getQuizletService());
+    protected QuizletSetListProviderFactory createProviderFactory() {
+        return new QuizletSetListProviderFactory(getQuizletService());
     }
 
     public CompareStrategyFactory<QuizletSet> createCompareStrategyFactory() {

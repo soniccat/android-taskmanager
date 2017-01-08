@@ -15,12 +15,12 @@ import listmodule.StorableListProviderFactory;
 /**
  * Created by alexeyglushkov on 20.08.16.
  */
-public class QuizletSetListFactory implements StorableListProviderFactory<QuizletSet> {
+public class QuizletSetListProviderFactory implements StorableListProviderFactory<QuizletSet> {
     private QuizletService service;
 
     //// Initialization
 
-    public QuizletSetListFactory(QuizletService service) {
+    public QuizletSetListProviderFactory(QuizletService service) {
         Assert.assertNotNull(service);
         this.service = service;
     }
