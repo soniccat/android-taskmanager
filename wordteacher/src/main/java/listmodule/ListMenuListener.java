@@ -13,9 +13,9 @@ import listmodule.view.SimpleListFragment;
  */
 public abstract class ListMenuListener<T> implements SimpleListFragment.Listener<T> {
     protected @NonNull Context context;
-    protected @NonNull Listener listener;
+    protected @NonNull Listener<T> listener;
 
-    public ListMenuListener(@NonNull Context context, @NonNull Listener listener) {
+    public ListMenuListener(@NonNull Context context, @NonNull Listener<T> listener) {
         this.context = context;
         this.listener = listener;
     }
@@ -25,7 +25,7 @@ public abstract class ListMenuListener<T> implements SimpleListFragment.Listener
         onCardMenuClicked(data, view);
     }
 
-    public void onCardMenuClicked(final T data, View view) {
+    private void onCardMenuClicked(final T data, View view) {
         PopupMenu popupMenu = new PopupMenu(context, view);
         fillMenu(data, popupMenu);
 
@@ -37,11 +37,11 @@ public abstract class ListMenuListener<T> implements SimpleListFragment.Listener
     }
 
     @NonNull
-    public Listener getListener() {
+    public Listener<T> getListener() {
         return listener;
     }
 
-    public void setListener(@NonNull Listener listener) {
+    public void setListener(@NonNull Listener<T> listener) {
         this.listener = listener;
     }
 

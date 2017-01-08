@@ -40,10 +40,10 @@ import pagermodule.PagerModuleListener;
 import pagermodule.presenter.PagerPresenter;
 import pagermodule.presenter.StatePagerPresenter;
 import pagermodule.view.PagerView;
-import quizletlistmodules.setlistmodule.QuizletSetFragmentMenuListener;
+import quizletlistmodules.setlistmodule.presenter.QuizletSetPresenterMenuListener;
 import quizletlistmodules.setlistmodule.presenter.QuizletSetListPresenter;
-import quizletlistmodules.terms.QuizletTermFragmentMenuListener;
-import quizletlistmodules.terms.QuizletTermListPresenter;
+import quizletlistmodules.termlistmodule.presenter.QuizletTermPresenterMenuListener;
+import quizletlistmodules.termlistmodule.presenter.QuizletTermListPresenter;
 import stackmodule.StackModule;
 import stackmodule.StackModuleListener;
 import tools.Sortable;
@@ -363,8 +363,8 @@ public class MainPresenterImp implements
     }
 
     @NonNull
-    private QuizletSetFragmentMenuListener createSetMenuListener() {
-        return new QuizletSetFragmentMenuListener(view.getContext(), getCourseHolder(), new QuizletSetFragmentMenuListener.Listener<QuizletSet>() {
+    private QuizletSetPresenterMenuListener createSetMenuListener() {
+        return new QuizletSetPresenterMenuListener(view.getContext(), getCourseHolder(), new QuizletSetPresenterMenuListener.Listener<QuizletSet>() {
             @Override
             public void onRowClicked(QuizletSet set) {
                 // Handled inside QuizletStackModuleFactory
@@ -400,8 +400,8 @@ public class MainPresenterImp implements
     }
 
     @NonNull
-    private QuizletTermFragmentMenuListener createTermMenuListener() {
-        return new QuizletTermFragmentMenuListener(view.getContext(), getCourseHolder(), new QuizletTermFragmentMenuListener.Listener<QuizletTerm>() {
+    private QuizletTermPresenterMenuListener createTermMenuListener() {
+        return new QuizletTermPresenterMenuListener(view.getContext(), getCourseHolder(), new QuizletTermPresenterMenuListener.Listener<QuizletTerm>() {
             @Override
             public void onRowClicked(QuizletTerm data) {
             }

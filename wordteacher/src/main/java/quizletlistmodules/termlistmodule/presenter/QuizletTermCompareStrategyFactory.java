@@ -1,4 +1,4 @@
-package quizletlistmodules.terms;
+package quizletlistmodules.termlistmodule.presenter;
 
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 

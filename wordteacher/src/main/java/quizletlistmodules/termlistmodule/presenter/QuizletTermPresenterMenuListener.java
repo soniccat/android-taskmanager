@@ -1,4 +1,4 @@
-package quizletlistmodules.terms;
+package quizletlistmodules.termlistmodule.presenter;
 
 import android.content.Context;
 import android.support.v7.widget.PopupMenu;
@@ -16,14 +16,14 @@ import java.util.List;
 import model.Card;
 import model.Course;
 import model.CourseHolder;
-import quizletlistmodules.QuizletFragmentMenuListener;
+import quizletlistmodules.QuizletPresenterMenuListener;
 
 /**
  * Created by alexeyglushkov on 14.08.16.
  */
-public class QuizletTermFragmentMenuListener extends QuizletFragmentMenuListener<QuizletTerm> {
+public class QuizletTermPresenterMenuListener extends QuizletPresenterMenuListener<QuizletTerm> {
 
-    public QuizletTermFragmentMenuListener(Context context, CourseHolder courseHolder, Listener listener) {
+    public QuizletTermPresenterMenuListener(Context context, CourseHolder courseHolder, Listener listener) {
         super(context, listener, courseHolder);
     }
 

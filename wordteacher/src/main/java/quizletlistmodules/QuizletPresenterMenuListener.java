@@ -23,10 +23,10 @@ import model.CourseHolder;
 /**
  * Created by alexeyglushkov on 14.08.16.
  */
-public abstract class QuizletFragmentMenuListener<T> extends ListMenuListener<T> {
-    protected @NonNull CourseHolder courseHolder;
+public abstract class QuizletPresenterMenuListener<T> extends ListMenuListener<T> {
+    private @NonNull CourseHolder courseHolder;
 
-    public QuizletFragmentMenuListener(@NonNull Context context, @NonNull Listener<T> listener, @NonNull CourseHolder courseHolder) {
+    public QuizletPresenterMenuListener(@NonNull Context context, @NonNull Listener<T> listener, @NonNull CourseHolder courseHolder) {
         super(context, listener);
         this.courseHolder = courseHolder;
     }

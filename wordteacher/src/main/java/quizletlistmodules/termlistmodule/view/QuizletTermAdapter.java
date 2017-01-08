@@ -1,4 +1,4 @@
-package quizletlistmodules.terms;
+package quizletlistmodules.termlistmodule.view;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
