@@ -1,4 +1,4 @@
-package quizletfragments.sets;
+package quizletlistmodules.setlistmodule;
 
 import android.content.Context;
 import android.support.v7.widget.PopupMenu;
@@ -14,14 +14,14 @@ import java.util.ArrayList;
 import model.Card;
 import model.Course;
 import model.CourseHolder;
-import quizletfragments.QuizletFragmentMenuListener;
+import quizletlistmodules.QuizletFragmentMenuListener;
 
 /**
  * Created by alexeyglushkov on 13.06.16.
  */
 public class QuizletSetFragmentMenuListener extends QuizletFragmentMenuListener<QuizletSet> {
 
-    public QuizletSetFragmentMenuListener(Context context, CourseHolder courseHolder, Listener listener) {
+    public QuizletSetFragmentMenuListener(Context context, CourseHolder courseHolder, Listener<QuizletSet> listener) {
         super(context, listener, courseHolder);
     }
 

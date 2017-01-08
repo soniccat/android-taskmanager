@@ -1,4 +1,4 @@
-package quizletfragments.sets;
+package quizletlistmodules.setlistmodule.view;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,7 +9,6 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.wordteacher.R;
 
 import listmodule.view.BaseListAdaptor;
-import listmodule.view.BaseListFragment;
 import listmodule.view.SimpleListFragment;
 
 /**
@@ -53,11 +52,5 @@ public class QuizletSetListFragment extends SimpleListFragment<QuizletSet> {
         });
 
         return adapter;
-    }
-
-    //// Getter
-
-    private QuizletSetAdapter getSetAdapter() {
-        return (QuizletSetAdapter)adapter;
     }
 }

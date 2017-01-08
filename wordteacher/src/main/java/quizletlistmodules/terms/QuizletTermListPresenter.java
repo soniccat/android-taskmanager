@@ -1,4 +1,4 @@
-package quizletfragments.terms;
+package quizletlistmodules.terms;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,7 +12,6 @@ import java.util.List;
 
 import listmodule.CompareStrategyFactory;
 import listmodule.NullStorableListProvider;
-import listmodule.presenter.BaseListPresenter;
 import listmodule.presenter.SimpleListPresenter;
 import listmodule.view.ListViewInterface;
 import main.MainApplication;

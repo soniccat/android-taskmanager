@@ -1,4 +1,4 @@
-package quizletfragments.sets;
+package quizletlistmodules.setlistmodule.presenter;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,7 +9,6 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 
 import listmodule.CompareStrategyFactory;
 import listmodule.NullStorableListProvider;
-import listmodule.presenter.BaseListPresenter;
 import listmodule.presenter.SimpleListPresenter;
 import listmodule.view.ListViewInterface;
 import main.MainApplication;

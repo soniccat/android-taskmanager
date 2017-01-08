@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -20,11 +19,11 @@ import com.example.alexeyglushkov.streamlib.CancelError;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
-import java.lang.ref.Reference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import coursefragments.cards.CardListFragmentMenuListener;
 import coursefragments.cards.CardListPresenter;
 import coursefragments.courses.CourseListPresenter;
 import coursefragments.courses.CourseListPresenterMenuListener;
@@ -41,11 +40,10 @@ import pagermodule.PagerModuleListener;
 import pagermodule.presenter.PagerPresenter;
 import pagermodule.presenter.StatePagerPresenter;
 import pagermodule.view.PagerView;
-import pagermodule.view.PagerViewImp;
-import quizletfragments.sets.QuizletSetFragmentMenuListener;
-import quizletfragments.sets.QuizletSetListPresenter;
-import quizletfragments.terms.QuizletTermFragmentMenuListener;
-import quizletfragments.terms.QuizletTermListPresenter;
+import quizletlistmodules.setlistmodule.QuizletSetFragmentMenuListener;
+import quizletlistmodules.setlistmodule.presenter.QuizletSetListPresenter;
+import quizletlistmodules.terms.QuizletTermFragmentMenuListener;
+import quizletlistmodules.terms.QuizletTermListPresenter;
 import stackmodule.StackModule;
 import stackmodule.StackModuleListener;
 import tools.Sortable;
@@ -94,10 +92,7 @@ public class MainPresenterImp implements
         StatePagerPresenter pagerPresenter = (StatePagerPresenter)pagerModule;
         pagerPresenter.getView().onRestoreInstanceState(savedInstanceState);
         MainPagerFactory factory = (MainPagerFactory)pagerPresenter.getFactory();
-        factory.setStackModuleListener(createStackModuleListener());
-        factory.setQuizletSetListener(createSetMenuListener());
-        factory.setQuizletTermListener(createTermMenuListener());
-        factory.setCourseListListener(createMenuCourseListener());
+        setFactoryListeners(factory);
 
         pagerModule.reload();
         updateToolbarBackButton();
@@ -336,10 +331,7 @@ public class MainPresenterImp implements
 
         if (savedInstanceState == null) {
             MainPagerFactory factory = new MainPagerFactory();
-            factory.setStackModuleListener(createStackModuleListener());
-            factory.setQuizletSetListener(createSetMenuListener());
-            factory.setQuizletTermListener(createTermMenuListener());
-            factory.setCourseListListener(createMenuCourseListener());
+            setFactoryListeners(factory);
 
             StatePagerPresenter pagerPresenter = new StatePagerPresenter();
             pagerPresenter.setDefaultTitles(new ArrayList<>(Arrays.asList(new String[]{QuizletSetListPresenter.DEFAULT_TITLE, QuizletTermListPresenter.DEFAULT_TITLE, CourseListPresenter.DEFAULT_TITLE})));
@@ -492,7 +484,48 @@ public class MainPresenterImp implements
         });
     }
 
+    private CardListFragmentMenuListener createMenuCardListener() {
+        return new CardListFragmentMenuListener(view.getContext(), getCourseHolder(), new CardListFragmentMenuListener.Listener() {
+            @Override
+            public void onCardDeleteClicked(Card card) {
+                ListModuleInterface listModule = getCourseListModule();
+                if (listModule != null) {
+                    listModule.delete(card);
+                }
+            }
+
+            @Override
+            public void onRowClicked(Card data) {
+            }
+
+            @Override
+            public void onDataDeletionCancelled(Card data) {
+                ListModuleInterface listModule = getCardListModule();
+                if (listModule != null) {
+                    listModule.reload();
+                }
+            }
+
+            @Override
+            public void onDataDeleted(Card data, Exception exception) {
+            }
+
+            @Override
+            public View getSnackBarViewContainer() {
+                return view.getRootView();
+            }
+        });
+    }
+
     //// Setters
+
+    private void setFactoryListeners(MainPagerFactory factory) {
+        factory.setStackModuleListener(createStackModuleListener());
+        factory.setQuizletSetListener(createSetMenuListener());
+        factory.setQuizletTermListener(createTermMenuListener());
+        factory.setCourseListListener(createMenuCourseListener());
+        factory.setCardListListener(createMenuCardListener());
+    }
 
     private void setSortOrder(Preferences.SortOrder sortOrder) {
         Object module = getCurrentModule();
@@ -597,6 +630,11 @@ public class MainPresenterImp implements
     private ListModuleInterface getCourseListModule() {
         StackModule stackModule = getCourseListStackModule();
         return stackModule != null && stackModule.getSize() > 0 ? (ListModuleInterface)stackModule.getModuleAtIndex(0) : null;
+    }
+
+    private ListModuleInterface getCardListModule() {
+        StackModule stackModule = getCourseListStackModule();
+        return stackModule != null && stackModule.getSize() > 1 ? (ListModuleInterface)stackModule.getModuleAtIndex(1) : null;
     }
 
     @Nullable

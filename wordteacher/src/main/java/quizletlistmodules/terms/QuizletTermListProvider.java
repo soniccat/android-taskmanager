@@ -1,4 +1,4 @@
-package quizletfragments.terms;
+package quizletlistmodules.terms;
 
 import android.os.Bundle;
 

@@ -1,4 +1,4 @@
-package quizletfragments.terms;
+package quizletlistmodules.terms;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,7 +9,6 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.wordteacher.R;
 
 import listmodule.view.BaseListAdaptor;
-import listmodule.view.BaseListFragment;
 import listmodule.view.SimpleListFragment;
 
 /**

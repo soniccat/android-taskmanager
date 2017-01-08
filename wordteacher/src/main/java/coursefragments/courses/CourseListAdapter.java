@@ -103,8 +103,8 @@ public class CourseListAdapter extends BaseListAdaptor<CourseListAdapter.ViewHol
 
         } else if (inProgressCount > 0) {
             holder.inProgressTextView.setVisibility(View.VISIBLE);
-            String inPorgressFormat = holder.itemView.getContext().getResources().getString(R.string.cell_course_in_progress);
-            String inProgressString = String.format(Locale.US, inPorgressFormat, inProgressCount);
+            String inProgressFormat = holder.itemView.getContext().getResources().getString(R.string.cell_course_in_progress);
+            String inProgressString = String.format(Locale.US, inProgressFormat, inProgressCount);
             holder.inProgressTextView.setText(inProgressString);
 
         } else {

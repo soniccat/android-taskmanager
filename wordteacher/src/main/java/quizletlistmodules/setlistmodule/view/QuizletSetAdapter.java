@@ -1,4 +1,4 @@
-package quizletfragments.sets;
+package quizletlistmodules.setlistmodule.view;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;

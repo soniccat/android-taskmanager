@@ -1,4 +1,4 @@
-package quizletfragments;
+package quizletlistmodules;
 
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
@@ -6,10 +6,10 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import listmodule.view.SimpleListFragment;
 import listmodule.view.SimpleListFragmentListenerAdapter;
 import main.Preferences;
-import quizletfragments.sets.QuizletSetListFragment;
-import quizletfragments.sets.QuizletSetListPresenter;
-import quizletfragments.terms.QuizletTermListFragment;
-import quizletfragments.terms.QuizletTermListPresenter;
+import quizletlistmodules.setlistmodule.view.QuizletSetListFragment;
+import quizletlistmodules.setlistmodule.presenter.QuizletSetListPresenter;
+import quizletlistmodules.terms.QuizletTermListFragment;
+import quizletlistmodules.terms.QuizletTermListPresenter;
 import stackmodule.StackModule;
 import stackmodule.StackModuleFactory;
 import stackmodule.StackModuleItem;
@@ -25,11 +25,11 @@ public class QuizletStackModuleFactory implements StackModuleFactory {
     @Override
     public StackModuleItem rootModule(final StackModule stackModule) {
         QuizletSetListPresenter listPresenter = new QuizletSetListPresenter();
-        QuizletSetListFragment fragment = QuizletSetListFragment.create();
+        QuizletSetListFragment view = QuizletSetListFragment.create();
         bindSetListPresenterListener(listPresenter, stackModule);
 
-        listPresenter.setView(fragment);
-        fragment.setPresenter(listPresenter);
+        listPresenter.setView(view);
+        view.setPresenter(listPresenter);
 
         listPresenter.setSortOrder(Preferences.getQuizletSetSortOrder());
         return listPresenter;

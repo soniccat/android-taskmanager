@@ -1,13 +1,11 @@
 package com.example.alexeyglushkov.wordteacher;
 
 import android.support.annotation.NonNull;
-import android.view.View;
 
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 
 import coursefragments.CourseStackModuleFactory;
-import listmodule.view.BaseListFragment;
 import listmodule.view.SimpleListFragment;
 import listmodule.view.SimpleListFragmentListenerAdapter;
 import main.Preferences;
@@ -16,9 +14,9 @@ import model.Course;
 import pagermodule.PagerModule;
 import pagermodule.PagerModuleFactory;
 import pagermodule.PagerModuleItem;
-import quizletfragments.QuizletStackModuleFactory;
-import quizletfragments.terms.QuizletTermListFragment;
-import quizletfragments.terms.QuizletTermListPresenter;
+import quizletlistmodules.QuizletStackModuleFactory;
+import quizletlistmodules.terms.QuizletTermListFragment;
+import quizletlistmodules.terms.QuizletTermListPresenter;
 import stackmodule.StackModuleListener;
 import stackmodule.presenter.StackPresenter;
 import stackmodule.view.StackFragment;

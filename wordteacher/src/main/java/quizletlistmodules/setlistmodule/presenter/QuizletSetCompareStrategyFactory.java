@@ -1,4 +1,4 @@
-package quizletfragments.sets;
+package quizletlistmodules.setlistmodule.presenter;
 
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 

@@ -11,7 +11,7 @@ import com.example.alexeyglushkov.wordteacher.R;
  * Created by alexeyglushkov on 07.08.16.
  */
 public abstract class DeleteMenuListener<T> extends ListMenuListener<T> {
-    protected Snackbar currentSnackbar;
+    private Snackbar currentSnackbar;
     private boolean snackBarNeedDeleteData;
 
     public DeleteMenuListener(Context context, Listener listener) {
@@ -50,12 +50,6 @@ public abstract class DeleteMenuListener<T> extends ListMenuListener<T> {
             }
         });
         currentSnackbar.show();
-    }
-
-    public void applyPendingOperation() {
-        if (currentSnackbar != null) {
-            currentSnackbar.dismiss();
-        }
     }
 
     protected abstract void deleteData(T data) throws Exception;
