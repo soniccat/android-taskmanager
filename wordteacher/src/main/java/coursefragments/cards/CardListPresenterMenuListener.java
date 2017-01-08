@@ -1,6 +1,7 @@
 package coursefragments.cards;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.PopupMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,10 +15,10 @@ import model.CourseHolder;
 /**
  * Created by alexeyglushkov on 31.07.16.
  */
-public class CardListFragmentMenuListener extends DeleteMenuListener<Card> {
+public class CardListPresenterMenuListener extends DeleteMenuListener<Card> {
     private CourseHolder courseHolder;
 
-    public CardListFragmentMenuListener(Context context, CourseHolder courseHolder, Listener listener) {
+    public CardListPresenterMenuListener(Context context, CourseHolder courseHolder, Listener listener) {
         super(context, listener);
         this.courseHolder = courseHolder;
     }
@@ -37,7 +38,7 @@ public class CardListFragmentMenuListener extends DeleteMenuListener<Card> {
         });
     }
 
-    public void onCardViewDeleted(Card card) {
+    private void onCardViewDeleted(Card card) {
         deleteDataWithSnackbar(card);
     }
 
@@ -51,6 +52,7 @@ public class CardListFragmentMenuListener extends DeleteMenuListener<Card> {
         courseHolder.removeCard(data);
     }
 
+    @NonNull
     public Listener getListener() {
         return (Listener)this.listener;
     }

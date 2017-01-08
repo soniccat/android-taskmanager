@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import coursefragments.cards.CardListFragmentMenuListener;
+import coursefragments.cards.CardListPresenterMenuListener;
 import coursefragments.cards.CardListPresenter;
 import coursefragments.courses.CourseListPresenter;
 import coursefragments.courses.CourseListPresenterMenuListener;
@@ -484,8 +484,8 @@ public class MainPresenterImp implements
         });
     }
 
-    private CardListFragmentMenuListener createMenuCardListener() {
-        return new CardListFragmentMenuListener(view.getContext(), getCourseHolder(), new CardListFragmentMenuListener.Listener() {
+    private CardListPresenterMenuListener createMenuCardListener() {
+        return new CardListPresenterMenuListener(view.getContext(), getCourseHolder(), new CardListPresenterMenuListener.Listener() {
             @Override
             public void onCardDeleteClicked(Card card) {
                 ListModuleInterface listModule = getCourseListModule();

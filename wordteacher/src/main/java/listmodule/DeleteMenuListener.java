@@ -55,8 +55,8 @@ public abstract class DeleteMenuListener<T> extends ListMenuListener<T> {
     protected abstract void deleteData(T data) throws Exception;
 
     @NonNull
-    public Listener getListener() {
-        return (Listener)this.listener;
+    public Listener<T> getListener() {
+        return (Listener<T>)this.listener;
     }
 
     public interface Listener<T> extends ListMenuListener.Listener<T> {
