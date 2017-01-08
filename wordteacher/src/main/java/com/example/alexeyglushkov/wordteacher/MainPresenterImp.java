@@ -116,7 +116,6 @@ public class MainPresenterImp implements
             view.showException(exception);
         }
 
-        updateCoursesIfNeeded();
         onCourseHolderChanged();
     }
 
@@ -124,6 +123,7 @@ public class MainPresenterImp implements
         List<Card> cards = course.getReadyToLearnCards();
         if (cards.size() > 0) {
             startLearnActivity(cards);
+
         } else if (course.getCards().size() > 0){
             startLearnActivity(course.getCards());
         }
@@ -180,41 +180,10 @@ public class MainPresenterImp implements
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == LearnActivity.ACTIVITY_RESULT) {
-            updateCoursesIfNeeded();
-            view.invalidateToolbar();
         }
     }
 
     //// Actions
-
-    // Update data actions
-
-    private void updateSets() {
-        StackModule stackModule = getQuizletStackModule();
-        if (stackModule != null) {
-            //stackModule.reloadSets();
-        }
-
-        ListModuleInterface listModule = getTermListQuizletModule();
-        if (listModule != null) {
-            listModule.reload();
-        }
-    }
-
-    private void updateCoursesIfNeeded() {
-        if (getCourseListStackModule() != null) {
-            updateCourses();
-        }
-    }
-
-    private void updateCourses() {
-        StackModule stackModule = getCourseListStackModule();
-        if (stackModule != null && stackModule.getSize() > 0) {
-            ListModuleInterface listModule = (ListModuleInterface) stackModule.getModuleAtIndex(0);
-        }
-    }
-
-    //
 
     private void handleLoadedQuizletSets() {
         forceLoadSetsIfNeeded();

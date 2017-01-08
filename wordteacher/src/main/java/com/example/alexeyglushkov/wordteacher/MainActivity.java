@@ -102,6 +102,12 @@ public class MainActivity extends BaseActivity implements
         presenter.onActivityResult(requestCode, resultCode, data);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        invalidateToolbar();
+    }
+
     // Menu Event
 
     @Override
