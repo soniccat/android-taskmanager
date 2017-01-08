@@ -13,6 +13,8 @@ import pagermodule.view.PagerViewImp;
  */
 
 public interface MainPresenter extends MainModule {
+    void setView(MainView view);
+
     void onCreate(Bundle savedInstanceState);
     void onDestroy();
 

@@ -105,20 +105,7 @@ public class MainPresenterImp implements
 
     //// Events
 
-    @Override
-    public void onFabPressed() {
-        loadQuizletSets();
-    }
-
-    @Override
-    public void onStartPressed() {
-        startLearnActivity(getReadyCards());
-    }
-
-    @Override
-    public void onDropboxPressed() {
-        syncWithDropbox();
-    }
+    // Course events
 
     private void onCourseHolderChanged() {
         view.invalidateToolbar();
@@ -142,16 +129,25 @@ public class MainPresenterImp implements
         }
     }
 
-    public void onLearnNewWordsClick(@NonNull Course course) {
-        startLearnNewWords(course);
+    // Buttons press
+
+    @Override
+    public void onFabPressed() {
+        loadQuizletSets();
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == LearnActivity.ACTIVITY_RESULT) {
-            updateCoursesIfNeeded();
-            view.invalidateToolbar();
-        }
+    public void onStartPressed() {
+        startLearnActivity(getReadyCards());
+    }
+
+    @Override
+    public void onDropboxPressed() {
+        syncWithDropbox();
+    }
+
+    public void onLearnNewWordsClick(@NonNull Course course) {
+        startLearnNewWords(course);
     }
 
     public void onSortOrderSelected(Preferences.SortOrder order) {
@@ -179,6 +175,16 @@ public class MainPresenterImp implements
         view.invalidateToolbar();
     }
 
+    // Activity
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == LearnActivity.ACTIVITY_RESULT) {
+            updateCoursesIfNeeded();
+            view.invalidateToolbar();
+        }
+    }
+
     //// Actions
 
     // Update data actions
@@ -203,8 +209,8 @@ public class MainPresenterImp implements
 
     private void updateCourses() {
         StackModule stackModule = getCourseListStackModule();
-        if (stackModule != null) {
-            //stackModule.reloadCourses();
+        if (stackModule != null && stackModule.getSize() > 0) {
+            ListModuleInterface listModule = (ListModuleInterface) stackModule.getModuleAtIndex(0);
         }
     }
 
@@ -329,7 +335,7 @@ public class MainPresenterImp implements
             view.showLoadError(error);
         }
 
-        loadingButton.stopLoading();
+        view.stopProgress();
     }
 
     // CourseHolder.CourseHolderListener
@@ -397,7 +403,7 @@ public class MainPresenterImp implements
 
     @NonNull
     private QuizletSetFragmentMenuListener createSetMenuListener() {
-        return new QuizletSetFragmentMenuListener(this, getCourseHolder(), new QuizletSetFragmentMenuListener.Listener<QuizletSet>() {
+        return new QuizletSetFragmentMenuListener(view.getContext(), getCourseHolder(), new QuizletSetFragmentMenuListener.Listener<QuizletSet>() {
             @Override
             public void onRowClicked(QuizletSet set) {
                 // Handled inside QuizletStackModuleFactory
@@ -423,7 +429,7 @@ public class MainPresenterImp implements
 
             @Override
             public ViewGroup getDialogContainer() {
-                return (ViewGroup) getRootView();
+                return (ViewGroup) view.getRootView();
             }
 
             @Override
@@ -434,7 +440,7 @@ public class MainPresenterImp implements
 
     @NonNull
     private QuizletTermFragmentMenuListener createTermMenuListener() {
-        return new QuizletTermFragmentMenuListener(this, getCourseHolder(), new QuizletTermFragmentMenuListener.Listener<QuizletTerm>() {
+        return new QuizletTermFragmentMenuListener(view.getContext(), getCourseHolder(), new QuizletTermFragmentMenuListener.Listener<QuizletTerm>() {
             @Override
             public void onRowClicked(QuizletTerm data) {
             }
@@ -460,18 +466,18 @@ public class MainPresenterImp implements
             @Nullable
             @Override
             public ViewGroup getDialogContainer() {
-                return (ViewGroup) getRootView();
+                return (ViewGroup) view.getRootView();
             }
 
             @Override
             public void onCourseChanged(@NonNull Course course) {
-                MainActivity.this.onCourseChanged(course, null);
+                MainPresenterImp.this.onCourseChanged(course, null);
             }
         });
     }
 
     private CourseListPresenterMenuListener createMenuCourseListener() {
-        return new CourseListPresenterMenuListener(this, getCourseHolder(), new CourseListPresenterMenuListener.Listener() {
+        return new CourseListPresenterMenuListener(view.getContext(), getCourseHolder(), new CourseListPresenterMenuListener.Listener() {
             @Override
             public void onCourseDeleteClicked(Course course) {
                 ListModuleInterface listModule = getCourseListModule();
@@ -512,7 +518,7 @@ public class MainPresenterImp implements
 
             @Override
             public View getSnackBarViewContainer() {
-                return getRootView();
+                return view.getRootView();
             }
         });
     }
@@ -552,7 +558,7 @@ public class MainPresenterImp implements
         return cards;
     }
 
-    private Preferences.SortOrder getCurrentSortOrder() {
+    public Preferences.SortOrder getCurrentSortOrder() {
         Preferences.SortOrder sortOrder = Preferences.SortOrder.BY_NAME;
         Object module = getCurrentModule();
 

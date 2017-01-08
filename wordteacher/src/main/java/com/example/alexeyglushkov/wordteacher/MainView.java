@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.view.View;
 
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 
@@ -24,9 +25,11 @@ public interface MainView {
     PagerView createPagerView();
 
     Context getContext();
+    View getRootView();
     void startActivityForResult(Intent intent, int code);
 
     ProgressListener startProgress(ProgressCallback callback);
+    void stopProgress();
 
     interface ProgressCallback {
         void onCancelled();

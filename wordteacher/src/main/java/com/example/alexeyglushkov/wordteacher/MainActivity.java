@@ -16,6 +16,7 @@ import android.view.MenuItem;
 
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
+import com.google.dexmaker.dx.rop.code.Exceptions;
 
 import main.BaseActivity;
 import main.Preferences;
@@ -48,6 +49,7 @@ public class MainActivity extends BaseActivity implements
         initPager(savedInstanceState);
         initFloatingButton();
 
+        presenter = createPresenter();
         presenter.onCreate(savedInstanceState);
     }
 
@@ -189,8 +191,12 @@ public class MainActivity extends BaseActivity implements
                 callback.onCancelled();
             }
         });
-
         return loadingButton.startLoading();
+    }
+
+    @Override
+    public void stopProgress() {
+        loadingButton.stopLoading();
     }
 
     private void showLoadErrorSnackBar(Error error) {
@@ -214,10 +220,6 @@ public class MainActivity extends BaseActivity implements
         String errorString = ex.getMessage();
         Snackbar.make(getRootView(), errorString, Snackbar.LENGTH_LONG).show();
         Log.e(ERROR_TAG, ex.getMessage());
-    }
-
-    private View getRootView() {
-        return findViewById(R.id.root);
     }
 
     // Update UI actions
@@ -248,6 +250,20 @@ public class MainActivity extends BaseActivity implements
         return new PagerViewImp(pager, getSupportFragmentManager());
     }
 
+    private MainPresenter createPresenter() {
+        MainPresenter presenter = null;
+        String presenterName = this.getResources().getString(R.string.main_presenter_class);
+        try {
+            presenter = (MainPresenter) getClassLoader().loadClass(presenterName).newInstance();
+            presenter.setView(this);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return presenter;
+    }
+
     //// Setters
 
     public void setPresenter(MainPresenter presenter) {
@@ -255,6 +271,15 @@ public class MainActivity extends BaseActivity implements
     }
 
     //// Getters
+
+    @Override
+    public Context getContext() {
+        return this;
+    }
+
+    public View getRootView() {
+        return findViewById(R.id.root);
+    }
 
     // Statuses
 
@@ -272,10 +297,5 @@ public class MainActivity extends BaseActivity implements
 
     private boolean isSortByPublishDate(Preferences.SortOrder sortOrder) {
         return sortOrder == Preferences.SortOrder.BY_PUBLISH_DATE || sortOrder == Preferences.SortOrder.BY_PUBLISH_DATE_INV;
-    }
-
-    @Override
-    public Context getContext() {
-        return this;
     }
 }
