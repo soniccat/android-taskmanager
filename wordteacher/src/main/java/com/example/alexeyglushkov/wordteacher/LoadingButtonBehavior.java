@@ -1,20 +1,12 @@
 package com.example.alexeyglushkov.wordteacher;
 
-import android.animation.TimeInterpolator;
 import android.content.Context;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.view.ViewPager;
-import android.support.v4.view.animation.FastOutLinearInInterpolator;
-import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 
-import ui.LoadingButton;
+import com.example.alexeyglushkov.wordteacher.ui.LoadingButton;
 
 /**
  * Created by alexeyglushkov on 13.06.16.

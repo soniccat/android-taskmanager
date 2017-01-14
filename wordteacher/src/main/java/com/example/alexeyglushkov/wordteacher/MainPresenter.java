@@ -3,7 +3,7 @@ package com.example.alexeyglushkov.wordteacher;
 import android.content.Intent;
 import android.os.Bundle;
 
-import main.Preferences;
+import com.example.alexeyglushkov.wordteacher.main.Preferences;
 
 /**
  * Created by alexeyglushkov on 07.01.17.

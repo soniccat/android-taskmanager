@@ -16,7 +16,7 @@ public interface Account {
     void setAuthCredentialStore(AccountStore store);
     void store() throws Exception;
 
-    // Method should be called not on main thread to be able show auth activity for OAuth20AuthorizerImpl
+    // Method should be called not on com.example.alexeyglushkov.wordteacher.main thread to be able show auth activity for OAuth20AuthorizerImpl
     void authorize(final Authorizer.AuthorizerCompletion completion);
 
     void signCommand(ServiceCommand command);

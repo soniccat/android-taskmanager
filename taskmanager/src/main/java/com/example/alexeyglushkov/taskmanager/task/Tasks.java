@@ -27,7 +27,7 @@ public class Tasks {
 
                 Log.d("Image--", "start " + task + " " + task.getTaskStatus());
 
-                //Waiting status is set in the main thread
+                //Waiting status is set in the com.example.alexeyglushkov.wordteacher.main thread
                 if (newStatus == Task.Status.Waiting) {
                     Assert.assertEquals(Looper.myLooper(), Looper.getMainLooper());
                     listener.setTaskInProgress(task);
@@ -56,7 +56,7 @@ public class Tasks {
     // TODO: think about a better name
     // An implementer should store task and filter setTaskCompleted call with old task
     // This can happen due to task cancellation behavior. When a task was cancelled when completion block
-    // was already added to the main thread
+    // was already added to the com.example.alexeyglushkov.wordteacher.main thread
     public interface TaskListener {
         void setTaskInProgress(Task task);
         void setTaskCompleted(Task task);

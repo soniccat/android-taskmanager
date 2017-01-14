@@ -11,49 +11,49 @@
         android:orientation="vertical"
         android:background="#ffffff">
 
-        <com.playground.ui.SettingsField
+        <com.playground.com.example.alexeyglushkov.wordteacher.ui.SettingsField
             android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:text="@string/task_config_field_name"
             app:default_value="Example"
             app:input_type="string"/>
-        <com.playground.ui.SettingsField
+        <com.playground.com.example.alexeyglushkov.wordteacher.ui.SettingsField
             android:id="@+id/count"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:text="@string/task_config_field_count"
             app:default_value="1"
             app:input_type="number"/>
-        <com.playground.ui.SettingsField
+        <com.playground.com.example.alexeyglushkov.wordteacher.ui.SettingsField
             android:id="@+id/type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:text="@string/task_config_field_type"
             app:default_value="0"
             app:input_type="number"/>
-        <com.playground.ui.SettingsField
+        <com.playground.com.example.alexeyglushkov.wordteacher.ui.SettingsField
             android:id="@+id/start_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:text="@string/task_config_field_start_id"
             app:default_value="1"
             app:input_type="number"/>
-        <com.playground.ui.SettingsField
+        <com.playground.com.example.alexeyglushkov.wordteacher.ui.SettingsField
             android:id="@+id/duration"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:text="@string/task_config_field_duration"
             app:default_value="10"
             app:input_type="number"/>
-        <com.playground.ui.SettingsField
+        <com.playground.com.example.alexeyglushkov.wordteacher.ui.SettingsField
             android:id="@+id/priority"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:text="@string/task_config_field_priority"
             app:default_value="0"
             app:input_type="number"/>
-        <com.playground.ui.SettingsField
+        <com.playground.com.example.alexeyglushkov.wordteacher.ui.SettingsField
             android:id="@+id/load_policy"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

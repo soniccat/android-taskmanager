@@ -18,7 +18,7 @@
         android:maxSdkVersion="18" />
 
     <application
-        android:name="main.MainApplication"
+        android:name="com.example.alexeyglushkov.wordteacher.main.MainApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -36,7 +36,7 @@
         </activity>
 
         <activity
-            android:name="learningmodule.view.LearnActivity"
+            android:name="com.example.alexeyglushkov.wordteacher.learningmodule.view.LearnActivity"
             android:label="@string/learning_title"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateVisible|adjustResize">
@@ -46,12 +46,12 @@
         </activity>
 
         <activity
-            android:name="learningmodule.SessionResultActivity"
+            android:name="com.example.alexeyglushkov.wordteacher.learningmodule.SessionResultActivity"
             android:label="@string/learning_results"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="learningmodule.view.LearnActivity" />
+                android:value="com.example.alexeyglushkov.wordteacher.learningmodule.view.LearnActivity" />
         </activity>
 
         <activity

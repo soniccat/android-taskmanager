@@ -1,17 +1,14 @@
 package authorization;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient;
 import com.example.alexeyglushkov.wordteacher.R;
 
-import main.Networks;
+import com.example.alexeyglushkov.wordteacher.main.Networks;
 
 /**
  * Created by alexeyglushkov on 24.10.15.

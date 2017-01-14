@@ -4,7 +4,7 @@ import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 
 /**
- * The main Scribe object. 
+ * The com.example.alexeyglushkov.wordteacher.main Scribe object.
  * 
  * A facade responsible for the retrieval of request and access tokens and for the signing of HTTP requests.  
  * 

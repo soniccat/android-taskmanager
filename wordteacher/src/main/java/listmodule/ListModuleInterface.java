@@ -1,6 +1,6 @@
 package listmodule;
 
-import main.Preferences;
+import com.example.alexeyglushkov.wordteacher.main.Preferences;
 
 /**
  * Created by alexeyglushkov on 30.10.16.

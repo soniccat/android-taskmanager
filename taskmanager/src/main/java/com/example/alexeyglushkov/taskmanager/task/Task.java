@@ -11,8 +11,8 @@ import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 // information, work with a database and other.
 // The task can be started only once. If you want to repeat it you should create new one.
 //
-// If you work with a model on main thread the task shouldn't work with the model data stored
-// outside the task. The model data should be changed on main thread after task completion and
+// If you work with a com.example.alexeyglushkov.wordteacher.model on com.example.alexeyglushkov.wordteacher.main thread the task shouldn't work with the com.example.alexeyglushkov.wordteacher.model data stored
+// outside the task. The com.example.alexeyglushkov.wordteacher.model data should be changed on com.example.alexeyglushkov.wordteacher.main thread after task completion and
 // notify UI.
 //
 // All setters mustn't be called after starting the task
@@ -50,7 +50,7 @@ public interface Task extends TaskContainer {
     int getTaskType();
 
     // Set/Get the task's id. Tasks with the same id means that they download the same data for the same caller.
-    // It's useful when you want to bind the task to a specific model object and provide an additional load policy
+    // It's useful when you want to bind the task to a specific com.example.alexeyglushkov.wordteacher.model object and provide an additional load policy
     // The right load policy can prevent needless loadings
     // nil means that the task doesn't have the id
     //

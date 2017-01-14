@@ -3,7 +3,7 @@ package org.scribe.oauth;
 import org.scribe.model.*;
 
 /**
- * The main Scribe object. 
+ * The com.example.alexeyglushkov.wordteacher.main Scribe object.
  * 
  * A facade responsible for the retrieval of request and access tokens and for the signing of HTTP requests.  
  * 

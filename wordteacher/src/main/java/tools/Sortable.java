@@ -1,6 +1,6 @@
 package tools;
 
-import main.Preferences;
+import com.example.alexeyglushkov.wordteacher.main.Preferences;
 
 /**
  * Created by alexeyglushkov on 14.08.16.

@@ -14,10 +14,9 @@ import listmodule.NullCompareStrategyFactory;
 import listmodule.NullStorableListProvider;
 import listmodule.StorableListProvider;
 import listmodule.StorableListProviderFactory;
-import listmodule.ListModuleInterface;
 import listmodule.view.ListViewInterface;
-import main.Preferences;
-import pagermodule.PagerModuleItem;
+import com.example.alexeyglushkov.wordteacher.main.Preferences;
+
 import pagermodule.PagerModuleItemView;
 import pagermodule.PagerModuleItemWithTitle;
 import stackmodule.StackModuleItem;

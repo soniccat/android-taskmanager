@@ -16,13 +16,12 @@ import android.view.MenuItem;
 
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
-import com.google.dexmaker.dx.rop.code.Exceptions;
 
-import main.BaseActivity;
-import main.Preferences;
+import com.example.alexeyglushkov.wordteacher.main.BaseActivity;
+import com.example.alexeyglushkov.wordteacher.main.Preferences;
 import pagermodule.view.PagerView;
 import pagermodule.view.PagerViewImp;
-import ui.LoadingButton;
+import com.example.alexeyglushkov.wordteacher.ui.LoadingButton;
 
 // TODO: consider moving content to fragment
 public class MainActivity extends BaseActivity implements
