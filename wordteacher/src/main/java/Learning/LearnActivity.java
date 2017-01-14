@@ -43,9 +43,6 @@ import model.CourseHolder;
 // TODO: consider moving content to fragment
 public class LearnActivity extends BaseActivity implements LearnView{
 
-    public static final int ACTIVITY_RESULT = 10002;
-    public static final int ACTIVITY_RESULT_CODE = 1;
-
     @NonNull LearnPresenter presenter;
 
     private View rootView;
@@ -68,13 +65,13 @@ public class LearnActivity extends BaseActivity implements LearnView{
         bindListeners();
         restore(savedInstanceState);
 
-        setResult(ACTIVITY_RESULT_CODE, getIntent());
+        presenter.onCreate(savedInstanceState);
     }
 
     private void restore(Bundle savedInstanceState) {
         // because of the support lib bug
         String string = savedInstanceState.getString("input");
-        inputLayout.getEditText().setText(string);
+        setInputText(string);
     }
 
     @Override
@@ -82,7 +79,7 @@ public class LearnActivity extends BaseActivity implements LearnView{
         super.onSaveInstanceState(outState);
 
         // because of the support lib bug
-        outState.putString("input", inputLayout.getEditText().getText().toString());
+        outState.putString("input", getInputText());
 
         presenter.onSaveInstanceState(outState);
     }
@@ -90,7 +87,7 @@ public class LearnActivity extends BaseActivity implements LearnView{
     // Binding
 
     private void bindViews() {
-        rootView = (View)findViewById(R.id.root);
+        rootView = findViewById(R.id.root);
         termView = (TextView)findViewById(R.id.word);
         progressTextView = (TextView)findViewById(R.id.progressTextView);
         inputLayout = (TextInputLayout)findViewById(R.id.definition);
@@ -110,13 +107,13 @@ public class LearnActivity extends BaseActivity implements LearnView{
         checkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkInput();
+                presenter.onCheckPressed();
             }
         });
         goNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showNextCard();
+                presenter.onNextPressed();
             }
         });
         hintButton.setOnClickListener(new View.OnClickListener() {
@@ -148,7 +145,7 @@ public class LearnActivity extends BaseActivity implements LearnView{
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 boolean handed = false;
                 if (actionId == EditorInfo.IME_ACTION_GO) {
-                    checkInput();
+                    presenter.onCheckPressed();
                     handed = true;
                 }
 
@@ -162,40 +159,11 @@ public class LearnActivity extends BaseActivity implements LearnView{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        getCourseHolder().removeListener(this);
-    }
-
-    private void onRightInput() {
-        try {
-            teacher.onRightInput();
-        } catch (Exception e) {
-            showException(e);
-        }
-
-        showNextCard();
-    }
-
-    private void onWrongInput() {
-        try {
-            teacher.onWrongInput();
-        } catch (Exception e) {
-            showException(e);
-        }
-
-        inputLayout.setError(getString(R.string.error_wrong_input));
-    }
-
-    private void onSessionFinished() {
-        LearnSession session = teacher.getCurrentSession();
-        teacher.onSessionsFinished();
-
-        showResultActivity(session);
+        presenter.onDestroy();
     }
 
     private void onTextChanged() {
-        if (isInputCorrect() && teacher.isWrongAnswerCounted()) {
-            showNextButton();
-        }
+        presenter.onTextChanged();
     }
 
     private void onShowNextLetterPressed() {
@@ -240,48 +208,12 @@ public class LearnActivity extends BaseActivity implements LearnView{
 
     //// Actions
 
-    private void checkInput() {
-        teacher.onCheckInput();
-
-        if (isInputCorrect()) {
-            onRightInput();
-        } else {
-            onWrongInput();
-        }
-    }
-
     private void prepareToNewCard() {
         showDefaultButtons();
         setHintButtonEnabled(true);
-        prepareHintString();
-    }
-
-    private void prepareHintString() {
-        hintArray.setLength(0);
-
-        Card currentCard = teacher.getCurrentCard();
-        for (int i = 0; i < getDefinition(currentCard).length(); ++i) {
-            hintArray.append(GAP_CHAR);
-        }
     }
 
     // Show UI actions
-
-    private void showCurrentCard() {
-        prepareToNewCard();
-        bindCurrentCard();
-    }
-
-    private void showNextCard() {
-        teacher.getNextCard();
-
-        if (teacher.getCurrentCard() != null) {
-            prepareToNewCard();
-            bindCurrentCard();
-        } else {
-            onSessionFinished();
-        }
-    }
 
     private void showDefaultButtons() {
         giveUpButton.setVisibility(View.VISIBLE);
@@ -337,17 +269,14 @@ public class LearnActivity extends BaseActivity implements LearnView{
 
     // Update UI
 
-    private void bindCurrentCard() {
-        Card card = teacher.getCurrentCard();
-        bindCard(card);
-    }
+    public void bindCard(Card card, String term) {
+        prepareToNewCard();
 
-    private void bindCard(Card card) {
         //updateCardBg(card);
         updateProgressText(card);
-        termView.setText(getTerm(card));
+        termView.setText(term);
         inputLayout.setError(null);
-        inputLayout.getEditText().setText(null);
+        setInputText(null);
     }
 
     private void updateProgressText(Card card) {
@@ -436,6 +365,10 @@ public class LearnActivity extends BaseActivity implements LearnView{
     @Override
     public void setInputText(String text) {
         inputLayout.getEditText().setText(text);
+    }
+
+    public void setViewResult(int result) {
+        setResult(result, getIntent());
     }
 
     //// Getters

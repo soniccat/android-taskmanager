@@ -10,4 +10,10 @@ import android.support.annotation.Nullable;
 public interface LearnPresenter extends LearnModule {
     void onCreate(@Nullable Bundle savedInstanceState);
     void onSaveInstanceState(Bundle outState);
+    void onDestroy();
+
+    void onCheckPressed();
+    void onNextPressed();
+    void onTextChanged();
+    void onShowNextLetterPressed();
 }

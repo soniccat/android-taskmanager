@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.example.alexeyglushkov.wordteacher.R;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +20,9 @@ import model.CourseHolder;
  */
 
 public class LearnPresenterImp implements LearnPresenter, CourseHolder.CourseHolderListener {
+    public static final int ACTIVITY_RESULT = 10002;
+    public static final int ACTIVITY_RESULT_CODE = 1;
+
     public final static String EXTRA_DEFINITION_TO_TERM = "EXTRA_DEFINITION_TO_TERM";
     public final static String EXTRA_CARD_IDS = "EXTRA_CARD_IDS";
     public final static char GAP_CHAR = '_';
@@ -34,6 +39,9 @@ public class LearnPresenterImp implements LearnPresenter, CourseHolder.CourseHol
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+
+        view.setViewResult(ACTIVITY_RESULT_CODE);
+
         if (savedInstanceState == null) {
             createTeacher();
             definitionToTerm = view.getIntent().getBooleanExtra(EXTRA_DEFINITION_TO_TERM, false);
@@ -94,9 +102,92 @@ public class LearnPresenterImp implements LearnPresenter, CourseHolder.CourseHol
         onReady();
     }
 
+    public void onDestroy() {
+        getCourseHolder().removeListener(this);
+    }
+
+    public void onCheckPressed() {
+        checkInput();
+    }
+
+    @Override
+    public void onNextPressed() {
+        showNextCard();
+    }
+
+    private void onRightInput() {
+        try {
+            teacher.onRightInput();
+        } catch (Exception e) {
+            showException(e);
+        }
+
+        showNextCard();
+    }
+
+    private void onWrongInput() {
+        try {
+            teacher.onWrongInput();
+        } catch (Exception e) {
+            showException(e);
+        }
+
+        inputLayout.setError(getString(R.string.error_wrong_input));
+    }
+
+    private void onSessionFinished() {
+        LearnSession session = teacher.getCurrentSession();
+        teacher.onSessionsFinished();
+
+        showResultActivity(session);
+    }
+
+    public void onTextChanged() {
+        if (isInputCorrect() && teacher.isWrongAnswerCounted()) {
+            showNextButton();
+        }
+    }
+
     //// Actions
 
+    private void showCurrentCard() {
+        prepareHintString();
+        bindCurrentCard();
+    }
 
+    private void showNextCard() {
+        teacher.getNextCard();
+
+        if (teacher.getCurrentCard() != null) {
+            bindCurrentCard();
+        } else {
+            onSessionFinished();
+        }
+    }
+
+    private void bindCurrentCard() {
+        Card card = teacher.getCurrentCard();
+        view.bindCard(card, getTerm(card));
+    }
+
+    private void checkInput() {
+        teacher.onCheckInput();
+
+        if (isInputCorrect()) {
+            onRightInput();
+        } else {
+            onWrongInput();
+        }
+    }
+
+    private void prepareHintString() {
+        hintArray.setLength(0);
+
+        Card currentCard = teacher.getCurrentCard();
+        for (int i = 0; i < getDefinition(currentCard).length(); ++i) {
+            hintArray.append(GAP_CHAR);
+        }
+    }
 
     //// Interfaces
 
@@ -180,7 +271,7 @@ public class LearnPresenterImp implements LearnPresenter, CourseHolder.CourseHol
 
     private boolean isInputCorrect() {
         Card card = teacher.getCurrentCard();
-        String input = inputLayout.getEditText().getText().toString();
+        String input = view.getInputText();
         return input.equalsIgnoreCase(getDefinition(card));
     }
 
