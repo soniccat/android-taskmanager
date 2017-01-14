@@ -41,18 +41,12 @@ import model.CourseHolder;
  * Created by alexeyglushkov on 09.05.16.
  */
 // TODO: consider moving content to fragment
-public class LearnActivity extends BaseActivity implements CourseHolder.CourseHolderListener{
+public class LearnActivity extends BaseActivity implements LearnView{
 
     public static final int ACTIVITY_RESULT = 10002;
     public static final int ACTIVITY_RESULT_CODE = 1;
-    public final static String EXTRA_DEFINITION_TO_TERM = "EXTRA_DEFINITION_TO_TERM";
-    public final static String EXTRA_CARD_IDS = "EXTRA_CARD_IDS";
-    public final static char GAP_CHAR = '_';
-    public final static String GAP_STRING = "_";
 
-    @Nullable Bundle savedInstanceState;
-
-    private @Nullable CardTeacher teacher;
+    @NonNull LearnPresenter presenter;
 
     private View rootView;
     private TextView termView;
@@ -63,9 +57,6 @@ public class LearnActivity extends BaseActivity implements CourseHolder.CourseHo
     private Button goNextButton;
     private ImageButton hintButton;
 
-    private boolean definitionToTerm;
-    private StringBuilder hintArray = new StringBuilder();
-
     //// Initialization
 
     @Override
@@ -75,71 +66,25 @@ public class LearnActivity extends BaseActivity implements CourseHolder.CourseHo
         setContentView(R.layout.activity_learn);
         bindViews();
         bindListeners();
+        restore(savedInstanceState);
 
         setResult(ACTIVITY_RESULT_CODE, getIntent());
-
-        if (savedInstanceState == null) {
-            createTeacher();
-            definitionToTerm = getIntent().getBooleanExtra(EXTRA_DEFINITION_TO_TERM, false);
-            onReady();
-        } else {
-            registerRestoration(savedInstanceState);
-        }
-    }
-
-    private void registerRestoration(@Nullable final Bundle savedInstanceState) {
-        final CourseHolder holder = getCourseHolder();
-        if (holder.getState() == CourseHolder.State.Unitialized) {
-            this.savedInstanceState = savedInstanceState;
-            getCourseHolder().addListener(this);
-        } else {
-            restore(savedInstanceState);
-        }
-    }
-
-    private void createTeacher() {
-        String[] courseIdStrings = getIntent().getStringArrayExtra(EXTRA_CARD_IDS);
-        List<Card> cards = new ArrayList<>();
-        for (String id : courseIdStrings) {
-            UUID cardId = UUID.fromString(id);
-            Card card = getCourseHolder().getCard(cardId);
-            cards.add(card);
-        }
-
-        teacher = new CardTeacher(cards);
     }
 
     private void restore(Bundle savedInstanceState) {
-        teacher = new CardTeacher(savedInstanceState, getCourseHolder());
-        definitionToTerm = savedInstanceState.getBoolean("definitionToTerm");
-
-        String string = savedInstanceState.getString("hintArray");
-        hintArray = new StringBuilder(string);
-
         // because of the support lib bug
-        string = savedInstanceState.getString("input");
+        String string = savedInstanceState.getString("input");
         inputLayout.getEditText().setText(string);
-        onRestore();
-    }
-
-    private void onRestore() {
-        onReady();
-    }
-
-    private void onReady() {
-        showCurrentCard();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        teacher.store(outState);
-        outState.putBoolean("definitionToTerm", definitionToTerm);
-        outState.putString("hintArray", hintArray.toString());
-
         // because of the support lib bug
         outState.putString("input", inputLayout.getEditText().getText().toString());
+
+        presenter.onSaveInstanceState(outState);
     }
 
     // Binding
@@ -213,7 +158,6 @@ public class LearnActivity extends BaseActivity implements CourseHolder.CourseHo
     }
 
     //// Events
-
 
     @Override
     protected void onDestroy() {
@@ -487,93 +431,17 @@ public class LearnActivity extends BaseActivity implements CourseHolder.CourseHo
         Snackbar.make(getWindow().getDecorView(), ex.getMessage(), Snackbar.LENGTH_LONG).show();
     }
 
-    //// Interfaces
-
-    // CourseHolder.CourseHolderListener
+    //// Setter
 
     @Override
-    public void onLoaded(@NonNull CourseHolder holder) {
-        restoreIfNeeded();
-        holder.removeListener(this);
-    }
-
-    private void restoreIfNeeded() {
-        if (savedInstanceState != null) {
-            restore(savedInstanceState);
-            savedInstanceState = null;
-        }
-    }
-
-    @Override
-    public void onCoursesAdded(@NonNull CourseHolder holder, @NonNull List<Course> courses) {
-        // TODO: handle
-    }
-
-    @Override
-    public void onCoursesRemoved(@NonNull CourseHolder holder, @NonNull List<Course> courses) {
-        // TODO: handle
-    }
-
-    @Override
-    public void onCourseUpdated(@NonNull CourseHolder holder, @NonNull Course course, @NonNull CourseHolder.UpdateBatch batch) {
-        // TODO: handle
+    public void setInputText(String text) {
+        inputLayout.getEditText().setText(text);
     }
 
     //// Getters
 
-    private String getTerm(Card card) {
-        return definitionToTerm ? card.getDefinition() : card.getTerm();
-    }
-
-    private String getDefinition(Card card) {
-        return definitionToTerm ? card.getTerm() : card.getDefinition();
-    }
-
-    private int getHintGapCount() {
-        int gapCount = 0;
-        for (int i=0; i<hintArray.length(); ++i) {
-            if (hintArray.charAt(i) == GAP_CHAR) {
-                ++gapCount;
-            }
-        }
-        return gapCount;
-    }
-
-    private int getGapIndexToCharIndex(int searchGapIndex) {
-        int gapIndex = -1;
-        int position = -1;
-        for (int i=0; i<hintArray.length(); ++i) {
-            if (hintArray.charAt(i) == GAP_CHAR) {
-                ++gapIndex;
-                if (gapIndex == searchGapIndex) {
-                    position = i;
-                    break;
-                }
-            }
-        }
-
-        return position;
-    }
-
-    // Cast Getters
-
-    private MainApplication getMainApplication() {
-        return MainApplication.instance;
-    }
-
-    public CourseHolder getCourseHolder() {
-        return getMainApplication().getCourseHolder();
-    }
-
-    // Statuses
-
-    private boolean isHintStringFull() {
-        return getHintGapCount() == 0;
-    }
-
-    private boolean isInputCorrect() {
-        Card card = teacher.getCurrentCard();
-        String input = inputLayout.getEditText().getText().toString();
-        return input.equalsIgnoreCase(getDefinition(card));
+    @Override
+    public String getInputText() {
+        return inputLayout.getEditText().getText().toString();
     }
 }
