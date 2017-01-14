@@ -1,4 +1,4 @@
-package preferencestorage;
+package com.example.alexeyglushkov.cachemanager.preference;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import com.example.alexeyglushkov.cachemanager.StorageEntry;
 import com.example.alexeyglushkov.cachemanager.StorageMetadata;
 import com.example.alexeyglushkov.cachemanager.StorageProvider;
-import com.example.alexeyglushkov.dropboxservice.ContextProvider;
+import com.example.alexeyglushkov.tools.ContextProvider;
 
 import java.util.List;
 

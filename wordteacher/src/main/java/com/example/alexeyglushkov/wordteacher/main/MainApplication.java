@@ -16,7 +16,7 @@ import com.example.alexeyglushkov.cachemanager.StorageCleaner;
 import com.example.alexeyglushkov.cachemanager.StorageProvider;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageCleaner;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageProvider;
-import com.example.alexeyglushkov.dropboxservice.ContextProvider;
+import com.example.alexeyglushkov.tools.ContextProvider;
 import com.example.alexeyglushkov.dropboxservice.DropboxAccount;
 import com.example.alexeyglushkov.dropboxservice.DropboxCommandProvider;
 import com.example.alexeyglushkov.dropboxservice.DropboxFileMerger;
@@ -40,7 +40,7 @@ import com.example.alexeyglushkov.wordteacher.authorization.AuthActivityProxy;
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder;
 import com.example.alexeyglushkov.wordteacher.model.CourseMerger;
 import com.example.alexeyglushkov.wordteacher.model.CourseSerializer;
-import preferencestorage.PreferenceStorageProvider;
+import com.example.alexeyglushkov.cachemanager.preference.PreferenceStorageProvider;
 
 public class MainApplication extends Application {
     private @NonNull AccountStore accountStore;

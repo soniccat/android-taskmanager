@@ -1,16 +1,15 @@
 package com.example.alexeyglushkov.dropboxservice;
 
-import android.net.Credentials;
 import android.support.annotation.NonNull;
 
 import com.dropbox.client2.android.AndroidAuthSession;
-import com.dropbox.client2.android.AuthActivity;
 import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProvider;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthCredentials;
+import com.example.alexeyglushkov.tools.ContextProvider;
 
 /**
  * Created by alexeyglushkov on 10.07.16.
