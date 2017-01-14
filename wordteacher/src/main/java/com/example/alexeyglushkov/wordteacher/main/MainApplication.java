@@ -36,7 +36,7 @@ import junit.framework.Assert;
 import java.io.File;
 import java.util.UUID;
 
-import authorization.AuthActivityProxy;
+import com.example.alexeyglushkov.wordteacher.authorization.AuthActivityProxy;
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder;
 import com.example.alexeyglushkov.wordteacher.model.CourseMerger;
 import com.example.alexeyglushkov.wordteacher.model.CourseSerializer;

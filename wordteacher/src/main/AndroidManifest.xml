@@ -55,7 +55,7 @@
         </activity>
 
         <activity
-            android:name="authorization.AuthorizationActivity"
+            android:name=".authorization.AuthorizationActivity"
             android:label="@string/title_activity_authorization" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

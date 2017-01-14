@@ -8,7 +8,7 @@ import com.example.alexeyglushkov.dropboxservice.DropboxAccount;
 
 import java.util.List;
 
-import authorization.AuthActivityProxy;
+import com.example.alexeyglushkov.wordteacher.authorization.AuthActivityProxy;
 
 /**
  * Created by alexeyglushkov on 12.12.15.

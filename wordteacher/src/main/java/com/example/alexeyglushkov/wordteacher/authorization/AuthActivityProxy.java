@@ -1,4 +1,4 @@
-package authorization;
+package com.example.alexeyglushkov.wordteacher.authorization;
 
 import android.app.Activity;
 import android.content.Intent;
