@@ -16,4 +16,5 @@ public interface LearnView {
     String getInputText();
 
     void bindCard(Card card, String term);
+    void showHintString(String hint, boolean isHintFull);
 }

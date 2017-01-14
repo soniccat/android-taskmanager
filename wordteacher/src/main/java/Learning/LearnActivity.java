@@ -167,10 +167,7 @@ public class LearnActivity extends BaseActivity implements LearnView{
     }
 
     private void onShowNextLetterPressed() {
-        int index = hintArray.indexOf(GAP_STRING);
-        updateHintString(index);
-        showHintString();
-        updateHintButton();
+        presenter.onShowNextLetterPressed();
     }
 
     private void onShowRandomLetterPressed() {
@@ -247,24 +244,9 @@ public class LearnActivity extends BaseActivity implements LearnView{
         popupMenu.show();
     }
 
-    private void showHintString() {
-        try {
-            teacher.onHintShown();
-        } catch (Exception e) {
-            showException(e);
-        }
-
-        StringBuilder builder = new StringBuilder();
-        for (int i=0; i < hintArray.length(); ++i) {
-            char ch = hintArray.charAt(i);
-            builder.append(ch);
-
-            if (builder.length() < hintArray.length()*2-1) {
-                builder.append(' ');
-            }
-        }
-
-        inputLayout.setError(builder.toString());
+    public void showHintString(String hintString, boolean isHintFull) {
+        inputLayout.setError(hintString);
+        setHintButtonEnabled(!isHintFull);
     }
 
     // Update UI
@@ -303,22 +285,6 @@ public class LearnActivity extends BaseActivity implements LearnView{
         int learnColor = getResources().getColor(R.color.learnProgressColor);
         int resultColor = Color.argb((int)(progress * 255), Color.red(learnColor), Color.green(learnColor), Color.blue(learnColor));
         rootView.setBackgroundColor(resultColor);
-    }
-
-    private void updateHintString(int index) {
-        String definition = getDefinition(teacher.getCurrentCard());
-        hintArray.setCharAt(index, definition.charAt(index));
-    }
-
-    private void updateHintStringWithRandomLetter() {
-        int gapCount = getHintGapCount();
-        int random = Math.abs(new Random(new Date().getTime()).nextInt());
-        int gapIndex = random % gapCount;
-        updateHintString(getGapIndexToCharIndex(gapIndex));
-    }
-
-    private void updateHintButton() {
-        setHintButtonEnabled(!isHintStringFull());
     }
 
     private void setHintButtonEnabled(boolean isEnable) {

@@ -7,7 +7,9 @@ import android.support.annotation.Nullable;
 import com.example.alexeyglushkov.wordteacher.R;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import main.MainApplication;
@@ -148,6 +150,12 @@ public class LearnPresenterImp implements LearnPresenter, CourseHolder.CourseHol
         }
     }
 
+    public void onShowNextLetterPressed() {
+        int index = hintArray.indexOf(GAP_STRING);
+        updateHintString(index);
+        showHintString();
+    }
+
     //// Actions
 
     private void showCurrentCard() {
@@ -180,6 +188,18 @@ public class LearnPresenterImp implements LearnPresenter, CourseHolder.CourseHol
         }
     }
 
+    private void showHintString() {
+        try {
+            teacher.onHintShown();
+        } catch (Exception e) {
+            view.showException(e);
+        }
+
+        view.showHintString(getHintString(), isHintStringFull());
+    }
+
+    // Hint
+
     private void prepareHintString() {
         hintArray.setLength(0);
 
@@ -187,6 +207,18 @@ public class LearnPresenterImp implements LearnPresenter, CourseHolder.CourseHol
         for (int i = 0; i < getDefinition(currentCard).length(); ++i) {
             hintArray.append(GAP_CHAR);
         }
+    }
+
+    private void updateHintString(int index) {
+        String definition = getDefinition(teacher.getCurrentCard());
+        hintArray.setCharAt(index, definition.charAt(index));
+    }
+
+    private void updateHintStringWithRandomLetter() {
+        int gapCount = getHintGapCount();
+        int random = Math.abs(new Random(new Date().getTime()).nextInt());
+        int gapIndex = random % gapCount;
+        updateHintString(getGapIndexToCharIndex(gapIndex));
     }
 
     //// Interfaces
@@ -228,6 +260,18 @@ public class LearnPresenterImp implements LearnPresenter, CourseHolder.CourseHol
     }
 
     //// Getters
+
+    private String getHintString() {
+        StringBuilder builder = new StringBuilder();
+        for (int i=0; i < hintArray.length(); ++i) {
+            char ch = hintArray.charAt(i);
+            builder.append(ch);
+
+            if (builder.length() < hintArray.length()*2-1) {
+                builder.append(' ');
+            }
+        }
+    }
 
     private String getTerm(Card card) {
         return definitionToTerm ? card.getDefinition() : card.getTerm();
