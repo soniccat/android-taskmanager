@@ -17,8 +17,8 @@ import com.example.alexeyglushkov.wordteacher.listmodule.view.ListViewInterface;
 import com.example.alexeyglushkov.wordteacher.main.MainApplication;
 import com.example.alexeyglushkov.wordteacher.main.Preferences;
 import com.example.alexeyglushkov.uimodulesandclasses.pagermodule.PagerModuleItemWithTitle;
-import tools.SortOrderCompareStrategy;
-import tools.Sortable;
+import com.example.alexeyglushkov.wordteacher.tools.SortOrderCompareStrategy;
+import com.example.alexeyglushkov.wordteacher.tools.Sortable;
 
 /**
  * Created by alexeyglushkov on 30.10.16.

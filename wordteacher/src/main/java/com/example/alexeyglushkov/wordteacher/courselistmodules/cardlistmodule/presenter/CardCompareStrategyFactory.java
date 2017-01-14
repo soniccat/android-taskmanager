@@ -2,7 +2,7 @@ package com.example.alexeyglushkov.wordteacher.courselistmodules.cardlistmodule.
 
 import com.example.alexeyglushkov.wordteacher.main.Preferences;
 import com.example.alexeyglushkov.wordteacher.model.Card;
-import tools.SortOrderCompareStrategyFactory;
+import com.example.alexeyglushkov.wordteacher.tools.SortOrderCompareStrategyFactory;
 
 /**
  * Created by alexeyglushkov on 27.08.16.

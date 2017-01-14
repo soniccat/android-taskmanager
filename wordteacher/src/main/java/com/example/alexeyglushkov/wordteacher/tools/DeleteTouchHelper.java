@@ -1,4 +1,4 @@
-package tools;
+package com.example.alexeyglushkov.wordteacher.tools;
 
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;

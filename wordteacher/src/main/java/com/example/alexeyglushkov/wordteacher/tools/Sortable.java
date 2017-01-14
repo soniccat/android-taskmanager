@@ -1,4 +1,4 @@
-package tools;
+package com.example.alexeyglushkov.wordteacher.tools;
 
 import com.example.alexeyglushkov.wordteacher.main.Preferences;
 

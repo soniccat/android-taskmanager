@@ -47,7 +47,7 @@ import com.example.alexeyglushkov.wordteacher.quizletlistmodules.termlistmodule.
 import com.example.alexeyglushkov.wordteacher.quizletlistmodules.termlistmodule.presenter.QuizletTermListPresenter;
 import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.StackModule;
 import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.StackModuleListener;
-import tools.Sortable;
+import com.example.alexeyglushkov.wordteacher.tools.Sortable;
 
 /**
  * Created by alexeyglushkov on 07.01.17.

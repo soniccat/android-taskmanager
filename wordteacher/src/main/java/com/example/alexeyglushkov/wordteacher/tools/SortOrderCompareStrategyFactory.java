@@ -1,4 +1,4 @@
-package tools;
+package com.example.alexeyglushkov.wordteacher.tools;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;

@@ -16,8 +16,8 @@ import com.example.alexeyglushkov.wordteacher.main.Preferences;
 import com.example.alexeyglushkov.wordteacher.model.Card;
 import com.example.alexeyglushkov.wordteacher.model.Course;
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder;
-import tools.SortOrderCompareStrategy;
-import tools.Sortable;
+import com.example.alexeyglushkov.wordteacher.tools.SortOrderCompareStrategy;
+import com.example.alexeyglushkov.wordteacher.tools.Sortable;
 
 /**
  * Created by alexeyglushkov on 05.11.16.

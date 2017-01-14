@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.example.alexeyglushkov.wordteacher.R;
 
 import com.example.alexeyglushkov.wordteacher.listmodule.view.BaseListAdaptor;
-import tools.DeleteTouchHelper;
+import com.example.alexeyglushkov.wordteacher.tools.DeleteTouchHelper;
 import com.example.alexeyglushkov.wordteacher.model.Card;
 
 /**

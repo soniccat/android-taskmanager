@@ -18,7 +18,7 @@ import java.util.Locale;
 import com.example.alexeyglushkov.wordteacher.listmodule.view.BaseListAdaptor;
 import com.example.alexeyglushkov.wordteacher.model.Card;
 import com.example.alexeyglushkov.wordteacher.model.CardProgress;
-import tools.DeleteTouchHelper;
+import com.example.alexeyglushkov.wordteacher.tools.DeleteTouchHelper;
 import com.example.alexeyglushkov.wordteacher.model.Course;
 
 /**

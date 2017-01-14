@@ -3,8 +3,8 @@ package com.example.alexeyglushkov.wordteacher.quizletlistmodules.setlistmodule.
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 
 import com.example.alexeyglushkov.wordteacher.main.Preferences;
-import tools.LongTools;
-import tools.SortOrderCompareStrategyFactory;
+import com.example.alexeyglushkov.wordteacher.tools.LongTools;
+import com.example.alexeyglushkov.wordteacher.tools.SortOrderCompareStrategyFactory;
 
 /**
  * Created by alexeyglushkov on 26.08.16.

@@ -1,4 +1,4 @@
-package tools;
+package com.example.alexeyglushkov.wordteacher.tools;
 
 /**
  * Created by alexeyglushkov on 26.08.16.
