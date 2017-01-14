@@ -63,15 +63,20 @@ public class LearnActivity extends BaseActivity implements LearnView{
         setContentView(R.layout.activity_learn);
         bindViews();
         bindListeners();
-        restore(savedInstanceState);
 
+        presenter = createPresenter();
         presenter.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            restore(savedInstanceState);
+        }
     }
 
     private void restore(Bundle savedInstanceState) {
         // because of the support lib bug
         String string = savedInstanceState.getString("input");
         setInputText(string);
+        inputLayout.getEditText().setSelection(string.length());
     }
 
     @Override
@@ -171,36 +176,17 @@ public class LearnActivity extends BaseActivity implements LearnView{
     }
 
     private void onShowRandomLetterPressed() {
-        updateHintStringWithRandomLetter();
-        showHintString();
-        updateHintButton();
+        presenter.onShowRandomLetterPressed();
     }
 
     private void onGiveUpPressed() {
-        try {
-            teacher.onGiveUp();
-        } catch (Exception e) {
-            showException(e);
-        }
-
-        inputLayout.getEditText().setText("");
-
-        String definition = getDefinition(teacher.getCurrentCard());
-        for (int i=0; i<definition.length(); ++i) {
-            hintArray.setCharAt(i, definition.charAt(i));
-        }
-
-        showHintString();
-        updateHintButton();
+        presenter.onGiveUpPressed();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == SessionResultActivity.ACTIVITY_RESULT) {
-            handleResultActivityClose();
-        }
+        presenter.onActivityResult(requestCode, resultCode, data);
     }
 
     //// Actions
@@ -208,6 +194,19 @@ public class LearnActivity extends BaseActivity implements LearnView{
     private void prepareToNewCard() {
         showDefaultButtons();
         setHintButtonEnabled(true);
+    }
+
+    @Override
+    public void showInputFocus() {
+        // to show keyboard
+        HandlerTools.runOnMainThreadDelayed(new Runnable() {
+            @Override
+            public void run() {
+                inputLayout.getEditText().requestFocus();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(inputLayout.getEditText(), InputMethodManager.SHOW_IMPLICIT);
+            }
+        }, 300);
     }
 
     // Show UI actions
@@ -218,7 +217,7 @@ public class LearnActivity extends BaseActivity implements LearnView{
         goNextButton.setVisibility(View.GONE);
     }
 
-    private void showNextButton() {
+    public void showNextButton() {
         giveUpButton.setVisibility(View.GONE);
         checkButton.setVisibility(View.GONE);
         goNextButton.setVisibility(View.VISIBLE);
@@ -247,6 +246,10 @@ public class LearnActivity extends BaseActivity implements LearnView{
     public void showHintString(String hintString, boolean isHintFull) {
         inputLayout.setError(hintString);
         setHintButtonEnabled(!isHintFull);
+    }
+
+    public void showInputError(String error) {
+        inputLayout.setError(error);
     }
 
     // Update UI
@@ -293,37 +296,26 @@ public class LearnActivity extends BaseActivity implements LearnView{
 
     //// Subactivities
 
-    // Result Activity
-
-    private void showResultActivity(LearnSession session) {
-        Intent intent = new Intent(this, SessionResultActivity.class);
-        intent.putExtra(SessionResultActivity.EXTERNAL_SESSION, session);
-        startActivityForResult(intent, SessionResultActivity.ACTIVITY_RESULT);
-    }
-
-    private void handleResultActivityClose() {
-        if (teacher.getCurrentCard() == null) {
-            finish();
-
-        } else {
-            showCurrentCard();
-
-            // to show keyboard
-            HandlerTools.runOnMainThreadDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    inputLayout.getEditText().requestFocus();
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.showSoftInput(inputLayout.getEditText(), InputMethodManager.SHOW_IMPLICIT);
-                }
-            }, 300);
-        }
-    }
-
     // Exceptions
 
-    private void showException(Exception ex) {
+    public void showException(Exception ex) {
         Snackbar.make(getWindow().getDecorView(), ex.getMessage(), Snackbar.LENGTH_LONG).show();
+    }
+
+    //// Creation Methods
+
+    private LearnPresenter createPresenter() {
+        LearnPresenter presenter = null;
+        String presenterName = this.getResources().getString(R.string.learning_presenter_class);
+        try {
+            presenter = (LearnPresenter) getClassLoader().loadClass(presenterName).newInstance();
+            presenter.setView(this);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return presenter;
     }
 
     //// Setter
@@ -342,5 +334,10 @@ public class LearnActivity extends BaseActivity implements LearnView{
     @Override
     public String getInputText() {
         return inputLayout.getEditText().getText().toString();
+    }
+
+    @Override
+    public Context getContext() {
+        return this;
     }
 }

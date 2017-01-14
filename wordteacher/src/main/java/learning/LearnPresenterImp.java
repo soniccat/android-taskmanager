@@ -1,5 +1,6 @@
 package learning;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -121,7 +122,7 @@ public class LearnPresenterImp implements LearnPresenter, CourseHolder.CourseHol
         try {
             teacher.onRightInput();
         } catch (Exception e) {
-            showException(e);
+            view.showException(e);
         }
 
         showNextCard();
@@ -131,10 +132,10 @@ public class LearnPresenterImp implements LearnPresenter, CourseHolder.CourseHol
         try {
             teacher.onWrongInput();
         } catch (Exception e) {
-            showException(e);
+            view.showException(e);
         }
 
-        inputLayout.setError(getString(R.string.error_wrong_input));
+        view.showInputError(view.getContext().getResources().getString(R.string.error_wrong_input));
     }
 
     private void onSessionFinished() {
@@ -146,7 +147,7 @@ public class LearnPresenterImp implements LearnPresenter, CourseHolder.CourseHol
 
     public void onTextChanged() {
         if (isInputCorrect() && teacher.isWrongAnswerCounted()) {
-            showNextButton();
+            view.showNextButton();
         }
     }
 
@@ -154,6 +155,34 @@ public class LearnPresenterImp implements LearnPresenter, CourseHolder.CourseHol
         int index = hintArray.indexOf(GAP_STRING);
         updateHintString(index);
         showHintString();
+    }
+
+    public void onShowRandomLetterPressed() {
+        updateHintStringWithRandomLetter();
+        showHintString();
+    }
+
+    public void onGiveUpPressed() {
+        try {
+            teacher.onGiveUp();
+        } catch (Exception e) {
+            view.showException(e);
+        }
+
+        view.setInputText("");
+
+        String definition = getDefinition(teacher.getCurrentCard());
+        for (int i=0; i<definition.length(); ++i) {
+            hintArray.setCharAt(i, definition.charAt(i));
+        }
+
+        showHintString();
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == SessionResultActivity.ACTIVITY_RESULT) {
+            handleResultActivityClose();
+        }
     }
 
     //// Actions
@@ -221,6 +250,26 @@ public class LearnPresenterImp implements LearnPresenter, CourseHolder.CourseHol
         updateHintString(getGapIndexToCharIndex(gapIndex));
     }
 
+    //// Activities
+
+    // Result Activity
+
+    private void showResultActivity(LearnSession session) {
+        Intent intent = new Intent(view.getContext(), SessionResultActivity.class);
+        intent.putExtra(SessionResultActivity.EXTERNAL_SESSION, session);
+        view.startActivityForResult(intent, SessionResultActivity.ACTIVITY_RESULT);
+    }
+
+    private void handleResultActivityClose() {
+        if (teacher.getCurrentCard() == null) {
+            view.finish();
+
+        } else {
+            showCurrentCard();
+            view.showInputFocus();
+        }
+    }
+
     //// Interfaces
 
     // CourseHolder.CourseHolderListener
@@ -271,6 +320,8 @@ public class LearnPresenterImp implements LearnPresenter, CourseHolder.CourseHol
                 builder.append(' ');
             }
         }
+
+        return builder.toString();
     }
 
     private String getTerm(Card card) {

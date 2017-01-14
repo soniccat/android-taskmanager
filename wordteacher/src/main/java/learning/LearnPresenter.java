@@ -1,5 +1,6 @@
 package learning;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
@@ -11,9 +12,14 @@ public interface LearnPresenter extends LearnModule {
     void onCreate(@Nullable Bundle savedInstanceState);
     void onSaveInstanceState(Bundle outState);
     void onDestroy();
+    void onActivityResult(int requestCode, int resultCode, Intent data);
 
     void onCheckPressed();
     void onNextPressed();
     void onTextChanged();
     void onShowNextLetterPressed();
+    void onShowRandomLetterPressed();
+    void onGiveUpPressed();
+
+    void setView(LearnView view);
 }

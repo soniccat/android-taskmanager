@@ -28,6 +28,8 @@ import courselistmodules.cardlistmodule.presenter.CardListPresenter;
 import courselistmodules.courselistmodule.presenter.CourseListPresenter;
 import courselistmodules.courselistmodule.presenter.CourseListPresenterMenuListener;
 import learning.LearnActivity;
+import learning.LearnPresenter;
+import learning.LearnPresenterImp;
 import listmodule.ListModuleInterface;
 import main.MainApplication;
 import main.Preferences;
@@ -174,7 +176,7 @@ public class MainPresenterImp implements
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == LearnActivity.ACTIVITY_RESULT) {
+        if (requestCode == LearnPresenterImp.ACTIVITY_RESULT) {
         }
     }
 
@@ -223,6 +225,7 @@ public class MainPresenterImp implements
         startLearnActivity(course.getNotStartedCards());
     }
 
+    // TODO: think about to move this transition in another class
     private void startLearnActivity(@NonNull List<Card> cards) {
         Intent activityIntent = new Intent(view.getContext(), LearnActivity.class);
         String[] cardIds = new String[cards.size()];
@@ -232,10 +235,10 @@ public class MainPresenterImp implements
             cardIds[i] = card.getId().toString();
         }
 
-        activityIntent.putExtra(LearnActivity.EXTRA_CARD_IDS, cardIds);
-        activityIntent.putExtra(LearnActivity.EXTRA_DEFINITION_TO_TERM, true);
+        activityIntent.putExtra(LearnPresenterImp.EXTRA_CARD_IDS, cardIds);
+        activityIntent.putExtra(LearnPresenterImp.EXTRA_DEFINITION_TO_TERM, true);
 
-        view.startActivityForResult(activityIntent, LearnActivity.ACTIVITY_RESULT);
+        view.startActivityForResult(activityIntent, LearnPresenterImp.ACTIVITY_RESULT);
     }
 
     private void syncWithDropbox() {
