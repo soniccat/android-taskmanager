@@ -3,10 +3,7 @@ package com.example.alexeyglushkov.wordteacher;
 import android.content.Intent;
 import android.os.Bundle;
 
-import learning.LearnActivity;
 import main.Preferences;
-import pagermodule.view.PagerView;
-import pagermodule.view.PagerViewImp;
 
 /**
  * Created by alexeyglushkov on 07.01.17.

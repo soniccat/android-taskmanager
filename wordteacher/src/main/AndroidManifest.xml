@@ -36,7 +36,7 @@
         </activity>
 
         <activity
-            android:name="learning.LearnActivity"
+            android:name="learningmodule.view.LearnActivity"
             android:label="@string/learning_title"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateVisible|adjustResize">
@@ -46,12 +46,12 @@
         </activity>
 
         <activity
-            android:name="learning.SessionResultActivity"
+            android:name="learningmodule.SessionResultActivity"
             android:label="@string/learning_results"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="learning.LearnActivity" />
+                android:value="learningmodule.view.LearnActivity" />
         </activity>
 
         <activity

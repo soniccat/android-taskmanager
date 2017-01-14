@@ -1,4 +1,4 @@
-package learning;
+package learningmodule;
 
 import android.os.Parcel;
 import android.os.Parcelable;

@@ -1,4 +1,4 @@
-package learning;
+package learningmodule;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.wordteacher.R;
+
+import learningmodule.model.LearnSession;
 
 /**
  * Created by alexeyglushkov on 15.05.16.

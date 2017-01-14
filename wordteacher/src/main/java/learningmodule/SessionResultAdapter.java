@@ -1,4 +1,4 @@
-package learning;
+package learningmodule;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -9,13 +9,12 @@ import android.widget.TextView;
 
 import com.example.alexeyglushkov.wordteacher.R;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import learningmodule.model.LearnSession;
 import model.Card;
 
 /**

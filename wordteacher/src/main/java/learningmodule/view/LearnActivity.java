@@ -1,4 +1,4 @@
-package learning;
+package learningmodule.view;
 
 import android.content.Context;
 import android.content.Intent;
@@ -23,19 +23,12 @@ import android.widget.TextView;
 import com.example.alexeyglushkov.tools.HandlerTools;
 import com.example.alexeyglushkov.wordteacher.R;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.Locale;
-import java.util.Random;
-import java.util.UUID;
 
+import learningmodule.presenter.LearnPresenter;
 import main.BaseActivity;
-import main.MainApplication;
 import model.Card;
 import model.CardProgress;
-import model.Course;
-import model.CourseHolder;
 
 /**
  * Created by alexeyglushkov on 09.05.16.
@@ -43,7 +36,8 @@ import model.CourseHolder;
 // TODO: consider moving content to fragment
 public class LearnActivity extends BaseActivity implements LearnView{
 
-    @NonNull LearnPresenter presenter;
+    @NonNull
+    LearnPresenter presenter;
 
     private View rootView;
     private TextView termView;

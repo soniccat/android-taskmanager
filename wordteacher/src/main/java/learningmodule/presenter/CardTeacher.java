@@ -1,4 +1,4 @@
-package learning;
+package learningmodule.presenter;
 
 import android.os.Bundle;
 
@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 import courselistmodules.cardlistmodule.presenter.CardListProvider;
+import learningmodule.model.LearnSession;
 import main.MainApplication;
 import model.Card;
 import model.Course;

@@ -1,4 +1,4 @@
-package learning;
+package learningmodule;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,6 +7,7 @@ import android.view.MenuItem;
 
 import com.example.alexeyglushkov.wordteacher.R;
 
+import learningmodule.model.LearnSession;
 import main.BaseActivity;
 
 /**

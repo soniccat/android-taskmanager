@@ -1,8 +1,7 @@
-package learning;
+package learningmodule.view;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 
 import model.Card;
 

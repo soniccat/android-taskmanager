@@ -1,4 +1,4 @@
-package learning;
+package learningmodule.presenter;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import learningmodule.model.LearnSession;
+import learningmodule.view.LearnView;
+import learningmodule.SessionResultActivity;
 import main.MainApplication;
 import model.Card;
 import model.Course;
@@ -32,7 +35,8 @@ public class LearnPresenterImp implements LearnPresenter, CourseHolder.CourseHol
     public final static String GAP_STRING = "_";
 
     private LearnView view;
-    private @NonNull CardTeacher teacher;
+    private @NonNull
+    CardTeacher teacher;
 
     private boolean definitionToTerm;
     private StringBuilder hintArray = new StringBuilder();

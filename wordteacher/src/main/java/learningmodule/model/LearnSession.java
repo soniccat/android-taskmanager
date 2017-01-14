@@ -1,4 +1,4 @@
-package learning;
+package learningmodule.model;
 
 import android.os.Bundle;
 import android.os.Parcel;
@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import courselistmodules.cardlistmodule.presenter.CardListProvider;
+import learningmodule.SessionCardResult;
 import model.Card;
 import model.CourseHolder;
 

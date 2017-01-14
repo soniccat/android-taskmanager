@@ -1,8 +1,11 @@
-package learning;
+package learningmodule.presenter;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+
+import learningmodule.LearnModule;
+import learningmodule.view.LearnView;
 
 /**
  * Created by alexeyglushkov on 08.01.17.
