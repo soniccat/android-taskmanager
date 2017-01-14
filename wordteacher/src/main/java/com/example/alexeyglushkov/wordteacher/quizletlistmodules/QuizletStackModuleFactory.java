@@ -3,16 +3,16 @@ package com.example.alexeyglushkov.wordteacher.quizletlistmodules;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 
-import listmodule.view.SimpleListFragment;
-import listmodule.view.SimpleListFragmentListenerAdapter;
+import com.example.alexeyglushkov.wordteacher.listmodule.view.SimpleListFragment;
+import com.example.alexeyglushkov.wordteacher.listmodule.view.SimpleListFragmentListenerAdapter;
 import com.example.alexeyglushkov.wordteacher.main.Preferences;
 import com.example.alexeyglushkov.wordteacher.quizletlistmodules.setlistmodule.view.QuizletSetListFragment;
 import com.example.alexeyglushkov.wordteacher.quizletlistmodules.setlistmodule.presenter.QuizletSetListPresenter;
 import com.example.alexeyglushkov.wordteacher.quizletlistmodules.termlistmodule.view.QuizletTermListFragment;
 import com.example.alexeyglushkov.wordteacher.quizletlistmodules.termlistmodule.presenter.QuizletTermListPresenter;
-import stackmodule.StackModule;
-import stackmodule.StackModuleFactory;
-import stackmodule.StackModuleItem;
+import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.StackModule;
+import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.StackModuleFactory;
+import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.StackModuleItem;
 
 /**
  * Created by alexeyglushkov on 06.11.16.

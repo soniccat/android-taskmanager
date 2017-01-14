@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.example.alexeyglushkov.wordteacher.R;
 
-import listmodule.view.BaseListAdaptor;
+import com.example.alexeyglushkov.wordteacher.listmodule.view.BaseListAdaptor;
 import tools.DeleteTouchHelper;
 import com.example.alexeyglushkov.wordteacher.model.Card;
 

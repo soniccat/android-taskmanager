@@ -15,7 +15,7 @@ import com.example.alexeyglushkov.wordteacher.R;
 import java.util.ArrayList;
 import java.util.List;
 
-import listmodule.ListMenuListener;
+import com.example.alexeyglushkov.wordteacher.listmodule.ListMenuListener;
 import com.example.alexeyglushkov.wordteacher.model.Card;
 import com.example.alexeyglushkov.wordteacher.model.Course;
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder;

@@ -14,7 +14,7 @@ import junit.framework.Assert;
 
 import java.util.Locale;
 
-import listmodule.view.BaseListAdaptor;
+import com.example.alexeyglushkov.wordteacher.listmodule.view.BaseListAdaptor;
 
 /**
  * Created by alexeyglushkov on 02.05.16.

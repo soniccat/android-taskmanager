@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import listmodule.SimpleStorableListProvider;
+import com.example.alexeyglushkov.wordteacher.listmodule.SimpleStorableListProvider;
 import com.example.alexeyglushkov.wordteacher.model.Course;
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder;
 

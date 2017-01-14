@@ -6,8 +6,8 @@ import junit.framework.Assert;
 
 import java.util.List;
 
-import listmodule.StorableListProvider;
-import listmodule.StorableListProviderFactory;
+import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProvider;
+import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProviderFactory;
 import com.example.alexeyglushkov.wordteacher.model.Card;
 import com.example.alexeyglushkov.wordteacher.model.Course;
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder;

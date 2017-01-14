@@ -3,8 +3,8 @@ package tools;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import listmodule.CompareStrategy;
-import listmodule.CompareStrategyFactory;
+import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategy;
+import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategyFactory;
 import com.example.alexeyglushkov.wordteacher.main.Preferences;
 
 /**

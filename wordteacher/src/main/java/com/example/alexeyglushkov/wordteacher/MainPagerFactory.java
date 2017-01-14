@@ -6,20 +6,20 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 
 import com.example.alexeyglushkov.wordteacher.courselistmodules.CourseStackModuleFactory;
-import listmodule.view.SimpleListFragment;
-import listmodule.view.SimpleListFragmentListenerAdapter;
+import com.example.alexeyglushkov.wordteacher.listmodule.view.SimpleListFragment;
+import com.example.alexeyglushkov.wordteacher.listmodule.view.SimpleListFragmentListenerAdapter;
 import com.example.alexeyglushkov.wordteacher.main.Preferences;
 import com.example.alexeyglushkov.wordteacher.model.Card;
 import com.example.alexeyglushkov.wordteacher.model.Course;
-import pagermodule.PagerModule;
-import pagermodule.PagerModuleFactory;
-import pagermodule.PagerModuleItem;
+import com.example.alexeyglushkov.uimodulesandclasses.pagermodule.PagerModule;
+import com.example.alexeyglushkov.uimodulesandclasses.pagermodule.PagerModuleFactory;
+import com.example.alexeyglushkov.uimodulesandclasses.pagermodule.PagerModuleItem;
 import com.example.alexeyglushkov.wordteacher.quizletlistmodules.QuizletStackModuleFactory;
 import com.example.alexeyglushkov.wordteacher.quizletlistmodules.termlistmodule.view.QuizletTermListFragment;
 import com.example.alexeyglushkov.wordteacher.quizletlistmodules.termlistmodule.presenter.QuizletTermListPresenter;
-import stackmodule.StackModuleListener;
-import stackmodule.presenter.StackPresenter;
-import stackmodule.view.StackFragment;
+import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.StackModuleListener;
+import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.presenter.StackPresenter;
+import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.view.StackFragment;
 
 /**
  * Created by alexeyglushkov on 05.11.16.

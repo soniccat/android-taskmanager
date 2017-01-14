@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.wordteacher.R;
 
-import listmodule.view.BaseListAdaptor;
+import com.example.alexeyglushkov.wordteacher.listmodule.view.BaseListAdaptor;
 
 /**
  * Created by alexeyglushkov on 03.05.16.

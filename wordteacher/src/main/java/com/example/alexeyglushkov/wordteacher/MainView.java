@@ -8,7 +8,7 @@ import android.view.View;
 
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 
-import pagermodule.view.PagerView;
+import com.example.alexeyglushkov.uimodulesandclasses.pagermodule.view.PagerView;
 
 /**
  * Created by alexeyglushkov on 07.01.17.

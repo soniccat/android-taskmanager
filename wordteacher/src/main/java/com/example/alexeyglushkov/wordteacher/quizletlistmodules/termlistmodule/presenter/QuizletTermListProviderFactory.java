@@ -10,8 +10,8 @@ import junit.framework.Assert;
 
 import java.util.List;
 
-import listmodule.StorableListProvider;
-import listmodule.StorableListProviderFactory;
+import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProvider;
+import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProviderFactory;
 
 /**
  * Created by alexeyglushkov on 20.08.16.

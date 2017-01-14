@@ -29,24 +29,24 @@ import com.example.alexeyglushkov.wordteacher.courselistmodules.courselistmodule
 import com.example.alexeyglushkov.wordteacher.courselistmodules.courselistmodule.presenter.CourseListPresenterMenuListener;
 import com.example.alexeyglushkov.wordteacher.learningmodule.view.LearnActivity;
 import com.example.alexeyglushkov.wordteacher.learningmodule.presenter.LearnPresenterImp;
-import listmodule.ListModuleInterface;
+import com.example.alexeyglushkov.wordteacher.listmodule.ListModuleInterface;
 import com.example.alexeyglushkov.wordteacher.main.MainApplication;
 import com.example.alexeyglushkov.wordteacher.main.Preferences;
 import com.example.alexeyglushkov.wordteacher.model.Card;
 import com.example.alexeyglushkov.wordteacher.model.Course;
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder;
-import pagermodule.PagerModule;
-import pagermodule.PagerModuleItem;
-import pagermodule.PagerModuleListener;
-import pagermodule.presenter.PagerPresenter;
-import pagermodule.presenter.StatePagerPresenter;
-import pagermodule.view.PagerView;
+import com.example.alexeyglushkov.uimodulesandclasses.pagermodule.PagerModule;
+import com.example.alexeyglushkov.uimodulesandclasses.pagermodule.PagerModuleItem;
+import com.example.alexeyglushkov.uimodulesandclasses.pagermodule.PagerModuleListener;
+import com.example.alexeyglushkov.uimodulesandclasses.pagermodule.presenter.PagerPresenter;
+import com.example.alexeyglushkov.uimodulesandclasses.pagermodule.presenter.StatePagerPresenter;
+import com.example.alexeyglushkov.uimodulesandclasses.pagermodule.view.PagerView;
 import com.example.alexeyglushkov.wordteacher.quizletlistmodules.setlistmodule.presenter.QuizletSetPresenterMenuListener;
 import com.example.alexeyglushkov.wordteacher.quizletlistmodules.setlistmodule.presenter.QuizletSetListPresenter;
 import com.example.alexeyglushkov.wordteacher.quizletlistmodules.termlistmodule.presenter.QuizletTermPresenterMenuListener;
 import com.example.alexeyglushkov.wordteacher.quizletlistmodules.termlistmodule.presenter.QuizletTermListPresenter;
-import stackmodule.StackModule;
-import stackmodule.StackModuleListener;
+import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.StackModule;
+import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.StackModuleListener;
 import tools.Sortable;
 
 /**

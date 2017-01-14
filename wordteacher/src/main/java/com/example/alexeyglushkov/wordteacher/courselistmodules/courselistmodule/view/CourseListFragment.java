@@ -9,8 +9,8 @@ import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.wordteacher.R;
 
-import listmodule.view.BaseListAdaptor;
-import listmodule.view.SimpleListFragment;
+import com.example.alexeyglushkov.wordteacher.listmodule.view.BaseListAdaptor;
+import com.example.alexeyglushkov.wordteacher.listmodule.view.SimpleListFragment;
 import com.example.alexeyglushkov.wordteacher.model.Course;
 
 /**

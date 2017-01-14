@@ -2,7 +2,7 @@ package tools;
 
 import android.os.Bundle;
 
-import listmodule.SimpleCompareStrategy;
+import com.example.alexeyglushkov.wordteacher.listmodule.SimpleCompareStrategy;
 import com.example.alexeyglushkov.wordteacher.main.Preferences;
 
 /**

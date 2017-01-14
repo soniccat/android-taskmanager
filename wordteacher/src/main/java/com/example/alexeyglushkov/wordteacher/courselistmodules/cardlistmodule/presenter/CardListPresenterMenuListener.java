@@ -8,7 +8,7 @@ import android.view.MenuItem;
 
 import com.example.alexeyglushkov.wordteacher.R;
 
-import listmodule.DeleteMenuListener;
+import com.example.alexeyglushkov.wordteacher.listmodule.DeleteMenuListener;
 import com.example.alexeyglushkov.wordteacher.model.Card;
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder;
 

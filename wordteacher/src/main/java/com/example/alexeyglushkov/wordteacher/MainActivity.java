@@ -19,8 +19,8 @@ import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 
 import com.example.alexeyglushkov.wordteacher.main.BaseActivity;
 import com.example.alexeyglushkov.wordteacher.main.Preferences;
-import pagermodule.view.PagerView;
-import pagermodule.view.PagerViewImp;
+import com.example.alexeyglushkov.uimodulesandclasses.pagermodule.view.PagerView;
+import com.example.alexeyglushkov.uimodulesandclasses.pagermodule.view.PagerViewImp;
 import com.example.alexeyglushkov.wordteacher.ui.LoadingButton;
 
 // TODO: consider moving content to fragment

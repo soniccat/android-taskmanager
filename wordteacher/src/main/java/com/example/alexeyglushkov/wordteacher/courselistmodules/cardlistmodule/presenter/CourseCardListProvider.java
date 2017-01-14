@@ -5,7 +5,7 @@ import android.os.Bundle;
 import java.util.List;
 import java.util.UUID;
 
-import listmodule.StorableListProvider;
+import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProvider;
 import com.example.alexeyglushkov.wordteacher.model.Card;
 import com.example.alexeyglushkov.wordteacher.model.Course;
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder;

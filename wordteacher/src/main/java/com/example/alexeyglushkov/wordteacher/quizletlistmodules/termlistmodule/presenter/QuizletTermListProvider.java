@@ -8,7 +8,7 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import java.util.ArrayList;
 import java.util.List;
 
-import listmodule.SimpleStorableListProvider;
+import com.example.alexeyglushkov.wordteacher.listmodule.SimpleStorableListProvider;
 
 /**
  * Created by alexeyglushkov on 07.08.16.

@@ -4,14 +4,14 @@ import com.example.alexeyglushkov.wordteacher.courselistmodules.cardlistmodule.v
 import com.example.alexeyglushkov.wordteacher.courselistmodules.cardlistmodule.presenter.CardListPresenter;
 import com.example.alexeyglushkov.wordteacher.courselistmodules.courselistmodule.view.CourseListFragment;
 import com.example.alexeyglushkov.wordteacher.courselistmodules.courselistmodule.presenter.CourseListPresenter;
-import listmodule.view.SimpleListFragment;
-import listmodule.view.SimpleListFragmentListenerAdapter;
+import com.example.alexeyglushkov.wordteacher.listmodule.view.SimpleListFragment;
+import com.example.alexeyglushkov.wordteacher.listmodule.view.SimpleListFragmentListenerAdapter;
 import com.example.alexeyglushkov.wordteacher.main.Preferences;
 import com.example.alexeyglushkov.wordteacher.model.Card;
 import com.example.alexeyglushkov.wordteacher.model.Course;
-import stackmodule.StackModule;
-import stackmodule.StackModuleFactory;
-import stackmodule.StackModuleItem;
+import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.StackModule;
+import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.StackModuleFactory;
+import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.StackModuleItem;
 
 /**
  * Created by alexeyglushkov on 04.01.17.
