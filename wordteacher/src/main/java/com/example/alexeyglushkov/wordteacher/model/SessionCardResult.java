@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.wordteacher.learningmodule;
+package com.example.alexeyglushkov.wordteacher.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

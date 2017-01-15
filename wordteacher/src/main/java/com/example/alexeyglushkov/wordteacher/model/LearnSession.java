@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.alexeyglushkov.wordteacher.courselistmodules.cardlistmodule.presenter.CardListProvider;
-import com.example.alexeyglushkov.wordteacher.learningmodule.SessionCardResult;
 
 /**
  * Created by alexeyglushkov on 15.05.16.

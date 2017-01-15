@@ -46,7 +46,7 @@
         </activity>
 
         <activity
-            android:name="com.example.alexeyglushkov.wordteacher.learningmodule.SessionResultActivity"
+            android:name="com.example.alexeyglushkov.wordteacher.sessionresultmodule.SessionResultActivity"
             android:label="@string/learning_results"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data

@@ -15,7 +15,7 @@ import java.util.UUID;
 
 import com.example.alexeyglushkov.wordteacher.model.LearnSession;
 import com.example.alexeyglushkov.wordteacher.learningmodule.view.LearnView;
-import com.example.alexeyglushkov.wordteacher.learningmodule.SessionResultActivity;
+import com.example.alexeyglushkov.wordteacher.sessionresultmodule.SessionResultActivity;
 import com.example.alexeyglushkov.wordteacher.main.MainApplication;
 import com.example.alexeyglushkov.wordteacher.model.Card;
 import com.example.alexeyglushkov.wordteacher.model.Course;

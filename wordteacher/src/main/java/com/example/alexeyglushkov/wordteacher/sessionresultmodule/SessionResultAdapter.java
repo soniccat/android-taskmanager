@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.wordteacher.learningmodule;
+package com.example.alexeyglushkov.wordteacher.sessionresultmodule;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -14,36 +14,19 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.example.alexeyglushkov.wordteacher.listmodule.view.BaseListAdaptor;
 import com.example.alexeyglushkov.wordteacher.model.LearnSession;
 import com.example.alexeyglushkov.wordteacher.model.Card;
+import com.example.alexeyglushkov.wordteacher.model.SessionCardResult;
 
 /**
  * Created by alexeyglushkov on 02.06.16.
  */
-public class SessionResultAdapter extends RecyclerView.Adapter<SessionResultAdapter.ViewHolder> {
+public class SessionResultAdapter extends BaseListAdaptor<SessionResultAdapter.ViewHolder, SessionCardResult> {
     private LearnSession session;
-    private List<SessionCardResult> results;
 
-    public void setSession(LearnSession aSession) {
-        this.session = aSession;
-
-        List<SessionCardResult> resultCopy = new ArrayList<>(aSession.getResults());
-        results = sortResults(resultCopy);
-        notifyDataSetChanged();
-    }
-
-    private List<SessionCardResult> sortResults(List<SessionCardResult> results) {
-        Collections.sort(results, new Comparator<SessionCardResult>() {
-            @Override
-            public int compare(SessionCardResult lhs, SessionCardResult rhs) {
-                return SessionResultAdapter.compare(lhs.isRight, rhs.isRight);
-            }
-        });
-        return results;
-    }
-
-    public static int compare(boolean lhs, boolean rhs) {
-        return lhs == rhs ? 0 : lhs ? 1 : -1;
+    public SessionResultAdapter(LearnSession session) {
+        this.session = session;
     }
 
     @Override
@@ -54,7 +37,7 @@ public class SessionResultAdapter extends RecyclerView.Adapter<SessionResultAdap
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        SessionCardResult result = results.get(position);
+        SessionCardResult result = items.get(position);
         int cardPosition = session.getResults().indexOf(result);
 
         Card card = session.getCard(cardPosition);

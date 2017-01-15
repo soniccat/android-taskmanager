@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.wordteacher.learningmodule;
+package com.example.alexeyglushkov.wordteacher.sessionresultmodule;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,7 +13,7 @@ import com.example.alexeyglushkov.wordteacher.main.BaseActivity;
 /**
  * Created by alexeyglushkov on 15.05.16.
  */
-public class SessionResultActivity extends BaseActivity {
+public class SessionResultActivity extends BaseActivity implements SessionResultView {
 
     public static final String EXTERNAL_SESSION = "session";
     public static final int ACTIVITY_RESULT = 10001;
@@ -33,7 +33,7 @@ public class SessionResultActivity extends BaseActivity {
         LearnSession session = getIntent().getParcelableExtra(EXTERNAL_SESSION);
 
         SessionResultFragment resultFragment = (SessionResultFragment)getSupportFragmentManager().findFragmentById(R.id.fragment);
-        resultFragment.setSession(session);
+        //resultFragment.setSession(session);
     }
 
     @Override
