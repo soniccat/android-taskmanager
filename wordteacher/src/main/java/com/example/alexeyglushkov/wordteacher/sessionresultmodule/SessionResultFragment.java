@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.wordteacher.R;
 
+import com.example.alexeyglushkov.wordteacher.listmodule.presenter.ListPresenterInterface;
 import com.example.alexeyglushkov.wordteacher.listmodule.view.BaseListAdaptor;
 import com.example.alexeyglushkov.wordteacher.listmodule.view.BaseListFragment;
 import com.example.alexeyglushkov.wordteacher.model.LearnSession;
@@ -28,6 +29,11 @@ public class SessionResultFragment extends BaseListFragment<SessionCardResult> {
 
     @Override
     protected BaseListAdaptor createAdapter() {
-        return null;//new SessionResultAdapter();
+        return new SessionResultAdapter(getPresenter().getLearnSession());
+    }
+
+    @Override
+    public SessionResultPresenter getPresenter() {
+        return (SessionResultPresenter)super.getPresenter();
     }
 }

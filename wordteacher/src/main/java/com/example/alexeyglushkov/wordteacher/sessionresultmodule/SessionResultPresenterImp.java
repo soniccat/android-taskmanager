@@ -10,10 +10,13 @@ import com.example.alexeyglushkov.wordteacher.model.SessionCardResult;
  * Created by alexeyglushkov on 15.01.17.
  */
 
-public class SessionResultPresenterImp extends BaseListPresenter<SessionCardResult> implements SessionResultModule {
+public class SessionResultPresenterImp extends BaseListPresenter<SessionCardResult> implements SessionResultPresenter {
     private LearnSession session;
 
-    
+    @Override
+    public LearnSession getLearnSession() {
+        return session;
+    }
 
     @Override
     protected StorableListProviderFactory<SessionCardResult> createProviderFactory() {

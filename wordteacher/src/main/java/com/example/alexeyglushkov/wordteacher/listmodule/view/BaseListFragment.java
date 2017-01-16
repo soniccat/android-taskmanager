@@ -11,14 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.alexeyglushkov.wordteacher.R;
-import com.example.alexeyglushkov.wordteacher.listmodule.presenter.BaseListPresenter;
-import com.example.alexeyglushkov.wordteacher.listmodule.presenter.SimpleListPresenter;
+import com.example.alexeyglushkov.wordteacher.listmodule.presenter.ListPresenterInterface;
 
 /**
  * Created by alexeyglushkov on 23.07.16.
  */
 public abstract class BaseListFragment<T> extends Fragment implements ListViewInterface<T> {
-    private BaseListPresenter<T> presenter;
+    private ListPresenterInterface presenter;
 
     protected RecyclerView recyclerView;
     protected View loader;
@@ -49,7 +48,7 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
             try {
                 Class presenterClass = Class.forName(savedInstanceState.getString("presenterClass"));
                 if (presenterClass != null) {
-                    presenter = (SimpleListPresenter<T>) presenterClass.newInstance();
+                    presenter = (ListPresenterInterface) presenterClass.newInstance();
                 }
             } catch (Exception e) {
             }
@@ -172,11 +171,11 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
 
     //// Setters
 
-    public void setPresenter(SimpleListPresenter<T> presenter) {
+    public void setPresenter(ListPresenterInterface presenter) {
         this.presenter = presenter;
     }
 
-    public BaseListPresenter<T> getPresenter() {
+    public ListPresenterInterface getPresenter() {
         return presenter;
     }
 
