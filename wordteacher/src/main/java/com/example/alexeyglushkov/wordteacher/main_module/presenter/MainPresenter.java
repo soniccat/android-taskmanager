@@ -1,9 +1,11 @@
-package com.example.alexeyglushkov.wordteacher;
+package com.example.alexeyglushkov.wordteacher.main_module.presenter;
 
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.alexeyglushkov.wordteacher.main.Preferences;
+import com.example.alexeyglushkov.wordteacher.main_module.MainModule;
+import com.example.alexeyglushkov.wordteacher.main_module.view.MainView;
 
 /**
  * Created by alexeyglushkov on 07.01.17.

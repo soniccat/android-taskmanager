@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.wordteacher;
+package com.example.alexeyglushkov.wordteacher.main_module.view;
 
 import android.app.Application;
 import android.content.Context;
@@ -26,7 +26,6 @@ public interface MainView {
 
     Context getContext();
     View getRootView();
-    void startActivityForResult(Intent intent, int code);
 
     ProgressListener startProgress(ProgressCallback callback);
     void stopProgress();

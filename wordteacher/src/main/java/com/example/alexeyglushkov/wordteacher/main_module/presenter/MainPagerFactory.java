@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.wordteacher;
+package com.example.alexeyglushkov.wordteacher.main_module.presenter;
 
 import android.support.annotation.NonNull;
 

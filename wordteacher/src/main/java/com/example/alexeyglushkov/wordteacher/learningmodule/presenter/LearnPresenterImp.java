@@ -200,7 +200,7 @@ public class LearnPresenterImp implements LearnPresenter, CourseHolder.CourseHol
         teacher.getNextCard();
 
         if (teacher.getCurrentCard() != null) {
-            bindCurrentCard();
+            showCurrentCard();
         } else {
             onSessionFinished();
         }

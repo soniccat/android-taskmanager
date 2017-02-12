@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.wordteacher;
+package com.example.alexeyglushkov.wordteacher.main_module.view;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,10 +17,12 @@ import android.view.MenuItem;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 
+import com.example.alexeyglushkov.wordteacher.R;
 import com.example.alexeyglushkov.wordteacher.main.BaseActivity;
 import com.example.alexeyglushkov.wordteacher.main.Preferences;
 import com.example.alexeyglushkov.uimodulesandclasses.pagermodule.view.PagerView;
 import com.example.alexeyglushkov.uimodulesandclasses.pagermodule.view.PagerViewImp;
+import com.example.alexeyglushkov.wordteacher.main_module.presenter.MainPresenter;
 import com.example.alexeyglushkov.wordteacher.ui.LoadingButton;
 
 // TODO: consider moving content to fragment

@@ -34,7 +34,7 @@ import com.example.alexeyglushkov.wordteacher.model.CardProgress;
  * Created by alexeyglushkov on 09.05.16.
  */
 // TODO: consider moving content to fragment
-public class LearnActivity extends BaseActivity implements LearnView{
+public class LearnActivity extends BaseActivity implements LearnView {
 
     @NonNull
     LearnPresenter presenter;

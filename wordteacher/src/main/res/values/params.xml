@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="main_presenter_class">com.example.alexeyglushkov.wordteacher.MainPresenterImp</string>
+    <string name="main_presenter_class">com.example.alexeyglushkov.wordteacher.main_module.presenter.MainPresenterImp</string>
+    <string name="main_router_class">com.example.alexeyglushkov.wordteacher.main_module.router.MainRouterImp</string>
     <string name="learning_presenter_class">com.example.alexeyglushkov.wordteacher.learningmodule.presenter.LearnPresenterImp</string>
 </resources>

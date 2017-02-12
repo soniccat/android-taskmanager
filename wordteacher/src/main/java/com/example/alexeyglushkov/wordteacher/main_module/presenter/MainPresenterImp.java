@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.wordteacher;
+package com.example.alexeyglushkov.wordteacher.main_module.presenter;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,15 +23,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.example.alexeyglushkov.wordteacher.R;
 import com.example.alexeyglushkov.wordteacher.courselistmodules.cardlistmodule.presenter.CardListPresenterMenuListener;
 import com.example.alexeyglushkov.wordteacher.courselistmodules.cardlistmodule.presenter.CardListPresenter;
 import com.example.alexeyglushkov.wordteacher.courselistmodules.courselistmodule.presenter.CourseListPresenter;
 import com.example.alexeyglushkov.wordteacher.courselistmodules.courselistmodule.presenter.CourseListPresenterMenuListener;
-import com.example.alexeyglushkov.wordteacher.learningmodule.view.LearnActivity;
 import com.example.alexeyglushkov.wordteacher.learningmodule.presenter.LearnPresenterImp;
 import com.example.alexeyglushkov.wordteacher.listmodule.ListModuleInterface;
 import com.example.alexeyglushkov.wordteacher.main.MainApplication;
 import com.example.alexeyglushkov.wordteacher.main.Preferences;
+import com.example.alexeyglushkov.wordteacher.main_module.view.MainView;
+import com.example.alexeyglushkov.wordteacher.main_module.router.MainRouter;
 import com.example.alexeyglushkov.wordteacher.model.Card;
 import com.example.alexeyglushkov.wordteacher.model.Course;
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder;
@@ -58,6 +60,7 @@ public class MainPresenterImp implements
         PagerModuleListener,
         QuizletService.QuizletServiceListener,
         CourseHolder.CourseHolderListener {
+    private MainRouter router;
     private PagerModule pagerModule;
     private MainView view;
 
@@ -68,6 +71,7 @@ public class MainPresenterImp implements
         getCourseHolder().addListener(this);
         getQuizletService().addListener(this);
 
+        router = createRouter();
         pagerModule = createPagerModule(savedInstanceState);
         if (savedInstanceState == null) {
             pagerModule.reload();
@@ -84,6 +88,8 @@ public class MainPresenterImp implements
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        outState.putString("routerClassName", router.getClass().getName());
+
         PagerPresenter pagerPresenter = (PagerPresenter)pagerModule;
         pagerPresenter.getView().onSaveInstanceState(outState);
     }
@@ -99,6 +105,18 @@ public class MainPresenterImp implements
         updateToolbarBackButton();
     }
 
+    private @NonNull MainRouter createRouter() {
+        MainRouter result = null;
+        String name = view.getContext().getString(R.string.main_router_class);
+        try {
+            result = (MainRouter) view.getContext().getClassLoader().loadClass(name).newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
     //// Events
 
     // Course events
@@ -107,7 +125,7 @@ public class MainPresenterImp implements
         view.invalidateToolbar();
     }
 
-    public void onCourseChanged(Course course, @Nullable Exception exception) {
+    private void onCourseChanged(Course course, @Nullable Exception exception) {
         if (exception != null) {
             view.showException(exception);
         }
@@ -118,10 +136,10 @@ public class MainPresenterImp implements
     public void onCourseClicked(@NonNull Course course) {
         List<Card> cards = course.getReadyToLearnCards();
         if (cards.size() > 0) {
-            startLearnActivity(cards);
+            showLearning(cards);
 
         } else if (course.getCards().size() > 0){
-            startLearnActivity(course.getCards());
+            showLearning(course.getCards());
         }
     }
 
@@ -134,7 +152,7 @@ public class MainPresenterImp implements
 
     @Override
     public void onStartPressed() {
-        startLearnActivity(getReadyCards());
+        showLearning(getReadyCards());
     }
 
     @Override
@@ -221,23 +239,11 @@ public class MainPresenterImp implements
     }
 
     private void startLearnNewWords(@NonNull Course course) {
-        startLearnActivity(course.getNotStartedCards());
+        showLearning(course.getNotStartedCards());
     }
 
-    // TODO: think about to move this transition in another class
-    private void startLearnActivity(@NonNull List<Card> cards) {
-        Intent activityIntent = new Intent(view.getContext(), LearnActivity.class);
-        String[] cardIds = new String[cards.size()];
-
-        for (int i=0; i<cards.size(); ++i) {
-            Card card = cards.get(i);
-            cardIds[i] = card.getId().toString();
-        }
-
-        activityIntent.putExtra(LearnPresenterImp.EXTRA_CARD_IDS, cardIds);
-        activityIntent.putExtra(LearnPresenterImp.EXTRA_DEFINITION_TO_TERM, true);
-
-        view.startActivityForResult(activityIntent, LearnPresenterImp.ACTIVITY_RESULT);
+    private void showLearning(@NonNull List<Card> cards) {
+        router.showLearningModule(view.getContext(), cards);
     }
 
     private void syncWithDropbox() {
@@ -353,8 +359,6 @@ public class MainPresenterImp implements
         return presenter;
     }
 
-    // TODO: move it somewhere
-
     private StackModuleListener createStackModuleListener() {
         return new StackModuleListener() {
             @Override
@@ -364,6 +368,7 @@ public class MainPresenterImp implements
         };
     }
 
+    // TODO: move that in appropriate list class
     @NonNull
     private QuizletSetPresenterMenuListener createSetMenuListener() {
         return new QuizletSetPresenterMenuListener(view.getContext(), getCourseHolder(), new QuizletSetPresenterMenuListener.Listener<QuizletSet>() {
@@ -401,6 +406,7 @@ public class MainPresenterImp implements
         });
     }
 
+    // TODO: move that in appropriate list class
     @NonNull
     private QuizletTermPresenterMenuListener createTermMenuListener() {
         return new QuizletTermPresenterMenuListener(view.getContext(), getCourseHolder(), new QuizletTermPresenterMenuListener.Listener<QuizletTerm>() {
@@ -439,6 +445,7 @@ public class MainPresenterImp implements
         });
     }
 
+    // TODO: move that in appropriate list class
     private CourseListPresenterMenuListener createMenuCourseListener() {
         return new CourseListPresenterMenuListener(view.getContext(), getCourseHolder(), new CourseListPresenterMenuListener.Listener() {
             @Override
@@ -486,6 +493,7 @@ public class MainPresenterImp implements
         });
     }
 
+    // TODO: move that in appropriate list class
     private CardListPresenterMenuListener createMenuCardListener() {
         return new CardListPresenterMenuListener(view.getContext(), getCourseHolder(), new CardListPresenterMenuListener.Listener() {
             @Override
@@ -546,6 +554,10 @@ public class MainPresenterImp implements
 
     public void setView(MainView view) {
         this.view = view;
+    }
+
+    public void setRouter(MainRouter router) {
+        this.router = router;
     }
 
     //// Getters
