@@ -17,27 +17,24 @@ import java.util.List;
  */
 
 public class SessionResultListProviderFactory implements StorableListProviderFactory<SessionResultAdapterView> {
-    private LearnSession session;
-
-    public SessionResultListProviderFactory(LearnSession s) {
-        session = s;
+    public SessionResultListProviderFactory() {
     }
 
     @Override
     public StorableListProvider<SessionResultAdapterView> createFromList(List<SessionResultAdapterView> list) {
-        return new SessionResultListProvider(list);
-    }
-
-    @Override
-    public StorableListProvider<SessionResultAdapterView> createFromObject(Object obj) {
         Assert.fail("Not supported");
         return null;
     }
 
     @Override
+    public StorableListProvider<SessionResultAdapterView> createFromObject(Object obj) {
+        LearnSession session = (LearnSession)obj;
+        return new SessionResultListProvider(session);
+    }
+
+    @Override
     public StorableListProvider<SessionResultAdapterView> restore(Bundle bundle) {
-        SessionResultListProvider provider = new SessionResultListProvider(null);
-        return provider;
+        return new SessionResultListProvider(bundle);
     }
 
     @Override

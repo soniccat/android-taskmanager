@@ -1,4 +1,5 @@
 package com.example.alexeyglushkov.wordteacher.listmodule;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -12,8 +13,16 @@ public class SimpleListProvider<T> implements ListProvider<T> {
         this.items = items;
     }
 
+    public SimpleListProvider() {
+        items = new ArrayList<>();
+    }
+
     @Override
     public List<T> getList() {
         return items;
+    }
+
+    public void setItems(List<T> items) {
+        this.items = items;
     }
 }

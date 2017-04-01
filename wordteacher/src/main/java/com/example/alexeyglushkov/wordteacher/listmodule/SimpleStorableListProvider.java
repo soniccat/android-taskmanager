@@ -9,4 +9,8 @@ public abstract class SimpleStorableListProvider<T> extends SimpleListProvider<T
     public SimpleStorableListProvider(List<T> items) {
         super(items);
     }
+
+    public SimpleStorableListProvider() {
+        super();
+    }
 }

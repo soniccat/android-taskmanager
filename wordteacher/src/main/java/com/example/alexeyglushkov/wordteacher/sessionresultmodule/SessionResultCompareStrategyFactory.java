@@ -7,25 +7,26 @@ import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategyFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.SimpleCompareStrategy;
 import com.example.alexeyglushkov.wordteacher.main.Preferences;
 import com.example.alexeyglushkov.wordteacher.model.SessionCardResult;
+import com.example.alexeyglushkov.wordteacher.sessionresultmodule.view.SessionResultAdapterView;
 import com.example.alexeyglushkov.wordteacher.tools.SortOrderCompareStrategyFactory;
 
 /**
  * Created by alexeyglushkov on 15.01.17.
  */
 
-public class SessionResultCompareStrategyFactory implements CompareStrategyFactory<SessionCardResult> {
+public class SessionResultCompareStrategyFactory implements CompareStrategyFactory<SessionResultAdapterView> {
     @Override
-    public CompareStrategy<SessionCardResult> createDefault() {
-        return new SimpleCompareStrategy<SessionCardResult>() {
+    public CompareStrategy<SessionResultAdapterView> createDefault() {
+        return new SimpleCompareStrategy<SessionResultAdapterView>() {
             @Override
-            public int compare(SessionCardResult lhs, SessionCardResult rhs) {
-                return SessionResultCompareStrategyFactory.compare(lhs.isRight, rhs.isRight);
+            public int compare(SessionResultAdapterView lhs, SessionResultAdapterView rhs) {
+                return SessionResultCompareStrategyFactory.compare(lhs.result.isRight, rhs.result.isRight);
             }
         };
     }
 
     @Override
-    public CompareStrategy<SessionCardResult> restore(Bundle bundle) {
+    public CompareStrategy<SessionResultAdapterView> restore(Bundle bundle) {
         return createDefault();
     }
 
