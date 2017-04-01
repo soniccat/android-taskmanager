@@ -16,28 +16,23 @@ import com.example.alexeyglushkov.wordteacher.sessionresultmodule.view.SessionRe
  */
 
 public class SessionResultPresenterImp extends BaseListPresenter<SessionResultAdapterView> implements SessionResultPresenter {
-    private LearnSession session;
 
     @Override
     public void onCreated(Bundle savedInstanceState, Bundle extras) {
         super.onCreated(savedInstanceState, extras);
 
-        if (session == null && savedInstanceState == null && extras != null) {
-            session = extras.getParcelable(SessionResultPresenter.EXTERNAL_SESSION);
+        if (savedInstanceState == null && extras != null) {
+            LearnSession session = extras.getParcelable(SessionResultPresenter.EXTERNAL_SESSION);
+            provider = providerFactory.createFromObject(session);
+
+        } else {
+            provider = providerFactory.restore(savedInstanceState);
         }
     }
 
     @Override
     public void onViewStateRestored(ListViewInterface view, @Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(view, savedInstanceState);
-
-        if (session != null) {
-            provider = providerFactory.createFromObject(session);
-
-        } else {
-            provider = providerFactory.restore(savedInstanceState);
-        }
-
         reload();
     }
 
