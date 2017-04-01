@@ -53,7 +53,6 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
             } catch (Exception e) {
             }
         }
-
         presenter.onCreated(savedInstanceState);
     }
 
