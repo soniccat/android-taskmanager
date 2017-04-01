@@ -20,6 +20,8 @@ import com.example.alexeyglushkov.wordteacher.main.MainApplication;
 import com.example.alexeyglushkov.wordteacher.model.Card;
 import com.example.alexeyglushkov.wordteacher.model.Course;
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder;
+import com.example.alexeyglushkov.wordteacher.sessionresultmodule.SessionResultPresenter;
+import com.example.alexeyglushkov.wordteacher.sessionresultmodule.SessionResultPresenterImp;
 
 /**
  * Created by alexeyglushkov on 08.01.17.
@@ -260,7 +262,7 @@ public class LearnPresenterImp implements LearnPresenter, CourseHolder.CourseHol
 
     private void showResultActivity(LearnSession session) {
         Intent intent = new Intent(view.getContext(), SessionResultActivity.class);
-        intent.putExtra(SessionResultActivity.EXTERNAL_SESSION, session);
+        intent.putExtra(SessionResultPresenter.EXTERNAL_SESSION, session);
         view.startActivityForResult(intent, SessionResultActivity.ACTIVITY_RESULT);
     }
 

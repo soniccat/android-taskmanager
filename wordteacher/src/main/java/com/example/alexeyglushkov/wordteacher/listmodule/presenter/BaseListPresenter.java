@@ -66,7 +66,7 @@ public abstract class BaseListPresenter<T>
     //// Events
 
     @Override
-    public void onCreated(Bundle savedInstanceState) {
+    public void onCreated(Bundle savedInstanceState, Bundle extras) {
         initStrategyIfNeeded(savedInstanceState);
     }
 

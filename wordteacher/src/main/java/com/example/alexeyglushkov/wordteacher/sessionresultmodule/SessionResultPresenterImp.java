@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.wordteacher.sessionresultmodule;
 
+import android.os.Bundle;
+
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategyFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProviderFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.presenter.BaseListPresenter;
@@ -14,13 +16,22 @@ public class SessionResultPresenterImp extends BaseListPresenter<SessionCardResu
     private LearnSession session;
 
     @Override
+    public void onCreated(Bundle savedInstanceState, Bundle extras) {
+        super.onCreated(savedInstanceState, extras);
+
+        if (session == null && savedInstanceState == null && extras != null) {
+            session = extras.getParcelable(SessionResultPresenter.EXTERNAL_SESSION);
+        }
+    }
+
+    @Override
     public LearnSession getLearnSession() {
         return session;
     }
 
     @Override
     protected StorableListProviderFactory<SessionCardResult> createProviderFactory() {
-        return null;
+        return new SessionResultListProviderFactory();
     }
 
     @Override

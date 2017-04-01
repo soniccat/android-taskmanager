@@ -18,15 +18,13 @@ import com.example.alexeyglushkov.wordteacher.listmodule.view.BaseListAdaptor;
 import com.example.alexeyglushkov.wordteacher.model.LearnSession;
 import com.example.alexeyglushkov.wordteacher.model.Card;
 import com.example.alexeyglushkov.wordteacher.model.SessionCardResult;
+import com.example.alexeyglushkov.wordteacher.sessionresultmodule.view.SessionResultAdapterView;
 
 /**
  * Created by alexeyglushkov on 02.06.16.
  */
-public class SessionResultAdapter extends BaseListAdaptor<SessionResultAdapter.ViewHolder, SessionCardResult> {
-    private LearnSession session;
-
-    public SessionResultAdapter(LearnSession session) {
-        this.session = session;
+public class SessionResultAdapter extends BaseListAdaptor<SessionResultAdapter.ViewHolder, SessionResultAdapterView> {
+    public SessionResultAdapter() {
     }
 
     @Override
@@ -37,15 +35,13 @@ public class SessionResultAdapter extends BaseListAdaptor<SessionResultAdapter.V
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        SessionCardResult result = items.get(position);
-        int cardPosition = session.getResults().indexOf(result);
-
-        Card card = session.getCard(cardPosition);
+        SessionResultAdapterView item = items.get(position);
+        Card card = item.card;
 
         holder.termTextView.setText(card.getTerm());
         holder.definitionTextView.setText(card.getDefinition());
 
-        int color = getBgColor(holder.itemView.getContext(), result);
+        int color = getBgColor(holder.itemView.getContext(), item.result);
         holder.itemView.setBackgroundColor(color);
     }
 
@@ -58,11 +54,6 @@ public class SessionResultAdapter extends BaseListAdaptor<SessionResultAdapter.V
             color = context.getResources().getColor(R.color.negativeProgress);
         }
         return color;
-    }
-
-    @Override
-    public int getItemCount() {
-        return session.getSize();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

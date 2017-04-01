@@ -1,10 +1,13 @@
 package com.example.alexeyglushkov.wordteacher.listmodule.view;
 
+import android.content.Context;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.AttributeSet;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -41,19 +44,39 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
     }
 
     @Override
+    public void onInflate(Context context, AttributeSet attrs, Bundle savedInstanceState) {
+        super.onInflate(context, attrs, savedInstanceState);
+
+        if (presenter == null && savedInstanceState == null) {
+            TypedArray a = context.obtainStyledAttributes(attrs,R.styleable.ModuleDeclaration);
+            String className = a.getString(R.styleable.ModuleDeclaration_presenterClass);
+            initializePresenter(className);
+
+            a.recycle();
+        }
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (presenter == null && savedInstanceState != null) {
-            try {
-                Class presenterClass = Class.forName(savedInstanceState.getString("presenterClass"));
-                if (presenterClass != null) {
-                    presenter = (ListPresenterInterface) presenterClass.newInstance();
-                }
-            } catch (Exception e) {
-            }
+            String className = savedInstanceState.getString("presenterClass");
+            initializePresenter(className);
         }
-        presenter.onCreated(savedInstanceState);
+
+        Bundle extras = getActivity().getIntent().getExtras();
+        presenter.onCreated(savedInstanceState, extras);
+    }
+
+    private void initializePresenter(String className) {
+        try {
+            Class presenterClass = Class.forName(className);
+            if (presenterClass != null) {
+                presenter = (ListPresenterInterface) presenterClass.newInstance();
+            }
+        } catch (Exception ex) {
+        }
     }
 
     @Override

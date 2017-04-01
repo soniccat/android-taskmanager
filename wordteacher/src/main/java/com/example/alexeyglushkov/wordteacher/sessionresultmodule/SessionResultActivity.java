@@ -14,8 +14,6 @@ import com.example.alexeyglushkov.wordteacher.main.BaseActivity;
  * Created by alexeyglushkov on 15.05.16.
  */
 public class SessionResultActivity extends BaseActivity implements SessionResultView {
-
-    public static final String EXTERNAL_SESSION = "session";
     public static final int ACTIVITY_RESULT = 10001;
 
     private Toolbar toolbar;
@@ -30,7 +28,7 @@ public class SessionResultActivity extends BaseActivity implements SessionResult
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
 
-        LearnSession session = getIntent().getParcelableExtra(EXTERNAL_SESSION);
+        //LearnSession session = getIntent().getParcelableExtra(EXTERNAL_SESSION);
 
         SessionResultFragment resultFragment = (SessionResultFragment)getSupportFragmentManager().findFragmentById(R.id.fragment);
         //resultFragment.setSession(session);

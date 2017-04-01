@@ -8,5 +8,7 @@ import com.example.alexeyglushkov.wordteacher.model.LearnSession;
  */
 
 public interface SessionResultPresenter extends ListPresenterInterface, SessionResultModule {
+    String EXTERNAL_SESSION = "session";
+
     LearnSession getLearnSession();
 }

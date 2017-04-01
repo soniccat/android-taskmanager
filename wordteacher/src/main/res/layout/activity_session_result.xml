@@ -22,6 +22,7 @@
         android:id="@+id/fragment"
         android:name="com.example.alexeyglushkov.wordteacher.sessionresultmodule.SessionResultFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        app:presenterClass="com.example.alexeyglushkov.wordteacher.sessionresultmodule.SessionResultPresenterImp"/>
 
 </LinearLayout>

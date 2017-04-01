@@ -29,7 +29,7 @@ public class SessionResultFragment extends BaseListFragment<SessionCardResult> {
 
     @Override
     protected BaseListAdaptor createAdapter() {
-        return new SessionResultAdapter(getPresenter().getLearnSession());
+        return new SessionResultAdapter();
     }
 
     @Override
