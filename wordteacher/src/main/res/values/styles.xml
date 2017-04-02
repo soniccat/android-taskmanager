@@ -22,6 +22,7 @@
 
     <declare-styleable name="ModuleDeclaration">
         <attr name="presenterClass" format="string"/>
+        <attr name="routerClass" format="string"/>
     </declare-styleable>
 
 </resources>

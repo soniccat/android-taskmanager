@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import com.example.alexeyglushkov.wordteacher.learningmodule.router.LearnRouter;
+import com.example.alexeyglushkov.wordteacher.learningmodule.router.LearnRouterImp;
 import com.example.alexeyglushkov.wordteacher.model.LearnSession;
 import com.example.alexeyglushkov.wordteacher.learningmodule.view.LearnView;
 import com.example.alexeyglushkov.wordteacher.sessionresultmodule.SessionResultActivity;
@@ -35,9 +37,9 @@ public class LearnPresenterImp implements LearnPresenter, CourseHolder.CourseHol
     public final static char GAP_CHAR = '_';
     public final static String GAP_STRING = "_";
 
+    private LearnRouter router = new LearnRouterImp(); // init from fragment class
     private LearnView view;
-    private @NonNull
-    CardTeacher teacher;
+    private @NonNull CardTeacher teacher;
 
     private boolean definitionToTerm;
     private StringBuilder hintArray = new StringBuilder();
@@ -47,7 +49,6 @@ public class LearnPresenterImp implements LearnPresenter, CourseHolder.CourseHol
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-
         view.setViewResult(ACTIVITY_RESULT_CODE);
 
         if (savedInstanceState == null) {
@@ -260,9 +261,7 @@ public class LearnPresenterImp implements LearnPresenter, CourseHolder.CourseHol
     // Result Activity
 
     private void showResultActivity(LearnSession session) {
-        Intent intent = new Intent(view.getContext(), SessionResultActivity.class);
-        intent.putExtra(SessionResultPresenter.EXTERNAL_SESSION, session);
-        view.startActivityForResult(intent, SessionResultActivity.ACTIVITY_RESULT);
+        router.showResultModule(view.getContext(), session);
     }
 
     private void handleResultActivityClose() {
