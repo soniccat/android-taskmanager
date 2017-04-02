@@ -1,14 +1,11 @@
-package com.example.alexeyglushkov.wordteacher.sessionresultmodule;
+package com.example.alexeyglushkov.wordteacher.sessionresultmodule.presenter;
 
 import android.os.Bundle;
 
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategy;
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategyFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.SimpleCompareStrategy;
-import com.example.alexeyglushkov.wordteacher.main.Preferences;
-import com.example.alexeyglushkov.wordteacher.model.SessionCardResult;
 import com.example.alexeyglushkov.wordteacher.sessionresultmodule.view.SessionResultAdapterView;
-import com.example.alexeyglushkov.wordteacher.tools.SortOrderCompareStrategyFactory;
 
 /**
  * Created by alexeyglushkov on 15.01.17.

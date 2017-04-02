@@ -1,21 +1,17 @@
-package com.example.alexeyglushkov.wordteacher.sessionresultmodule;
+package com.example.alexeyglushkov.wordteacher.sessionresultmodule.view;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.wordteacher.R;
 
-import com.example.alexeyglushkov.wordteacher.listmodule.presenter.ListPresenterInterface;
 import com.example.alexeyglushkov.wordteacher.listmodule.view.BaseListAdaptor;
 import com.example.alexeyglushkov.wordteacher.listmodule.view.BaseListFragment;
-import com.example.alexeyglushkov.wordteacher.model.LearnSession;
 import com.example.alexeyglushkov.wordteacher.model.SessionCardResult;
+import com.example.alexeyglushkov.wordteacher.sessionresultmodule.presenter.SessionResultPresenter;
 
 /**
  * Created by alexeyglushkov on 15.05.16.

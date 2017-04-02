@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.wordteacher.sessionresultmodule;
+package com.example.alexeyglushkov.wordteacher.sessionresultmodule.presenter;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,7 +8,6 @@ import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProviderFac
 import com.example.alexeyglushkov.wordteacher.listmodule.presenter.BaseListPresenter;
 import com.example.alexeyglushkov.wordteacher.listmodule.view.ListViewInterface;
 import com.example.alexeyglushkov.wordteacher.model.LearnSession;
-import com.example.alexeyglushkov.wordteacher.model.SessionCardResult;
 import com.example.alexeyglushkov.wordteacher.sessionresultmodule.view.SessionResultAdapterView;
 
 /**

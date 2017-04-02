@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.wordteacher.sessionresultmodule;
+package com.example.alexeyglushkov.wordteacher.sessionresultmodule.presenter;
 
 import android.os.Bundle;
 import android.os.Parcelable;

@@ -7,8 +7,9 @@ import android.view.MenuItem;
 
 import com.example.alexeyglushkov.wordteacher.R;
 
-import com.example.alexeyglushkov.wordteacher.model.LearnSession;
 import com.example.alexeyglushkov.wordteacher.main.BaseActivity;
+import com.example.alexeyglushkov.wordteacher.sessionresultmodule.view.SessionResultFragment;
+import com.example.alexeyglushkov.wordteacher.sessionresultmodule.view.SessionResultView;
 
 /**
  * Created by alexeyglushkov on 15.05.16.
@@ -27,11 +28,6 @@ public class SessionResultActivity extends BaseActivity implements SessionResult
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
-
-        //LearnSession session = getIntent().getParcelableExtra(EXTERNAL_SESSION);
-
-        SessionResultFragment resultFragment = (SessionResultFragment)getSupportFragmentManager().findFragmentById(R.id.fragment);
-        //resultFragment.setSession(session);
     }
 
     @Override

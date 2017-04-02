@@ -1,11 +1,10 @@
-package com.example.alexeyglushkov.wordteacher.sessionresultmodule;
+package com.example.alexeyglushkov.wordteacher.sessionresultmodule.presenter;
 
 import android.os.Bundle;
 
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProvider;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProviderFactory;
 import com.example.alexeyglushkov.wordteacher.model.LearnSession;
-import com.example.alexeyglushkov.wordteacher.model.SessionCardResult;
 import com.example.alexeyglushkov.wordteacher.sessionresultmodule.view.SessionResultAdapterView;
 
 import junit.framework.Assert;

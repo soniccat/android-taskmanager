@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.wordteacher.sessionresultmodule;
+package com.example.alexeyglushkov.wordteacher.sessionresultmodule.view;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -9,16 +9,9 @@ import android.widget.TextView;
 
 import com.example.alexeyglushkov.wordteacher.R;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 import com.example.alexeyglushkov.wordteacher.listmodule.view.BaseListAdaptor;
-import com.example.alexeyglushkov.wordteacher.model.LearnSession;
 import com.example.alexeyglushkov.wordteacher.model.Card;
 import com.example.alexeyglushkov.wordteacher.model.SessionCardResult;
-import com.example.alexeyglushkov.wordteacher.sessionresultmodule.view.SessionResultAdapterView;
 
 /**
  * Created by alexeyglushkov on 02.06.16.

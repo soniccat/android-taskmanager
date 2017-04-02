@@ -20,8 +20,7 @@ import com.example.alexeyglushkov.wordteacher.main.MainApplication;
 import com.example.alexeyglushkov.wordteacher.model.Card;
 import com.example.alexeyglushkov.wordteacher.model.Course;
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder;
-import com.example.alexeyglushkov.wordteacher.sessionresultmodule.SessionResultPresenter;
-import com.example.alexeyglushkov.wordteacher.sessionresultmodule.SessionResultPresenterImp;
+import com.example.alexeyglushkov.wordteacher.sessionresultmodule.presenter.SessionResultPresenter;
 
 /**
  * Created by alexeyglushkov on 08.01.17.
