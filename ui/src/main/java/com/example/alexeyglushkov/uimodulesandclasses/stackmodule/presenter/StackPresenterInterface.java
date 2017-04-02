@@ -17,7 +17,7 @@ public interface StackPresenterInterface extends StackModule {
     void onBackStackChanged();
     void onViewCreated(Bundle savedInstanceState);
     void onSaveInstanceState(Bundle outState);
-    void onViewStateRestored(StackView view, List<Object> childs, Bundle savedInstanceState);
+    void onViewStateRestored(StackView view, List<Object> childs, Bundle savedInstanceState); //TODO: StackModuleItem for childs?
 
     void setListener(StackModuleListener listener);
     void setFactory(StackModuleFactory factory);
