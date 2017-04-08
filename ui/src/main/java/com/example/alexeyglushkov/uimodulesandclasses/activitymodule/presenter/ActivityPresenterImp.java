@@ -14,7 +14,6 @@ import junit.framework.Assert;
 public class ActivityPresenterImp implements ActivityPresenter {
     private ActivityPresenterFactory factory;
     private ActivityModuleView view;
-
     private ActivityModuleItem item;
 
     @Override
@@ -52,7 +51,7 @@ public class ActivityPresenterImp implements ActivityPresenter {
     }
 
     @Override
-    public void onViewStateRestored(ActivityModuleView view, ActivityModuleItemView child, Bundle savedInstanceState) {
+    public void onViewStateRestored(Bundle savedInstanceState, ActivityModuleItemView child) {
     }
 
     @Override

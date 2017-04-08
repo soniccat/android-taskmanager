@@ -15,7 +15,7 @@ public interface ActivityPresenter extends ActivityModule {
 
     void onCreate(Bundle savedInstanceState, Bundle extras, ActivityModuleItemView restoredItemView);
     void onSaveInstanceState(Bundle outState);
-    void onViewStateRestored(ActivityModuleView view, ActivityModuleItemView child, Bundle savedInstanceState);
+    void onViewStateRestored(Bundle savedInstanceState, ActivityModuleItemView child);
 
     void setView(ActivityModuleView view);
     void setFactory(ActivityPresenterFactory factory);

@@ -19,7 +19,7 @@ public class ActivityModuleViewImp extends AppCompatActivity implements Activity
     private String ITEM_TAG = "ITEM_TAG";
 
     ActivityPresenter presenter;
-    ActivityModuleItemView itemVIew;
+    ActivityModuleItemView itemView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -31,8 +31,8 @@ public class ActivityModuleViewImp extends AppCompatActivity implements Activity
         Bundle extras = getIntent().getExtras();
         initialize(savedInstanceState, extras);
 
-        itemVIew = (ActivityModuleItemView) getSupportFragmentManager().findFragmentByTag(ITEM_TAG);
-        presenter.onCreate(savedInstanceState, extras, itemVIew);
+        itemView = (ActivityModuleItemView) getSupportFragmentManager().findFragmentByTag(ITEM_TAG);
+        presenter.onCreate(savedInstanceState, extras, itemView);
     }
 
     private void initialize(Bundle savedInstance, Bundle extra) {
@@ -50,8 +50,22 @@ public class ActivityModuleViewImp extends AppCompatActivity implements Activity
         Assert.assertNotNull(presenter);
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        presenter.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        presenter.onViewStateRestored(savedInstanceState, itemView);
+    }
+
     public void setItemView(ActivityModuleItemView view) {
-        this.itemVIew = view;
+        this.itemView = view;
 
         getSupportFragmentManager()
                 .beginTransaction()
