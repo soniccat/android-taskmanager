@@ -46,6 +46,7 @@ public class ActivityPresenterImp implements ActivityPresenter {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        outState.putString(FACTORY_CLASS_KEY, factory.getClass().getName());
     }
 
     @Override

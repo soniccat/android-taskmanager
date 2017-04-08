@@ -24,6 +24,7 @@ public class SessionResultActivityFactory implements ActivityPresenterFactory {
 
     @Override
     public ActivityModuleItem restore(ActivityModuleItemView view) {
-        return null;
+        SessionResultPresenterImp presenter = (SessionResultPresenterImp)((SessionResultFragment)view).getPresenter();
+        return presenter;
     }
 }

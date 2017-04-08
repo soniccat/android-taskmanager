@@ -55,6 +55,7 @@ public class ActivityModuleViewImp extends AppCompatActivity implements Activity
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
+        outState.putString(PRESENTER_CLASS_KEY, presenter.getClass().getName());
         presenter.onSaveInstanceState(outState);
     }
 

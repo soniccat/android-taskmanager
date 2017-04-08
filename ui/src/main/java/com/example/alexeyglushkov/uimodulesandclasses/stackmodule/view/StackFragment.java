@@ -24,6 +24,8 @@ import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.presenter.Stac
  * Created by alexeyglushkov on 03.05.16.
  */
 public class StackFragment extends Fragment implements FragmentManager.OnBackStackChangedListener, StackView {
+    private final String PRESENTER_CLASS = "PRESENTER_CLASS_StackFragment";
+
     protected StackPresenter presenter;
 
     //// Creation
@@ -34,7 +36,7 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
 
         if (presenter == null && savedInstanceState != null) {
             try {
-                Class presenterClass = Class.forName(savedInstanceState.getString("presenterClass"));
+                Class presenterClass = Class.forName(savedInstanceState.getString(PRESENTER_CLASS));
                 if (presenterClass != null) {
                     presenter = (StackPresenter) presenterClass.newInstance();
                 }
@@ -99,7 +101,7 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("presenterClass", presenter.getClass().getName());
+        outState.putString(PRESENTER_CLASS, presenter.getClass().getName());
         presenter.onSaveInstanceState(outState);
     }
 

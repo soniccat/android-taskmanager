@@ -14,6 +14,8 @@ import com.example.alexeyglushkov.uimodulesandclasses.pagermodule.presenter.Page
  */
 
 public class PagerViewImp implements PagerView, PagerAdapter.Listener, ViewPager.OnPageChangeListener {
+    private final String PRESENTER_CLASS = "PRESENTER_CLASS_PagerViewImp";
+
     private PagerPresenter presenter;
     private int itemCount;
 
@@ -30,7 +32,7 @@ public class PagerViewImp implements PagerView, PagerAdapter.Listener, ViewPager
     public void onViewCreated(Bundle savedInstanceState) {
         if (presenter == null && savedInstanceState != null) {
             try {
-                Class presenterClass = Class.forName(savedInstanceState.getString("presenterClass"));
+                Class presenterClass = Class.forName(savedInstanceState.getString(PRESENTER_CLASS));
                 if (presenterClass != null) {
                     presenter = (PagerPresenter) presenterClass.newInstance();
                     presenter.setView(this);
@@ -51,7 +53,7 @@ public class PagerViewImp implements PagerView, PagerAdapter.Listener, ViewPager
     }
 
     public void onSaveInstanceState(Bundle outState) {
-        outState.putString("presenterClass", presenter.getClass().getName());
+        outState.putString(PRESENTER_CLASS, presenter.getClass().getName());
         presenter.onSaveInstanceState(outState);
     }
 

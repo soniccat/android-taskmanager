@@ -20,6 +20,8 @@ import com.example.alexeyglushkov.wordteacher.listmodule.presenter.ListPresenter
  * Created by alexeyglushkov on 23.07.16.
  */
 public abstract class BaseListFragment<T> extends Fragment implements ListViewInterface<T> {
+    private final String PRESENTER_CLASS = "PRESENTER_CLASS_BaseListFragment";
+
     private ListPresenterInterface presenter;
 
     protected RecyclerView recyclerView;
@@ -61,7 +63,7 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
         super.onCreate(savedInstanceState);
 
         if (presenter == null && savedInstanceState != null) {
-            String className = savedInstanceState.getString("presenterClass");
+            String className = savedInstanceState.getString(PRESENTER_CLASS);
             initializePresenter(className);
         }
 
@@ -97,7 +99,7 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("presenterClass", presenter.getClass().getName());
+        outState.putString(PRESENTER_CLASS, presenter.getClass().getName());
         presenter.store(outState);
     }
 
