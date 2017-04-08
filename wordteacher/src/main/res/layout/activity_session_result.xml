@@ -18,11 +18,9 @@
         app:popupTheme="@style/AppTheme.PopupOverlay"/>
     </android.support.design.widget.AppBarLayout>
 
-    <fragment
-        android:id="@+id/fragment"
-        android:name="com.example.alexeyglushkov.wordteacher.sessionresultmodule.view.SessionResultFragment"
+    <FrameLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:presenterClass="com.example.alexeyglushkov.wordteacher.sessionresultmodule.presenter.SessionResultPresenterImp"/>
+        android:layout_height="match_parent"/>
 
 </LinearLayout>

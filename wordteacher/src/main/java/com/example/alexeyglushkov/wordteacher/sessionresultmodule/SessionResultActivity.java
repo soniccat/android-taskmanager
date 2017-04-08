@@ -1,9 +1,12 @@
 package com.example.alexeyglushkov.wordteacher.sessionresultmodule;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.view.ActivityModuleView;
 import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.view.ActivityModuleViewImp;
@@ -19,13 +22,17 @@ import com.example.alexeyglushkov.wordteacher.sessionresultmodule.view.SessionRe
 public class SessionResultActivity extends ActivityModuleViewImp implements SessionResultView {
     public static final int ACTIVITY_RESULT = 10001;
 
-    /*
     private Toolbar toolbar;
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_session_result;
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_session_result);
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -40,5 +47,5 @@ public class SessionResultActivity extends ActivityModuleViewImp implements Sess
         }
 
         return true;
-    }*/
+    }
 }

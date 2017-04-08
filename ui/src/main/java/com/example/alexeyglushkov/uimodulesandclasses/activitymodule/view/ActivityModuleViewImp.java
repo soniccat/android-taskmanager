@@ -23,9 +23,7 @@ public class ActivityModuleViewImp extends AppCompatActivity implements Activity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //int layoutId = getIntent().getIntExtra("layout_id", 0);
-        setContentView(R.layout.activity_layout);
+        setContentView(getLayoutId());
 
         Bundle extras = getIntent().getExtras();
         initialize(savedInstanceState, extras);
@@ -34,6 +32,10 @@ public class ActivityModuleViewImp extends AppCompatActivity implements Activity
 
         presenter.setView(this);
         presenter.onCreate(savedInstanceState, extras, itemView);
+    }
+
+    protected int getLayoutId() {
+        return R.layout.activity_layout;
     }
 
     private void initialize(Bundle savedInstance, Bundle extra) {
