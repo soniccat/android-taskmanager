@@ -18,8 +18,6 @@ public class ActivityPresenterImp implements ActivityPresenter {
 
     @Override
     public void onCreate(Bundle savedInstanceState, Bundle extras, ActivityModuleItemView restoredItemView) {
-        extras.getString(FACTORY_CLASS_KEY);
-
         initialize(savedInstanceState, extras);
 
         if (restoredItemView == null) {

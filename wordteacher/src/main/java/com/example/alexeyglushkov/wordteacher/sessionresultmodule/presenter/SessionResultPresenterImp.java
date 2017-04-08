@@ -3,6 +3,8 @@ package com.example.alexeyglushkov.wordteacher.sessionresultmodule.presenter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
+import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.presenter.ActivityModuleItem;
+import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.view.ActivityModuleItemView;
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategyFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProviderFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.presenter.BaseListPresenter;
@@ -14,7 +16,8 @@ import com.example.alexeyglushkov.wordteacher.sessionresultmodule.view.SessionRe
  * Created by alexeyglushkov on 15.01.17.
  */
 
-public class SessionResultPresenterImp extends BaseListPresenter<SessionResultAdapterView> implements SessionResultPresenter {
+public class SessionResultPresenterImp extends BaseListPresenter<SessionResultAdapterView>
+        implements SessionResultPresenter, ActivityModuleItem {
 
     @Override
     public void onCreated(Bundle savedInstanceState, Bundle extras) {
@@ -43,5 +46,13 @@ public class SessionResultPresenterImp extends BaseListPresenter<SessionResultAd
     @Override
     protected CompareStrategyFactory<SessionResultAdapterView> createCompareStrategyFactory() {
         return new SessionResultCompareStrategyFactory();
+    }
+
+
+    // ActivityModuleItem
+
+    @Override
+    public ActivityModuleItemView getActivityModuleItemView() {
+        return view;
     }
 }

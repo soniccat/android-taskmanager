@@ -5,7 +5,7 @@ package com.example.alexeyglushkov.uimodulesandclasses.activitymodule.view;
  */
 
 public interface ActivityModuleView {
-    String PRESENTER_CLASS = "PRESENTER_CLASS";
+    String PRESENTER_CLASS_KEY = "PRESENTER_CLASS_KEY";
 
     void setItemView(ActivityModuleItemView view);
 }

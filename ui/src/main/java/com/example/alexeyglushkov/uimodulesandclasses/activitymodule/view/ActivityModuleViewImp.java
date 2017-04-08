@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.example.alexeyglushkov.uimodulesandclasses.R;
 import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.presenter.ActivityPresenter;
-import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.presenter.ActivityPresenterFactory;
 
 import junit.framework.Assert;
 
@@ -25,13 +24,15 @@ public class ActivityModuleViewImp extends AppCompatActivity implements Activity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        int layoutId = getIntent().getIntExtra("layout_id", 0);
-        setContentView(layoutId);
+        //int layoutId = getIntent().getIntExtra("layout_id", 0);
+        setContentView(R.layout.activity_layout);
 
         Bundle extras = getIntent().getExtras();
         initialize(savedInstanceState, extras);
 
         itemView = (ActivityModuleItemView) getSupportFragmentManager().findFragmentByTag(ITEM_TAG);
+
+        presenter.setView(this);
         presenter.onCreate(savedInstanceState, extras, itemView);
     }
 
@@ -41,7 +42,7 @@ public class ActivityModuleViewImp extends AppCompatActivity implements Activity
     }
 
     private void initializePresenter(Bundle bundle) {
-        String className = bundle.getString(PRESENTER_CLASS);
+        String className = bundle.getString(PRESENTER_CLASS_KEY);
         try {
             presenter = (ActivityPresenter) Class.forName(className).newInstance();
         } catch (Exception e) {
