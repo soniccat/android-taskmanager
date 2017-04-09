@@ -5,8 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
+import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.presenter.ActivityPresenter;
+import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.presenter.ActivityPresenterImp;
+import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.view.ActivityModuleView;
+import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.view.ActivityModuleViewImp;
+import com.example.alexeyglushkov.wordteacher.learningmodule.LearnActivity;
 import com.example.alexeyglushkov.wordteacher.learningmodule.presenter.LearnPresenterImp;
-import com.example.alexeyglushkov.wordteacher.learningmodule.view.LearnActivity;
+import com.example.alexeyglushkov.wordteacher.learningmodule.LearnActivityFactory;
 import com.example.alexeyglushkov.wordteacher.model.Card;
 
 import java.util.List;
@@ -32,6 +37,8 @@ public class MainRouterImp implements MainRouter {
             cardIds[i] = card.getId().toString();
         }
 
+        activityIntent.putExtra(ActivityModuleView.PRESENTER_CLASS_KEY, ActivityPresenterImp.class.getName());
+        activityIntent.putExtra(ActivityPresenter.FACTORY_CLASS_KEY, LearnActivityFactory.class.getName());
         activityIntent.putExtra(LearnPresenterImp.EXTRA_CARD_IDS, cardIds);
         activityIntent.putExtra(LearnPresenterImp.EXTRA_DEFINITION_TO_TERM, true);
 

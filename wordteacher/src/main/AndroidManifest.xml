@@ -36,7 +36,7 @@
         </activity>
 
         <activity
-            android:name="com.example.alexeyglushkov.wordteacher.learningmodule.view.LearnActivity"
+            android:name="com.example.alexeyglushkov.wordteacher.learningmodule.LearnActivity"
             android:label="@string/learning_title"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateVisible|adjustResize">
@@ -51,7 +51,7 @@
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.alexeyglushkov.wordteacher.learningmodule.view.LearnActivity" />
+                android:value="com.example.alexeyglushkov.wordteacher.learningmodule.LearnActivity" />
         </activity>
 
         <activity

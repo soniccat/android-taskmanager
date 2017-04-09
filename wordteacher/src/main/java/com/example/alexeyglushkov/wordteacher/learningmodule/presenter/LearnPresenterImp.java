@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.presenter.ActivityModuleItem;
+import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.view.ActivityModuleItemView;
 import com.example.alexeyglushkov.wordteacher.R;
 
 import java.util.ArrayList;
@@ -28,7 +30,7 @@ import com.example.alexeyglushkov.wordteacher.sessionresultmodule.presenter.Sess
  * Created by alexeyglushkov on 08.01.17.
  */
 
-public class LearnPresenterImp implements LearnPresenter, CourseHolder.CourseHolderListener {
+public class LearnPresenterImp implements LearnPresenter, ActivityModuleItem, CourseHolder.CourseHolderListener {
     public static final int ACTIVITY_RESULT = 10002;
     public static final int ACTIVITY_RESULT_CODE = 1;
 
@@ -305,6 +307,14 @@ public class LearnPresenterImp implements LearnPresenter, CourseHolder.CourseHol
     public void onCourseUpdated(@NonNull CourseHolder holder, @NonNull Course course, @NonNull CourseHolder.UpdateBatch batch) {
         // TODO: handle
     }
+
+    // ActivityModuleItem
+
+    @Override
+    public ActivityModuleItemView getActivityModuleItemView() {
+        return view;
+    }
+
 
     //// Setters
 
