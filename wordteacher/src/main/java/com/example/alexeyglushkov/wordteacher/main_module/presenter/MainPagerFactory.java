@@ -18,7 +18,7 @@ import com.example.alexeyglushkov.wordteacher.quizletlistmodules.QuizletStackMod
 import com.example.alexeyglushkov.wordteacher.quizletlistmodules.termlistmodule.view.QuizletTermListFragment;
 import com.example.alexeyglushkov.wordteacher.quizletlistmodules.termlistmodule.presenter.QuizletTermListPresenter;
 import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.StackModuleListener;
-import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.presenter.StackPresenter;
+import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.presenter.StackPresenterImp;
 import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.view.StackFragment;
 
 /**
@@ -75,7 +75,7 @@ public class MainPagerFactory implements PagerModuleFactory {
 
     @NonNull
     private PagerModuleItem restoreQuizletStackModule(StackFragment view, PagerModule pagerModule) {
-        StackPresenter presenter = view.getPresenter();
+        StackPresenterImp presenter = view.getPresenter();
 
         QuizletStackModuleFactory factory = (QuizletStackModuleFactory)presenter.getFactory();
         factory.setQuizletSetListener(createQuizletSetListener());
@@ -93,7 +93,7 @@ public class MainPagerFactory implements PagerModuleFactory {
     }
 
     private PagerModuleItem restoreCourseStackModule(StackFragment view, PagerModule pagerModule) {
-        StackPresenter presenter = view.getPresenter();
+        StackPresenterImp presenter = view.getPresenter();
 
         CourseStackModuleFactory factory = (CourseStackModuleFactory)presenter.getFactory();
         factory.setCourseListListener(createCourseListener());
@@ -125,7 +125,7 @@ public class MainPagerFactory implements PagerModuleFactory {
         factory.setQuizletTermListener(createQuizletTermListener());
 
         StackFragment view = new StackFragment();
-        StackPresenter stackPresenter = new StackPresenter();
+        StackPresenterImp stackPresenter = new StackPresenterImp();
         stackPresenter.setFactory(factory);
         stackPresenter.setView(view);
         bindStackListener(pagerModule, stackPresenter);
@@ -141,7 +141,7 @@ public class MainPagerFactory implements PagerModuleFactory {
         factory.setCardListListener(createCardListener());
 
         StackFragment view = new StackFragment();
-        StackPresenter stackPresenter = new StackPresenter();
+        StackPresenterImp stackPresenter = new StackPresenterImp();
         stackPresenter.setFactory(factory);
         stackPresenter.setView(view);
         bindStackListener(pagerModule, stackPresenter);
@@ -208,7 +208,7 @@ public class MainPagerFactory implements PagerModuleFactory {
 
     //// Setters
 
-    private void bindStackListener(final PagerModule pagerModule, StackPresenter stackPresenter) {
+    private void bindStackListener(final PagerModule pagerModule, StackPresenterImp stackPresenter) {
         stackPresenter.setListener(new StackModuleListener() {
             @Override
             public void onBackStackChanged() {
