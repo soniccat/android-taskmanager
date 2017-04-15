@@ -1,5 +1,6 @@
 package com.example.alexeyglushkov.uimodulesandclasses.activitymodule.presenter;
 
+import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.ActivityModule;
 import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.view.ActivityModuleItemView;
 
 /**
@@ -7,6 +8,6 @@ import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.view.Activi
  */
 
 public interface ActivityPresenterFactory {
-    ActivityModuleItem createModule();
-    ActivityModuleItem restore(ActivityModuleItemView view);
+    ActivityModuleItem createModule(ActivityModule module);
+    ActivityModuleItem restore(ActivityModuleItemView view, ActivityModule module);
 }

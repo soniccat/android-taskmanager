@@ -190,12 +190,6 @@ public class LearnFragment extends Fragment implements LearnView {
         presenter.onGiveUpPressed();
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        presenter.onActivityResult(requestCode, resultCode, data);
-    }
-
     //// Actions
 
     private void prepareToNewCard() {

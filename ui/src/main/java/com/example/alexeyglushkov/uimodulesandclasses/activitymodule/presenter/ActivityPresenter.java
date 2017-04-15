@@ -1,5 +1,6 @@
 package com.example.alexeyglushkov.uimodulesandclasses.activitymodule.presenter;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.ActivityModule;
@@ -16,7 +17,14 @@ public interface ActivityPresenter extends ActivityModule {
     void onCreate(Bundle savedInstanceState, Bundle extras, ActivityModuleItemView restoredItemView);
     void onSaveInstanceState(Bundle outState);
     void onViewStateRestored(Bundle savedInstanceState, ActivityModuleItemView child);
+    void onActivityResult(int requestCode, int resultCode, Intent data);
+
+    void setListener(Listener listener);
 
     void setView(ActivityModuleView view);
     void setFactory(ActivityPresenterFactory factory);
+
+    interface Listener {
+        void onActivityResult(int requestCode, int resultCode, Intent data);
+    }
 }

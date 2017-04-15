@@ -1,6 +1,9 @@
 package com.example.alexeyglushkov.uimodulesandclasses.activitymodule.presenter;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.view.ActivityModuleItemView;
 import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.view.ActivityModuleView;
@@ -12,20 +15,20 @@ import junit.framework.Assert;
  */
 
 public class ActivityPresenterImp implements ActivityPresenter {
-    private ActivityPresenterFactory factory;
-    private ActivityModuleView view;
-    private ActivityModuleItem item;
+    @NonNull private ActivityPresenterFactory factory;
+    @NonNull private ActivityModuleView view;
+    @NonNull private ActivityModuleItem item;
+    @Nullable private Listener listener;
+
+    //// Initialization, Restoration
 
     @Override
     public void onCreate(Bundle savedInstanceState, Bundle extras, ActivityModuleItemView restoredItemView) {
         initialize(savedInstanceState, extras);
 
         if (restoredItemView == null) {
-            item = factory.createModule();
+            item = factory.createModule(this);
             view.setItemView(item.getActivityModuleItemView());
-
-        } else {
-            item = factory.restore(restoredItemView);
         }
     }
 
@@ -51,14 +54,33 @@ public class ActivityPresenterImp implements ActivityPresenter {
 
     @Override
     public void onViewStateRestored(Bundle savedInstanceState, ActivityModuleItemView child) {
+        if (child != null) {
+            item = factory.restore(child, this);
+        }
     }
 
+    //// Events
+
     @Override
-    public void setFactory(ActivityPresenterFactory factory) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (listener != null) {
+            listener.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    //// Setters
+
+    @Override
+    public void setFactory(@NonNull ActivityPresenterFactory factory) {
         this.factory = factory;
     }
 
-    public void setView(ActivityModuleView view) {
+    public void setView(@NonNull ActivityModuleView view) {
         this.view = view;
+    }
+
+    @Override
+    public void setListener(@Nullable Listener listener) {
+        this.listener = listener;
     }
 }

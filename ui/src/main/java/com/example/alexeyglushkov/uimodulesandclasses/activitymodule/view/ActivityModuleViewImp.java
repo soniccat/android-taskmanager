@@ -1,5 +1,6 @@
 package com.example.alexeyglushkov.uimodulesandclasses.activitymodule.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -75,5 +76,12 @@ public class ActivityModuleViewImp extends AppCompatActivity implements Activity
                 .beginTransaction()
                 .replace(R.id.container, (Fragment) view, ITEM_TAG)
                 .commitAllowingStateLoss();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        presenter.onActivityResult(requestCode, resultCode, data);
     }
 }
