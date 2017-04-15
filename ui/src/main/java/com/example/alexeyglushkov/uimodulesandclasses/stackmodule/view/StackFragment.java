@@ -18,6 +18,7 @@ import java.util.List;
 
 import com.example.alexeyglushkov.uimodulesandclasses.R;
 import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.StackModuleItemView;
+import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.presenter.StackPresenter;
 import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.presenter.StackPresenterImp;
 
 /**
@@ -26,7 +27,7 @@ import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.presenter.Stac
 public class StackFragment extends Fragment implements FragmentManager.OnBackStackChangedListener, StackView {
     private final String PRESENTER_CLASS = "PRESENTER_CLASS_StackFragment";
 
-    protected StackPresenterImp presenter;
+    protected StackPresenter presenter;
 
     //// Creation
 
@@ -38,7 +39,7 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
             try {
                 Class presenterClass = Class.forName(savedInstanceState.getString(PRESENTER_CLASS));
                 if (presenterClass != null) {
-                    presenter = (StackPresenterImp) presenterClass.newInstance();
+                    presenter = (StackPresenter) presenterClass.newInstance();
                 }
             } catch (Exception e) {
             }
@@ -243,7 +244,7 @@ public class StackFragment extends Fragment implements FragmentManager.OnBackSta
         return list != null && index < list.size() ? list.get(index) : null;
     }
 
-    public StackPresenterImp getPresenter() {
+    public StackPresenter getPresenter() {
         return presenter;
     }
 

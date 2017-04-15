@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 
+import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.presenter.StackPresenter;
 import com.example.alexeyglushkov.wordteacher.courselistmodules.CourseStackModuleFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.view.SimpleListFragment;
 import com.example.alexeyglushkov.wordteacher.listmodule.view.SimpleListFragmentListenerAdapter;
@@ -75,7 +76,7 @@ public class MainPagerFactory implements PagerModuleFactory {
 
     @NonNull
     private PagerModuleItem restoreQuizletStackModule(StackFragment view, PagerModule pagerModule) {
-        StackPresenterImp presenter = view.getPresenter();
+        StackPresenterImp presenter = (StackPresenterImp)view.getPresenter();
 
         QuizletStackModuleFactory factory = (QuizletStackModuleFactory)presenter.getFactory();
         factory.setQuizletSetListener(createQuizletSetListener());
@@ -93,7 +94,7 @@ public class MainPagerFactory implements PagerModuleFactory {
     }
 
     private PagerModuleItem restoreCourseStackModule(StackFragment view, PagerModule pagerModule) {
-        StackPresenterImp presenter = view.getPresenter();
+        StackPresenterImp presenter = (StackPresenterImp)view.getPresenter();
 
         CourseStackModuleFactory factory = (CourseStackModuleFactory)presenter.getFactory();
         factory.setCourseListListener(createCourseListener());
@@ -208,7 +209,7 @@ public class MainPagerFactory implements PagerModuleFactory {
 
     //// Setters
 
-    private void bindStackListener(final PagerModule pagerModule, StackPresenterImp stackPresenter) {
+    private void bindStackListener(final PagerModule pagerModule, StackPresenter stackPresenter) {
         stackPresenter.setListener(new StackModuleListener() {
             @Override
             public void onBackStackChanged() {
