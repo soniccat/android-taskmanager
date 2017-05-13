@@ -9,8 +9,7 @@ android {
         targetSdkVersion project.ext.targetSdkVersion
         versionCode project.ext.versionCode
         versionName project.ext.versionName
-
-        testInstrumentationRunner "com.example.alexeyglushkov.testsupport.InstrumentationRunner"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -24,8 +23,6 @@ android {
     }
 }
 
-
-
 dependencies {
     compile 'com.android.support:support-v4:'  + project.ext.supportLibVersion
     compile 'com.android.support:appcompat-v7:'  + project.ext.supportLibVersion
@@ -36,4 +33,8 @@ dependencies {
     compile project(':testsupport')
     compile project(':streamlib')
     compile project(':tools')
+    androidTestCompile 'junit:junit:4.12'
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
 }

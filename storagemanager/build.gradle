@@ -10,7 +10,7 @@ android {
         versionCode project.ext.versionCode
         versionName project.ext.versionName
 
-        testInstrumentationRunner "android.test.InstrumentationTestRunner"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {

@@ -154,7 +154,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
                                 @Override
                                 public void run() {
                                     if (task.getTaskCallback() != thisCallback) {
-                                        // can happen if canBeCancelledImmediately returns true
+                                        // may happen if canBeCancelledImmediately returns true
                                         return;
                                     }
 

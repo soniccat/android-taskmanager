@@ -147,6 +147,6 @@ public class SimpleTaskPool implements TaskPool {
     }
 
     protected void checkHandlerThread() {
-        Assert.assertEquals(Looper.myLooper(),handler.getLooper());
+        Assert.assertEquals(Looper.myLooper(), handler.getLooper());
     }
 }

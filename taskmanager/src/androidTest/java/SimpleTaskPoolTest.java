@@ -1,71 +1,168 @@
 import android.os.Handler;
 import android.os.Looper;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
 
 import com.example.alexeyglushkov.taskmanager.task.SimpleTaskPool;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * Created by alexeyglushkov on 08.08.15.
  */
+
+@RunWith(AndroidJUnit4.class)
 public class SimpleTaskPoolTest extends TaskPoolTest {
 
-    @Override
-    protected void setUp() throws Exception{
-        super.before(new SimpleTaskPool(new Handler(Looper.myLooper())));
+    @Before
+    public void setUp() throws Exception{
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                SimpleTaskPoolTest.this.before(new SimpleTaskPool(new Handler(Looper.myLooper())));
+            }
+        });
     }
 
+    @Test
     public void testSetGetHandler() {
-        super.setGetHandler();
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                SimpleTaskPoolTest.this.setGetHandler();
+            }
+        });
     }
 
+    @Test
     public void testAddTask() {
-        super.addTask();
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                SimpleTaskPoolTest.this.addTask();
+            }
+        });
     }
 
+    @Test
     public void testAddStartedTask() {
-        super.addStartedTask();
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                SimpleTaskPoolTest.this.addStartedTask();
+            }
+        });
     }
 
+    @Test
     public void testRemoveTask() {
-        super.removeTask();
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                SimpleTaskPoolTest.this.removeTask();
+            }
+        });
     }
 
+    @Test
     public void testRemoveUnknownTask() {
-        super.removeUnknownTask();
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                SimpleTaskPoolTest.this.removeUnknownTask();
+            }
+        });
     }
 
+    @Test
     public void testGetTask() {
-        super.getTask();
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                SimpleTaskPoolTest.this.getTask();
+            }
+        });
     }
 
+    @Test
     public void testGetUnknownTask() {
-        super.getUnknownTask();
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                SimpleTaskPoolTest.this.getUnknownTask();
+            }
+        });
     }
 
+    @Test
     public void testGetTaskCount() {
-        super.getTaskCount();
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                SimpleTaskPoolTest.this.getTaskCount();
+            }
+        });
     }
 
+    @Test
     public void testGetTaskCount2() {
-        super.getTaskCount2();
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                SimpleTaskPoolTest.this.getTaskCount2();
+            }
+        });
     }
 
+    @Test
     public void testSetGetUserData() {
-        super.setGetUserData();
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                SimpleTaskPoolTest.this.setGetUserData();
+            }
+        });
     }
 
+    @Test
     public void testAddStateListener() {
-        super.addStateListener();
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                SimpleTaskPoolTest.this.addStateListener();
+            }
+        });
     }
 
+    @Test
     public void testRemoveStateListener() {
-        super.removeStateListener();
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                SimpleTaskPoolTest.this.removeStateListener();
+            }
+        });
     }
 
+    @Test
     public void testChangeTaskStatus() {
-        super.changeTaskStatus();
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                SimpleTaskPoolTest.this.changeTaskStatus();
+            }
+        });
     }
 
+    @Test
     public void testCheckTaskRemovingAfterFinishing() {
-        super.checkTaskRemovingAfterFinishing();
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                SimpleTaskPoolTest.this.checkTaskRemovingAfterFinishing();
+            }
+        });
     }
 }
