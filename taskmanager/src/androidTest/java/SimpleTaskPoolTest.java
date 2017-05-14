@@ -22,7 +22,7 @@ public class SimpleTaskPoolTest extends TaskPoolTest {
     @Rule
     public UiThreadTestRule rule = new UiThreadTestRule();
 
-    @UiThreadTest @Before
+    @Before
     public void setUp() throws Exception{
         SimpleTaskPoolTest.this.before(new SimpleTaskPool(new Handler(Looper.myLooper())));
     }
