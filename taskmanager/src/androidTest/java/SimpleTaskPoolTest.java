@@ -1,11 +1,14 @@
 import android.os.Handler;
 import android.os.Looper;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.annotation.UiThreadTest;
+import android.support.test.rule.UiThreadTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.example.alexeyglushkov.taskmanager.task.SimpleTaskPool;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -16,153 +19,81 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4.class)
 public class SimpleTaskPoolTest extends TaskPoolTest {
 
-    @Before
+    @Rule
+    public UiThreadTestRule rule = new UiThreadTestRule();
+
+    @UiThreadTest @Before
     public void setUp() throws Exception{
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                SimpleTaskPoolTest.this.before(new SimpleTaskPool(new Handler(Looper.myLooper())));
-            }
-        });
+        SimpleTaskPoolTest.this.before(new SimpleTaskPool(new Handler(Looper.myLooper())));
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testSetGetHandler() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                SimpleTaskPoolTest.this.setGetHandler();
-            }
-        });
+        SimpleTaskPoolTest.this.setGetHandler();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testAddTask() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                SimpleTaskPoolTest.this.addTask();
-            }
-        });
+        SimpleTaskPoolTest.this.addTask();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testAddStartedTask() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                SimpleTaskPoolTest.this.addStartedTask();
-            }
-        });
+        SimpleTaskPoolTest.this.addStartedTask();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testRemoveTask() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                SimpleTaskPoolTest.this.removeTask();
-            }
-        });
+        SimpleTaskPoolTest.this.removeTask();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testRemoveUnknownTask() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                SimpleTaskPoolTest.this.removeUnknownTask();
-            }
-        });
+        SimpleTaskPoolTest.this.removeUnknownTask();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testGetTask() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                SimpleTaskPoolTest.this.getTask();
-            }
-        });
+        SimpleTaskPoolTest.this.getTask();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testGetUnknownTask() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                SimpleTaskPoolTest.this.getUnknownTask();
-            }
-        });
+        SimpleTaskPoolTest.this.getUnknownTask();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testGetTaskCount() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                SimpleTaskPoolTest.this.getTaskCount();
-            }
-        });
+        SimpleTaskPoolTest.this.getTaskCount();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testGetTaskCount2() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                SimpleTaskPoolTest.this.getTaskCount2();
-            }
-        });
+        SimpleTaskPoolTest.this.getTaskCount2();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testSetGetUserData() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                SimpleTaskPoolTest.this.setGetUserData();
-            }
-        });
+        SimpleTaskPoolTest.this.setGetUserData();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testAddStateListener() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                SimpleTaskPoolTest.this.addStateListener();
-            }
-        });
+        SimpleTaskPoolTest.this.addStateListener();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testRemoveStateListener() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                SimpleTaskPoolTest.this.removeStateListener();
-            }
-        });
+        SimpleTaskPoolTest.this.removeStateListener();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testChangeTaskStatus() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                SimpleTaskPoolTest.this.changeTaskStatus();
-            }
-        });
+        SimpleTaskPoolTest.this.changeTaskStatus();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testCheckTaskRemovingAfterFinishing() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                SimpleTaskPoolTest.this.checkTaskRemovingAfterFinishing();
-            }
-        });
+        SimpleTaskPoolTest.this.checkTaskRemovingAfterFinishing();
     }
 }
