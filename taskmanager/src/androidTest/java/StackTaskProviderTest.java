@@ -1,12 +1,15 @@
 import android.os.Handler;
 import android.os.Looper;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.annotation.UiThreadTest;
+import android.support.test.rule.UiThreadTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.AndroidTestCase;
 
 import com.example.alexeyglushkov.taskmanager.task.StackTaskProvider;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -20,243 +23,131 @@ public class StackTaskProviderTest {
     private TaskProviderTest providerTest;
     private StackTaskProvider taskProvider;
 
+    @Rule
+    public UiThreadTestRule rule = new UiThreadTestRule();
+
     @Before
     public void setUp() throws Exception {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                taskProvider = new StackTaskProvider(false, new Handler(Looper.myLooper()), "TestId");
+        taskProvider = new StackTaskProvider(false, new Handler(Looper.myLooper()), "TestId");
 
-                poolTest = new TaskPoolTest();
-                providerTest = new TaskProviderTest();
+        poolTest = new TaskPoolTest();
+        providerTest = new TaskProviderTest();
 
-                poolTest.before(taskProvider);
-                providerTest.before(taskProvider);
-            }
-        });
+        poolTest.before(taskProvider);
+        providerTest.before(taskProvider);
     }
 
     // ProviderTests
 
-    @Test
+    @Test @UiThreadTest
     public void testGetTopTaskWithBlockedTask() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                providerTest.getTopTaskWithBlockedTask();
-            }
-        });
+        providerTest.getTopTaskWithBlockedTask();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testTakeTopTaskWithBlockedTask() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                providerTest.takeTopTaskWithBlockedTask();
-            }
-        });
+        providerTest.takeTopTaskWithBlockedTask();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testSetProviderId() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                providerTest.setProviderId();
-            }
-        });
+        providerTest.setProviderId();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testSetPriority() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                providerTest.setPriority();
-            }
-        });
+        providerTest.setPriority();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testGetTopTaskWithoutFilter() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                providerTest.getTopTaskWithoutFilter();
-            }
-        });
+        providerTest.getTopTaskWithoutFilter();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testGetTopTaskWithFilter() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                providerTest.getTopTaskWithFilter();
-            }
-        });
+        providerTest.getTopTaskWithFilter();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testTakeTopTaskWithFilter() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                providerTest.takeTopTaskWithFilter();
-            }
-        });
+        providerTest.takeTopTaskWithFilter();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testRemoveTaskWithUnknownType() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                providerTest.removeTaskWithUnknownType();
-            }
-        });
+        providerTest.removeTaskWithUnknownType();
     }
 
     // PoolTests
 
-    @Test
+    @Test @UiThreadTest
     public void testSetGetHandler() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                poolTest.setGetHandler();
-            }
-        });
+        poolTest.setGetHandler();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testAddTask() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                poolTest.addTask();
-            }
-        });
+        poolTest.addTask();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testAddStartedTask() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                poolTest.addStartedTask();
-            }
-        });
+        poolTest.addStartedTask();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testRemoveTask() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                poolTest.removeTask();
-            }
-        });
+        poolTest.removeTask();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testRemoveUnknownTask() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                poolTest.removeUnknownTask();
-            }
-        });
+        poolTest.removeUnknownTask();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testGetTask() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                poolTest.getTask();
-            }
-        });
+        poolTest.getTask();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testGetUnknownTask() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                poolTest.getUnknownTask();
-            }
-        });
+        poolTest.getUnknownTask();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testGetTaskCount() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                poolTest.getTaskCount();
-            }
-        });
+        poolTest.getTaskCount();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testGetTaskCount2() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                poolTest.getTaskCount2();
-            }
-        });
+        poolTest.getTaskCount2();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testSetGetUserData() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                poolTest.setGetUserData();
-            }
-        });
+        poolTest.setGetUserData();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testAddStateListener() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                poolTest.addStateListener();
-            }
-        });
+        poolTest.addStateListener();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testRemoveStateListener() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                poolTest.removeStateListener();
-            }
-        });
+        poolTest.removeStateListener();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testChangeTaskStatus() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                poolTest.changeTaskStatus();
-            }
-        });
+        poolTest.changeTaskStatus();
     }
 
-    @Test
+    @Test @UiThreadTest
     public void testCheckTaskRemovingAfterFinishing() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                poolTest.checkTaskRemovingAfterFinishing();
-            }
-        });
+        poolTest.checkTaskRemovingAfterFinishing();
     }
 }
