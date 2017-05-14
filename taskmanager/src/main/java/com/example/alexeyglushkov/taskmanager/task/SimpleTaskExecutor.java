@@ -29,6 +29,7 @@ public class SimpleTaskExecutor implements TaskExecutor {
 
     public SimpleTaskExecutor() {
         // TODO: need to transfer these values somehow
+        // they should depend on task manager settings
         executor = new ThreadPoolExecutor(10, 10, 60, TimeUnit.SECONDS, sPoolWorkQueue, sThreadFactory);
     }
 
@@ -38,7 +39,9 @@ public class SimpleTaskExecutor implements TaskExecutor {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                task.startTask(callback);
+                if (!Tasks.isTaskCompleted(task)) { // the task could be already handled by task manager
+                    task.startTask(callback);
+                }
             }
         });
     }

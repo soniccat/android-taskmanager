@@ -12,6 +12,7 @@ import junit.framework.Assert;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 /**

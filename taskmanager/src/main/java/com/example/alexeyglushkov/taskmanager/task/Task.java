@@ -148,6 +148,7 @@ public interface Task extends TaskContainer {
     //
     // Caller: TaskManager
     //
+    // TODO: check if we need to call setTaskCallback in all implementations
     void startTask(Callback callback);
 
     enum Status {
