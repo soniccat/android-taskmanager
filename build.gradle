@@ -16,7 +16,7 @@ allprojects {
 
     project.ext {
         compileSdkVersion = 25
-        buildToolsVersion = "25.0.2"
+        buildToolsVersion = "25.0.3"
         minSdkVersion = 14
         targetSdkVersion = 25
         minifyEnabled = false
@@ -25,7 +25,7 @@ allprojects {
         versionCode = 1
         versionName = "1.0"
 
-        supportLibVersion = "25.0.1"
+        supportLibVersion = "25.3.1"
     }
 
     task hello << { task -> println "I'm $task.project.name $buildDir" }

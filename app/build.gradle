@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '25.0.0'
+    compileSdkVersion project.ext.compileSdkVersion
+    buildToolsVersion project.ext.buildToolsVersion
 
     defaultConfig {
         applicationId "com.example.rssreader"
         minSdkVersion 14
-        targetSdkVersion 23
+        targetSdkVersion project.ext.targetSdkVersion
     }
 
     buildTypes {
@@ -35,8 +35,8 @@ repositories{
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:23.2.1'
-    compile 'com.android.support:appcompat-v7:23.2.1'
+    compile 'com.android.support:support-v4:' + project.ext.supportLibVersion
+    compile 'com.android.support:appcompat-v7:' + project.ext.supportLibVersion
     testCompile 'org.mockito:mockito-core:1.9.5'
     compile 'com.google.guava:guava:18.0'
     compile project(':taskmanager')

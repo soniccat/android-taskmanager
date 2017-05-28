@@ -91,13 +91,13 @@ public class MainActivity extends BaseActivity {
     private void showAuthorization() {
         Task authTask = new SimpleTask() {
             @Override
-            public void startTask(Callback callback) {
+            public void startTask(final Callback callback) {
                 final Account account = Networks.createAccount(Networks.Network.Quizlet);
                 account.authorize(new Authorizer.AuthorizerCompletion() {
                     @Override
                     public void onFinished(AuthCredentials credentials, Authorizer.AuthError error) {
                         Log.d(TAG, "showAuthorization onFinished " + account.getCredentials().isValid());
-                        getPrivate().handleTaskCompletion();
+                        getPrivate().handleTaskCompletion(callback);
                     }
                 });
             }
@@ -158,7 +158,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void loadSets(boolean useCache) {
-        getMainApplication().getQuizletService().loadSets(new SimpleService.CommandCallback() {
+        getMainApplication().getQuizletService().loadSets(CachableHttpLoadTask.CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD, new SimpleService.CommandCallback() {
             @Override
             public void onCompleted(Error error) {
                 if (error != null) {
