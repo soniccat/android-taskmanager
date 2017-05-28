@@ -27,9 +27,9 @@ import java.lang.ref.WeakReference;
  */
 
 public class TestRotationActivity extends AppCompatActivity {
-    final String TAG = "Test_Rotation";
-    final String POOL_NAME = "rotationStack";
-    final String TASK_ID = "Button 1";
+    static final String TAG = "Test_Rotation";
+    static final String POOL_NAME = "rotationStack";
+    static final String TASK_ID = "Button 1";
 
     private TaskProvider taskPool;
     private TaskManagerSnapshot snapshot;
@@ -49,7 +49,7 @@ public class TestRotationActivity extends AppCompatActivity {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startTask();
+                startTask(TestRotationActivity.this);
             }
         });
 
@@ -81,7 +81,13 @@ public class TestRotationActivity extends AppCompatActivity {
         }
     }
 
-    void startTask() {
+    void stopTask() {
+        Log.d(TAG, "cancel ref " + this);
+
+        stopTasks(this);
+    }
+
+    static void startTask(TestRotationActivity activity) {
         Task task = new TaskImpl() {
             @Override
             public void startTask(Callback callback) {
@@ -105,8 +111,8 @@ public class TestRotationActivity extends AppCompatActivity {
         task.setTaskId(TASK_ID);
         task.setLoadPolicy(Task.LoadPolicy.CancelAdded);
 
-        final WeakReference<TestRotationActivity> ref = new WeakReference<>(this);
-        Log.d(TAG, "ref " + ref.get());
+        final WeakReference<TestRotationActivity> ref = new WeakReference<>(activity);
+        Log.d(TAG, "ref " + activity);
 
         task.setTaskCallback(new Task.Callback() {
             @Override
@@ -115,17 +121,17 @@ public class TestRotationActivity extends AppCompatActivity {
             }
         });
 
-        lastTask = task;
-        taskPool.addTask(task);
+        activity.taskPool.addTask(task);
     }
 
-    void stopTask() {
-        getTaskManager().getHandler().post(new Runnable() {
+    static private void stopTasks(final TestRotationActivity activity) {
+        final TaskManager manager = activity.getTaskManager();
+        manager.getHandler().post(new Runnable() {
             @Override
             public void run() {
-                Task task = getTaskManager().getTask(TASK_ID);
+                Task task = manager.getTask(TASK_ID);
                 if (task != null) {
-                    getTaskManager().cancel(task, null);
+                    manager.cancel(task, null);
                 }
             }
         });
