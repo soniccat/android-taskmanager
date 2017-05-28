@@ -64,6 +64,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.main.MainActivity" />
         </activity>
+        <activity android:name="com.testrotation.TestRotationActivity"
+            android:label="RotationTest">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.main.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

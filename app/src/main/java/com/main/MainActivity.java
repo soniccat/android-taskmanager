@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -30,6 +31,7 @@ import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 import com.playground.PlaygroundActivity;
 import com.rssclient.controllers.MainRssActivity;
 import com.rssclient.controllers.R;
+import com.testrotation.TestRotationActivity;
 
 import java.io.File;
 import java.util.List;
@@ -58,7 +60,7 @@ public class MainActivity extends BaseActivity implements QuizletService.Quizlet
         setContentView(R.layout.activity_main);
 
         ListView listView = (ListView)findViewById(R.id.list);
-        listView.setAdapter(new ArrayAdapter<String>(this,android.R.layout.activity_list_item, android.R.id.text1, new String[]{"Rss Client", "Playground", "Authorization", "Run Request", "Clear cache", "Load Sets"}));
+        listView.setAdapter(new ArrayAdapter<String>(this,android.R.layout.activity_list_item, android.R.id.text1, new String[]{"Rss Client", "Playground", "Authorization", "Run Request", "Clear cache", "Load Sets", "Test rotation"}));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -74,6 +76,8 @@ public class MainActivity extends BaseActivity implements QuizletService.Quizlet
                     clearCache();
                 } else if (position == 5) {
                     loadSets(true);
+                } else if (position == 6) {
+                    testRotation();
                 }
             }
         });
@@ -199,5 +203,10 @@ public class MainActivity extends BaseActivity implements QuizletService.Quizlet
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    void testRotation() {
+        Intent intent = new Intent(this, TestRotationActivity.class);
+        startActivity(intent);
     }
 }
