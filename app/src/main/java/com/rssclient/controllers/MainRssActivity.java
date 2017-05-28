@@ -233,7 +233,7 @@ public class MainRssActivity extends ActionBarActivity implements FeedsAdapter.F
         builder.setMessage("Type a feed url");
 
         final EditText textView = new EditText(this);
-        textView.setText("http://www.lenta.ru/rss");
+        textView.setText("https://www.lenta.ru/rss");
         builder.setView(textView);
 
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -309,6 +309,7 @@ public class MainRssActivity extends ActionBarActivity implements FeedsAdapter.F
                     int feedsCount = storage.feeds().size();
                     System.out.printf("loaded %d feeds\n", feedsCount);
 
+                    MainRssActivity.this.rssStorage = storage;
                     activity.handleRssStorageLoad();
                 }
             }

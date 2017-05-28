@@ -25,11 +25,10 @@ public class RssFeed implements Parcelable, Serializable, Tasks.TaskListener, Ht
     URL url;
     Task.Status loadStatus = Task.Status.NotStarted;
     Image image;
-    ArrayList<RssItem> items;
+    ArrayList<RssItem> items = new ArrayList<>();
     protected Task processingTask;
 
     public RssFeed() {
-        this.items = new ArrayList<RssItem>();
     }
 
     public RssFeed(URL url, String name) {

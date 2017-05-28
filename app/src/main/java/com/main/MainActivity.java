@@ -21,6 +21,7 @@ import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
 import com.example.alexeyglushkov.cachemanager.StorageProvider;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageProvider;
+import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.service.CachableHttpLoadTask;
 import com.example.alexeyglushkov.service.SimpleService;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
@@ -33,7 +34,7 @@ import com.rssclient.controllers.R;
 import java.io.File;
 import java.util.List;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements QuizletService.QuizletServiceListener {
     private static final String TAG = "MainActivity";
     private SimpleService service;
     private StorageProvider storageProvider;
@@ -153,21 +154,29 @@ public class MainActivity extends BaseActivity {
     }
 
     private void clearCache() {
-        getAccountStore().removeAll();
-        getServiceCache().removeAll();
+        try {
+            getAccountStore().removeAll();
+            getServiceCache().removeAll();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadSets(boolean useCache) {
-        getMainApplication().getQuizletService().loadSets(CachableHttpLoadTask.CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD, new SimpleService.CommandCallback() {
-            @Override
-            public void onCompleted(Error error) {
-                if (error != null) {
-                    Log.d("Quizlet", "error " + error.getMessage());
-                } else {
-                    Log.d("Quizlet", "fine ");
-                }
-            }
-        }, CachableHttpLoadTask.CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD);
+        getMainApplication().getQuizletService().loadSets(CachableHttpLoadTask.CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD, null);
+    }
+
+    // QuizletServiceListener
+
+
+    @Override
+    public void onStateChanged(QuizletService service, QuizletService.State oldState) {
+        Log.d("Quizlet", "fine ");
+    }
+
+    @Override
+    public void onLoadError(QuizletService service, Error error) {
+        Log.d("Quizlet", "error " + error.getMessage());
     }
 
     @Override

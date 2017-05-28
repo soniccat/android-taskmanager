@@ -3,9 +3,11 @@ package com.rssclient.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 import com.example.alexeyglushkov.taskmanager.image.Image;
 import com.example.alexeyglushkov.taskmanager.image.ImageLoader;
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
+import com.example.alexeyglushkov.tools.HandlerTools;
 import com.rssclient.model.RssItem;
 import com.example.alexeyglushkov.taskmanager.task.*;
 import com.google.common.collect.Range;
@@ -26,7 +28,7 @@ import android.widget.TextView;
 
 import junit.framework.Assert;
 
-public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.ProgressListener {
+public class RssItemsAdapter extends ArrayAdapter<RssItem> implements ProgressListener {
 
     /**
      *
@@ -144,7 +146,8 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
         taskProvider.addTask(task);
     }
 
-    public void onTaskProgressChanged(Task task, ProgressInfo info) {
+    public void onProgressChanged(Object sender, ProgressInfo info) {
+        Task task = (Task)sender;
         Assert.assertTrue(task.getTaskUserData() instanceof Pair);
 
         Pair<Integer, Image> taskData = (Pair<Integer, Image>)task.getTaskUserData();
@@ -170,7 +173,7 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements Task.Progr
         }
 
         //TODO: it should be done via api without direct access to getStreamReader
-        com.example.alexeyglushkov.taskmanager.task.Tools.runOnHandlerThread(taskProvider.getHandler(), new Runnable() {
+        HandlerTools.runOnHandlerThread(taskProvider.getHandler(), new Runnable() {
             @Override
             public void run() {
                 List<Task> tasks = new ArrayList<Task>();

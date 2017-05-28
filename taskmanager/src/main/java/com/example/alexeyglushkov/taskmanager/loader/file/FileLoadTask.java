@@ -13,7 +13,6 @@ public class FileLoadTask extends SimpleTask {
     protected String fileName;
     protected InputStreamReader handler;
     protected Context context;
-    protected Object handledData;
 
     public FileLoadTask(String fileName, InputStreamReader dataHandler, Context context) {
         super();
@@ -42,7 +41,7 @@ public class FileLoadTask extends SimpleTask {
             if (data instanceof Error) {
                 getPrivate().setTaskError((Error)data);
             } else {
-                setHandledData(data);
+                setTaskResult(data);
             }
 
         } catch (Exception e) {
@@ -60,14 +59,6 @@ public class FileLoadTask extends SimpleTask {
         }
 
         getPrivate().handleTaskCompletion(callback);
-    }
-
-    public Object getHandledData() {
-        return handledData;
-    }
-
-    public void setHandledData(Object handledData) {
-        this.handledData = handledData;
     }
 
     protected Object handleStream(InputStream fis) throws Exception {

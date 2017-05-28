@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManagerSnapshot;
 import com.example.alexeyglushkov.taskmanager.task.TaskManagerSnapshot;
+import com.example.alexeyglushkov.tools.HandlerTools;
 import com.main.MainApplication;
 import com.rssclient.model.RssFeed;
 import com.rssclient.model.RssStorage;
@@ -77,8 +78,7 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
                 // TODO Auto-generated method stub
                 System.out.println("loaded");
 
-                Tools.postOnMainLoop(new Runnable() {
-
+                HandlerTools.runOnMainThread(new Runnable() {
                     @Override
                     public void run() {
                         if (error != null) {

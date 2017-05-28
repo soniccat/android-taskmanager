@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.example.alexeyglushkov.taskmanager.com.example.alexeyglushkov.wordteacher.ui.TaskManagerView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.example.alexeyglushkov.taskmanager.ui.TaskManagerView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/task_manager_view"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.example.alexeyglushkov.taskmanager.com.example.alexeyglushkov.wordteacher.ui.TaskBarView
+    <com.example.alexeyglushkov.taskmanager.ui.TaskBarView
         android:id="@+id/bar"
         android:layout_width="match_parent"
         android:layout_height="30dp"
@@ -30,4 +30,4 @@
         android:paddingLeft="5dp"
         android:paddingRight="5dp"/>
 
-</com.example.alexeyglushkov.taskmanager.com.example.alexeyglushkov.wordteacher.ui.TaskManagerView>
+</com.example.alexeyglushkov.taskmanager.ui.TaskManagerView>

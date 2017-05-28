@@ -185,8 +185,8 @@ public class PlaygroundActivity extends ActionBarActivity implements TaskManager
             @Override
             public void onCompleted(boolean cancelled) {
                 List<TestTaskConfig> configs = null;
-                if (fileLoadTask.getHandledData() != null) {
-                    configs = (List<TestTaskConfig>)fileLoadTask.getHandledData();
+                if (fileLoadTask.getTaskResult() != null) {
+                    configs = (List<TestTaskConfig>)fileLoadTask.getTaskResult();
                 }
 
                 if (callback != null) {

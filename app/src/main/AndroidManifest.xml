@@ -20,13 +20,13 @@
         android:maxSdkVersion="18" />
 
     <application
-        android:name="com.com.example.alexeyglushkov.wordteacher.main.MainApplication"
+        android:name="com.main.MainApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.com.example.alexeyglushkov.wordteacher.main.MainActivity"
+            android:name="com.main.MainActivity"
             android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,7 +39,7 @@
             android:label="@string/rss_name" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.com.example.alexeyglushkov.wordteacher.main.MainActivity" />
+                android:value="com.main.MainActivity" />
         </activity>
         <activity
             android:name=".RssItemsActivity"
@@ -52,17 +52,17 @@
         <activity
             android:name="com.playground.PlaygroundActivity"
             android:label="@string/title_activity_playground"
-            android:parentActivityName="com.com.example.alexeyglushkov.wordteacher.main.MainActivity" >
+            android:parentActivityName="com.main.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.com.example.alexeyglushkov.wordteacher.main.MainActivity" />
+                android:value="com.main.MainActivity" />
         </activity>
         <activity
-            android:name="com.com.example.alexeyglushkov.wordteacher.authorization.AuthorizationActivity"
+            android:name="com.authorization.AuthorizationActivity"
             android:label="@string/title_activity_authorization" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.com.example.alexeyglushkov.wordteacher.main.MainActivity" />
+                android:value="com.main.MainActivity" />
         </activity>
     </application>
 

@@ -23,7 +23,7 @@ public class TestTask extends SimpleTask {
             }
         }
 
-        getPrivate().handleTaskCompletion();
+        getPrivate().handleTaskCompletion(callback);
         return;
     }
 }

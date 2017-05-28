@@ -22,20 +22,13 @@ public class ByteArrayWriter implements OutputStreamWriter {
             object = this.convertor.convert(object);
         }
 
-        /*
-        ByteArrayBuffer buffer = (ByteArrayBuffer)object;
-        try {
-            lastError = writeByteArray(stream, buffer);
-        } catch (IOException ex) {
-            lastError = new Error("ByteArrayWriter exception: " + ex.getMessage());
-        }*/
+        byte[] buffer = (byte[])object;
+        writeByteArray(stream, buffer);
     }
 
-    /*
-    public Error writeByteArray(OutputStream stream, ByteArrayBuffer buffer) throws IOException {
-        //stream.write(buffer.buffer());
-        return null;
-    }*/
+    public void writeByteArray(OutputStream stream, byte[] buffer) throws IOException {
+        stream.write(buffer);
+    }
 
     @Override
     public void setProgressUpdater(ProgressUpdater progressUpdater) {

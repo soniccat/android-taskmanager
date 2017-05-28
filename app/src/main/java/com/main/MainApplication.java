@@ -89,7 +89,7 @@ public class MainApplication extends Application {
                 StorageCleaner cleaner = new DiskStorageCleaner();
                 cleaner.clean(getStorageProvider());
 
-                getPrivate().handleTaskCompletion();
+                getPrivate().handleTaskCompletion(callback);
             }
         };
 
@@ -106,7 +106,7 @@ public class MainApplication extends Application {
                 restoreAccounts(store);
 
                 getPrivate().setTaskUserData(store);
-                getPrivate().handleTaskCompletion();
+                getPrivate().handleTaskCompletion(callback);
             }
         };
 
