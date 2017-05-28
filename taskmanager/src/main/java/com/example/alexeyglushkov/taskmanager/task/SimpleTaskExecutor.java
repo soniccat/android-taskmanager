@@ -13,8 +13,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class SimpleTaskExecutor implements TaskExecutor {
 
-    Executor executor;
-
     private static final ThreadFactory sThreadFactory = new ThreadFactory() {
         private final AtomicInteger mCount = new AtomicInteger(1);
 
@@ -23,20 +21,13 @@ public class SimpleTaskExecutor implements TaskExecutor {
         }
     };
 
-    // TODO: BlockingQueue gives bad performance, consider using our own executor
-    private static final BlockingQueue<Runnable> sPoolWorkQueue =
-            new LinkedBlockingQueue<Runnable>(128);
-
     public SimpleTaskExecutor() {
-        // TODO: need to transfer these values somehow
-        // they should depend on task manager settings
-        executor = new ThreadPoolExecutor(10, 10, 60, TimeUnit.SECONDS, sPoolWorkQueue, sThreadFactory);
     }
 
     @Override
     public void executeTask(final Task task) {
         final Task.Callback callback = task.getTaskCallback();
-        executor.execute(new Runnable() {
+        final Thread thread = sThreadFactory.newThread(new Runnable() {
             @Override
             public void run() {
                 if (!Tasks.isTaskCompleted(task)) { // the task could be already handled by task manager
@@ -44,5 +35,7 @@ public class SimpleTaskExecutor implements TaskExecutor {
                 }
             }
         });
+
+        thread.start();
     }
 }
