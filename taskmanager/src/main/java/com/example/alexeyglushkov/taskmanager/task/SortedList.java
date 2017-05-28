@@ -16,7 +16,12 @@ public class SortedList<T> extends ArrayList<T> {
         comparator = aComparator;
     }
 
-    public void addInSortedOrder(T elem) {
+    @Override
+    public boolean add(T t) {
+        return addInSortedOrder(t);
+    }
+
+    public boolean addInSortedOrder(T elem) {
         int insertIndex = Collections.binarySearch(this, elem, comparator);
         if (insertIndex < 0) {
             insertIndex = -insertIndex - 1;
@@ -32,7 +37,8 @@ public class SortedList<T> extends ArrayList<T> {
             }
         }
 
-        add(insertIndex, elem);
+        super.add(insertIndex, elem);
+        return true;
     }
 
     public void updateSortedOrder() {

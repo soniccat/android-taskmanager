@@ -3,6 +3,7 @@ package com.example.alexeyglushkov.taskmanager.task;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -37,7 +38,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
     private TaskPool loadingTasks;
     private TaskProvider waitingTasks;
-    private SortedList<TaskProvider> taskProviders;
+    private SafeList<TaskProvider> taskProviders;
 
     private SparseArray<Float> limits;
     private SparseArray<Integer> usedSpace; //type -> task count from loadingTasks
@@ -79,8 +80,8 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         usedSpace = new SparseArray<Integer>();
     }
 
-    private SortedList<TaskProvider> createTaskProvidersTreeSet() {
-        return new SortedList<TaskProvider>(new Comparator<TaskProvider>() {
+    private SafeList<TaskProvider> createTaskProvidersTreeSet() {
+        SortedList<TaskProvider> sortedList = new SortedList<TaskProvider>(new Comparator<TaskProvider>() {
             @Override
             public int compare(TaskProvider lhs, TaskProvider rhs) {
                 if (lhs.getPriority() == rhs.getPriority()) {
@@ -94,6 +95,8 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
                 return 1;
             }
         });
+
+        return new SafeList<>(sortedList, callbackHandler);
     }
 
     // TODO: we need run tasks when increase the size
@@ -197,7 +200,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         });
     }
 
-    public SortedList<TaskProvider> getTaskProviders() {
+    public ArrayList<TaskProvider> getTaskProviders() {
         checkHandlerThread();
 
         return taskProviders;
@@ -212,7 +215,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         }
 
         provider.addListener(this);
-        taskProviders.addInSortedOrder(provider);
+        taskProviders.add(provider);
     }
 
     public void setTaskProviderPriority(final TaskProvider provider, final int priority) {
@@ -228,18 +231,30 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         checkHandlerThread();
 
         provider.setPriority(priority);
-        taskProviders.updateSortedOrder();
+        ((SortedList)taskProviders.getOriginalList()).updateSortedOrder();
     }
 
     public TaskProvider getTaskProvider(String id) {
-        checkHandlerThread();
+        TaskProvider taskProvider = null;
 
-        for (TaskProvider taskProvider : taskProviders) {
+        if (Looper.myLooper() == taskProviders.getHandler().getLooper()) {
+            taskProvider = findProvider(taskProviders.getSafeList(), id);
+
+        } else {
+            checkHandlerThread();
+            taskProvider = findProvider(this.taskProviders, id);
+        }
+
+        return taskProvider;
+    }
+
+    @Nullable
+    private TaskProvider findProvider(ArrayList<TaskProvider> providers, String id) {
+        for (TaskProvider taskProvider : providers) {
             if (taskProvider.getTaskProviderId().equals(id)) {
                 return taskProvider;
             }
         }
-
         return null;
     }
 

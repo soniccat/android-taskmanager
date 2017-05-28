@@ -2,6 +2,8 @@ package com.example.alexeyglushkov.taskmanager.task;
 
 import android.util.SparseArray;
 
+import java.util.ArrayList;
+
 /**
  * Created by alexeyglushkov on 20.09.14.
  */
@@ -26,7 +28,7 @@ public interface TaskManager extends TaskPool {
     // Task Providers
     void addTaskProvider(TaskProvider provider);
     void removeTaskProvider(TaskProvider provider);
-    SortedList<TaskProvider> getTaskProviders(); //always sorted by priority
+    ArrayList<TaskProvider> getTaskProviders(); //always sorted by priority
 
     TaskProvider getTaskProvider(String id);
     void setTaskProviderPriority(TaskProvider provider, int priority);

@@ -60,7 +60,7 @@ public class TestRotationActivity extends AppCompatActivity {
     }
 
     private void initializeTaskPool() {
-        //taskPool = getTaskManager().getTaskProvider(POOL_NAME);
+        taskPool = getTaskManager().getTaskProvider(POOL_NAME);
         if (taskPool == null) {
             taskPool = new StackTaskProvider(true, getTaskManager().getHandler(), POOL_NAME);
             getTaskManager().addTaskProvider(taskPool);
