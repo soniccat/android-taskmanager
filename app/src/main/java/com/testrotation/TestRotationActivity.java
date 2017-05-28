@@ -14,10 +14,13 @@ import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 import com.example.alexeyglushkov.taskmanager.task.TaskManagerSnapshot;
 import com.example.alexeyglushkov.taskmanager.task.TaskPool;
 import com.example.alexeyglushkov.taskmanager.task.TaskProvider;
+import com.example.alexeyglushkov.taskmanager.task.WeakRefList;
 import com.example.alexeyglushkov.taskmanager.ui.TaskBarView;
 import com.example.alexeyglushkov.taskmanager.ui.TaskManagerView;
 import com.main.MainApplication;
 import com.rssclient.controllers.R;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Created by alexeyglushkov on 28.05.17.
@@ -26,10 +29,13 @@ import com.rssclient.controllers.R;
 public class TestRotationActivity extends AppCompatActivity {
     final String TAG = "Test_Rotation";
     final String POOL_NAME = "rotationStack";
+    final String TASK_ID = "Button 1";
 
     private TaskProvider taskPool;
     private TaskManagerSnapshot snapshot;
     private TaskManagerView taskManagerView;
+
+    private Task lastTask;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,6 +50,14 @@ public class TestRotationActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startTask();
+            }
+        });
+
+        view = findViewById(R.id.button2);
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopTask();
             }
         });
 
@@ -72,7 +86,14 @@ public class TestRotationActivity extends AppCompatActivity {
             @Override
             public void startTask(Callback callback) {
                 try {
-                    Thread.sleep(3000);
+                    for(int i=0; i<30; ++i) {
+                        Thread.sleep(1000);
+
+                        if (getNeedCancelTask()) {
+                            setIsCancelled();
+                            break;
+                        }
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -81,16 +102,33 @@ public class TestRotationActivity extends AppCompatActivity {
             }
         };
 
-        task.setTaskId("Button 1");
+        task.setTaskId(TASK_ID);
         task.setLoadPolicy(Task.LoadPolicy.CancelAdded);
+
+        final WeakReference<TestRotationActivity> ref = new WeakReference<>(this);
+        Log.d(TAG, "ref " + ref.get());
+
         task.setTaskCallback(new Task.Callback() {
             @Override
             public void onCompleted(boolean cancelled) {
-                Log.d(TAG, "Button 1 task completed");
+                Log.d(TAG, "Button 1 task completed " + ref.get());
             }
         });
 
+        lastTask = task;
         taskPool.addTask(task);
+    }
+
+    void stopTask() {
+        getTaskManager().getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                Task task = getTaskManager().getTask(TASK_ID);
+                if (task != null) {
+                    getTaskManager().cancel(task, null);
+                }
+            }
+        });
     }
 
     //// Getters
