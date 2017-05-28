@@ -6,12 +6,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManagerSnapshot;
 import com.example.alexeyglushkov.taskmanager.task.StackTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskImpl;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
+import com.example.alexeyglushkov.taskmanager.task.TaskManagerSnapshot;
 import com.example.alexeyglushkov.taskmanager.task.TaskPool;
 import com.example.alexeyglushkov.taskmanager.task.TaskProvider;
+import com.example.alexeyglushkov.taskmanager.ui.TaskBarView;
+import com.example.alexeyglushkov.taskmanager.ui.TaskManagerView;
 import com.main.MainApplication;
 import com.rssclient.controllers.R;
 
@@ -24,12 +28,16 @@ public class TestRotationActivity extends AppCompatActivity {
     final String POOL_NAME = "rotationStack";
 
     private TaskProvider taskPool;
+    private TaskManagerSnapshot snapshot;
+    private TaskManagerView taskManagerView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_rotation_test);
+
+        taskManagerView = (TaskManagerView) findViewById(R.id.task_manager_view);
 
         View view = findViewById(R.id.button1);
         view.setOnClickListener(new View.OnClickListener() {
@@ -39,11 +47,20 @@ public class TestRotationActivity extends AppCompatActivity {
             }
         });
 
+        snapshot = new SimpleTaskManagerSnapshot();
+        snapshot.startSnapshotRecording(getTaskManager());
+        snapshot.addSnapshotListener(new TaskManagerSnapshot.OnSnapshotChangedListener() {
+            @Override
+            public void onSnapshotChanged(TaskManagerSnapshot snapshot) {
+                taskManagerView.showSnapshot(snapshot);
+            }
+        });
+
         initializeTaskPool();
     }
 
     private void initializeTaskPool() {
-        taskPool = getTaskManager().getTaskProvider(POOL_NAME);
+        //taskPool = getTaskManager().getTaskProvider(POOL_NAME);
         if (taskPool == null) {
             taskPool = new StackTaskProvider(true, getTaskManager().getHandler(), POOL_NAME);
             getTaskManager().addTaskProvider(taskPool);
