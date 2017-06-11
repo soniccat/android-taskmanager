@@ -1,11 +1,13 @@
 package com.testrotation;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import com.example.alexeyglushkov.taskmanager.task.RestorableTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManagerSnapshot;
 import com.example.alexeyglushkov.taskmanager.task.StackTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.Task;
@@ -31,7 +33,7 @@ public class TestRotationActivity extends AppCompatActivity {
     static final String POOL_NAME = "rotationStack";
     static final String TASK_ID = "Button 1";
 
-    private TaskProvider taskPool;
+    private RestorableTaskProvider taskPool;
     private TaskManagerSnapshot snapshot;
     private TaskManagerView taskManagerView;
 
@@ -74,10 +76,21 @@ public class TestRotationActivity extends AppCompatActivity {
     }
 
     private void initializeTaskPool() {
-        taskPool = getTaskManager().getTaskProvider(POOL_NAME);
+        taskPool = (RestorableTaskProvider) getTaskManager().getTaskProvider(POOL_NAME);
         if (taskPool == null) {
-            taskPool = new StackTaskProvider(true, getTaskManager().getHandler(), POOL_NAME);
+            StackTaskProvider stackProvider = new StackTaskProvider(true, getTaskManager().getHandler(), POOL_NAME);
+            taskPool = new RestorableTaskProvider(stackProvider);
+            taskPool.setRecording(true);
+
             getTaskManager().addTaskProvider(taskPool);
+
+        } else {
+            taskPool.restoreTaskCompletion(TASK_ID, getTaskCallback(this), getTaskManager().getHandler(), new RestorableTaskProvider.Completion() {
+                @Override
+                public void completed(boolean isRestored) {
+                    Log.d(TAG, "is restored " + isRestored);
+                }
+            });
         }
     }
 
@@ -92,7 +105,7 @@ public class TestRotationActivity extends AppCompatActivity {
             @Override
             public void startTask(Callback callback) {
                 try {
-                    for(int i=0; i<30; ++i) {
+                    for(int i=0; i<5; ++i) {
                         Thread.sleep(1000);
 
                         if (getNeedCancelTask()) {
@@ -111,17 +124,22 @@ public class TestRotationActivity extends AppCompatActivity {
         task.setTaskId(TASK_ID);
         task.setLoadPolicy(Task.LoadPolicy.CancelAdded);
 
+        task.setTaskCallback(getTaskCallback(activity));
+
+        activity.taskPool.addTask(task);
+    }
+
+    @NonNull
+    private static Task.Callback getTaskCallback(TestRotationActivity activity) {
         final WeakReference<TestRotationActivity> ref = new WeakReference<>(activity);
         Log.d(TAG, "ref " + activity);
 
-        task.setTaskCallback(new Task.Callback() {
+        return new Task.Callback() {
             @Override
             public void onCompleted(boolean cancelled) {
                 Log.d(TAG, "Button 1 task completed " + ref.get());
             }
-        });
-
-        activity.taskPool.addTask(task);
+        };
     }
 
     static private void stopTasks(final TestRotationActivity activity) {
