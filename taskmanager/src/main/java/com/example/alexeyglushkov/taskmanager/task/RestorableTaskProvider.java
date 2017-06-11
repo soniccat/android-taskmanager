@@ -26,9 +26,10 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
             @Override
             public void onTaskStatusChanged(Task task, Task.Status oldStatus, Task.Status newStatus) {
                 if (Tasks.isTaskCompleted(task)) {
-                    if (!isRecording()) {
+                    activeTasks.remove(task);
+
+                    if (isRecording()) {
                         //task.setTaskCallback(originalCallback);
-                        activeTasks.remove(task);
                         storedTasks.add(task);
                     }
                 }
@@ -62,13 +63,13 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
             public void run() {
                 restoreTaskCompletionOnThread(taskId, callback, new Completion() {
                     @Override
-                    public void completed(final boolean isRestored) {
+                    public void completed(final Task task, final boolean isRestored) {
                         if (completion != null) {
                             Handler h = new Handler(looper);
                             h.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    completion.completed(isRestored);
+                                    completion.completed(task, isRestored);
                                 }
                             });
                         }
@@ -82,6 +83,7 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
         final Looper looper = Looper.myLooper();
 
         boolean isRestored = false;
+        Task restoredTask = null;
         Task activeTask = findTask(activeTasks, taskId);
 
         if (activeTask != null) {
@@ -91,7 +93,10 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
             if (canReplaceCompletion) {
                 activeTask.setTaskCallback(callback);
 
-            } else {
+            } else if (Tasks.isTaskCompleted(activeTask)) {
+                callback.onCompleted(activeTask.getTaskStatus() == Task.Status.Cancelled);
+
+            }else {
                 activeTask.addTaskStatusListener(new Task.StatusListener() {
                     @Override
                     public void onTaskStatusChanged(Task task, Task.Status oldStatus, final Task.Status newStatus) {
@@ -109,9 +114,15 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
             }
 
             isRestored = true;
+
+        } else {
+            restoredTask = findStoredTask(taskId);
+            if (restoredTask != null) {
+                isRestored = true;
+            }
         }
 
-        completion.completed(isRestored);
+        completion.completed(restoredTask, isRestored);
     }
 
     private Task findTask(List<Task> tasks, String taskId) {
@@ -126,8 +137,16 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
         return result;
     }
 
+    public void clearStoredTasks() {
+        storedTasks.clear();
+    }
+
     public void setRecording(boolean recording) {
         isRecording = recording;
+
+        if (!isRecording) {
+            clearStoredTasks();
+        }
     }
 
     public boolean isRecording() {
@@ -135,6 +154,6 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
     }
 
     public interface Completion {
-        void completed(boolean isRestored);
+        void completed(Task task, boolean isRestored);
     }
 }

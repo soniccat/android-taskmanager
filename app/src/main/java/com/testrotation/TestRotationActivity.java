@@ -87,10 +87,12 @@ public class TestRotationActivity extends AppCompatActivity {
         } else {
             taskPool.restoreTaskCompletion(TASK_ID, getTaskCallback(this), getTaskManager().getHandler(), new RestorableTaskProvider.Completion() {
                 @Override
-                public void completed(boolean isRestored) {
-                    Log.d(TAG, "is restored " + isRestored);
+                public void completed(Task task, boolean isRestored) {
+                    Log.d(TAG, "Task " + task.toString() + " is restored " + isRestored);
                 }
             });
+
+            taskPool.setRecording(false);
         }
     }
 
@@ -98,6 +100,12 @@ public class TestRotationActivity extends AppCompatActivity {
         Log.d(TAG, "cancel ref " + this);
 
         stopTasks(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        taskPool.setRecording(true);
     }
 
     static void startTask(TestRotationActivity activity) {
@@ -130,14 +138,14 @@ public class TestRotationActivity extends AppCompatActivity {
     }
 
     @NonNull
-    private static Task.Callback getTaskCallback(TestRotationActivity activity) {
+    private static Task.Callback getTaskCallback(final TestRotationActivity activity) {
         final WeakReference<TestRotationActivity> ref = new WeakReference<>(activity);
         Log.d(TAG, "ref " + activity);
 
         return new Task.Callback() {
             @Override
             public void onCompleted(boolean cancelled) {
-                Log.d(TAG, "Button 1 task completed " + ref.get());
+                Log.d(TAG, "Button 1 task completed " + ref.get() + " is completed " + (activity.isFinishing() || activity.isDestroyed()));
             }
         };
     }
