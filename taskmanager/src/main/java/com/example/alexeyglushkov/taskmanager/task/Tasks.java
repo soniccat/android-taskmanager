@@ -14,18 +14,12 @@ public class Tasks {
 
     // To automatically sync task state with your object state (isLoading for example)
     public static void bindOnTaskCompletion(final Task task, final TaskListener listener) {
-        Assert.assertEquals(task.getTaskStatus(), Task.Status.NotStarted);
-
-        if (task.getTaskId() != null) {
-            task.setTaskId(task.getTaskId() + listener.hashCode());
-        }
-
         task.addTaskStatusListener(new Task.StatusListener() {
             @Override
             public void onTaskStatusChanged(final Task task, final Task.Status oldStatus, final Task.Status newStatus) {
                 final Task.StatusListener thisListener = this;
 
-                Log.d("Image--", "start " + task + " " + task.getTaskStatus());
+                Log.d("Bind--", "task " + task + " from " + oldStatus + " to " + newStatus);
 
                 //Waiting status is set in the com.example.alexeyglushkov.wordteacher.main thread
                 if (newStatus == Task.Status.Waiting) {

@@ -88,7 +88,8 @@ public class TestRotationActivity extends AppCompatActivity {
             taskPool.restoreTaskCompletion(TASK_ID, getTaskCallback(this), getTaskManager().getHandler(), new RestorableTaskProvider.Completion() {
                 @Override
                 public void completed(Task task, boolean isRestored) {
-                    Log.d(TAG, "Task " + task.toString() + " is restored " + isRestored);
+                    String stringTask = task == null ? "(null)" : task.toString();
+                    Log.d(TAG, "Task " + stringTask + " is restored " + isRestored);
                 }
             });
 
@@ -113,7 +114,7 @@ public class TestRotationActivity extends AppCompatActivity {
             @Override
             public void startTask(Callback callback) {
                 try {
-                    for(int i=0; i<5; ++i) {
+                    for(int i=0; i<10; ++i) {
                         Thread.sleep(1000);
 
                         if (getNeedCancelTask()) {
@@ -145,7 +146,9 @@ public class TestRotationActivity extends AppCompatActivity {
         return new Task.Callback() {
             @Override
             public void onCompleted(boolean cancelled) {
-                Log.d(TAG, "Button 1 task completed " + ref.get() + " is completed " + (activity.isFinishing() || activity.isDestroyed()));
+                TestRotationActivity currentActivity = ref.get();
+                boolean isCompleted = currentActivity == null || (currentActivity.isFinishing() || currentActivity.isDestroyed());
+                Log.d(TAG, "Button 1 task completed " + currentActivity + " is completed " + isCompleted);
             }
         };
     }

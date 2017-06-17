@@ -12,6 +12,8 @@ import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 import com.example.alexeyglushkov.taskmanager.task.Tasks;
 
+import junit.framework.Assert;
+
 // Because Image doesn't store loaded data we should use ImageLoader to get the data from callback
 
 public class ImageLoader {
@@ -28,6 +30,10 @@ public class ImageLoader {
 
         httpLoadTask.setLoadPolicy(image.getLoadPolicy());
         httpLoadTask.setContentLength(image.getByteSize());
+
+        if (httpLoadTask.getTaskId() != null) {
+            httpLoadTask.setTaskId(httpLoadTask.getTaskId() + image.hashCode());
+        }
 
         Tasks.bindOnTaskCompletion(httpLoadTask, image);
 

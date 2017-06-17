@@ -79,9 +79,9 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
         });
     }
 
+    // try to update the completion of the task if the task is in progress or waiting
+    // otherwise return the completed task in completion
     private void restoreTaskCompletionOnThread(String taskId, final Task.Callback callback, final Completion completion) {
-        final Looper looper = Looper.myLooper();
-
         boolean isRestored = false;
         Task restoredTask = null;
         Task activeTask = findTask(activeTasks, taskId);
@@ -97,18 +97,14 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
                 callback.onCompleted(activeTask.getTaskStatus() == Task.Status.Cancelled);
 
             }else {
-                activeTask.addTaskStatusListener(new Task.StatusListener() {
+                Tasks.bindOnTaskCompletion(activeTask, new Tasks.TaskListener() {
                     @Override
-                    public void onTaskStatusChanged(Task task, Task.Status oldStatus, final Task.Status newStatus) {
-                        if (Tasks.isTaskCompleted(task)) {
-                            Handler h = new Handler(looper);
-                            h.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    callback.onCompleted(newStatus == Task.Status.Cancelled);
-                                }
-                            });
-                        }
+                    public void setTaskInProgress(Task task) {
+                    }
+
+                    @Override
+                    public void setTaskCompleted(Task task) {
+                        callback.onCompleted(task.getTaskStatus() == Task.Status.Cancelled);
                     }
                 });
             }
@@ -154,6 +150,11 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
     }
 
     public interface Completion {
+
+        // restored is true if the task is restored,
+        // in this case the task could be null or not null
+        // it's null if the task is in progress or waiting and the passed completion will be called
+        // it isn't null if the task is completed, the result of the task should be handled
         void completed(Task task, boolean isRestored);
     }
 }
