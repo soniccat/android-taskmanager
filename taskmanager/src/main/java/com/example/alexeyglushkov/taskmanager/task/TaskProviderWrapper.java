@@ -2,7 +2,10 @@ package com.example.alexeyglushkov.taskmanager.task;
 
 import android.os.Handler;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by alexeyglushkov on 11.06.17.
@@ -11,6 +14,7 @@ import java.util.List;
 public class TaskProviderWrapper implements TaskProvider {
 
     private TaskProvider provider;
+    private Map<TaskPoolListener, TaskPoolListener> listenerMap = new HashMap<>();
 
     public TaskProviderWrapper(TaskProvider provider) {
         this.provider = provider;
@@ -72,8 +76,21 @@ public class TaskProviderWrapper implements TaskProvider {
     }
 
     @Override
-    public void addListener(TaskPoolListener listener) {
-        provider.addListener(listener);
+    public void addListener(final TaskPoolListener listener) {
+        TaskPoolListener wrapperListener = new TaskPoolListener() {
+            @Override
+            public void onTaskAdded(TaskPool pool, Task task) {
+                listener.onTaskAdded(TaskProviderWrapper.this, task);
+            }
+
+            @Override
+            public void onTaskRemoved(TaskPool pool, Task task) {
+                listener.onTaskRemoved(TaskProviderWrapper.this, task);
+            }
+        };
+
+        listenerMap.put(listener, wrapperListener);
+        provider.addListener(wrapperListener);
     }
 
     @Override
@@ -83,7 +100,11 @@ public class TaskProviderWrapper implements TaskProvider {
 
     @Override
     public void removeListener(TaskPoolListener listener) {
-        provider.removeListener(listener);
+        TaskPoolListener wrappedListener = listenerMap.get(listener);
+        if (wrappedListener != null) {
+            provider.removeListener(wrappedListener);
+            listenerMap.remove(listener);
+        }
     }
 
     @Override

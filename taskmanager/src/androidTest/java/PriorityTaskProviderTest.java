@@ -165,6 +165,11 @@ public class PriorityTaskProviderTest {
     }
 
     @Test @UiThreadTest
+    public void testAddTaskAddStatusListener() {
+        poolTest.addTaskAddStatusListener();
+    }
+
+    @Test @UiThreadTest
     public void testAddStartedTask() {
         poolTest.addStartedTask();
     }

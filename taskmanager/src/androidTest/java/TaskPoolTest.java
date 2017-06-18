@@ -52,11 +52,21 @@ public class TaskPoolTest {
 
         // Verify
         Mockito.verify(taskPrivate).setTaskStatus(Task.Status.Waiting);
-        Mockito.verify(task).addTaskStatusListener(taskPool);
         Mockito.verify(listener).onTaskAdded(taskPool, task);
 
         assertEquals(taskPool.getTaskCount(), 1);
         assertTrue(taskPool.getTasks().contains(task));
+    }
+
+    public void addTaskAddStatusListener() {
+        // Arrange
+        Task task = TestTasks.createTaskMock();
+
+        // Act
+        taskPool.addTask(task);
+
+        // Verify
+        Mockito.verify(task).addTaskStatusListener(taskPool);
     }
 
     public void addStartedTask() {
@@ -238,8 +248,6 @@ public class TaskPoolTest {
         testTask.getPrivate().setTaskStatus(Task.Status.Finished);
 
         // Verify
-        Mockito.verify(taskPoolMock).onTaskStatusChanged(testTask, Task.Status.Waiting, Task.Status.Finished);
-
         assertEquals(0, taskPool.getTaskCount());
     }
 }

@@ -2,6 +2,7 @@ package com.example.alexeyglushkov.taskmanager.task;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
  */
 
 public class RestorableTaskProvider extends TaskProviderWrapper {
+    static final String TAG = "RestorableTaskProvider";
 
     private boolean isRecording;
     private List<Task> activeTasks = new ArrayList<>();
@@ -22,21 +24,24 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
 
     @Override
     public void addTask(final Task task) {
-        task.addTaskStatusListener(new Task.StatusListener() {
-            @Override
-            public void onTaskStatusChanged(Task task, Task.Status oldStatus, Task.Status newStatus) {
-                if (Tasks.isTaskCompleted(task)) {
-                    activeTasks.remove(task);
-
-                    if (isRecording()) {
-                        //task.setTaskCallback(originalCallback);
-                        storedTasks.add(task);
-                    }
-                }
-            }
-        });
-
         super.addTask(task);
+        if (!Tasks.isTaskReadyToStart(task)) {
+            // that was rejected on super level too
+            return;
+        }
+
+        task.addTaskStatusListener(this);
+    }
+
+    @Override
+    public void onTaskStatusChanged(Task task, Task.Status oldStatus, Task.Status newStatus) {
+        if (Tasks.isTaskCompleted(task)) {
+            activeTasks.remove(task);
+
+            if (isRecording()) {
+                storedTasks.add(task);
+            }
+        }
     }
 
     @Override

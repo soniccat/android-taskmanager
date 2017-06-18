@@ -27,8 +27,8 @@ public class SimpleTaskPool implements TaskPool {
     private Object userData;
 
     public SimpleTaskPool(Handler handler) {
-        tasks = new ArrayList<Task>();
-        listeners = new ArrayList<TaskPoolListener>();
+        tasks = new ArrayList<>();
+        listeners = new ArrayList<>();
         setHandler(handler);
     }
 

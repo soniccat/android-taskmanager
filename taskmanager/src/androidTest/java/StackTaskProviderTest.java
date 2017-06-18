@@ -7,6 +7,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.test.AndroidTestCase;
 
 import com.example.alexeyglushkov.taskmanager.task.StackTaskProvider;
+import com.example.alexeyglushkov.taskmanager.task.TaskProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -19,21 +20,33 @@ import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class StackTaskProviderTest {
-    private TaskPoolTest poolTest;
-    private TaskProviderTest providerTest;
-    private StackTaskProvider taskProvider;
+    protected TaskPoolTest poolTest;
+    protected TaskProviderTest providerTest;
+    protected TaskProvider taskProvider;
 
     @Rule
     public UiThreadTestRule rule = new UiThreadTestRule();
 
     @Before
     public void setUp() throws Exception {
-        taskProvider = new StackTaskProvider(false, new Handler(Looper.myLooper()), "TestId");
+        taskProvider = prepareTaskProvider();
 
         poolTest = new TaskPoolTest();
         providerTest = new TaskProviderTest();
 
+        preparePoolTest();
+        prepareProviderTest();
+    }
+
+    protected TaskProvider prepareTaskProvider() {
+        return new StackTaskProvider(false, new Handler(Looper.myLooper()), "TestId");
+    }
+
+    protected void preparePoolTest() {
         poolTest.before(taskProvider);
+    }
+
+    protected void prepareProviderTest() {
         providerTest.before(taskProvider);
     }
 
@@ -89,6 +102,11 @@ public class StackTaskProviderTest {
     @Test @UiThreadTest
     public void testAddTask() {
         poolTest.addTask();
+    }
+
+    @Test @UiThreadTest
+    public void testAddTaskAddStatusListener() {
+        poolTest.addTaskAddStatusListener();
     }
 
     @Test @UiThreadTest
