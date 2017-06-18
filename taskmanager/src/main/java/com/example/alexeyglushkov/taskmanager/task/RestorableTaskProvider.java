@@ -39,7 +39,7 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
             activeTasks.remove(task);
 
             if (isRecording()) {
-                storedTasks.add(task);
+                getStoredTasks().add(task);
             }
         }
     }
@@ -57,7 +57,7 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
     }
 
     public Task findStoredTask(String taskId) {
-        return findTask(storedTasks, taskId);
+        return findTask(getStoredTasks(), taskId);
     }
 
     public void restoreTaskCompletion(final String taskId, final Task.Callback callback, Handler handler, final Completion completion) {
@@ -139,7 +139,7 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
     }
 
     public void clearStoredTasks() {
-        storedTasks.clear();
+        getStoredTasks().clear();
     }
 
     public void setRecording(boolean recording) {
