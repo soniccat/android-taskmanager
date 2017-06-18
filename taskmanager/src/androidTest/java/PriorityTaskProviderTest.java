@@ -1,5 +1,6 @@
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.annotation.UiThreadTest;
 import android.support.test.rule.UiThreadTestRule;
@@ -7,6 +8,7 @@ import android.support.test.runner.AndroidJUnit4;
 
 import com.example.alexeyglushkov.taskmanager.task.PriorityTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.Task;
+import com.example.alexeyglushkov.taskmanager.task.TaskPool;
 import com.example.alexeyglushkov.taskmanager.task.TaskProvider;
 
 import org.junit.Before;
@@ -31,17 +33,26 @@ public class PriorityTaskProviderTest {
 
     private TaskPoolTest poolTest;
     private TaskProviderTest providerTest;
-    private PriorityTaskProvider taskProvider;
+    protected TaskProvider taskProvider;
 
     @Before
     public void setUp() throws Exception {
-        taskProvider = new PriorityTaskProvider(new Handler(Looper.myLooper()), "TestId");
+        taskProvider = prepareTaskProvider();
 
         poolTest = new TaskPoolTest();
         providerTest = new TaskProviderTest();
 
         poolTest.before(taskProvider);
         providerTest.before(taskProvider);
+    }
+
+    @NonNull
+    protected TaskProvider prepareTaskProvider() {
+        return new PriorityTaskProvider(new Handler(Looper.myLooper()), "TestId");
+    }
+
+    protected PriorityTaskProvider getPriorityTaskProvider() {
+        return (PriorityTaskProvider)taskProvider;
     }
 
     // PriorityTaskProviderTests
@@ -60,7 +71,7 @@ public class PriorityTaskProviderTest {
         taskProvider.addTask(TestTasks.createTestTaskSpy("f", 3, 6));
 
         // Act
-        taskProvider.updatePriorities(new PriorityTaskProvider.PriorityProvider() {
+        getPriorityTaskProvider().updatePriorities(new PriorityTaskProvider.PriorityProvider() {
             @Override
             public int getPriority(Task task) {
                 if (task.getTaskType() == 2) {

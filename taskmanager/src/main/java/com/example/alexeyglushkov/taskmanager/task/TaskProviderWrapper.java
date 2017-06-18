@@ -126,4 +126,8 @@ public class TaskProviderWrapper implements TaskProvider {
     public void onTaskStatusChanged(Task task, Task.Status oldStatus, Task.Status newStatus) {
         provider.onTaskStatusChanged(task, oldStatus, newStatus);
     }
+
+    public TaskProvider getProvider() {
+        return provider;
+    }
 }
