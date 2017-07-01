@@ -356,6 +356,57 @@ public class TaskManagerTest {
         assertTrue(taskManager.getTasks().contains(task2));
     }
 
+    public void taskCallbackCalled() {
+        // Arrange
+        TaskManager.TaskManagerListener listener = Mockito.mock(TaskManager.TaskManagerListener.class);
+
+        TestTask task = TestTasks.createTestTaskSpy("taskId");
+        task.setTaskCallback(new Task.Callback() {
+            @Override
+            public void onCompleted(boolean cancelled) {
+            }
+        });
+
+        taskManager.addListener(listener);
+
+        // Act
+        taskManager.addTask(task);
+        task.finish();
+
+        // Verify
+        assertEquals(Task.Status.Finished, task.getTaskStatus());
+        Mockito.verify(listener).onTaskRemoved(taskManager, task, true);
+    }
+
+    public void changeTaskCallback() {
+        // Arrange
+        TaskManager.TaskManagerListener listener = Mockito.mock(TaskManager.TaskManagerListener.class);
+
+        Task task = TestTasks.createTestTaskSpy("taskId");
+        task.setTaskCallback(new Task.Callback() {
+            @Override
+            public void onCompleted(boolean cancelled) {
+            }
+        });
+
+        Task.Callback newCallback = new Task.Callback() {
+            @Override
+            public void onCompleted(boolean cancelled) {
+            }
+        };
+
+        taskManager.addListener(listener);
+
+        // Act
+        taskManager.addTask(task);
+        task.getPrivate().handleTaskCompletion(task.getTaskCallback());
+        //task.setTaskCallback(newCallback);
+
+        // Verify
+        assertEquals(Task.Status.Finished, task.getTaskStatus());
+        Mockito.verify(listener).onTaskRemoved(taskManager, task, true);
+    }
+
     public void addStateListener() {
         // Arrange
         Task task = TestTasks.createTaskMock("taskId", Task.Status.NotStarted);
