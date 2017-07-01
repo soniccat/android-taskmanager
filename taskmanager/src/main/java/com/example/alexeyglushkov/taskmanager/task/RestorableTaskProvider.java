@@ -96,27 +96,13 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
         Task task = findTask(activeTasks, taskId);
 
         if (task != null) {
-            Task.Status status = task.getTaskStatus();
-            boolean canReplaceCompletion = status == Task.Status.Blocked || status == Task.Status.NotStarted || status == Task.Status.Waiting;
             restoreState = RestoreState.ReplacedCompletion;
 
-            if (canReplaceCompletion) {
-                task.setTaskCallback(callback);
-
-            } else if (Tasks.isTaskCompleted(task)) {
+            if (Tasks.isTaskCompleted(task)) {
                 callback.onCompleted(task.getTaskStatus() == Task.Status.Cancelled);
 
             }else {
-                Tasks.bindOnTaskCompletion(task, new Tasks.TaskListener() {
-                    @Override
-                    public void setTaskInProgress(Task task) {
-                    }
-
-                    @Override
-                    public void setTaskCompleted(Task task) {
-                        callback.onCompleted(task.getTaskStatus() == Task.Status.Cancelled);
-                    }
-                });
+                task.setTaskCallback(callback);
             }
 
         } else {

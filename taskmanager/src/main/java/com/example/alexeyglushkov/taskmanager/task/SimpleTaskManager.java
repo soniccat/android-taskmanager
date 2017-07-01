@@ -147,7 +147,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
             @Override
             public void run() {
                 if (handleTaskLoadPolicy(task)) {
-                    final Task.Callback oldCallBack = task.getTaskCallback();
+                    final Task.Callback originalCallback = task.getTaskCallback();
                     task.setTaskCallback(new Task.Callback() {
                         @Override
                         public void onCompleted(final boolean cancelled) {
@@ -156,13 +156,18 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
                             HandlerTools.runOnHandlerThread(handler, new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (task.getTaskCallback() != thisCallback) {
-                                        // may happen if canBeCancelledImmediately returns true
+                                    Task.Callback resultCallback = originalCallback;
+                                    if (task.getTaskCallback() == originalCallback) {
+                                        // handleTaskCompletionOnThread was already called
+                                        // it may happen if canBeCancelledImmediately returns true
                                         return;
+                                    } else if (task.getTaskCallback() != thisCallback) {
+                                        // callback was changed outside
+                                        resultCallback = task.getTaskCallback();
                                     }
 
                                     triggerOnTaskRemoved(task, true);
-                                    handleTaskCompletionOnThread(task, oldCallBack, cancelled);
+                                    handleTaskCompletionOnThread(task, resultCallback, cancelled);
                                 }
                             });
                         }
@@ -593,13 +598,18 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
                 HandlerTools.runOnHandlerThread(handler, new Runnable() {
                     @Override
                     public void run() {
-                        if (task.getTaskCallback() != thisCallback) {
+                        Task.Callback resultCallback = originalCallback;
+                        if (task.getTaskCallback() == originalCallback) {
+                            // handleTaskCompletionOnThread was already called
                             // can happen if canBeCancelledImmediately returns true
                             return;
+                        } else if (task.getTaskCallback() != thisCallback) {
+                            // callback was changed outside
+                            resultCallback = task.getTaskCallback();
                         }
 
                         logTask(task, cancelled ? "Task onCompleted (Cancelled)" : "Task onCompleted");
-                        handleTaskCompletionOnThread(task, originalCallback, cancelled);
+                        handleTaskCompletionOnThread(task, resultCallback, cancelled);
                     }
                 });
             }
@@ -658,7 +668,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
 
             if (st == Task.Status.Waiting || st == Task.Status.NotStarted || st == Task.Status.Blocked || task.getPrivate().canBeCancelledImmediately()) {
                 if (st == Task.Status.Started) {
-                    task.getTaskCallback().onCompleted(true); // to get an original callback
+                    task.getTaskCallback().onCompleted(true); // to get the original callback
 
                 } else {
                     handleTaskCompletionOnThread(task, task.getTaskCallback(), true);
