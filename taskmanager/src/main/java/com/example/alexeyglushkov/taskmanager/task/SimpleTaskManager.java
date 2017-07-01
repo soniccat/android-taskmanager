@@ -69,7 +69,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         loadingTasks = new SimpleTaskPool(handler);
         loadingTasks.addListener(this);
 
-        // TODO: consider putting it to taskProiders list
+        // TODO: consider putting it to taskProviders list
         waitingTasks = new PriorityTaskProvider(handler, "TaskManagerProviderId");
         waitingTasks.addListener(this);
 
@@ -635,6 +635,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
             @Override
             public void run() {
                 if (callback != null) {
+                    // TODO: looks strange to pass status == ... everywhere
                     callback.onCompleted(status == Task.Status.Cancelled);
                 }
             }

@@ -2,7 +2,6 @@ package com.example.alexeyglushkov.taskmanager.task;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +11,12 @@ import java.util.List;
  */
 
 public class RestorableTaskProvider extends TaskProviderWrapper {
+    public enum RestoreState {
+        NotRestored, // task wasn't found
+        Restored, // completed task was found and should be handled
+        ReplacedCompletion // task is in progress, completion will be called when the task finishes
+    }
+
     static final String TAG = "RestorableTaskProvider";
 
     private boolean isRecording;
@@ -68,13 +73,13 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
             public void run() {
                 restoreTaskCompletionOnThread(taskId, callback, new Completion() {
                     @Override
-                    public void completed(final Task task, final boolean isRestored) {
+                    public void completed(final Task task, final RestoreState restoreState) {
                         if (completion != null) {
                             Handler h = new Handler(looper);
                             h.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    completion.completed(task, isRestored);
+                                    completion.completed(task, restoreState);
                                 }
                             });
                         }
@@ -87,22 +92,22 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
     // try to update the completion of the task if the task is in progress or waiting
     // otherwise return the completed task in completion
     private void restoreTaskCompletionOnThread(String taskId, final Task.Callback callback, final Completion completion) {
-        boolean isRestored = false;
-        Task restoredTask = null;
-        Task activeTask = findTask(activeTasks, taskId);
+        RestoreState restoreState = RestoreState.NotRestored;
+        Task task = findTask(activeTasks, taskId);
 
-        if (activeTask != null) {
-            Task.Status status = activeTask.getTaskStatus();
+        if (task != null) {
+            Task.Status status = task.getTaskStatus();
             boolean canReplaceCompletion = status == Task.Status.Blocked || status == Task.Status.NotStarted || status == Task.Status.Waiting;
+            restoreState = RestoreState.ReplacedCompletion;
 
             if (canReplaceCompletion) {
-                activeTask.setTaskCallback(callback);
+                task.setTaskCallback(callback);
 
-            } else if (Tasks.isTaskCompleted(activeTask)) {
-                callback.onCompleted(activeTask.getTaskStatus() == Task.Status.Cancelled);
+            } else if (Tasks.isTaskCompleted(task)) {
+                callback.onCompleted(task.getTaskStatus() == Task.Status.Cancelled);
 
             }else {
-                Tasks.bindOnTaskCompletion(activeTask, new Tasks.TaskListener() {
+                Tasks.bindOnTaskCompletion(task, new Tasks.TaskListener() {
                     @Override
                     public void setTaskInProgress(Task task) {
                     }
@@ -114,16 +119,14 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
                 });
             }
 
-            isRestored = true;
-
         } else {
-            restoredTask = findStoredTask(taskId);
-            if (restoredTask != null) {
-                isRestored = true;
+            task = findStoredTask(taskId);
+            if (task != null) {
+                restoreState = RestoreState.Restored;
             }
         }
 
-        completion.completed(restoredTask, isRestored);
+        completion.completed(task, restoreState);
     }
 
     private Task findTask(List<Task> tasks, String taskId) {
@@ -155,11 +158,6 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
     }
 
     public interface Completion {
-
-        // restored is true if the task is restored,
-        // in this case the task could be null or not null
-        // it's null if the task is in progress or waiting and the passed completion will be called
-        // it isn't null if the task is completed, the result of the task should be handled
-        void completed(Task task, boolean isRestored);
+        void completed(Task task, RestoreState state);
     }
 }

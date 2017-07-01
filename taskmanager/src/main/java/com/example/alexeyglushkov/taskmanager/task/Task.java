@@ -163,6 +163,7 @@ public interface Task extends TaskContainer {
     enum LoadPolicy {
         SkipIfAdded, // don't load if the state isn't equal to Waiting
         CancelAdded // cancel already added task, in this case you shouldn't do anything with cancelled task
+        // TODO: AddDependency add dependency to start after finishing
     }
 
     // TODO: pass Error to get to know that the task was cancelled or an error happened
