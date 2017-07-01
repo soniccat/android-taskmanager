@@ -12,9 +12,11 @@ public class TestTask extends SimpleTask {
     @Override
     public void startTask(Callback callback) {
         storedCallback = callback;
+        Log.d("RRRRRR", "1 " + storedCallback);
     }
 
     public void finish() {
+        Log.d("RRRRRR", "2 " + storedCallback);
         getPrivate().handleTaskCompletion(storedCallback);
     }
 }

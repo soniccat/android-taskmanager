@@ -9,7 +9,10 @@ import com.example.alexeyglushkov.taskmanager.task.TaskPool;
 import com.example.alexeyglushkov.taskmanager.task.TaskPrivate;
 import com.example.alexeyglushkov.taskmanager.task.TaskProvider;
 
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -25,6 +28,19 @@ public class TaskManagerTest {
 
     public void before(TaskManager taskManager) {
         this.taskManager = taskManager;
+
+        TaskExecutor executor = Mockito.mock(TaskExecutor.class);
+        Mockito.doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Task task = (Task)invocation.getArguments()[0];
+                Task.Callback callback = (Task.Callback)invocation.getArguments()[1];
+                task.startTask(callback);
+                return null;
+            }
+        }).when(executor).executeTask((Task) Mockito.any(), (Task.Callback)Mockito.any());
+
+        taskManager.setTaskExecutor(executor);
     }
 
     public void setMaxLoadingTasks() {
