@@ -74,6 +74,11 @@ public class SimpleTaskManagerTest {
     }
 
     @Test @UiThreadTest
+    public void testChangedTaskCallbackCalled() {
+        taskManagerTest.changedTaskCallbackCalled();
+    }
+
+    @Test @UiThreadTest
     public void testAddStateListener() {
         taskManagerTest.addStateListener();
     }

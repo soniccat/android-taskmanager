@@ -25,8 +25,7 @@ public class SimpleTaskExecutor implements TaskExecutor {
     }
 
     @Override
-    public void executeTask(final Task task) {
-        final Task.Callback callback = task.getTaskCallback();
+    public void executeTask(final Task task, final Task.Callback callback) {
         final Thread thread = sThreadFactory.newThread(new Runnable() {
             @Override
             public void run() {

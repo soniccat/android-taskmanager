@@ -614,8 +614,8 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
                 });
             }
         };
-        task.setTaskCallback(callback);
-        taskExecutor.executeTask(task);
+
+        taskExecutor.executeTask(task, callback);
     }
 
     private void logTask(Task task, String prefix) {

@@ -71,7 +71,7 @@ public abstract class TaskImpl implements Task, TaskPrivate {
         Task.Status oldStatus = this.taskStatus;
         this.taskStatus = status;
 
-        Log.d("TaskImpl", "setTaskStatus " + Thread.currentThread()); //TODO: CRASH: get concurrent access crash in triggerStatusListeners
+        Log.d("TaskImpl", "setTaskStatus " + status + " " + Thread.currentThread()); //TODO: CRASH: get concurrent access crash in triggerStatusListeners
         triggerStatusListeners(oldStatus, this.taskStatus);
     }
 
