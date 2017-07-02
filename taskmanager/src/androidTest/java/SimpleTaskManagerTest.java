@@ -79,6 +79,16 @@ public class SimpleTaskManagerTest {
     }
 
     @Test @UiThreadTest
+    public void testTaskWithCancelledImmediatelyCallbackCalledAfterCancel() {
+        taskManagerTest.taskWithCancelledImmediatelyCallbackCalledAfterCancel();
+    }
+
+    @Test @UiThreadTest
+    public void testTaskWithCancelledImmediatelyAndChangedCallbackCalled() {
+        taskManagerTest.taskWithCancelledImmediatelyAndChangedCallbackCalled();
+    }
+
+    @Test @UiThreadTest
     public void testAddStateListener() {
         taskManagerTest.addStateListener();
     }

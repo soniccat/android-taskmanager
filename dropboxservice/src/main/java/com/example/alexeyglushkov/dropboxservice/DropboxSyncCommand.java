@@ -28,7 +28,7 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
     private @NonNull DropboxAPI<?> api;
     private @NonNull DropboxHelper helper;
 
-    private @Nullable DropboxCommandProvider.SyncCallback callback;
+    private @Nullable DropboxCommandProvider.SyncCallback dropboxCallback;
 
     //// Initialize
 
@@ -186,7 +186,7 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
         long dropboxDate = getModifiedTime(dropboxFile);
 
         if (localDate > lastSyncDate && dropboxDate > lastSyncDate) {
-            if (callback != null) {
+            if (dropboxCallback != null) {
                 merge(localFile, dropboxFile, listener);
             }
 
@@ -199,12 +199,12 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
     }
 
     private void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxFile, com.dropbox.client2.ProgressListener listener) throws Exception {
-        Assert.assertNotNull(callback);
+        Assert.assertNotNull(dropboxCallback);
 
         final ArrayList<Object> container = new ArrayList<>();
 
         final Semaphore semaphore = new Semaphore(0, true);
-        callback.merge(localFile, dropboxFile, new DropboxCommandProvider.MergeCompletion() {
+        dropboxCallback.merge(localFile, dropboxFile, new DropboxCommandProvider.MergeCompletion() {
             @Override
             public void completed(File result, Error error) {
                 if (error != null) {
@@ -306,8 +306,8 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
 
     //// Setter
 
-    public void setCallback(@Nullable DropboxCommandProvider.SyncCallback callback) {
-        this.callback = callback;
+    public void setCallback(@Nullable DropboxCommandProvider.SyncCallback dropboxCallback) {
+        this.dropboxCallback = dropboxCallback;
     }
 
     //// Getter

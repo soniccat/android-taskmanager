@@ -29,6 +29,7 @@ public class TaskManagerTest {
     public void before(TaskManager taskManager) {
         this.taskManager = taskManager;
 
+        // mock executor
         TaskExecutor executor = Mockito.mock(TaskExecutor.class);
         Mockito.doAnswer(new Answer() {
             @Override
@@ -413,6 +414,55 @@ public class TaskManagerTest {
         Mockito.verify(listener).onTaskRemoved(taskManager, task, true);
         Mockito.verify(callback, Mockito.never()).onCompleted(Mockito.anyBoolean());
         Mockito.verify(newCallback).onCompleted(false);
+    }
+
+    public void taskWithCancelledImmediatelyCallbackCalledAfterCancel() {
+        // Arrange
+        TaskManager.TaskManagerListener listener = Mockito.mock(TaskManager.TaskManagerListener.class);
+
+        TestTask task = TestTasks.createTestTaskSpy("taskId");
+        Mockito.when(task.canBeCancelledImmediately()).thenReturn(true);
+
+        Task.Callback callback = Mockito.mock(Task.Callback.class);
+        task.setTaskCallback(callback);
+
+        taskManager.addListener(listener);
+
+        // Act
+        taskManager.addTask(task);
+        taskManager.cancel(task, null);
+        task.finish();
+
+        // Verify
+        assertEquals(Task.Status.Cancelled, task.getTaskStatus());
+        Mockito.verify(listener).onTaskRemoved(taskManager, task, true);
+        Mockito.verify(callback).onCompleted(true);
+    }
+
+    public void taskWithCancelledImmediatelyAndChangedCallbackCalled() {
+        // Arrange
+        TaskManager.TaskManagerListener listener = Mockito.mock(TaskManager.TaskManagerListener.class);
+
+        TestTask task = TestTasks.createTestTaskSpy("taskId");
+        Mockito.when(task.canBeCancelledImmediately()).thenReturn(true);
+
+        Task.Callback callback = Mockito.mock(Task.Callback.class);
+        Task.Callback newCallback = Mockito.mock(Task.Callback.class);
+        task.setTaskCallback(callback);
+
+        taskManager.addListener(listener);
+
+        // Act
+        taskManager.addTask(task);
+        task.setTaskCallback(newCallback);
+        taskManager.cancel(task, null);
+        task.finish();
+
+        // Verify
+        assertEquals(Task.Status.Cancelled, task.getTaskStatus());
+        Mockito.verify(listener).onTaskRemoved(taskManager, task, true);
+        Mockito.verify(callback, Mockito.never()).onCompleted(true);
+        Mockito.verify(newCallback).onCompleted(true);
     }
 
     public void addStateListener() {

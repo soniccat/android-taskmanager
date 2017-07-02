@@ -72,10 +72,17 @@ public interface TaskPrivate extends Task {
     //
     void triggerProgressListeners(final ProgressInfo progressInfo);
 
+    // Updates start callback
+    //
+    // Caller: Task
+    //
+    void handleTaskStart(Callback callback);
+
     // Call the start callback
     //
     // Caller: Task
     //
+    //TODO: just call start callback inside
     void handleTaskCompletion(Callback callback);
 
     // To keep the result

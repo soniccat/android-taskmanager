@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.taskmanager.task;
 
+import android.telecom.Call;
+
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 
@@ -26,6 +28,7 @@ public interface Task extends TaskContainer {
     //
     void setTaskCallback(Callback callback);
     Callback getTaskCallback();
+    Callback getStartCallback();
 
     //TODO: add custom thread callback support through set/get
 

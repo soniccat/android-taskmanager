@@ -23,7 +23,7 @@ public class DropboxServiceTaskProvider implements DropboxCommandProvider {
 
     public DropboxSyncCommand getSyncCommand(String srcPath, String dstPath, long lastSyncDate, DropboxCommandProvider.SyncCallback callback) {
         DropboxSyncCommand cmd = new DropboxSyncCommand(api, srcPath, dstPath, lastSyncDate);
-        cmd.setCallback(callback);
+        cmd.setDropboxCallback(callback);
 
         return cmd;
     }

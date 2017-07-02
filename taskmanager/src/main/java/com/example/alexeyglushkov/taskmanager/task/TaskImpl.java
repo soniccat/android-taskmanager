@@ -12,13 +12,13 @@ import junit.framework.Assert;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 
 /**
  * Created by alexeyglushkov on 23.07.15.
  */
 public abstract class TaskImpl implements Task, TaskPrivate {
+    protected Task.Callback callback;
     protected Task.Callback startCallback;
     protected Object cancellationInfo;
     protected Task.Status taskStatus = Task.Status.NotStarted;
@@ -52,12 +52,17 @@ public abstract class TaskImpl implements Task, TaskPrivate {
 
     @Override
     public Callback getTaskCallback() {
-        return this.startCallback;
+        return this.callback;
+    }
+
+    @Override
+    public Callback getStartCallback() {
+        return startCallback;
     }
 
     @Override
     public void setTaskCallback(Callback callback) {
-        this.startCallback = callback;
+        this.callback = callback;
     }
 
     @Override
@@ -338,6 +343,11 @@ public abstract class TaskImpl implements Task, TaskPrivate {
     @Override
     public boolean canBeCancelledImmediately() {
         return false;
+    }
+
+    @Override
+    public void handleTaskStart(Callback callback) {
+        startCallback = callback;
     }
 
     @Override
