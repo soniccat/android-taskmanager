@@ -158,12 +158,12 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
                                 public void run() {
                                     Log.d(TAG, "status " + task.getTaskStatus());
                                     if (Tasks.isTaskCompleted(task)) {
-                                        // handleTaskCompletionOnThread was already called
-                                        // it may happen if canBeCancelledImmediately returns true
+                                        // may happen if canBeCancelledImmediately returns true
                                         return;
                                     }
 
-                                    triggerOnTaskRemoved(task, true);
+                                    onTaskRemoved(loadingTasks, task);
+
                                     Task.Callback resultCallback = task.getTaskCallback() == thisCallback ? originalCallback : task.getTaskCallback();
                                     handleTaskCompletionOnThread(task, resultCallback, cancelled);
                                 }
@@ -171,7 +171,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
                         }
                     });
 
-                    triggerOnTaskAdded(task, true);
+                    onTaskAdded(loadingTasks, task);
 
                     task.getPrivate().setTaskStatus(Task.Status.Started);
                     task.getPrivate().setTaskStartDate(new Date());
@@ -601,13 +601,8 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
                 HandlerTools.runOnHandlerThread(handler, new Runnable() {
                     @Override
                     public void run() {
-                        Log.d(TAG, "cancelled " + cancelled + " status " + task.getTaskStatus());
-                        Log.d(TAG, Log.getStackTraceString(new Exception()));
-
                         if (Tasks.isTaskCompleted(task)) {
-                            Log.d(TAG, "task.getTaskCallback() == originalCallback");
-                            // handleTaskCompletionOnThread was already called
-                            // can happen if canBeCancelledImmediately returns true
+                            // may happen if canBeCancelledImmediately returns true
                             return;
                         }
 
