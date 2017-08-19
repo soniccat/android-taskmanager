@@ -57,6 +57,8 @@ public class HttpLoadTask extends SimpleTask {
     }
 
     public void startTask(Callback callback) {
+        super.startTask(callback);
+
         InputStream stream = null;
         HttpURLConnection connection = provider.getUrlConnection();
 

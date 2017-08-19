@@ -59,6 +59,7 @@ public class SimpleTaskPool implements TaskPool {
         HandlerTools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
+                Log.d(TAG, "addTaskOnThread");
                 addTaskOnThread(task);
             }
         });

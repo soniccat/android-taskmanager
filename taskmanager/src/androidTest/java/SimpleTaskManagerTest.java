@@ -154,8 +154,23 @@ public class SimpleTaskManagerTest {
     }
 
     @Test @UiThreadTest
+    public void testStartImmediatelySkipPolicyWithFinish() {
+        taskManagerTest.startImmediatelySkipPolicyWithFinish();
+    }
+
+    @Test @UiThreadTest
     public void testStartImmediatelyFinish() {
         taskManagerTest.startImmediatelyFinish();
+    }
+
+    @Test @UiThreadTest
+    public void testStartImmediatelyFinishWithChangedCallback() {
+        taskManagerTest.startImmediatelyFinishWithChangedCallback();
+    }
+
+    @Test @UiThreadTest
+    public void testStartImmediatelyCancelWithChangedCallback() {
+        taskManagerTest.startImmediatelyCancelWithChangedCallback();
     }
 
     @Test @UiThreadTest

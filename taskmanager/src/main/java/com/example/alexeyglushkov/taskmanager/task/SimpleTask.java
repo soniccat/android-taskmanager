@@ -14,4 +14,6 @@ public abstract class SimpleTask extends TaskImpl {
     public SimpleTask() {
         super();
     }
+
+
 }

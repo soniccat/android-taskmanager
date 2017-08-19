@@ -122,6 +122,8 @@ public class MainApplication extends Application {
         final Task cleanTask = new SimpleTask() {
             @Override
             public void startTask(Callback callback) {
+                super.startTask(callback);
+
                 StorageCleaner cleaner = new DiskStorageCleaner();
                 cleaner.clean(getStorageProvider());
 

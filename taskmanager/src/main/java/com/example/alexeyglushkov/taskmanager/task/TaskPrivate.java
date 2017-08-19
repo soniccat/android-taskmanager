@@ -9,7 +9,7 @@ import java.util.Date;
  * Created by alexeyglushkov on 21.07.15.
  */
 
-// Contains methods being used only by TaskManager, TaskPool or in a Task
+// Contains methods being used only by TaskManager, TaskPool or a Task
 
 public interface TaskPrivate extends Task {
 

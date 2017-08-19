@@ -21,6 +21,8 @@ public class DropboxDownloadCommand extends ServiceTask {
 
     @Override
     public void startTask(Callback callback) {
+        super.handleTaskStart(callback);
+
         try {
             helper.downloadFileOrDir(srcPath, destPath, getProgressListener());
         } catch (Exception e) {

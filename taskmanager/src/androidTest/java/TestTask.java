@@ -10,7 +10,7 @@ public class TestTask extends SimpleTask {
 
     @Override
     public void startTask(Callback callback) {
-        getPrivate().handleTaskStart(callback);
+        super.startTask(callback);
         Log.d("TestTask", "startTask " + getStartCallback());
     }
 

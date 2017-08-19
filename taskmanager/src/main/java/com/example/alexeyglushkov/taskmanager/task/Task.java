@@ -27,8 +27,8 @@ public interface Task extends TaskContainer {
     // Caller: Client, TaskManager
     //
     void setTaskCallback(Callback callback);
-    Callback getTaskCallback();
-    Callback getStartCallback();
+    Callback getTaskCallback(); // get the current callback
+    Callback getStartCallback(); // get the callback which is passed in startTask
 
     //TODO: add custom thread callback support through set/get
 

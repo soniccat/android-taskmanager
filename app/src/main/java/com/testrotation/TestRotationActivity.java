@@ -81,19 +81,11 @@ public class TestRotationActivity extends AppCompatActivity {
         if (taskPool == null) {
             StackTaskProvider stackProvider = new StackTaskProvider(true, getTaskManager().getHandler(), POOL_NAME);
             taskPool = new RestorableTaskProvider(stackProvider);
-            taskPool.setRecording(true);
 
             getTaskManager().addTaskProvider(taskPool);
 
         } else {
-            taskPool.restoreTaskCompletion(TASK_ID, getTaskCallback(this), getTaskManager().getHandler(), new RestorableTaskProvider.Completion() {
-                @Override
-                public void completed(Task task, RestorableTaskProvider.RestoreState restoreState) {
-                    String stringTask = task == null ? "(null)" : task.toString();
-                    Log.d(TAG, "Task " + stringTask + " restoreState " + restoreState);
-                }
-            });
-
+            taskPool.restoreTaskCompletion(TASK_ID, getTaskCallback(this));
             taskPool.setRecording(false);
         }
     }
@@ -114,9 +106,11 @@ public class TestRotationActivity extends AppCompatActivity {
         Task task = new TaskImpl() {
             @Override
             public void startTask(Callback callback) {
+                super.startTask(callback);
+
                 try {
                     for(int i=0; i<10; ++i) {
-                        Thread.sleep(1000);
+                        Thread.sleep(500);
 
                         if (getNeedCancelTask()) {
                             setIsCancelled();

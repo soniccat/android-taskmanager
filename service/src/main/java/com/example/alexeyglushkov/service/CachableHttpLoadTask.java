@@ -13,6 +13,8 @@ import java.io.ByteArrayInputStream;
 /**
  * Created by alexeyglushkov on 26.11.15.
  */
+// TODO: Think about an universal cache task, could be a decorator probably
+    // or a decorator for TaskProvider
 public class CachableHttpLoadTask extends HttpBytesLoadTask {
     private static final String TAG = "CHLT";
 
@@ -73,6 +75,7 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
             needStore = cacheMode != CacheMode.IGNORE_CACHE;
             super.startTask(callback);
         } else {
+            getPrivate().handleTaskStart(callback);
             getPrivate().handleTaskCompletion(callback);
         }
     }

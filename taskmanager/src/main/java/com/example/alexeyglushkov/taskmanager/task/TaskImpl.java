@@ -165,6 +165,11 @@ public abstract class TaskImpl implements Task, TaskPrivate {
     }
 
     @Override
+    public void startTask(Callback callback) {
+        getPrivate().handleTaskStart(callback);
+    }
+
+    @Override
     public boolean getNeedCancelTask() {
         return needCancelTask;
     }

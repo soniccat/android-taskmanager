@@ -48,6 +48,8 @@ public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
 
     @Override
     public void startTask(Callback callback) {
+        super.handleTaskCompletion(callback);
+
         try {
             syncFileOrDir(localPath, dropboPath, getProgressListener());
 

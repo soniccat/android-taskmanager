@@ -86,6 +86,8 @@ public class MainApplication extends Application {
         final Task cleanTask = new SimpleTask() {
             @Override
             public void startTask(Callback callback) {
+                super.startTask(callback);
+
                 StorageCleaner cleaner = new DiskStorageCleaner();
                 cleaner.clean(getStorageProvider());
 
@@ -100,6 +102,7 @@ public class MainApplication extends Application {
         final Task loadAccountTask = new SimpleTask() {
             @Override
             public void startTask(Callback callback) {
+                super.startTask(callback);
                 File authDir = getDir("AuthFolder", Context.MODE_PRIVATE);
                 AccountCacheStore store = new AccountCacheStore(authDir);
                 store.load();

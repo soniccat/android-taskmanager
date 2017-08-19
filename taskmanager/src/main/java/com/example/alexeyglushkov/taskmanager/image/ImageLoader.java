@@ -41,6 +41,8 @@ public class ImageLoader {
             httpLoadTask.setTaskId(httpLoadTask.getTaskId() + destinationId);
         }
 
+        // TODO: it seems it's better to return callback in another function to be able to use it
+        // also for restoring in RestorableTaskProvider
         httpLoadTask.setTaskCallback(new Task.Callback() {
             @Override
             public void onCompleted(boolean cancelled) {

@@ -26,36 +26,38 @@ public class FileLoadTask extends SimpleTask {
     }
 
     public void startTask(Callback callback) {
-        if (context == null) {
-            return;
-        }
+        getPrivate().handleTaskCompletion(callback);
 
-        String name = this.fileName;
-        InputStream fis = null;
+        if (context != null) {
+            String name = this.fileName;
+            InputStream fis = null;
 
-        try {
-            handler.setProgressUpdater(getPrivate().createProgressUpdater(getFileSize()));
+            try {
+                handler.setProgressUpdater(getPrivate().createProgressUpdater(getFileSize()));
 
-            fis = new BufferedInputStream(this.context.openFileInput(name));
-            Object data = handleStream(fis);
-            if (data instanceof Error) {
-                getPrivate().setTaskError((Error)data);
-            } else {
-                setTaskResult(data);
-            }
+                fis = new BufferedInputStream(this.context.openFileInput(name));
+                Object data = handleStream(fis);
+                if (data instanceof Error) {
+                    getPrivate().setTaskError((Error) data);
+                } else {
+                    setTaskResult(data);
+                }
 
-        } catch (Exception e) {
-            getPrivate().setTaskError(new Error("Load exception"));
+            } catch (Exception e) {
+                getPrivate().setTaskError(new Error("Load exception"));
 
-        } finally {
-            if (fis != null) {
-                try {
-                    fis.close();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+            } finally {
+                if (fis != null) {
+                    try {
+                        fis.close();
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
                 }
             }
+        } else {
+            getPrivate().setTaskError(new Error("Context is null"));
         }
 
         getPrivate().handleTaskCompletion(callback);

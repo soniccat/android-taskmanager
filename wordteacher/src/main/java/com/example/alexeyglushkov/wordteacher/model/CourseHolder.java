@@ -222,9 +222,10 @@ public class CourseHolder {
         final Task task = new SimpleTask() {
             @Override
             public void startTask(Callback callback) {
+                super.startTask(callback);
                 ArrayList<Course> courses = loadCourses();
                 getPrivate().setTaskResult(courses);
-                handleTaskCompletion(callback);
+                getPrivate().handleTaskCompletion(callback);
             }
         };
 

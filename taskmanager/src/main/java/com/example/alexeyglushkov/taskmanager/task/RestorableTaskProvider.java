@@ -2,6 +2,10 @@ package com.example.alexeyglushkov.taskmanager.task;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.util.Pair;
+import android.util.Log;
+
+import junit.framework.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +22,11 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
     }
 
     static final String TAG = "RestorableTaskProvider";
+    static private final boolean isDebug = false;
 
     private boolean isRecording;
     private List<Task> activeTasks = new ArrayList<>();
-    private List<Task> storedTasks = new ArrayList<>();
+    private List<Task> completedTasks = new ArrayList<>();
 
     public RestorableTaskProvider(TaskProvider provider) {
         super(provider);
@@ -30,92 +35,124 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
     @Override
     public void addTask(final Task task) {
         super.addTask(task);
-        if (!Tasks.isTaskReadyToStart(task)) {
-            // that was rejected on super level too
+        if (task.getTaskStatus() == Task.Status.NotStarted) {
             return;
         }
 
         task.addTaskStatusListener(this);
+
+        if (isDebug) {
+            Log.d(TAG, "activeTasks addTaskStatusListener " + task + " status " + task.getTaskStatus());
+        }
     }
 
     @Override
     public void onTaskStatusChanged(Task task, Task.Status oldStatus, Task.Status newStatus) {
+        if (isDebug) {
+            Log.d(TAG, "activeTasks onTaskStatusChanged " + task + " from " + oldStatus + " to " + newStatus);
+        }
+
         if (Tasks.isTaskCompleted(task)) {
+            checkHandlerThread();
             activeTasks.remove(task);
 
+            if (isDebug) {
+                Log.d(TAG, "activeTasks removed " + task);
+            }
+
             if (isRecording()) {
-                getStoredTasks().add(task);
+                getCompletedTasks().add(task);
             }
         }
     }
 
     @Override
     public Task takeTopTask(List<Integer> typesToFilter) {
+        checkHandlerThread();
+
         Task task = super.takeTopTask(typesToFilter);
-        activeTasks.add(task);
+        if (task != null) {
+            activeTasks.add(task);
+
+            if (isDebug) {
+                Log.d(TAG, "activeTasks added " + task);
+            }
+        }
 
         return task;
     }
 
-    public List<Task> getStoredTasks() {
-        return storedTasks;
+    public List<Task> getCompletedTasks() {
+        return completedTasks;
     }
 
-    public Task findStoredTask(String taskId) {
-        return findTask(getStoredTasks(), taskId);
+    public Task findCompletedTask(String taskId) {
+        return findTask(getCompletedTasks(), taskId);
     }
 
-    public void restoreTaskCompletion(final String taskId, final Task.Callback callback, Handler handler, final Completion completion) {
+    public void restoreTaskCompletion(final String taskId, final Task.Callback callback) {
         final Looper looper = Looper.myLooper();
+        restoreTaskCompletion(taskId, getDefaultCompletion(callback, looper));
+    }
 
-        handler.post(new Runnable() {
+    public void restoreTaskCompletion(final String taskId, final Completion completion) {
+        getHandler().post(new Runnable() {
             @Override
             public void run() {
-                restoreTaskCompletionOnThread(taskId, callback, new Completion() {
-                    @Override
-                    public void completed(final Task task, final RestoreState restoreState) {
-                        if (completion != null) {
-                            Handler h = new Handler(looper);
-                            h.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    completion.completed(task, restoreState);
-                                }
-                            });
-                        }
-                    }
-                });
+                Pair<Task, RestoreState> restoredData = restoreTaskCompletionOnThread(taskId);
+                completion.completed(restoredData.first, restoredData.second);
             }
         });
     }
 
+    public Completion getDefaultCompletion(final Task.Callback taskCallback, final Looper callbackLooper) {
+        return new Completion() {
+            @Override
+            public void completed(final Task restoredTask, RestoreState restoredState) {
+                if (restoredState == RestoreState.ReplacedCompletion) {
+                    restoredTask.setTaskCallback(taskCallback);
+
+                } else if (restoredState == RestoreState.Restored) {
+                    Handler h = new Handler(callbackLooper);
+                    h.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            taskCallback.onCompleted(restoredTask.getTaskStatus() == Task.Status.Cancelled);
+                        }
+                    });
+                }
+            }
+        };
+    }
+
     // try to update the completion of the task if the task is in progress or waiting
     // otherwise return the completed task in completion
-    private void restoreTaskCompletionOnThread(String taskId, final Task.Callback callback, final Completion completion) {
+    private Pair<Task, RestoreState> restoreTaskCompletionOnThread(String taskId) {
+        checkHandlerThread();
+
         RestoreState restoreState = RestoreState.NotRestored;
         Task task = findTask(activeTasks, taskId);
 
         if (task != null) {
-            restoreState = RestoreState.ReplacedCompletion;
-
             if (Tasks.isTaskCompleted(task)) {
-                callback.onCompleted(task.getTaskStatus() == Task.Status.Cancelled);
-
+                Assert.fail("Can't stop here");
             }else {
-                task.setTaskCallback(callback);
+                restoreState = RestoreState.ReplacedCompletion;
             }
 
         } else {
-            task = findStoredTask(taskId);
+            task = findCompletedTask(taskId);
             if (task != null) {
                 restoreState = RestoreState.Restored;
             }
         }
 
-        completion.completed(task, restoreState);
+        return new Pair<>(task, restoreState);
     }
 
     private Task findTask(List<Task> tasks, String taskId) {
+        checkHandlerThread();
+
         Task result = null;
         for (Task task : tasks) {
             if (task.getTaskId().equals(taskId)) {
@@ -128,7 +165,7 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
     }
 
     public void clearStoredTasks() {
-        getStoredTasks().clear();
+        getCompletedTasks().clear();
     }
 
     public void setRecording(boolean recording) {
@@ -145,5 +182,9 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
 
     public interface Completion {
         void completed(Task task, RestoreState state);
+    }
+
+    protected void checkHandlerThread() {
+        Assert.assertEquals(Looper.myLooper(), getHandler().getLooper());
     }
 }
