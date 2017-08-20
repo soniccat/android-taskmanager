@@ -82,11 +82,11 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
         return task;
     }
 
-    public List<Task> getCompletedTasks() {
+    protected List<Task> getCompletedTasks() {
         return completedTasks;
     }
 
-    public Task findCompletedTask(String taskId) {
+    private Task findCompletedTask(String taskId) {
         return findTask(getCompletedTasks(), taskId);
     }
 
@@ -164,7 +164,7 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
         return result;
     }
 
-    public void clearStoredTasks() {
+    private void clearStoredTasks() {
         getCompletedTasks().clear();
     }
 

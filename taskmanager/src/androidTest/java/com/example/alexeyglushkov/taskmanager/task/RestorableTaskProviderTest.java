@@ -53,7 +53,7 @@ public class RestorableTaskProviderTest {
     }
 
     @Test @UiThreadTest
-    public void testTakeTopTaskWhenRecording() {
+    public void testTakeTopTask() {
         // When
         Task task = Mockito.mock(Task.class);
 
@@ -93,5 +93,29 @@ public class RestorableTaskProviderTest {
 
         // Assert
         Assert.assertEquals(0, restorableTaskProvider.activeTasks.size());
+        Assert.assertEquals(1, restorableTaskProvider.getCompletedTasks().size());
+        Assert.assertEquals(task, restorableTaskProvider.getCompletedTasks().get(0));
+    }
+
+    @Test @UiThreadTest
+    public void testOnTaskStatusChangedWhenNotRecording() {
+        // When
+        TaskProvider taskProvider = Mockito.mock(TaskProvider.class);
+        Mockito.doReturn(new Handler(Looper.myLooper())).when(taskProvider).getHandler();
+
+        RestorableTaskProvider restorableTaskProvider = new RestorableTaskProvider(taskProvider);
+        restorableTaskProvider.setRecording(false);
+
+        Task task = Mockito.mock(Task.class);
+        Mockito.doReturn(Task.Status.Finished).when(task).getTaskStatus();
+
+        restorableTaskProvider.activeTasks.add(task);
+
+        // Then
+        restorableTaskProvider.onTaskStatusChanged(task, Task.Status.Started, Task.Status.Finished);
+
+        // Assert
+        Assert.assertEquals(0, restorableTaskProvider.activeTasks.size());
+        Assert.assertEquals(0, restorableTaskProvider.getCompletedTasks().size());
     }
 }
