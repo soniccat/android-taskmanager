@@ -5,6 +5,8 @@ import android.os.Looper;
 import android.support.v4.util.Pair;
 import android.util.Log;
 
+import com.example.alexeyglushkov.tools.HandlerTools;
+
 import junit.framework.Assert;
 
 import java.util.ArrayList;
@@ -96,7 +98,7 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
     }
 
     public void restoreTaskCompletion(final String taskId, final Completion completion) {
-        getHandler().post(new Runnable() {
+        HandlerTools.runOnHandlerThread(getHandler(), new Runnable() {
             @Override
             public void run() {
                 Pair<Task, RestoreState> restoredData = restoreTaskCompletionOnThread(taskId);
@@ -110,11 +112,12 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
             @Override
             public void completed(final Task restoredTask, RestoreState restoredState) {
                 if (restoredState == RestoreState.ReplacedCompletion) {
+                    // that callback is handled in task manager instead of startCallback
                     restoredTask.setTaskCallback(taskCallback);
 
                 } else if (restoredState == RestoreState.Restored) {
                     Handler h = new Handler(callbackLooper);
-                    h.post(new Runnable() {
+                    HandlerTools.runOnHandlerThread(h, new Runnable() {
                         @Override
                         public void run() {
                             taskCallback.onCompleted(restoredTask.getTaskStatus() == Task.Status.Cancelled);

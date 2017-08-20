@@ -118,4 +118,27 @@ public class RestorableTaskProviderTest {
         Assert.assertEquals(0, restorableTaskProvider.activeTasks.size());
         Assert.assertEquals(0, restorableTaskProvider.getCompletedTasks().size());
     }
+
+    @Test @UiThreadTest
+    public void testrestoreTaskCompletionWithActiveTasks() {
+        // When
+        TaskProvider taskProvider = Mockito.mock(TaskProvider.class);
+        Mockito.doReturn(new Handler(Looper.myLooper())).when(taskProvider).getHandler();
+
+        RestorableTaskProvider restorableTaskProvider = new RestorableTaskProvider(taskProvider);
+
+        Task task = new TestTask();
+        Mockito.doReturn("TestId").when(task).getTaskId();
+        Mockito.doReturn(Task.Status.Started).when(task).getTaskStatus();
+
+        restorableTaskProvider.activeTasks.add(task);
+
+        Task.Callback callback = Mockito.mock(Task.Callback.class);
+
+        // Then
+        restorableTaskProvider.restoreTaskCompletion("TestId", callback);
+
+        // Assert
+        Assert.assertEquals(callback, task.getPrivate().getTaskCallback());
+    }
 }
