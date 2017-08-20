@@ -25,8 +25,8 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
     static private final boolean isDebug = false;
 
     private boolean isRecording;
-    private List<Task> activeTasks = new ArrayList<>();
-    private List<Task> completedTasks = new ArrayList<>();
+    protected List<Task> activeTasks = new ArrayList<>();
+    protected List<Task> completedTasks = new ArrayList<>();
 
     public RestorableTaskProvider(TaskProvider provider) {
         super(provider);

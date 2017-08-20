@@ -20,6 +20,7 @@ import java.util.List;
 
 // A task source for TaskManager
 
+    // TODO: try to extend SimpleTaskPool to remove code duplications
 public class PriorityTaskProvider implements TaskProvider, TaskPool {
     static final String TAG = "PriorityTaskProvider";
 

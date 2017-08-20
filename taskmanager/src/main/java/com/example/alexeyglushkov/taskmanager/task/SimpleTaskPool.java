@@ -14,6 +14,7 @@ import java.util.List;
 /**
  * Created by alexeyglushkov on 30.12.14.
  */
+// TODO: think about abstractTaskPool without tasks list to be able to inherid code in PriorityTaskProvider
 public class SimpleTaskPool implements TaskPool {
     static final String TAG = "SimpleTaskPool";
 

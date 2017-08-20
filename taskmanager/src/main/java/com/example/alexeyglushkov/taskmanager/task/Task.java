@@ -176,6 +176,7 @@ public interface Task extends TaskContainer {
     }
 
     interface StatusListener {
+        // TODO: remove newStatus arg
         void onTaskStatusChanged(Task task, Status oldStatus, Status newStatus);
     }
 }

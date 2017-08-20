@@ -1,0 +1,97 @@
+package com.example.alexeyglushkov.taskmanager.task;
+
+import android.os.Handler;
+import android.os.Looper;
+import android.support.annotation.NonNull;
+import android.support.test.annotation.UiThreadTest;
+import android.support.test.rule.UiThreadTestRule;
+import android.support.test.runner.AndroidJUnit4;
+
+import com.example.alexeyglushkov.taskmanager.task.PriorityTaskProvider;
+import com.example.alexeyglushkov.taskmanager.task.RestorableTaskProvider;
+import com.example.alexeyglushkov.taskmanager.task.Task;
+import com.example.alexeyglushkov.taskmanager.task.TaskProvider;
+
+import junit.framework.Assert;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+
+/**
+ * Created by alexeyglushkov on 19.08.17.
+ */
+
+@RunWith(AndroidJUnit4.class)
+public class RestorableTaskProviderTest {
+    @Rule
+    public UiThreadTestRule rule = new UiThreadTestRule();
+
+    @Before
+    public void setUp() throws Exception {
+    }
+
+    @NonNull
+    protected TaskProvider prepareTaskProvider(TaskProvider taskProvider) {
+        return new RestorableTaskProvider(taskProvider);
+    }
+
+    @Test @UiThreadTest
+    public void testAddTask() {
+        // When
+        TaskProvider taskProvider = Mockito.mock(TaskProvider.class);
+        RestorableTaskProvider restorableTaskProvider = new RestorableTaskProvider(taskProvider);
+        Task task = Mockito.mock(Task.class);
+
+        // Then
+        restorableTaskProvider.addTask(task);
+
+        // Assert
+        Mockito.verify(task).addTaskStatusListener(restorableTaskProvider);
+    }
+
+    @Test @UiThreadTest
+    public void testTakeTopTaskWhenRecording() {
+        // When
+        Task task = Mockito.mock(Task.class);
+
+        TaskProvider taskProvider = Mockito.mock(TaskProvider.class);
+        Mockito.doReturn(new Handler(Looper.myLooper())).when(taskProvider).getHandler();
+        Mockito.doReturn(task).when(taskProvider).takeTopTask(null);
+
+        RestorableTaskProvider restorableTaskProvider = new RestorableTaskProvider(taskProvider);
+
+        restorableTaskProvider.addTask(task);
+
+        // Then
+        Task takenTask = restorableTaskProvider.takeTopTask(null);
+
+        // Assert
+        Assert.assertEquals(task, takenTask);
+        Assert.assertEquals(1, restorableTaskProvider.activeTasks.size());
+        Assert.assertEquals(takenTask, restorableTaskProvider.activeTasks.get(0));
+    }
+
+    @Test @UiThreadTest
+    public void testOnTaskStatusChangedWhenRecording() {
+        // When
+        TaskProvider taskProvider = Mockito.mock(TaskProvider.class);
+        Mockito.doReturn(new Handler(Looper.myLooper())).when(taskProvider).getHandler();
+
+        RestorableTaskProvider restorableTaskProvider = new RestorableTaskProvider(taskProvider);
+        restorableTaskProvider.setRecording(true);
+
+        Task task = Mockito.mock(Task.class);
+        Mockito.doReturn(Task.Status.Finished).when(task).getTaskStatus();
+
+        restorableTaskProvider.activeTasks.add(task);
+
+        // Then
+        restorableTaskProvider.onTaskStatusChanged(task, Task.Status.Started, Task.Status.Finished);
+
+        // Assert
+        Assert.assertEquals(0, restorableTaskProvider.activeTasks.size());
+    }
+}
