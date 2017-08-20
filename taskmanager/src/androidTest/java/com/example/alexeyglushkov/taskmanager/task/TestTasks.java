@@ -1,6 +1,4 @@
-import com.example.alexeyglushkov.taskmanager.task.Task;
-import com.example.alexeyglushkov.taskmanager.task.TaskImpl;
-import com.example.alexeyglushkov.taskmanager.task.TaskPrivate;
+package com.example.alexeyglushkov.taskmanager.task;
 
 import org.mockito.Mockito;
 

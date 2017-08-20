@@ -1,11 +1,10 @@
+package com.example.alexeyglushkov.taskmanager.task;
+
 import android.os.Handler;
 import android.os.Looper;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.annotation.UiThreadTest;
 import android.support.test.rule.UiThreadTestRule;
 import android.support.test.runner.AndroidJUnit4;
-
-import com.example.alexeyglushkov.taskmanager.task.SimpleTaskPool;
 
 import org.junit.Before;
 import org.junit.Rule;

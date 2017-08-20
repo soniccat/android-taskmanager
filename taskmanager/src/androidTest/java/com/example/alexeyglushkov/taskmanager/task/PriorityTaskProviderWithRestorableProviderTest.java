@@ -1,12 +1,8 @@
+package com.example.alexeyglushkov.taskmanager.task;
+
 import android.os.Handler;
 import android.os.Looper;
 import android.support.test.runner.AndroidJUnit4;
-
-import com.example.alexeyglushkov.taskmanager.task.PriorityTaskProvider;
-import com.example.alexeyglushkov.taskmanager.task.RestorableTaskProvider;
-import com.example.alexeyglushkov.taskmanager.task.StackTaskProvider;
-import com.example.alexeyglushkov.taskmanager.task.TaskPool;
-import com.example.alexeyglushkov.taskmanager.task.TaskProvider;
 
 import org.junit.runner.RunWith;
 

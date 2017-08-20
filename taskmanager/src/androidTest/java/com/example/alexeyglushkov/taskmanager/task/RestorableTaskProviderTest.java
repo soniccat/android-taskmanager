@@ -127,7 +127,7 @@ public class RestorableTaskProviderTest {
 
         RestorableTaskProvider restorableTaskProvider = new RestorableTaskProvider(taskProvider);
 
-        Task task = new TestTask();
+        Task task = Mockito.spy(new TestTask());
         Mockito.doReturn("TestId").when(task).getTaskId();
         Mockito.doReturn(Task.Status.Started).when(task).getTaskStatus();
 

@@ -1,11 +1,7 @@
-import com.example.alexeyglushkov.taskmanager.task.Task;
-import com.example.alexeyglushkov.taskmanager.task.TaskPool;
-import com.example.alexeyglushkov.taskmanager.task.TaskPrivate;
-import com.example.alexeyglushkov.taskmanager.task.TaskProvider;
+package com.example.alexeyglushkov.taskmanager.task;
 
 import org.mockito.Mockito;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import static junit.framework.Assert.assertEquals;

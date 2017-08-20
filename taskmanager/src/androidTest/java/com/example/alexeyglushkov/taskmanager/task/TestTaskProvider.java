@@ -1,3 +1,5 @@
+package com.example.alexeyglushkov.taskmanager.task;
+
 import android.os.Handler;
 
 import com.example.alexeyglushkov.taskmanager.task.PriorityTaskProvider;

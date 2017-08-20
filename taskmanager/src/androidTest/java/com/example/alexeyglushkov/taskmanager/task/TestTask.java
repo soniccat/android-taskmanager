@@ -1,3 +1,5 @@
+package com.example.alexeyglushkov.taskmanager.task;
+
 import android.util.Log;
 
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
@@ -11,11 +13,11 @@ public class TestTask extends SimpleTask {
     @Override
     public void startTask(Callback callback) {
         super.startTask(callback);
-        Log.d("TestTask", "startTask " + getStartCallback());
+        Log.d("com.example.alexeyglushkov.taskmanager.task.TestTask", "startTask " + getStartCallback());
     }
 
     public void finish() {
-        Log.d("TestTask", "finish " + getStartCallback());
+        Log.d("com.example.alexeyglushkov.taskmanager.task.TestTask", "finish " + getStartCallback());
         getPrivate().handleTaskCompletion(getStartCallback());
     }
 }

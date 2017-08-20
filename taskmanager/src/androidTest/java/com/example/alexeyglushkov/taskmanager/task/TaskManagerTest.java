@@ -1,15 +1,8 @@
+package com.example.alexeyglushkov.taskmanager.task;
+
 import android.os.Handler;
 import android.os.HandlerThread;
 
-import com.example.alexeyglushkov.taskmanager.task.PriorityTaskProvider;
-import com.example.alexeyglushkov.taskmanager.task.Task;
-import com.example.alexeyglushkov.taskmanager.task.TaskExecutor;
-import com.example.alexeyglushkov.taskmanager.task.TaskManager;
-import com.example.alexeyglushkov.taskmanager.task.TaskPool;
-import com.example.alexeyglushkov.taskmanager.task.TaskPrivate;
-import com.example.alexeyglushkov.taskmanager.task.TaskProvider;
-
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;

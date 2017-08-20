@@ -1,18 +1,9 @@
-import android.content.Context;
+package com.example.alexeyglushkov.taskmanager.task;
+
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.test.AndroidTestCase;
 
-import com.example.alexeyglushkov.taskmanager.task.Task;
-import com.example.alexeyglushkov.taskmanager.task.TaskPool;
-import com.example.alexeyglushkov.taskmanager.task.TaskPrivate;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
