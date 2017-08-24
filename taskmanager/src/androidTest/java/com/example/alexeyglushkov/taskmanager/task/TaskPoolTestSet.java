@@ -51,7 +51,7 @@ public class TaskPoolTestSet {
 
     public void addTaskAddStatusListener() {
         // Arrange
-        Task task = TestTasks.createTaskMock();
+        Task task = Mockito.spy(new TestTask());
 
         // Act
         taskPool.addTask(task);

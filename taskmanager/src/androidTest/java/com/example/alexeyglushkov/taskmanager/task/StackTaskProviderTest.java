@@ -18,7 +18,7 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4.class)
 public class StackTaskProviderTest {
     protected TaskPoolTestSet poolTest;
-    protected TaskProviderTest providerTest;
+    protected TaskProviderTestSet providerTest;
     protected TaskProvider taskProvider;
 
     @Rule
@@ -29,7 +29,7 @@ public class StackTaskProviderTest {
         taskProvider = prepareTaskProvider();
 
         poolTest = new TaskPoolTestSet();
-        providerTest = new TaskProviderTest();
+        providerTest = new TaskProviderTestSet();
 
         preparePoolTest();
         prepareProviderTest();

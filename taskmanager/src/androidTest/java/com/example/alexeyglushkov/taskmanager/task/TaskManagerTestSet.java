@@ -16,7 +16,7 @@ import static junit.framework.Assert.assertTrue;
 /**
  * Created by alexeyglushkov on 23.08.15.
  */
-public class TaskManagerTest {
+public class TaskManagerTestSet {
     protected TaskManager taskManager;
 
     public void before(TaskManager taskManager) {

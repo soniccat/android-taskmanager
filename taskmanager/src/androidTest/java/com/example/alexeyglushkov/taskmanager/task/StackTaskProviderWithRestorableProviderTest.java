@@ -16,4 +16,9 @@ public class StackTaskProviderWithRestorableProviderTest extends StackTaskProvid
     protected TaskProvider prepareTaskProvider() {
         return new RestorableTaskProvider(new StackTaskProvider(false, new Handler(Looper.myLooper()), "TestId"));
     }
+
+    /*@Override
+    public void testAddTaskAddStatusListener() {
+        // the test in
+    }*/
 }

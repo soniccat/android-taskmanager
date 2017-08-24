@@ -22,7 +22,7 @@ import static junit.framework.Assert.assertNull;
 @RunWith(AndroidJUnit4.class)
 public class StackTaskProviderWithDependentTasksTest {
     private TaskPoolTestSet poolTest;
-    private TaskProviderTest providerTest;
+    private TaskProviderTestSet providerTest;
     private StackTaskProvider taskProvider;
 
     @Rule
@@ -33,7 +33,7 @@ public class StackTaskProviderWithDependentTasksTest {
         taskProvider = new StackTaskProvider(true, new Handler(Looper.myLooper()), "TestId");
 
         poolTest = new TaskPoolTestSet();
-        providerTest = new TaskProviderTest();
+        providerTest = new TaskProviderTestSet();
 
         poolTest.before(taskProvider);
         providerTest.before(taskProvider);

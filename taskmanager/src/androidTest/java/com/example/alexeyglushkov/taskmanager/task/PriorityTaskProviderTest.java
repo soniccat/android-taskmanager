@@ -27,18 +27,18 @@ public class PriorityTaskProviderTest {
     @Rule
     public UiThreadTestRule rule = new UiThreadTestRule();
 
-    private TaskPoolTestSet poolTest;
-    private TaskProviderTest providerTest;
+    private TaskPoolTestSet poolTestSet;
+    private TaskProviderTestSet providerTest;
     protected TaskProvider taskProvider;
 
     @Before
     public void setUp() throws Exception {
         taskProvider = prepareTaskProvider();
 
-        poolTest = new TaskPoolTestSet();
-        providerTest = new TaskProviderTest();
+        poolTestSet = new TaskPoolTestSet();
+        providerTest = new TaskProviderTestSet();
 
-        poolTest.before(taskProvider);
+        poolTestSet.before(taskProvider);
         providerTest.before(taskProvider);
     }
 
@@ -163,76 +163,76 @@ public class PriorityTaskProviderTest {
 
     @Test @UiThreadTest
     public void testSetGetHandler() {
-        poolTest.setGetHandler();
+        poolTestSet.setGetHandler();
     }
 
     @Test @UiThreadTest
     public void testAddTask() {
-        poolTest.addTask();
+        poolTestSet.addTask();
     }
 
     @Test @UiThreadTest
     public void testAddTaskAddStatusListener() {
-        poolTest.addTaskAddStatusListener();
+        poolTestSet.addTaskAddStatusListener();
     }
 
     @Test @UiThreadTest
     public void testAddStartedTask() {
-        poolTest.addStartedTask();
+        poolTestSet.addStartedTask();
     }
 
     @Test @UiThreadTest
     public void testRemoveTask() {
-        poolTest.removeTask();
+        poolTestSet.removeTask();
     }
 
     @Test @UiThreadTest
     public void testRemoveUnknownTask() {
-        poolTest.removeUnknownTask();
+        poolTestSet.removeUnknownTask();
     }
 
     @Test @UiThreadTest
     public void testGetTask() {
-        poolTest.getTask();
+        poolTestSet.getTask();
     }
 
     @Test @UiThreadTest
     public void testGetUnknownTask() {
-        poolTest.getUnknownTask();
+        poolTestSet.getUnknownTask();
     }
 
     @Test @UiThreadTest
     public void testGetTaskCount() {
-        poolTest.getTaskCount();
+        poolTestSet.getTaskCount();
     }
 
     @Test @UiThreadTest
     public void testGetTaskCount2() {
-        poolTest.getTaskCount2();
+        poolTestSet.getTaskCount2();
     }
 
     @Test @UiThreadTest
     public void testSetGetUserData() {
-        poolTest.setGetUserData();
+        poolTestSet.setGetUserData();
     }
 
     @Test @UiThreadTest
     public void testAddStateListener() {
-        poolTest.addStateListener();
+        poolTestSet.addStateListener();
     }
 
     @Test @UiThreadTest
     public void testRemoveStateListener() {
-        poolTest.removeStateListener();
+        poolTestSet.removeStateListener();
     }
 
     @Test @UiThreadTest
     public void testChangeTaskStatus() {
-        poolTest.changeTaskStatus();
+        poolTestSet.changeTaskStatus();
     }
 
     @Test @UiThreadTest
     public void testCheckTaskRemovingAfterFinishing() {
-        poolTest.checkTaskRemovingAfterFinishing();
+        poolTestSet.checkTaskRemovingAfterFinishing();
     }
 }

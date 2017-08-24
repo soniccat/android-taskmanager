@@ -10,7 +10,7 @@ import static junit.framework.Assert.assertNull;
 /**
  * Created by alexeyglushkov on 15.08.15.
  */
-public class TaskProviderTest {
+public class TaskProviderTestSet {
 
     protected TaskProvider taskProvider;
 

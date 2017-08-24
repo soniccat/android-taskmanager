@@ -36,6 +36,11 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
 
     @Override
     public void addTask(final Task task) {
+        if (!Tasks.isTaskReadyToStart(task)) {
+            Log.e(TAG, "Can't put task " + task.getClass().toString() + " because it's already started " + task.getTaskStatus().toString());
+            return;
+        }
+
         super.addTask(task);
         if (task.getTaskStatus() == Task.Status.NotStarted) {
             return;

@@ -14,6 +14,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 /**
  * Created by alexeyglushkov on 19.08.17.
@@ -34,11 +36,33 @@ public class RestorableTaskProviderTest {
     }
 
     @Test @UiThreadTest
-    public void testAddTask() {
+    public void testAddTaskWhenProviderDoesNothing() {
         // When
         TaskProvider taskProvider = Mockito.mock(TaskProvider.class);
         RestorableTaskProvider restorableTaskProvider = new RestorableTaskProvider(taskProvider);
-        Task task = Mockito.mock(Task.class);
+        Task task = Mockito.spy(new TestTask());
+
+        // Then
+        restorableTaskProvider.addTask(task);
+
+        // Assert
+        Mockito.verify(task, Mockito.never()).addTaskStatusListener(restorableTaskProvider);
+    }
+
+    @Test @UiThreadTest
+    public void testAddTaskWhenProviderStartsTask() {
+        // When
+        TaskProvider taskProvider = Mockito.mock(TaskProvider.class);
+        RestorableTaskProvider restorableTaskProvider = new RestorableTaskProvider(taskProvider);
+        final Task task = Mockito.spy(new TestTask());
+
+        Mockito.doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                task.getPrivate().setTaskStatus(Task.Status.Waiting);
+                return null;
+            }
+        }).when(taskProvider).addTask(task);
 
         // Then
         restorableTaskProvider.addTask(task);
