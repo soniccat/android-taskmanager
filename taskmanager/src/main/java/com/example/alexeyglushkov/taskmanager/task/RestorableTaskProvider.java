@@ -133,8 +133,6 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
         };
     }
 
-    // try to update the completion of the task if the task is in progress or waiting
-    // otherwise return the completed task in completion
     private Pair<Task, RestoreState> restoreTaskCompletionOnThread(String taskId) {
         checkHandlerThread();
 
@@ -143,6 +141,7 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
 
         if (task != null) {
             if (Tasks.isTaskCompleted(task)) {
+                // if a task is completed it will be in completedTasks
                 Assert.fail("Can't stop here");
             }else {
                 restoreState = RestoreState.ReplacedCompletion;
