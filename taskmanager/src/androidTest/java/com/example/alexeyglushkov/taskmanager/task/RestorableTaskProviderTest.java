@@ -7,11 +7,6 @@ import android.support.test.annotation.UiThreadTest;
 import android.support.test.rule.UiThreadTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.example.alexeyglushkov.taskmanager.task.PriorityTaskProvider;
-import com.example.alexeyglushkov.taskmanager.task.RestorableTaskProvider;
-import com.example.alexeyglushkov.taskmanager.task.Task;
-import com.example.alexeyglushkov.taskmanager.task.TaskProvider;
-
 import junit.framework.Assert;
 
 import org.junit.Before;
@@ -120,7 +115,7 @@ public class RestorableTaskProviderTest {
     }
 
     @Test @UiThreadTest
-    public void testrestoreTaskCompletionWithActiveTasks() {
+    public void testRestoreTaskCompletionWithActiveTasks() {
         // When
         TaskProvider taskProvider = Mockito.mock(TaskProvider.class);
         Mockito.doReturn(new Handler(Looper.myLooper())).when(taskProvider).getHandler();

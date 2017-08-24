@@ -158,7 +158,7 @@ public interface Task extends TaskContainer {
 
     enum Status {
         NotStarted, //not started
-        Waiting, //in queue, must be set in the caller thread
+        Waiting, //in queue, must be set on the caller thread
         Blocked, //is waiting until all dependencies finish
         Started, //started
         Finished, //successfully loaded

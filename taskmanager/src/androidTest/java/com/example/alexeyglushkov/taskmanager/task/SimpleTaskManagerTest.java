@@ -18,7 +18,7 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4.class)
 public class SimpleTaskManagerTest {
 
-    private TaskPoolTest poolTest;
+    private TaskPoolTestSet poolTest;
     private TaskManagerTest taskManagerTest;
     private TaskManager taskManager;
 
@@ -28,7 +28,7 @@ public class SimpleTaskManagerTest {
     @Before
     public void setUp() throws Exception {
         taskManager = new SimpleTaskManager(10, new Handler(Looper.myLooper()));
-        poolTest = new TaskPoolTest();
+        poolTest = new TaskPoolTestSet();
         taskManagerTest = new TaskManagerTest();
 
         poolTest.before(taskManager);

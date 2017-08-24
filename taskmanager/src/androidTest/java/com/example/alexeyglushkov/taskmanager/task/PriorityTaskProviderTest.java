@@ -27,7 +27,7 @@ public class PriorityTaskProviderTest {
     @Rule
     public UiThreadTestRule rule = new UiThreadTestRule();
 
-    private TaskPoolTest poolTest;
+    private TaskPoolTestSet poolTest;
     private TaskProviderTest providerTest;
     protected TaskProvider taskProvider;
 
@@ -35,7 +35,7 @@ public class PriorityTaskProviderTest {
     public void setUp() throws Exception {
         taskProvider = prepareTaskProvider();
 
-        poolTest = new TaskPoolTest();
+        poolTest = new TaskPoolTestSet();
         providerTest = new TaskProviderTest();
 
         poolTest.before(taskProvider);

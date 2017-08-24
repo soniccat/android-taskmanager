@@ -21,7 +21,7 @@ import static junit.framework.Assert.assertNull;
 
 @RunWith(AndroidJUnit4.class)
 public class StackTaskProviderWithDependentTasksTest {
-    private TaskPoolTest poolTest;
+    private TaskPoolTestSet poolTest;
     private TaskProviderTest providerTest;
     private StackTaskProvider taskProvider;
 
@@ -32,7 +32,7 @@ public class StackTaskProviderWithDependentTasksTest {
     public void setUp() throws Exception {
         taskProvider = new StackTaskProvider(true, new Handler(Looper.myLooper()), "TestId");
 
-        poolTest = new TaskPoolTest();
+        poolTest = new TaskPoolTestSet();
         providerTest = new TaskProviderTest();
 
         poolTest.before(taskProvider);

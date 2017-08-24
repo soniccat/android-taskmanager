@@ -16,7 +16,7 @@ import org.junit.runner.RunWith;
  */
 
 @RunWith(AndroidJUnit4.class)
-public class SimpleTaskPoolTest extends TaskPoolTest {
+public class SimpleTaskPoolTest extends TaskPoolTestSet {
 
     @Rule
     public UiThreadTestRule rule = new UiThreadTestRule();

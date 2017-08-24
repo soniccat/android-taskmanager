@@ -17,7 +17,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class StackTaskProviderTest {
-    protected TaskPoolTest poolTest;
+    protected TaskPoolTestSet poolTest;
     protected TaskProviderTest providerTest;
     protected TaskProvider taskProvider;
 
@@ -28,7 +28,7 @@ public class StackTaskProviderTest {
     public void setUp() throws Exception {
         taskProvider = prepareTaskProvider();
 
-        poolTest = new TaskPoolTest();
+        poolTest = new TaskPoolTestSet();
         providerTest = new TaskProviderTest();
 
         preparePoolTest();

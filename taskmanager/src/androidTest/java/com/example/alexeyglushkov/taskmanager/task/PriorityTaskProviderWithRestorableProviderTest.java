@@ -21,4 +21,11 @@ public class PriorityTaskProviderWithRestorableProviderTest extends PriorityTask
         RestorableTaskProvider restorableTaskProvider = (RestorableTaskProvider)taskProvider;
         return (PriorityTaskProvider)restorableTaskProvider.getProvider();
     }
+
+    @Override
+    public void testAddTaskAddStatusListener() {
+        super.testAddTaskAddStatusListener();
+
+
+    }
 }
