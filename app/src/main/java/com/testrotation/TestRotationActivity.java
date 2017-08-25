@@ -134,7 +134,7 @@ public class TestRotationActivity extends AppCompatActivity {
     }
 
     @NonNull
-    private static Task.Callback getTaskCallback(final TestRotationActivity activity) {
+    private static Task.Callback getTaskCallback(TestRotationActivity activity) {
         final WeakReference<TestRotationActivity> ref = new WeakReference<>(activity);
         Log.d(TAG, "ref " + activity);
 

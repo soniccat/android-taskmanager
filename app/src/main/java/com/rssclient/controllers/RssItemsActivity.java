@@ -1,5 +1,6 @@
 package com.rssclient.controllers;
 
+import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import com.example.alexeyglushkov.taskmanager.task.PriorityTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManagerSnapshot;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskManagerSnapshot;
+import com.example.alexeyglushkov.taskmanager.task.WeakRefList;
 import com.example.alexeyglushkov.tools.HandlerTools;
 import com.main.MainApplication;
 import com.rssclient.model.RssFeed;
@@ -206,7 +208,8 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
         Image image = item.image();
 
         //the position is used as a part of task id to handle the same images right
-        Task task = ImageLoader.loadImage(null, image, Integer.toString(position), getLoadImageCallback(item));
+        final WeakReference<RssItemsActivity> ref = new WeakReference<>(this);
+        Task task = ImageLoader.loadImage(null, image, Integer.toString(position), getLoadImageCallback(item, ref));
 
         Range<Integer> range = getVisibleRange();
         task.setTaskType(position%2 + 1);
@@ -217,16 +220,23 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
 
         task.addTaskProgressListener(this);
         task.setTaskProgressMinChange(0.2f);
+        task.setLoadPolicy(Task.LoadPolicy.SkipIfAdded);
 
         taskProvider.addTask(task);
     }
 
     @NonNull
-    protected ImageLoader.LoadCallback getLoadImageCallback(final RssItem item) {
+    public static ImageLoader.LoadCallback getLoadImageCallback(final RssItem item, final WeakReference<RssItemsActivity> ref) {
+
         return new ImageLoader.LoadCallback() {
             @Override
             public void completed(Task task, final Image image, final Bitmap bitmap, Error error) {
-                RssItemsAdapter adapter = (RssItemsAdapter)listView.getAdapter();
+                RssItemsActivity act = ref.get();
+                if (act == null || act.isDestroyed() || act.isFinishing()) {
+                    return;
+                }
+
+                RssItemsAdapter adapter = (RssItemsAdapter)act.listView.getAdapter();
                 if (adapter == null) {
                     return;
                 }
@@ -236,7 +246,7 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
                     return;
                 }
 
-                View view = getViewAtPosition(position);
+                View view = act.getViewAtPosition(position);
                 if (view != null) {
                     // TODO: move holder access to adapter
                     RssItemsAdapter.ViewHolder holder = (RssItemsAdapter.ViewHolder) view.getTag();

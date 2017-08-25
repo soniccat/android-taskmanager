@@ -2,6 +2,7 @@ package com.example.alexeyglushkov.taskmanager.image;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -24,19 +25,18 @@ public class Image implements Serializable, Tasks.TaskListener, HttpURLConnectio
     protected Task.Status loadStatus;
     protected Task.LoadPolicy loadPolicy = Task.LoadPolicy.SkipIfAdded;
 
-    //TODO: make weak ref
-    protected Task processingTask;
+    protected WeakReference<Task> processingTask;
 
     @Override
     public void setTaskInProgress(Task task) {
         Log.d("Image--", "start " + task);
-        processingTask = task;
+        processingTask = new WeakReference<>(task);
         loadStatus = Task.Status.Started;
     }
 
     @Override
     public void setTaskCompleted(Task task) {
-        if (task == processingTask) {
+        if (processingTask != null && task == processingTask.get()) {
             loadStatus = Task.Status.Finished;
             processingTask = null;
         }
