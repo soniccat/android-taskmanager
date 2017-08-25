@@ -153,7 +153,7 @@ public class SimpleTaskManagerSnapshot implements TaskManagerSnapshot, TaskManag
 
     @Override
     public void addSnapshotListener(OnSnapshotChangedListener listener) {
-        snapshotChangedListeners.add(new WeakReference<OnSnapshotChangedListener>(listener));
+        snapshotChangedListeners.add(new WeakReference<>(listener));
     }
 
     @Override

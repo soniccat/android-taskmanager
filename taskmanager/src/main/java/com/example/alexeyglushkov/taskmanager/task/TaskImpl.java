@@ -40,14 +40,14 @@ public abstract class TaskImpl implements Task, TaskPrivate {
 
     // listeners are cleared in a TaskManager after task finishing or cancelling
     protected ArrayList<StatusListener> statusListeners;
-    protected ArrayList<ProgressListener> progressListeners;
+    protected WeakRefList<ProgressListener> progressListeners;
 
     public TaskImpl() {
         super();
 
         blockedByTasks = new WeakRefList<Task>();
         statusListeners = new ArrayList<StatusListener>();
-        progressListeners = new ArrayList<ProgressListener>();
+        progressListeners = new WeakRefList<>();
     }
 
     @Override
@@ -201,7 +201,7 @@ public abstract class TaskImpl implements Task, TaskPrivate {
     public void addTaskProgressListener(ProgressListener listener) {
         checkMainThread();
 
-        progressListeners.add(listener);
+        progressListeners.add(new WeakReference<ProgressListener>(listener));
     }
 
     @Override
@@ -209,8 +209,8 @@ public abstract class TaskImpl implements Task, TaskPrivate {
         checkMainThread();
 
         int i=0;
-        for (ProgressListener l : progressListeners) {
-            if (l == listener) {
+        for (WeakReference<ProgressListener> l : progressListeners) {
+            if (l.get() == listener) {
                 progressListeners.remove(i);
                 break;
             }
@@ -331,10 +331,8 @@ public abstract class TaskImpl implements Task, TaskPrivate {
             HandlerTools.runOnMainThread(new Runnable() {
                 @Override
                 public void run() {
-                    for (ProgressListener l : progressListeners) {
-                        if (l != null) {
-                            l.onProgressChanged(TaskImpl.this, progressInfo);
-                        }
+                    for (WeakReference<ProgressListener> l : progressListeners) {
+                        l.get().onProgressChanged(TaskImpl.this, progressInfo);
                     }
                 }
             });

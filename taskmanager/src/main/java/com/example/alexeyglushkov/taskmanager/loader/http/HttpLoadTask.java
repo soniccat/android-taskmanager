@@ -60,7 +60,7 @@ public class HttpLoadTask extends SimpleTask {
         super.startTask(callback);
 
         try {
-            Thread.sleep(60000);
+            Thread.sleep(6000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -194,5 +194,9 @@ public class HttpLoadTask extends SimpleTask {
         } else {
             super.cancelTask(info);
         }
+    }
+
+    public HttpURLConnectionProvider getProvider() {
+        return provider;
     }
 }

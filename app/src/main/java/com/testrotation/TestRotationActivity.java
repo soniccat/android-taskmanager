@@ -86,7 +86,8 @@ public class TestRotationActivity extends AppCompatActivity {
 
         } else {
             taskPool.restoreTaskCompletion(TASK_ID, getTaskCallback(this));
-            taskPool.setRecording(false);
+            // TODO: figure out when it's better to call that to not lose completed and active tasks
+            //taskPool.setRecording(false);
         }
     }
 

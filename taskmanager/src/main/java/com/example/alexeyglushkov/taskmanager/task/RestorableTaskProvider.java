@@ -2,6 +2,7 @@ package com.example.alexeyglushkov.taskmanager.task;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.v4.util.Pair;
 import android.util.Log;
 
@@ -112,6 +113,39 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
         });
     }
 
+    public void restoreTaskCompletions(final TaskCompletionProvider completionProvider) {
+        final Looper looper = Looper.myLooper();
+
+        HandlerTools.runOnHandlerThread(getHandler(), new Runnable() {
+            @Override
+            public void run() {
+                for (Task task : activeTasks) {
+                    Task.Callback callback = completionProvider.getCallback(task);
+                    if (callback != null) {
+                        final Completion taskCompletion = getDefaultCompletion(callback, looper);
+
+                        Pair<Task, RestoreState> restoredData = restoreActiveTask(task);
+                        taskCompletion.completed(restoredData.first, restoredData.second);
+                    }
+                }
+
+                for (Task task : completedTasks) {
+                    Task.Callback callback = completionProvider.getCallback(task);
+                    if (callback != null) {
+                        final Completion taskCompletion = getDefaultCompletion(callback, looper);
+
+                        Pair<Task, RestoreState> restoredData = restoreCompletedTask(task);
+                        taskCompletion.completed(restoredData.first, restoredData.second);
+                    }
+                }
+            }
+        });
+    }
+
+    public interface TaskCompletionProvider {
+        Task.Callback getCallback(Task task);
+    }
+
     public Completion getDefaultCompletion(final Task.Callback taskCallback, final Looper callbackLooper) {
         return new Completion() {
             @Override
@@ -135,23 +169,36 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
 
     private Pair<Task, RestoreState> restoreTaskCompletionOnThread(String taskId) {
         checkHandlerThread();
-
-        RestoreState restoreState = RestoreState.NotRestored;
         Task task = findTask(activeTasks, taskId);
 
         if (task != null) {
-            if (Tasks.isTaskCompleted(task)) {
-                // if a task is completed it will be in completedTasks
-                Assert.fail("Can't stop here");
-            }else {
-                restoreState = RestoreState.ReplacedCompletion;
-            }
+            return restoreActiveTask(task);
 
         } else {
             task = findCompletedTask(taskId);
-            if (task != null) {
-                restoreState = RestoreState.Restored;
-            }
+            return restoreCompletedTask(task);
+        }
+    }
+
+    @NonNull
+    private Pair<Task, RestoreState> restoreActiveTask(Task task) {
+        RestoreState restoreState = RestoreState.NotRestored;
+        if (Tasks.isTaskCompleted(task)) {
+            // if a task is completed it will be in completedTasks
+            Assert.fail("Can't stop here");
+        }else {
+            restoreState = RestoreState.ReplacedCompletion;
+        }
+
+        return new Pair<>(task, restoreState);
+    }
+
+    @NonNull
+    private Pair<Task, RestoreState> restoreCompletedTask(Task task) {
+        RestoreState restoreState = RestoreState.NotRestored;
+
+        if (task != null) {
+            restoreState = RestoreState.Restored;
         }
 
         return new Pair<>(task, restoreState);

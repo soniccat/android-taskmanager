@@ -33,7 +33,7 @@ public class HttpServiceTask extends CachableHttpLoadTask implements IServiceTas
         setLoadPolicy(LoadPolicy.CancelAdded);
     }
 
-    protected HttpURLConnectionProvider getProvider() {
+    public HttpURLConnectionProvider getProvider() {
         return new HttpURLConnectionProvider() {
             @Override
             public HttpURLConnection getUrlConnection() {

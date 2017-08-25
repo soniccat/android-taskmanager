@@ -1,6 +1,7 @@
 package com.example.alexeyglushkov.taskmanager.image;
 
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 
 import com.example.alexeyglushkov.streamlib.convertors.BytesBitmapConvertor;
 import com.example.alexeyglushkov.streamlib.readersandwriters.ByteArrayReader;
@@ -11,8 +12,6 @@ import com.example.alexeyglushkov.taskmanager.loader.http.HttpLoadTask;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 import com.example.alexeyglushkov.taskmanager.task.Tasks;
-
-import junit.framework.Assert;
 
 // Because Image doesn't store loaded data we should use ImageLoader to get the data from callback
 
@@ -41,9 +40,19 @@ public class ImageLoader {
             httpLoadTask.setTaskId(httpLoadTask.getTaskId() + destinationId);
         }
 
-        // TODO: it seems it's better to return callback in another function to be able to use it
-        // also for restoring in RestorableTaskProvider
-        httpLoadTask.setTaskCallback(new Task.Callback() {
+        Task.Callback taskCallback = getTaskCallback(httpLoadTask, image, callback);
+        httpLoadTask.setTaskCallback(taskCallback);
+
+        if (taskManager != null) {
+            taskManager.addTask(httpLoadTask);
+        }
+
+        return httpLoadTask;
+    }
+
+    @NonNull
+    public static Task.Callback getTaskCallback(final HttpLoadTask httpLoadTask, final Image image, final LoadCallback callback) {
+        return new Task.Callback() {
             @Override
             public void onCompleted(boolean cancelled) {
                 //ignore a cancelled result
@@ -61,13 +70,7 @@ public class ImageLoader {
                     callback.completed(httpLoadTask, image, bitmap, httpLoadTask.getTaskError());
                 }
             }
-        });
-
-        if (taskManager != null) {
-            taskManager.addTask(httpLoadTask);
-        }
-
-        return httpLoadTask;
+        };
     }
 
     public interface LoadCallback {

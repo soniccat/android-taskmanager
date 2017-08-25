@@ -10,11 +10,12 @@ import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 import com.example.alexeyglushkov.taskmanager.image.Image;
 import com.example.alexeyglushkov.taskmanager.image.ImageLoader;
+import com.example.alexeyglushkov.taskmanager.loader.http.HttpLoadTask;
 import com.example.alexeyglushkov.taskmanager.task.PriorityTaskProvider;
+import com.example.alexeyglushkov.taskmanager.task.RestorableTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManagerSnapshot;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskManagerSnapshot;
-import com.example.alexeyglushkov.taskmanager.task.WeakRefList;
 import com.example.alexeyglushkov.tools.HandlerTools;
 import com.main.MainApplication;
 import com.rssclient.model.RssFeed;
@@ -25,7 +26,7 @@ import com.example.alexeyglushkov.taskmanager.ui.TaskManagerView;
 import com.google.common.collect.Range;
 
 import android.graphics.Bitmap;
-import android.os.Handler;
+import android.support.annotation.IntegerRes;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBarActivity;
 import android.content.Intent;
@@ -42,10 +43,11 @@ import junit.framework.Assert;
 
 public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapter.RssItemsAdapterListener, TaskManagerSnapshot.OnSnapshotChangedListener, ProgressListener {
 
+    final static public String PROVIDER_ID = "providerID";
     final static public String FEED_URL = "feedURL";
 
     TaskManager taskManager;
-    private PriorityTaskProvider taskProvider;
+    private RestorableTaskProvider taskProvider;
 
     ListView listView;
     RssStorage rssStorage;
@@ -82,8 +84,17 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
         feed = rssStorage.getFeed(url);
 
         taskManager = application.getTaskManager();
-        this.taskProvider = new PriorityTaskProvider(this.taskManager.getHandler(), "RssItemProvider");
-        this.taskManager.addTaskProvider(this.taskProvider);
+        this.taskProvider = (RestorableTaskProvider) taskManager.getTaskProvider(PROVIDER_ID);
+
+        boolean needRestoreImages = false;
+        if (this.taskProvider == null) {
+            this.taskProvider = new RestorableTaskProvider(new PriorityTaskProvider(this.taskManager.getHandler(), PROVIDER_ID));
+            this.taskManager.addTaskProvider(this.taskProvider);
+            
+        } else {
+            needRestoreImages = true;
+            // TODO: figure out when it's better to call that to not lose completed and active tasks
+        }
         
         taskManagerView = (TaskManagerView) findViewById(R.id.task_manager_view);
 
@@ -133,7 +144,37 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
             });
         } else {
             acitvity.updateTableAdapter();
+
+            if (needRestoreImages) {
+                taskProvider.restoreTaskCompletions(new RestorableTaskProvider.TaskCompletionProvider() {
+                    @Override
+                    public Task.Callback getCallback(Task task) {
+                        HttpLoadTask httpTask = (HttpLoadTask)task;
+                        if (httpTask.getTaskUserData() instanceof Pair) {
+                            Pair<Integer, Image> taskData = (Pair<Integer, Image>) task.getTaskUserData();
+                            RssItem item = feed.items().get(taskData.first);
+
+                            ImageLoader.LoadCallback imageLoadCallback = getLoadImageCallback(item, RssItemsActivity.this);
+                            return ImageLoader.getTaskCallback(httpTask, taskData.second, imageLoadCallback);
+                        }
+
+                        return null;
+                    }
+                });
+            }
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        taskProvider.setRecording(true);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //taskProvider.setRecording(false);
     }
 
     @Override
@@ -208,8 +249,7 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
         Image image = item.image();
 
         //the position is used as a part of task id to handle the same images right
-        final WeakReference<RssItemsActivity> ref = new WeakReference<>(this);
-        Task task = ImageLoader.loadImage(null, image, Integer.toString(position), getLoadImageCallback(item, ref));
+        Task task = ImageLoader.loadImage(null, image, Integer.toString(position), getLoadImageCallback(item, this));
 
         Range<Integer> range = getVisibleRange();
         task.setTaskType(position%2 + 1);
@@ -226,7 +266,8 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
     }
 
     @NonNull
-    public static ImageLoader.LoadCallback getLoadImageCallback(final RssItem item, final WeakReference<RssItemsActivity> ref) {
+    public static ImageLoader.LoadCallback getLoadImageCallback(final RssItem item, RssItemsActivity activity) {
+        final WeakReference<RssItemsActivity> ref = new WeakReference<RssItemsActivity>(activity);
 
         return new ImageLoader.LoadCallback() {
             @Override
@@ -306,8 +347,10 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
             }
         });
 
+        PriorityTaskProvider priorityTaskProvider = (PriorityTaskProvider)taskProvider.getProvider();
+
         taskProvider.setUserData(firstVisibleItem);
-        taskProvider.updatePriorities(new PriorityTaskProvider.PriorityProvider() {
+        priorityTaskProvider.updatePriorities(new PriorityTaskProvider.PriorityProvider() {
             @Override
             public int getPriority(Task task) {
                 Assert.assertTrue(task.getTaskUserData() instanceof Pair);
