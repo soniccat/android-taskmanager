@@ -26,7 +26,7 @@ public class FileLoadTask extends SimpleTask {
     }
 
     public void startTask(Callback callback) {
-        getPrivate().handleTaskCompletion(callback);
+        super.startTask(callback);
 
         if (context != null) {
             String name = this.fileName;

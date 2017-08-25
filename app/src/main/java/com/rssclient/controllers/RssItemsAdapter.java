@@ -28,16 +28,10 @@ import android.widget.TextView;
 
 import junit.framework.Assert;
 
-public class RssItemsAdapter extends ArrayAdapter<RssItem> implements ProgressListener {
-
-    /**
-     *
-     */
+public class RssItemsAdapter extends ArrayAdapter<RssItem> {
     private final Context context;
-    private final ArrayList<RssItem> values;
-    private final TaskManager taskManager;
+    protected final ArrayList<RssItem> values;
     private RssItemsAdapterListener listener;
-    private PriorityTaskProvider taskProvider;
 
     class ViewHolder {
         public TextView text;
@@ -47,16 +41,10 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements ProgressLi
         public ProgressBar progressBar;
     }
 
-    public RssItemsAdapter(Context context, ArrayList<RssItem> values, TaskManager taskManager) {
+    public RssItemsAdapter(Context context, ArrayList<RssItem> values) {
         super(context, R.layout.feed_cell, values);
         this.context = context;
         this.values = values;
-        this.taskManager = taskManager;
-
-        Handler taskManagerHandler = this.taskManager.getHandler();
-        Handler mainThreadHandler = new Handler(Looper.myLooper());
-        this.taskProvider = new PriorityTaskProvider(taskManagerHandler, "RssItemAdapter");
-        this.taskManager.addTaskProvider(this.taskProvider);
     }
 
     public RssItemsAdapterListener getListener() {
@@ -96,7 +84,7 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements ProgressLi
 
         if (item.image() != null) {
             holder.progressBar.setVisibility(View.VISIBLE);
-            loadImage(item.image(), holder);
+            loadImage(convertView, item);
         } else {
             holder.progressBar.setVisibility(View.INVISIBLE);
         }
@@ -104,116 +92,22 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> implements ProgressLi
         return convertView;
     }
 
-    void loadImage(final Image image, final ViewHolder holder) {
+    protected void loadImage(View convertView, RssItem item) {
+        final ViewHolder holder = (ViewHolder) convertView.getTag();
 
         holder.imageView.setImageDrawable(null);
-        holder.loadingImage = image;
-        if (image == null) {
+        holder.loadingImage = item.image();
+        if (item.image() == null) {
             return;
         }
 
         final int position = holder.position;
         holder.progressBar.setProgress(0);
 
-        //the position is used as a part of task id to handle the same images right
-        Task task = ImageLoader.loadImage(null, image, Integer.toString(position), new ImageLoader.LoadCallback() {
-            @Override
-            public void completed(Task task, final Image image, final Bitmap bitmap, Error error) {
-                View view = getListener().getViewAtPosition(position);
-                if (view != null) {
-                    ViewHolder holder = (ViewHolder) view.getTag();
-                    if (holder.loadingImage == image) {
-                        if (bitmap != null) {
-                            holder.imageView.setImageBitmap(bitmap);
-                        }
-                        holder.loadingImage = null;
-                        holder.progressBar.setVisibility(View.INVISIBLE);
-                    }
-                }
-            }
-        });
-
-        Range<Integer> range = getListener().getVisibleRange();
-        task.setTaskType(position%2 + 1);
-        taskManager.setLimit(1, 0.5f);
-        taskManager.setLimit(2, 0.5f);
-        task.setTaskPriority(getTaskPriority(position, range.lowerEndpoint(), range.upperEndpoint() - range.lowerEndpoint() + 1));
-        task.setTaskUserData(new Pair<Integer, Image>(position, image));
-
-        task.addTaskProgressListener(this);
-        task.setTaskProgressMinChange(0.2f);
-
-        taskProvider.addTask(task);
-    }
-
-    public void onProgressChanged(Object sender, ProgressInfo info) {
-        Task task = (Task)sender;
-        Assert.assertTrue(task.getTaskUserData() instanceof Pair);
-
-        Pair<Integer, Image> taskData = (Pair<Integer, Image>)task.getTaskUserData();
-
-        View view = getListener().getViewAtPosition(taskData.first);
-        if (view != null) {
-            ViewHolder holder = (ViewHolder) view.getTag();
-            if (holder.loadingImage == taskData.second) {
-                holder.progressBar.setProgress((int)(info.getNormalizedValue()*100.0f));
-                //Log.d("imageprogress","progress " + newValue);
-            } else {
-                //Log.d("imageprogress","loadingImage is different");
-            }
-        }
-    }
-
-    public void onScroll(AbsListView view, final int firstVisibleItem, final int visibleItemCount, int totalItemCount) {
-        if (taskProvider.getUserData() instanceof Integer) {
-            int distance = Math.abs((Integer)taskProvider.getUserData() - firstVisibleItem);
-            if (distance < 5) {
-                return;
-            }
-        }
-
-        //TODO: it should be done via api without direct access to getStreamReader
-        HandlerTools.runOnHandlerThread(taskProvider.getHandler(), new Runnable() {
-            @Override
-            public void run() {
-                List<Task> tasks = new ArrayList<Task>();
-                tasks.addAll(taskProvider.getTasks());
-
-                for (Task t : tasks) {
-                    Pair<Integer, Image> taskData = (Pair<Integer, Image>)t.getTaskUserData();
-                    int distance = Math.abs((Integer)taskProvider.getUserData() - taskData.first);
-                    if (distance > 30) {
-                        taskManager.cancel(t,null);
-                    }
-                }
-            }
-        });
-
-        taskProvider.setUserData(firstVisibleItem);
-        taskProvider.updatePriorities(new PriorityTaskProvider.PriorityProvider() {
-            @Override
-            public int getPriority(Task task) {
-                Assert.assertTrue(task.getTaskUserData() instanceof Pair);
-
-                Pair<Integer, Image> taskData = (Pair<Integer, Image>)task.getTaskUserData();
-                int taskPosition = taskData.first;
-                return getTaskPriority(taskPosition, firstVisibleItem, visibleItemCount);
-            }
-        });
-    }
-
-    private int getTaskPriority(int taskPosition, int firstVisibleItem, int visibleItemCount) {
-        //for a test purpose we start load images from the center of the list view
-        int delta = Math.abs(firstVisibleItem + visibleItemCount/2 - taskPosition);
-        if (delta > 100) {
-            delta = 100;
-        }
-
-        return 100 - delta;
+        getListener().loadImage(item);
     }
 
     public interface RssItemsAdapterListener {
-        View getViewAtPosition(int position);
-        Range<Integer> getVisibleRange();
+        void loadImage(RssItem item);
     }
 }

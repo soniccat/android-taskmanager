@@ -30,8 +30,6 @@ import android.widget.ListView;
 
 @SuppressLint("NewApi")
 public class MainRssActivity extends ActionBarActivity implements FeedsAdapter.FeedsAdapterListener {
-    public final static String FEED_OBJECT = "com.ga.mainActivity.FEED_OBJECT";
-
     TaskManager taskManager;
     RssStorage rssStorage;
 
@@ -143,7 +141,7 @@ public class MainRssActivity extends ActionBarActivity implements FeedsAdapter.F
 
         // Do something in response to button
         Intent intent = new Intent(this, RssItemsActivity.class);
-        intent.putExtra(FEED_OBJECT, (Serializable) feed);
+        intent.putExtra(RssItemsActivity.FEED_URL, feed.getURL().toString());
 
         startActivity(intent);
     }
@@ -309,7 +307,6 @@ public class MainRssActivity extends ActionBarActivity implements FeedsAdapter.F
                     int feedsCount = storage.feeds().size();
                     System.out.printf("loaded %d feeds\n", feedsCount);
 
-                    MainRssActivity.this.rssStorage = storage;
                     activity.handleRssStorageLoad();
                 }
             }

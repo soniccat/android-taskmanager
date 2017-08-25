@@ -3,6 +3,7 @@ package com.rssclient.model;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
+import java.net.URL;
 import java.util.ArrayList;
 
 import android.content.Context;
@@ -55,17 +56,22 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
 
     public void load(TaskManager taskManager, Context context, final RssStorageCallback callback) {
         final RssStorage storage = this;
-        final FileLoadTask httpLoadTask = new FileLoadTask(getFileName(), new ObjectReader(null), context);
-        httpLoadTask.setTaskCallback(new Task.Callback() {
+        final FileLoadTask fileLoadTask = new FileLoadTask(getFileName(), new ObjectReader(null), context);
+        fileLoadTask.setTaskCallback(new Task.Callback() {
             @Override
             public void onCompleted(boolean cancelled) {
+                RssStorage loadedStorage = (RssStorage)fileLoadTask.getTaskResult();
+                if (loadedStorage != null) {
+                    feeds.addAll(loadedStorage.feeds());
+                }
+
                 if (callback != null) {
-                    callback.completed((RssStorage) httpLoadTask.getTaskResult(), httpLoadTask.getTaskError());
+                    callback.completed((RssStorage) fileLoadTask.getTaskResult(), fileLoadTask.getTaskError());
                 }
             }
         });
 
-        taskManager.addTask(httpLoadTask);
+        taskManager.addTask(fileLoadTask);
     }
 
     public void keep(TaskManager taskManager, Context context, final RssStorageCallback callback) {
@@ -97,6 +103,18 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
 
     public ArrayList<RssFeed> feeds() {
         return feeds;
+    }
+
+    public RssFeed getFeed(URL url) {
+        RssFeed result = null;
+        for (RssFeed feed : feeds) {
+            if (feed.getURL().equals(url)) {
+                result = feed;
+                break;
+            }
+        }
+
+        return result;
     }
 
     public void loadFeed(TaskManager taskManager, Context context, final RssFeed feed, final RssFeedCallback callback) {

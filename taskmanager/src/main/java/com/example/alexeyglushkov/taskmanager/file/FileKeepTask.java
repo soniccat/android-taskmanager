@@ -22,6 +22,8 @@ public class FileKeepTask extends SimpleTask {
     }
 
     public void startTask(Callback callback) {
+        super.startTask(callback);
+
         if (context != null) {
             String name = this.fileName;
             FileOutputStream fos = null;

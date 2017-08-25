@@ -1,8 +1,17 @@
 package com.rssclient.controllers;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
+import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
+import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
+import com.example.alexeyglushkov.taskmanager.image.Image;
+import com.example.alexeyglushkov.taskmanager.image.ImageLoader;
+import com.example.alexeyglushkov.taskmanager.task.PriorityTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManagerSnapshot;
+import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskManagerSnapshot;
 import com.example.alexeyglushkov.tools.HandlerTools;
 import com.main.MainApplication;
@@ -13,19 +22,29 @@ import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 import com.example.alexeyglushkov.taskmanager.ui.TaskManagerView;
 import com.google.common.collect.Range;
 
+import android.graphics.Bitmap;
+import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBarActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
+import junit.framework.Assert;
 
-public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapter.RssItemsAdapterListener, TaskManagerSnapshot.OnSnapshotChangedListener {
+
+public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapter.RssItemsAdapterListener, TaskManagerSnapshot.OnSnapshotChangedListener, ProgressListener {
+
+    final static public String FEED_URL = "feedURL";
 
     TaskManager taskManager;
+    private PriorityTaskProvider taskProvider;
+
     ListView listView;
     RssStorage rssStorage;
     TaskManagerView taskManagerView;
@@ -41,10 +60,28 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
         MainApplication application = (MainApplication) getApplication();
 
         Intent intent = getIntent();
-        feed = (RssFeed) intent.getSerializableExtra(MainRssActivity.FEED_OBJECT);
+
+        rssStorage = application.getRssStorage();
+
+        String urlString;
+        if (savedInstanceState == null) {
+            urlString = (String) intent.getSerializableExtra(FEED_URL);
+        } else {
+            urlString = savedInstanceState.getString(FEED_URL);
+        }
+
+        URL url = null;
+        try {
+            url = new URL(urlString);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        feed = rssStorage.getFeed(url);
 
         taskManager = application.getTaskManager();
-        rssStorage = application.getRssStorage();
+        this.taskProvider = new PriorityTaskProvider(this.taskManager.getHandler(), "RssItemProvider");
+        this.taskManager.addTaskProvider(this.taskProvider);
         
         taskManagerView = (TaskManagerView) findViewById(R.id.task_manager_view);
 
@@ -64,40 +101,49 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 final RssItemsAdapter adapter = (RssItemsAdapter)view.getAdapter();
                 if (adapter != null) {
-                    adapter.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
+                    RssItemsActivity.this.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
                 }
             }
         });
 
         final RssItemsActivity acitvity = this;
 
-        rssStorage.loadFeed(taskManager, this, feed, new RssStorage.RssFeedCallback() {
+        if (feed.items() == null || feed.items().size() == 0) {
+            rssStorage.loadFeed(taskManager, this, feed, new RssStorage.RssFeedCallback() {
 
-            @Override
-            public void completed(RssFeed feed, final Error error) {
-                // TODO Auto-generated method stub
-                System.out.println("loaded");
+                @Override
+                public void completed(RssFeed feed, final Error error) {
+                    // TODO Auto-generated method stub
+                    System.out.println("loaded");
 
-                HandlerTools.runOnMainThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (error != null) {
-                            Tools.showErrorMessage(acitvity, "Rss Load Error");
+                    HandlerTools.runOnMainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (error != null) {
+                                Tools.showErrorMessage(acitvity, "Rss Load Error");
 
-                        } else {
-                            acitvity.updateTableAdapter();
+                            } else {
+                                acitvity.updateTableAdapter();
+                            }
                         }
-                    }
-                });
-            }
-        });
+                    });
+                }
+            });
+        } else {
+            acitvity.updateTableAdapter();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(FEED_URL, feed.getURL().toString());
     }
 
     public void onSnapshotChanged(TaskManagerSnapshot snapshot) {
         taskManagerView.showSnapshot(snapshot);
     }
 
-    @Override
     public View getViewAtPosition(int pos) {
         final int firstListItemPosition = listView.getFirstVisiblePosition();
         final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
@@ -110,7 +156,6 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
         return null;
     }
 
-    @Override
     public Range<Integer> getVisibleRange() {
         if (listView.getChildCount() == 0) {
             return Range.closed(0,0);
@@ -121,7 +166,7 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
 
     void updateTableAdapter() {
         final ArrayList<RssItem> items = new ArrayList<RssItem>(this.feed.items());
-        final RssItemsAdapter adapter = new RssItemsAdapter(this, items, this.taskManager);
+        final RssItemsAdapter adapter = new RssItemsAdapter(this, items);
 
         adapter.setListener(this);
         listView.setAdapter(adapter);
@@ -145,5 +190,132 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    //
+
+    @Override
+    public void loadImage(RssItem item) {
+        RssItemsAdapter adapter = (RssItemsAdapter)listView.getAdapter();
+
+        int position = adapter.values.indexOf(item);
+        if (position == -1) {
+            return;
+        }
+
+        Image image = item.image();
+
+        //the position is used as a part of task id to handle the same images right
+        Task task = ImageLoader.loadImage(null, image, Integer.toString(position), getLoadImageCallback(item));
+
+        Range<Integer> range = getVisibleRange();
+        task.setTaskType(position%2 + 1);
+        taskManager.setLimit(1, 0.5f);
+        taskManager.setLimit(2, 0.5f);
+        task.setTaskPriority(getTaskPriority(position, range.lowerEndpoint(), range.upperEndpoint() - range.lowerEndpoint() + 1));
+        task.setTaskUserData(new Pair<Integer, Image>(position, image));
+
+        task.addTaskProgressListener(this);
+        task.setTaskProgressMinChange(0.2f);
+
+        taskProvider.addTask(task);
+    }
+
+    @NonNull
+    protected ImageLoader.LoadCallback getLoadImageCallback(final RssItem item) {
+        return new ImageLoader.LoadCallback() {
+            @Override
+            public void completed(Task task, final Image image, final Bitmap bitmap, Error error) {
+                RssItemsAdapter adapter = (RssItemsAdapter)listView.getAdapter();
+                if (adapter == null) {
+                    return;
+                }
+
+                int position = adapter.values.indexOf(item);
+                if (position == -1) {
+                    return;
+                }
+
+                View view = getViewAtPosition(position);
+                if (view != null) {
+                    // TODO: move holder access to adapter
+                    RssItemsAdapter.ViewHolder holder = (RssItemsAdapter.ViewHolder) view.getTag();
+                    if (holder.loadingImage == image) {
+                        if (bitmap != null) {
+                            holder.imageView.setImageBitmap(bitmap);
+                        }
+                        holder.loadingImage = null;
+                        holder.progressBar.setVisibility(View.INVISIBLE);
+                    }
+                }
+            }
+        };
+    }
+
+    public void onProgressChanged(Object sender, ProgressInfo info) {
+        Task task = (Task)sender;
+        Assert.assertTrue(task.getTaskUserData() instanceof Pair);
+
+        Pair<Integer, Image> taskData = (Pair<Integer, Image>)task.getTaskUserData();
+
+        View view = getViewAtPosition(taskData.first);
+        if (view != null) {
+            // TODO: move holder access to adapter
+            RssItemsAdapter.ViewHolder holder = (RssItemsAdapter.ViewHolder) view.getTag();
+            if (holder.loadingImage == taskData.second) {
+                holder.progressBar.setProgress((int)(info.getNormalizedValue()*100.0f));
+                //Log.d("imageprogress","progress " + newValue);
+            } else {
+                //Log.d("imageprogress","loadingImage is different");
+            }
+        }
+    }
+
+    public void onScroll(AbsListView view, final int firstVisibleItem, final int visibleItemCount, int totalItemCount) {
+        if (taskProvider.getUserData() instanceof Integer) {
+            int distance = Math.abs((Integer)taskProvider.getUserData() - firstVisibleItem);
+            if (distance < 5) {
+                return;
+            }
+        }
+
+        //TODO: it should be done via api without direct access to getStreamReader
+        HandlerTools.runOnHandlerThread(taskProvider.getHandler(), new Runnable() {
+            @Override
+            public void run() {
+                List<Task> tasks = new ArrayList<Task>();
+                tasks.addAll(taskProvider.getTasks());
+
+                for (Task t : tasks) {
+                    Pair<Integer, Image> taskData = (Pair<Integer, Image>)t.getTaskUserData();
+                    int distance = Math.abs((Integer)taskProvider.getUserData() - taskData.first);
+                    if (distance > 30) {
+                        taskManager.cancel(t,null);
+                    }
+                }
+            }
+        });
+
+        taskProvider.setUserData(firstVisibleItem);
+        taskProvider.updatePriorities(new PriorityTaskProvider.PriorityProvider() {
+            @Override
+            public int getPriority(Task task) {
+                Assert.assertTrue(task.getTaskUserData() instanceof Pair);
+
+                Pair<Integer, Image> taskData = (Pair<Integer, Image>)task.getTaskUserData();
+                int taskPosition = taskData.first;
+                return getTaskPriority(taskPosition, firstVisibleItem, visibleItemCount);
+            }
+        });
+    }
+
+    private int getTaskPriority(int taskPosition, int firstVisibleItem, int visibleItemCount) {
+        //for a test purpose we start load images from the center of the list view
+        int delta = Math.abs(firstVisibleItem + visibleItemCount/2 - taskPosition);
+        if (delta > 100) {
+            delta = 100;
+        }
+
+        return 100 - delta;
     }
 }
