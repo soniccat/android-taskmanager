@@ -22,6 +22,7 @@ public class ImageLoader {
         return loadImage(taskManager, image, null, callback);
     }
 
+    // TODO: remove taskManager argument
     public static Task loadImage(TaskManager taskManager, final Image image, String destinationId, final ImageLoader.LoadCallback callback) {
         InputStreamReader streamReader = new ByteArrayReader(new BytesBitmapConvertor(null));
         HTTPConnectionStreamReader reader = new HTTPConnectionResponseReaderAdaptor(streamReader);

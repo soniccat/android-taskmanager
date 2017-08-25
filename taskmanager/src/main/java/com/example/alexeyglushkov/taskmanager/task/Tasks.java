@@ -17,8 +17,6 @@ public class Tasks {
         task.addTaskStatusListener(new Task.StatusListener() {
             @Override
             public void onTaskStatusChanged(final Task task, final Task.Status oldStatus, final Task.Status newStatus) {
-                final Task.StatusListener thisListener = this;
-
                 Log.d("Bind--", "task " + task + " from " + oldStatus + " to " + newStatus);
 
                 //Waiting status is set in the com.example.alexeyglushkov.wordteacher.main thread
