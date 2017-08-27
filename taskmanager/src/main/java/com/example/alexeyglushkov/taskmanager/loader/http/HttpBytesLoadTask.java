@@ -14,7 +14,7 @@ public class HttpBytesLoadTask extends HttpLoadTask {
         super(provider, null);
 
         byteArrayReader = new ByteArrayReader(handler, true);
-        setStreamReader(new HTTPConnectionResponseReaderAdaptor(byteArrayReader){
+        setStreamReader(new HTTPConnectionStreamReaderAdaptor(byteArrayReader){
             @Override
             public void handleConnectionResponse(HttpURLConnection connection) {
                 if (handler != null) {

@@ -9,10 +9,10 @@ import java.net.HttpURLConnection;
 /**
  * Created by alexeyglushkov on 31.10.15.
  */
-public class HTTPConnectionResponseReaderAdaptor implements HTTPConnectionStreamReader {
+public class HTTPConnectionStreamReaderAdaptor implements HTTPConnectionStreamReader {
     private InputStreamReader reader;
 
-    public HTTPConnectionResponseReaderAdaptor(InputStreamReader reader) {
+    public HTTPConnectionStreamReaderAdaptor(InputStreamReader reader) {
         this.reader = reader;
     }
 

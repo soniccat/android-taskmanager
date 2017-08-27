@@ -10,22 +10,18 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
 import com.example.alexeyglushkov.streamlib.readersandwriters.ByteArrayReader;
 import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
 import com.example.alexeyglushkov.streamlib.readersandwriters.ObjectReader;
-import com.example.alexeyglushkov.taskmanager.file.ByteArrayProvider;
-import com.example.alexeyglushkov.taskmanager.file.ByteArrayWriter;
 import com.example.alexeyglushkov.taskmanager.file.FileKeepTask;
 import com.example.alexeyglushkov.taskmanager.file.ObjectWriter;
 import com.example.alexeyglushkov.taskmanager.loader.file.FileLoadTask;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionStreamReader;
-import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionResponseReaderAdaptor;
+import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionStreamReaderAdaptor;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpLoadTask;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 import com.example.alexeyglushkov.taskmanager.task.Tasks;
-import com.fasterxml.jackson.core.util.ByteArrayBuilder;
 
 public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener {
 
@@ -120,7 +116,7 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
     public void loadFeed(TaskManager taskManager, Context context, final RssFeed feed, final RssFeedCallback callback) {
 
         InputStreamReader streamReader = new ByteArrayReader(feed.getDataHandler());
-        HTTPConnectionStreamReader reader = new HTTPConnectionResponseReaderAdaptor(streamReader);
+        HTTPConnectionStreamReader reader = new HTTPConnectionStreamReaderAdaptor(streamReader);
         final HttpLoadTask loatTask = new HttpLoadTask(feed, reader);
         loatTask.setTaskCallback(new Task.Callback() {
             @Override
