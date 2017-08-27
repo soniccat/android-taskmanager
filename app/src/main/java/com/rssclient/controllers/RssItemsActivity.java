@@ -90,7 +90,7 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
         if (this.taskProvider == null) {
             this.taskProvider = new RestorableTaskProvider(new PriorityTaskProvider(this.taskManager.getHandler(), PROVIDER_ID));
             this.taskManager.addTaskProvider(this.taskProvider);
-            
+
         } else {
             needRestoreImages = true;
             // TODO: figure out when it's better to call that to not lose completed and active tasks
@@ -249,7 +249,7 @@ public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapt
         Image image = item.image();
 
         //the position is used as a part of task id to handle the same images right
-        Task task = ImageLoader.loadImage(null, image, Integer.toString(position), getLoadImageCallback(item, this));
+        Task task = ImageLoader.loadImage(taskProvider, image, Integer.toString(position), getLoadImageCallback(item, this));
 
         Range<Integer> range = getVisibleRange();
         task.setTaskType(position%2 + 1);

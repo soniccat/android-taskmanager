@@ -47,7 +47,12 @@ public class RestorableTaskProvider extends TaskProviderWrapper {
             return;
         }
 
-        task.addTaskStatusListener(this);
+        HandlerTools.runOnHandlerThread(getHandler(), new Runnable() {
+            @Override
+            public void run() {
+                task.addTaskStatusListener(RestorableTaskProvider.this);
+            }
+        });
 
         if (isDebug) {
             Log.d(TAG, "activeTasks addTaskStatusListener " + task + " status " + task.getTaskStatus());

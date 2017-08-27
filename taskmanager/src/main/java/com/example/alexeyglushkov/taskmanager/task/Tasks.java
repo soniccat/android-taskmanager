@@ -19,12 +19,7 @@ public class Tasks {
             public void onTaskStatusChanged(final Task task, final Task.Status oldStatus, final Task.Status newStatus) {
                 Log.d("Bind--", "task " + task + " from " + oldStatus + " to " + newStatus);
 
-                //Waiting status is set in the com.example.alexeyglushkov.wordteacher.main thread
-                if (newStatus == Task.Status.Waiting) {
-                    Assert.assertEquals(Looper.myLooper(), Looper.getMainLooper());
-                    listener.setTaskInProgress(task);
-
-                } else if (newStatus == Task.Status.Finished || newStatus == Task.Status.Cancelled)
+                if (newStatus == Task.Status.Finished || newStatus == Task.Status.Cancelled)
                     HandlerTools.runOnMainThread(new Runnable() {
                         @Override
                         public void run() {

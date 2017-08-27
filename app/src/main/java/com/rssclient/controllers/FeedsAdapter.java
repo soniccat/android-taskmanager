@@ -93,7 +93,7 @@ public class FeedsAdapter extends ArrayAdapter<RssFeed> {
 
         final int position = holder.position;
 
-        ImageLoader.loadImage(this.taskManager, image, Integer.toString(holder.hashCode()), new ImageLoader.LoadCallback() {
+        Task task = ImageLoader.loadImage(this.taskManager, image, Integer.toString(holder.hashCode()), new ImageLoader.LoadCallback() {
 
             @Override
             public void completed(Task task, final Image image, final Bitmap bitmap, Error error) {
@@ -110,6 +110,8 @@ public class FeedsAdapter extends ArrayAdapter<RssFeed> {
                 }
             }
         });
+
+        this.taskManager.addTask(task);
     }
 
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
