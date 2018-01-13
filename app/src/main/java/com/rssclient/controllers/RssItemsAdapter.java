@@ -10,7 +10,6 @@ import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
 import com.example.alexeyglushkov.tools.HandlerTools;
 import com.rssclient.model.RssItem;
 import com.example.alexeyglushkov.taskmanager.task.*;
-import com.google.common.collect.Range;
 
 import android.content.Context;
 import android.graphics.Bitmap;

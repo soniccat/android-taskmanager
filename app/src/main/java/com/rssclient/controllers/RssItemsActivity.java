@@ -17,13 +17,13 @@ import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManagerSnapshot;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskManagerSnapshot;
 import com.example.alexeyglushkov.tools.HandlerTools;
+import com.example.alexeyglushkov.tools.Range;
 import com.main.MainApplication;
 import com.rssclient.model.RssFeed;
 import com.rssclient.model.RssStorage;
 import com.rssclient.model.RssItem;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 import com.example.alexeyglushkov.taskmanager.ui.TaskManagerView;
-import com.google.common.collect.Range;
 
 import android.graphics.Bitmap;
 import android.support.annotation.IntegerRes;
@@ -201,10 +201,10 @@ public class RssItemsActivity extends AppCompatActivity implements RssItemsAdapt
 
     public Range<Integer> getVisibleRange() {
         if (listView.getChildCount() == 0) {
-            return Range.closed(0,0);
+            return new Range<>(0, 0);
         }
 
-        return Range.closed(listView.getFirstVisiblePosition(), listView.getFirstVisiblePosition() + listView.getChildCount() - 1);
+        return new Range<Integer>(listView.getFirstVisiblePosition(), listView.getFirstVisiblePosition() + listView.getChildCount() - 1);
     }
 
     void updateTableAdapter() {
@@ -255,7 +255,7 @@ public class RssItemsActivity extends AppCompatActivity implements RssItemsAdapt
         task.setTaskType(position%2 + 1);
         taskManager.setLimit(1, 0.5f);
         taskManager.setLimit(2, 0.5f);
-        task.setTaskPriority(getTaskPriority(position, range.lowerEndpoint(), range.upperEndpoint() - range.lowerEndpoint() + 1));
+        task.setTaskPriority(getTaskPriority(position, range.getLower(), range.getUpper() - range.getLower() + 1));
         task.setTaskUserData(new Pair<Integer, Image>(position, image));
 
         task.addTaskProgressListener(this);

@@ -28,7 +28,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:'  + project.ext.supportLibVersion
     compile 'com.google.dexmaker:dexmaker:1.2'
     compile 'com.google.dexmaker:dexmaker-mockito:1.2'
-    compile 'com.google.guava:guava:18.0'
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':testsupport')
     compile project(':streamlib')
