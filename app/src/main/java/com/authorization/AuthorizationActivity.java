@@ -5,7 +5,7 @@ import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.content.Loader;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -30,7 +30,7 @@ import java.io.File;
 /**
  * Created by alexeyglushkov on 24.10.15.
  */
-public class AuthorizationActivity extends ActionBarActivity implements OAuthWebClient {
+public class AuthorizationActivity extends AppCompatActivity implements OAuthWebClient {
     private static final String TAG = "AuthorizationActivity";
     public static final String LOAD_URL = "LOAD_URL";
 

@@ -28,7 +28,7 @@ import com.google.common.collect.Range;
 import android.graphics.Bitmap;
 import android.support.annotation.IntegerRes;
 import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Pair;
@@ -41,7 +41,7 @@ import android.widget.ListView;
 import junit.framework.Assert;
 
 
-public class RssItemsActivity extends ActionBarActivity implements RssItemsAdapter.RssItemsAdapterListener, TaskManagerSnapshot.OnSnapshotChangedListener, ProgressListener {
+public class RssItemsActivity extends AppCompatActivity implements RssItemsAdapter.RssItemsAdapterListener, TaskManagerSnapshot.OnSnapshotChangedListener, ProgressListener {
 
     final static public String PROVIDER_ID = "providerID";
     final static public String FEED_URL = "feedURL";

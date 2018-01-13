@@ -11,7 +11,7 @@ import com.rssclient.model.RssFeed;
 import com.rssclient.model.RssStorage;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -29,7 +29,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 @SuppressLint("NewApi")
-public class MainRssActivity extends ActionBarActivity implements FeedsAdapter.FeedsAdapterListener {
+public class MainRssActivity extends AppCompatActivity implements FeedsAdapter.FeedsAdapterListener {
     TaskManager taskManager;
     RssStorage rssStorage;
 
