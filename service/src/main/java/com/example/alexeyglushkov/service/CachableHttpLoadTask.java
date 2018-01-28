@@ -154,6 +154,7 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
         }
     }
 
+    // TODO: looks strange
     @Override
     public void setError(Error error) {
         if (getHandledData() == null) {

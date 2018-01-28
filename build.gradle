@@ -29,6 +29,4 @@ allprojects {
 
         supportLibVersion = "27.0.2"
     }
-
-    task hello << { task -> println "I'm $task.project.name $buildDir" }
 }

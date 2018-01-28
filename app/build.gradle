@@ -20,6 +20,41 @@ android {
         }
     }
 
+    flavorDimensions "a", "b"
+
+    productFlavors {
+        f1a {
+            dimension "a"
+        }
+
+        f1b {
+            dimension "b"
+        }
+
+        f2a {
+            dimension "a"
+        }
+
+        f2b {
+            dimension "b"
+        }
+    }
+
+    android.variantFilter { variant ->
+        if (variant.getFlavors().get(0).name.equals('f1a')
+                && variant.getFlavors().get(1).name.equals('f2b')) {
+            variant.setIgnore(true);
+        }
+        if (variant.getFlavors().get(0).name.equals('f1b')
+                && variant.getFlavors().get(1).name.equals('f2a')) {
+            variant.setIgnore(true);
+        }
+        if (variant.getFlavors().get(0).name.equals('f2a')
+                && variant.getFlavors().get(1).name.equals('f1b')) {
+            variant.setIgnore(true);
+        }
+    }
+
     testOptions {
         unitTests.returnDefaultValues = true
     }
@@ -28,20 +63,58 @@ android {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/NOTICE'
     }
-}
 
-repositories{
-    mavenCentral()
+//    project.afterEvaluate {
+//        project.dependencies.each { handler ->
+//            println("aaaa")
+//            println(handler)
+//        }
+//
+//        android.applicationVariants.all { variant ->
+//            println("bbbb " + variant.getBuildType().getName())
+//            println(variant)
+//
+//            variant.outputs.all { output ->
+//                println(output)
+//                println(it.fileTree(it.rootDir))
+//            }
+//        }
+//    }
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:' + project.ext.supportLibVersion
-    compile 'com.android.support:appcompat-v7:' + project.ext.supportLibVersion
-    testCompile 'org.mockito:mockito-core:1.9.5'
-    compile project(':taskmanager')
-    compile project(':authorization')
-    compile project(':servicetaskmanager')
-    compile project(':authcachemanager')
-    compile project(':service')
-    compile project(':quizletservice')
+    implementation 'com.android.support:support-v4:' + project.ext.supportLibVersion
+    implementation 'com.android.support:appcompat-v7:' + project.ext.supportLibVersion
+    testImplementation 'org.mockito:mockito-core:1.9.5'
+    implementation project(':taskmanager')
+    implementation project(':authorization')
+    implementation project(':servicetaskmanager')
+    implementation project(':authcachemanager')
+    implementation project(':service')
+    implementation project(':quizletservice')
+}
+
+task generateClass() {
+    println('generateClass: preparing')
+
+    project.afterEvaluate {
+        println('generateClass: prepared')
+
+        def srcPath = android.sourceSets['main'].java.srcDirs[0].toString()
+        println('source path: ' + srcPath)
+        println('project name: ' + project.name)
+        println('project path: ' + project.rootDir)
+
+        def resultPath = srcPath + '/' + "custom.java"
+        println('result path: ' + resultPath)
+
+        File configFile = file(resultPath)
+        //configFile.createNewFile()
+        //configFile.write("hello")
+
+        android.applicationVariants.all { variant ->
+            //println('variant: ' + variant.name)
+            //println('sourceSet: ' + variant.sourceSets[0].)
+        }
+    }
 }
