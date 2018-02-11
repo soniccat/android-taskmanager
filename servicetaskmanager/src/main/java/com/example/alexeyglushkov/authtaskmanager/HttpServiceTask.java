@@ -2,9 +2,12 @@ package com.example.alexeyglushkov.authtaskmanager;
 
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
-import com.example.alexeyglushkov.service.CachableHttpLoadTask;
+import com.example.alexeyglushkov.service.HttpCacheableTransport;
 import com.example.alexeyglushkov.streamlib.convertors.BytesStringConvertor;
 import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
+import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionBytesReader;
+import com.example.alexeyglushkov.taskmanager.loader.http.HttpLoadTask;
+import com.example.alexeyglushkov.taskmanager.loader.http.HttpTaskTransport;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpURLConnectionProvider;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 
@@ -15,16 +18,41 @@ import java.net.URL;
 /**
  * Created by alexeyglushkov on 04.11.15.
  */
-public class HttpServiceTask extends CachableHttpLoadTask implements IServiceTask {
+public class HttpServiceTask extends HttpLoadTask implements IServiceTask {
 
     private HttpUrlConnectionBuilder connectionBuilder = new HttpUrlConnectionBuilder();
 
     public HttpServiceTask() {
         //TODO: we pass null and lose HTTPConnectionHandler handling (HTTPConnectionResponseReaderAdaptor)
-        super(null, null);
-        setProvider(getProvider());
-        byteArrayReader.setByteArrayHandler(getReader());
+        //super(null, null);
+        super();
+        setTransport(createTransport());
+        //setProvider(getProvider());
+        //byteArrayReader.setByteArrayHandler(getReader());
         this.connectionBuilder = new HttpUrlConnectionBuilder();
+    }
+
+    private HttpTaskTransport createTransport() {
+        final ByteArrayHandler handler = getReader();
+
+        HttpCacheableTransport transport = new HttpCacheableTransport(getProvider(), new HTTPConnectionBytesReader() {
+            @Override
+            public Object convert(Object object) {
+                return handleByteArrayBuffer((byte[])object);
+            }
+
+            @Override
+            public Object handleByteArrayBuffer(byte[] byteArray) {
+                return handler.handleByteArrayBuffer(byteArray);
+            }
+
+            @Override
+            public void handleConnectionResponse(HttpURLConnection connection) {
+                //
+            }
+        });
+
+        return transport;
     }
 
     public void setConnectionBuilder(HttpUrlConnectionBuilder connectionBuilder) {
@@ -97,5 +125,11 @@ public class HttpServiceTask extends CachableHttpLoadTask implements IServiceTas
     @Override
     public boolean isEmpty() {
         return false;
+    }
+
+    @Override
+    public int getResponseCode() {
+        HttpTaskTransport transport = (HttpTaskTransport) getTransport();
+        return transport.getResponseCode();
     }
 }

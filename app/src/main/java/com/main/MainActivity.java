@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -23,7 +22,7 @@ import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
 import com.example.alexeyglushkov.cachemanager.StorageProvider;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageProvider;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
-import com.example.alexeyglushkov.service.CachableHttpLoadTask;
+import com.example.alexeyglushkov.service.HttpCacheableTransport;
 import com.example.alexeyglushkov.service.SimpleService;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 import com.example.alexeyglushkov.taskmanager.task.Task;
@@ -167,7 +166,7 @@ public class MainActivity extends BaseActivity implements QuizletService.Quizlet
     }
 
     private void loadSets(boolean useCache) {
-        getMainApplication().getQuizletService().loadSets(CachableHttpLoadTask.CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD, null);
+        getMainApplication().getQuizletService().loadSets(HttpCacheableTransport.CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD, null);
     }
 
     // QuizletServiceListener

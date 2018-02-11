@@ -5,7 +5,7 @@ import android.util.Log;
 import com.example.alexeyglushkov.cachemanager.StorageMetadata;
 import com.example.alexeyglushkov.cachemanager.StorageProvider;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionBytesReader;
-import com.example.alexeyglushkov.taskmanager.loader.http.HttpBytesLoadTask;
+import com.example.alexeyglushkov.taskmanager.loader.http.HttpBytesTransport;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpURLConnectionProvider;
 
 import java.io.ByteArrayInputStream;
@@ -14,8 +14,9 @@ import java.io.ByteArrayInputStream;
  * Created by alexeyglushkov on 26.11.15.
  */
 // TODO: Think about an universal cache task, could be a decorator probably
+// TODO: try to create a TaskTransportDecorator
     // or a decorator for TaskProvider
-public class CachableHttpLoadTask extends HttpBytesLoadTask {
+public class HttpCacheableTransport extends HttpBytesTransport {
     private static final String TAG = "CHLT";
 
     public enum CacheMode {
@@ -30,11 +31,11 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
     private boolean deleteIfExpired = true;
     private CacheMode cacheMode = CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD;
 
-    public CachableHttpLoadTask(HttpURLConnectionProvider provider, HTTPConnectionBytesReader handler) {
+    public HttpCacheableTransport(HttpURLConnectionProvider provider, HTTPConnectionBytesReader handler) {
         super(provider, handler);
     }
 
-    public CachableHttpLoadTask(HttpURLConnectionProvider provider, HTTPConnectionBytesReader handler, StorageProvider cache) {
+    public HttpCacheableTransport(HttpURLConnectionProvider provider, HTTPConnectionBytesReader handler, StorageProvider cache) {
         super(provider, handler);
         this.cache = cache;
     }
@@ -60,7 +61,7 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
     }
 
     @Override
-    public void startTask(Callback callback) {
+    public void start() {
         boolean canLoadTask = true;
         if (cache != null && canLoadFromCache()) {
             try {
@@ -73,10 +74,7 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
 
         if (canLoadTask) {
             needStore = cacheMode != CacheMode.IGNORE_CACHE;
-            super.startTask(callback);
-        } else {
-            getPrivate().handleTaskStart(callback);
-            getPrivate().handleTaskCompletion(callback);
+            super.start();
         }
     }
 
@@ -103,7 +101,7 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
 
             //TODO: think to call base menthod which wrap calling this two
             // now in base class something could be inserted after setHandleData and won't be called here
-            setHandledData(result);
+            setData(result);
             isApplied = true;
         }
 
@@ -132,8 +130,8 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
     }
 
     @Override
-    public void setHandledData(Object handledData) {
-        super.setHandledData(handledData);
+    public void setData(Object handledData) {
+        super.setData(handledData);
 
         if (needStore && cache != null) {
             StorageMetadata metadata = cache.createMetadata();
@@ -154,13 +152,13 @@ public class CachableHttpLoadTask extends HttpBytesLoadTask {
         }
     }
 
-    // TODO: looks strange
-    @Override
-    public void setError(Error error) {
-        if (getHandledData() == null) {
-            super.setError(error);
-        }
-    }
+//    // TODO: looks strange
+//    @Override
+//    public void setError(Error error) {
+//        if (getData() == null) {
+//            super.setError(error);
+//        }
+//    }
 
     public class CacheEmptyError extends Error {
         private static final long serialVersionUID = -783104001989492147L;

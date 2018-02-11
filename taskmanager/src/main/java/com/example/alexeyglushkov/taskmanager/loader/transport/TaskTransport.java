@@ -19,7 +19,7 @@ public interface TaskTransport {
     boolean isCancelled();
 
     interface Listener {
-        ProgressUpdater getProgressUpdated(TaskTransport transport, float size);
+        ProgressUpdater getProgressUpdater(TaskTransport transport, float size);
         boolean needCancel(TaskTransport transport);
     }
 }

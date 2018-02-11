@@ -7,7 +7,6 @@ import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
 import com.example.alexeyglushkov.streamlib.readersandwriters.StringReader;
 import com.example.alexeyglushkov.taskmanager.loader.transport.TaskTransport;
-import com.example.alexeyglushkov.taskmanager.loader.transport.TaskTransportContext;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -19,8 +18,8 @@ import java.net.HttpURLConnection;
  */
 
 public class HttpTaskTransport implements TaskTransport {
-    private HttpURLConnectionProvider provider;
-    private HTTPConnectionStreamReader streamReader;
+    protected HttpURLConnectionProvider provider;
+    protected HTTPConnectionStreamReader streamReader;
 
     protected int contentLength;
     protected int responseCode;
@@ -66,7 +65,7 @@ public class HttpTaskTransport implements TaskTransport {
             Log.d("HttpLoadTask", "HttpLoadingContext: The response is: " + responseCode + "\n");
 
             synchronized (this) {
-                progressUpdater = listener != null ? listener.getProgressUpdated(this, getContentLength()) : null;
+                progressUpdater = listener != null ? listener.getProgressUpdater(this, getContentLength()) : null;
                 streamReader.setProgressUpdater(progressUpdater);
             }
 

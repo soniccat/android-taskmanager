@@ -7,10 +7,10 @@ import java.net.HttpURLConnection;
 /**
  * Created by alexeyglushkov on 26.11.15.
  */
-public class HttpBytesLoadTask extends HttpLoadTask {
+public class HttpBytesTransport extends HttpTaskTransport {
     protected ByteArrayReader byteArrayReader;
 
-    public HttpBytesLoadTask(HttpURLConnectionProvider provider, final HTTPConnectionBytesReader handler) {
+    public HttpBytesTransport(HttpURLConnectionProvider provider, final HTTPConnectionBytesReader handler) {
         super(provider, null);
 
         byteArrayReader = new ByteArrayReader(handler, true);

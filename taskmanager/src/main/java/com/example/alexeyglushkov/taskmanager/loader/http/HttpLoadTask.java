@@ -24,6 +24,10 @@ public class HttpLoadTask extends SimpleTask implements TaskTransport.Listener {
     private TaskTransport transport;
     protected ProgressUpdater progressUpdater;
 
+    protected HttpLoadTask() {
+        super();
+    }
+
     public HttpLoadTask(TaskTransport transport) {
         super();
         setTransport(transport);
@@ -36,6 +40,10 @@ public class HttpLoadTask extends SimpleTask implements TaskTransport.Listener {
         if (transportId != null) {
             setTaskId(transportId);
         }
+    }
+
+    public TaskTransport getTransport() {
+        return transport;
     }
 
     public void startTask(Callback callback) {
@@ -105,7 +113,7 @@ public class HttpLoadTask extends SimpleTask implements TaskTransport.Listener {
     // TaskTransport.Listener
 
     @Override
-    public ProgressUpdater getProgressUpdated(TaskTransport transport, float size) {
+    public ProgressUpdater getProgressUpdater(TaskTransport transport, float size) {
         return createProgressUpdater(size);
     }
 
