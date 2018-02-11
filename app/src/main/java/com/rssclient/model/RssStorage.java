@@ -19,6 +19,7 @@ import com.example.alexeyglushkov.taskmanager.loader.file.FileLoadTask;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionStreamReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionStreamReaderAdaptor;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpLoadTask;
+import com.example.alexeyglushkov.taskmanager.loader.http.HttpTaskTransport;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 import com.example.alexeyglushkov.taskmanager.task.Tasks;
@@ -117,7 +118,9 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
 
         InputStreamReader streamReader = new ByteArrayReader(feed.getDataHandler());
         HTTPConnectionStreamReader reader = new HTTPConnectionStreamReaderAdaptor(streamReader);
-        final HttpLoadTask loatTask = new HttpLoadTask(feed, reader);
+        HttpTaskTransport transport = new HttpTaskTransport(feed, reader);
+
+        final HttpLoadTask loatTask = new HttpLoadTask(transport);
         loatTask.setTaskCallback(new Task.Callback() {
             @Override
             public void onCompleted(boolean cancelled) {

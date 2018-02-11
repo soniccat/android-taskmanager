@@ -11,6 +11,7 @@ import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionStreamReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionStreamReaderAdaptor;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpLoadTask;
+import com.example.alexeyglushkov.taskmanager.loader.http.HttpTaskTransport;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskPool;
 import com.example.alexeyglushkov.taskmanager.task.Tasks;
@@ -54,10 +55,11 @@ public class ImageLoader {
 
     @NonNull
     protected static HttpLoadTask createTask(Image image, String destinationId, HTTPConnectionStreamReader reader) {
-        final HttpLoadTask httpLoadTask = new HttpLoadTask(image, reader);
+        HttpTaskTransport transport = new HttpTaskTransport(image, reader);
+        transport.setContentLength(image.getByteSize());
 
+        final HttpLoadTask httpLoadTask = new HttpLoadTask(transport);
         httpLoadTask.setLoadPolicy(image.getLoadPolicy());
-        httpLoadTask.setContentLength(image.getByteSize());
 
         if (httpLoadTask.getTaskId() != null && destinationId != null) {
             httpLoadTask.setTaskId(httpLoadTask.getTaskId() + destinationId);

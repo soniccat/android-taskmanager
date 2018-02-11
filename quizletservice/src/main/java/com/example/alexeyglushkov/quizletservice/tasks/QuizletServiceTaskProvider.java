@@ -6,6 +6,7 @@ import com.example.alexeyglushkov.quizletservice.QuizletCommandProvider;
 import com.example.alexeyglushkov.quizletservice.QuizletSetsCommand;
 import com.example.alexeyglushkov.service.HttpCacheableTransport;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
+import com.example.alexeyglushkov.taskmanager.loader.http.HttpTaskTransport;
 
 /**
  * Created by alexeyglushkov on 03.04.16.
@@ -20,8 +21,11 @@ public class QuizletServiceTaskProvider extends ServiceTaskProvider implements Q
     @Override
     public QuizletSetsCommand getLoadSetsCommand(String server, String userId, HttpCacheableTransport.CacheMode cacheMode, ProgressListener progressListener) {
         QuizletSetsTask task = new QuizletSetsTask(server, userId);
-        task.setCacheMode(cacheMode);
-        task.setCache(storageProvider);
+
+        HttpCacheableTransport transport = (HttpCacheableTransport)task.getTransport();
+        transport.setCacheMode(cacheMode);
+        transport.setCache(storageProvider);
+
         task.addTaskProgressListener(progressListener);
 
         return task;
