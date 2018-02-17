@@ -10,10 +10,9 @@ import com.example.alexeyglushkov.streamlib.readersandwriters.ByteArrayReader;
 import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionStreamReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionStreamReaderAdaptor;
-import com.example.alexeyglushkov.taskmanager.loader.http.HttpLoadTask;
+import com.example.alexeyglushkov.taskmanager.loader.http.TransportTask;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpTaskTransport;
 import com.example.alexeyglushkov.taskmanager.task.Task;
-import com.example.alexeyglushkov.taskmanager.task.TaskPool;
 import com.example.alexeyglushkov.taskmanager.task.Tasks;
 import com.example.alexeyglushkov.tools.HandlerTools;
 
@@ -31,16 +30,16 @@ public class ImageLoader {
     public static Task loadImage(final Handler handler, final Image image, String destinationId, final ImageLoader.LoadCallback callback) {
         InputStreamReader streamReader = new ByteArrayReader(new BytesBitmapConvertor(null));
         HTTPConnectionStreamReader reader = new HTTPConnectionStreamReaderAdaptor(streamReader);
-        final HttpLoadTask httpLoadTask = createTask(image, destinationId, reader);
+        final TransportTask transportTask = createTask(image, destinationId, reader);
 
-        Task.Callback taskCallback = getTaskCallback(httpLoadTask, image, callback);
-        httpLoadTask.setTaskCallback(taskCallback);
+        Task.Callback taskCallback = getTaskCallback(transportTask, image, callback);
+        transportTask.setTaskCallback(taskCallback);
 
         HandlerTools.runOnHandlerThread(handler, new Runnable() {
             @Override
             public void run() {
                 // to have addTaskStatusListener called on a handler's thread
-                Tasks.bindOnTaskCompletion(httpLoadTask, image);
+                Tasks.bindOnTaskCompletion(transportTask, image);
             }
         });
 
@@ -48,39 +47,39 @@ public class ImageLoader {
         // maybe it's ok to set waiting on a handler's thread, to be able to bind on that before adding
         // and handle it in bindOnTaskCompletion listener
         Assert.assertEquals(Looper.myLooper(), Looper.getMainLooper());
-        image.setTaskInProgress(httpLoadTask);
+        image.setTaskInProgress(transportTask);
 
-        return httpLoadTask;
+        return transportTask;
     }
 
     @NonNull
-    protected static HttpLoadTask createTask(Image image, String destinationId, HTTPConnectionStreamReader reader) {
+    private static TransportTask createTask(Image image, String destinationId, HTTPConnectionStreamReader reader) {
         HttpTaskTransport transport = new HttpTaskTransport(image, reader);
         transport.setContentLength(image.getByteSize());
 
-        final HttpLoadTask httpLoadTask = new HttpLoadTask(transport);
-        httpLoadTask.setLoadPolicy(image.getLoadPolicy());
+        final TransportTask transportTask = new TransportTask(transport);
+        transportTask.setLoadPolicy(image.getLoadPolicy());
 
-        if (httpLoadTask.getTaskId() != null && destinationId != null) {
-            httpLoadTask.setTaskId(httpLoadTask.getTaskId() + destinationId);
+        if (transportTask.getTaskId() != null && destinationId != null) {
+            transportTask.setTaskId(transportTask.getTaskId() + destinationId);
 
-        } else if (httpLoadTask.getTaskId() != null) {
-            httpLoadTask.setTaskId(httpLoadTask.getTaskId() + image.hashCode());
+        } else if (transportTask.getTaskId() != null) {
+            transportTask.setTaskId(transportTask.getTaskId() + image.hashCode());
         }
 
-        return httpLoadTask;
+        return transportTask;
     }
 
     @NonNull
-    public static Task.Callback getTaskCallback(final HttpLoadTask httpLoadTask, final Image image, final LoadCallback callback) {
+    public static Task.Callback getTaskCallback(final TransportTask transportTask, final Image image, final LoadCallback callback) {
         return new Task.Callback() {
             @Override
             public void onCompleted(boolean cancelled) {
                 //ignore a cancelled result
-                if (callback != null && httpLoadTask.getTaskStatus() == Task.Status.Finished) {
+                if (callback != null && transportTask.getTaskStatus() == Task.Status.Finished) {
                     Bitmap bitmap = null;
-                    if (httpLoadTask.getHandledData() != null) {
-                        bitmap = (Bitmap)httpLoadTask.getHandledData();
+                    if (transportTask.getHandledData() != null) {
+                        bitmap = (Bitmap) transportTask.getHandledData();
                     }
 
                     if (image instanceof ImageWithData) {
@@ -88,7 +87,7 @@ public class ImageLoader {
                         imageWithData.setBitmap(bitmap);
                     }
 
-                    callback.completed(httpLoadTask, image, bitmap, httpLoadTask.getTaskError());
+                    callback.completed(transportTask, image, bitmap, transportTask.getTaskError());
                 }
             }
         };

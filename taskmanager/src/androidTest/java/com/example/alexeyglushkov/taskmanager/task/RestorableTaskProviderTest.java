@@ -53,6 +53,7 @@ public class RestorableTaskProviderTest {
     public void testAddTaskWhenProviderStartsTask() {
         // When
         TaskProvider taskProvider = Mockito.mock(TaskProvider.class);
+        Mockito.doReturn(new Handler(Looper.myLooper())).when(taskProvider).getHandler();
         RestorableTaskProvider restorableTaskProvider = new RestorableTaskProvider(taskProvider);
         final Task task = Mockito.spy(new TestTask());
 

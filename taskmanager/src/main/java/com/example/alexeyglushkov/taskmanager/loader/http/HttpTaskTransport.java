@@ -189,6 +189,11 @@ public class HttpTaskTransport implements TaskTransport {
     }
 
     @Override
+    public Listener getListener() {
+        return listener;
+    }
+
+    @Override
     public boolean isCancelled() {
         return isCancelled;
     }

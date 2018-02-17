@@ -2,11 +2,12 @@ package com.example.alexeyglushkov.authtaskmanager;
 
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
+import com.example.alexeyglushkov.cachemanager.StorageProvider;
 import com.example.alexeyglushkov.service.HttpCacheableTransport;
 import com.example.alexeyglushkov.streamlib.convertors.BytesStringConvertor;
 import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionBytesReader;
-import com.example.alexeyglushkov.taskmanager.loader.http.HttpLoadTask;
+import com.example.alexeyglushkov.taskmanager.loader.http.TransportTask;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpTaskTransport;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpURLConnectionProvider;
 import com.example.alexeyglushkov.taskmanager.task.Task;
@@ -18,7 +19,7 @@ import java.net.URL;
 /**
  * Created by alexeyglushkov on 04.11.15.
  */
-public class HttpServiceTask extends HttpLoadTask implements IServiceTask {
+public class HttpServiceTask extends TransportTask implements IServiceTask {
 
     private HttpUrlConnectionBuilder connectionBuilder = new HttpUrlConnectionBuilder();
 
@@ -131,5 +132,10 @@ public class HttpServiceTask extends HttpLoadTask implements IServiceTask {
     public int getResponseCode() {
         HttpTaskTransport transport = (HttpTaskTransport) getTransport();
         return transport.getResponseCode();
+    }
+
+    public void setCache(StorageProvider cache) {
+        HttpCacheableTransport transport = (HttpCacheableTransport) getTransport();
+        transport.setCache(cache);
     }
 }

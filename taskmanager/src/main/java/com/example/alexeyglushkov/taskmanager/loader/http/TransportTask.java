@@ -18,23 +18,29 @@ import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 // Handler - object which converts a stream or other input type to an object of another data type and return it, after that it is stored in handledData
 // Reader is an extended Handler
 
-public class HttpLoadTask extends SimpleTask implements TaskTransport.Listener {
+public class TransportTask extends SimpleTask implements TaskTransport.Listener {
     protected Object handledData; // TODO: use result object and api
 
     private TaskTransport transport;
     protected ProgressUpdater progressUpdater;
 
-    protected HttpLoadTask() {
+    protected TransportTask() {
         super();
     }
 
-    public HttpLoadTask(TaskTransport transport) {
+    public TransportTask(TaskTransport transport) {
         super();
         setTransport(transport);
     }
 
-    protected void setTransport(TaskTransport transport) {
+    protected void setTransport(@NonNull TaskTransport transport) {
+        TaskTransport oldTransport = getTransport();
+        if (oldTransport != null && oldTransport.getListener() == this) {
+            oldTransport.setListener(null);
+        }
+
         this.transport = transport;
+        transport.setListener(this);
 
         String transportId = transport.getId();
         if (transportId != null) {

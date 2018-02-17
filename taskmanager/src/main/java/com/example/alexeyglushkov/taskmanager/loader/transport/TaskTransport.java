@@ -12,6 +12,7 @@ public interface TaskTransport {
     String getId();
     void start();
     void cancel();
+    Listener getListener();
     void setListener(Listener listener);
 
     Object getData();

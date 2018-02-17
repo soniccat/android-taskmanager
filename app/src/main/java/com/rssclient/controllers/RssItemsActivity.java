@@ -10,7 +10,7 @@ import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 import com.example.alexeyglushkov.taskmanager.image.Image;
 import com.example.alexeyglushkov.taskmanager.image.ImageLoader;
-import com.example.alexeyglushkov.taskmanager.loader.http.HttpLoadTask;
+import com.example.alexeyglushkov.taskmanager.loader.http.TransportTask;
 import com.example.alexeyglushkov.taskmanager.task.PriorityTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.RestorableTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManagerSnapshot;
@@ -26,7 +26,6 @@ import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 import com.example.alexeyglushkov.taskmanager.ui.TaskManagerView;
 
 import android.graphics.Bitmap;
-import android.support.annotation.IntegerRes;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
@@ -149,7 +148,7 @@ public class RssItemsActivity extends AppCompatActivity implements RssItemsAdapt
                 taskProvider.restoreTaskCompletions(new RestorableTaskProvider.TaskCompletionProvider() {
                     @Override
                     public Task.Callback getCallback(Task task) {
-                        HttpLoadTask httpTask = (HttpLoadTask)task;
+                        TransportTask httpTask = (TransportTask)task;
                         if (httpTask.getTaskUserData() instanceof Pair) {
                             Pair<Integer, Image> taskData = (Pair<Integer, Image>) task.getTaskUserData();
                             RssItem item = feed.items().get(taskData.first);

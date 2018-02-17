@@ -21,10 +21,10 @@ public class QuizletServiceTaskProvider extends ServiceTaskProvider implements Q
     @Override
     public QuizletSetsCommand getLoadSetsCommand(String server, String userId, HttpCacheableTransport.CacheMode cacheMode, ProgressListener progressListener) {
         QuizletSetsTask task = new QuizletSetsTask(server, userId);
+        task.setCache(storageProvider);
 
         HttpCacheableTransport transport = (HttpCacheableTransport)task.getTransport();
         transport.setCacheMode(cacheMode);
-        transport.setCache(storageProvider);
 
         task.addTaskProgressListener(progressListener);
 
