@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.dropboxservice;
 
+import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReaders;
+import com.example.alexeyglushkov.streamlib.readersandwriters.OutputStreamWriters;
 import com.example.alexeyglushkov.streamlib.serializers.Serializer;
 
 import java.io.BufferedInputStream;
@@ -42,41 +44,12 @@ public class FileObjectMerger implements FileMerger {
     }
 
     private Object readObject(File f1) throws Exception {
-        Object obj = null;
-
-        InputStream fis = null;
-        try {
-            fis = new BufferedInputStream(new FileInputStream(f1));
-            obj = this.serializer.read(fis);
-
-        } finally {
-            try {
-                if (fis != null) {
-                    fis.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return obj;
+        InputStream stream = new BufferedInputStream(new FileInputStream(f1));
+        return InputStreamReaders.readOnce(serializer, stream);
     }
 
     private void writeObject(File file, Object obj) throws Exception {
-        OutputStream os = null;
-
-        try {
-            os = new BufferedOutputStream(new FileOutputStream(file));
-            serializer.write(os, obj);
-
-        } finally {
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        }
+        OutputStream stream = new BufferedOutputStream(new FileOutputStream(file));;
+        OutputStreamWriters.writeOnce(serializer, stream, obj);
     }
 }

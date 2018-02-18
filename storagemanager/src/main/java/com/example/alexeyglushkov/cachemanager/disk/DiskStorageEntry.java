@@ -3,6 +3,7 @@ package com.example.alexeyglushkov.cachemanager.disk;
 import android.support.annotation.NonNull;
 
 import com.example.alexeyglushkov.cachemanager.StorageEntry;
+import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReaders;
 import com.example.alexeyglushkov.streamlib.readersandwriters.OutputStreamWriters;
 import com.example.alexeyglushkov.streamlib.serializers.Serializer;
 
@@ -47,43 +48,13 @@ public class DiskStorageEntry implements StorageEntry {
     }
 
     private void loadObject() throws Exception {
-        InputStream fis = null;
-
-        try {
-            fis = new BufferedInputStream(new FileInputStream(file));
-            //StringReader tstReader = new StringReader(null);
-            //String str = tstReader.readStreamToString(fis);
-            //Log.d("Parsing", str);
-
-            object = serializer.read(fis);
-
-        } finally {
-            if (fis != null) {
-                try {
-                    fis.close();
-                } catch (Exception ex) {
-                }
-            }
-        }
+        InputStream stream = new BufferedInputStream(new FileInputStream(file));
+        object = InputStreamReaders.readOnce(serializer, stream);
     }
 
     public void write() throws Exception {
-
-
-        OutputStream os = null;
-
-        try {
-            os = new BufferedOutputStream(new FileOutputStream(file));
-            OutputStreamWriters.writeOnce(serializer, os, object);
-
-        } finally {
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (Exception ex) {
-                }
-            }
-        }
+        OutputStream os = new BufferedOutputStream(new FileOutputStream(file));;
+        OutputStreamWriters.writeOnce(serializer, os, object);
     }
 
     @Override
