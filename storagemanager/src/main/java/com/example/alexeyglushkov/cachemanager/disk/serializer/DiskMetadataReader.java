@@ -18,12 +18,12 @@ import java.io.InputStream;
 public class DiskMetadataReader implements InputStreamReader {
 
     @Override
-    public InputStream wrapInputStream(@NonNull InputStream stream) {
+    public @NonNull InputStream wrapStream(@NonNull InputStream stream) {
         return stream;
     }
 
     @Override
-    public Object readStream(@NonNull InputStream data) throws IOException {
+    public Object read(@NonNull InputStream data) throws IOException {
         Object result = null;
         SimpleModule md = new SimpleModule("DiskMetadataModule", new Version(1,0,0,null,null,null));
         md.addDeserializer(DiskStorageMetadata.class, new DiskMetadataDeserializer(DiskStorageMetadata.class));

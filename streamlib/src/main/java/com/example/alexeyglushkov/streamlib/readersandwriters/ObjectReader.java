@@ -20,12 +20,12 @@ public class ObjectReader implements InputStreamReader {
     }
 
     @Override
-    public InputStream wrapInputStream(@NonNull InputStream stream) {
+    public InputStream wrapStream(@NonNull InputStream stream) {
         return null;
     }
 
     @Override
-    public @Nullable Object readStream(@NonNull InputStream stream) throws Exception {
+    public @Nullable Object read(@NonNull InputStream stream) throws Exception {
         Object result = null;
         Object object = this.readStreamToObject(stream);
         if (converter != null) {

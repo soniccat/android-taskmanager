@@ -38,14 +38,5 @@ import java.io.OutputStream;
 /**
  * Serializer helps to save and to load values of some type to byte streams.
  */
-public interface Serializer {
-
-    void setOutputStreamWriter(@NonNull OutputStreamWriter writer);
-    void setInputStreamReader(@NonNull InputStreamReader reader);
-
-    InputStream wrapInputStream(@NonNull InputStream stream) throws Exception;
-    OutputStream wrapOutputStream(@NonNull OutputStream stream) throws Exception;
-
-    void write(@NonNull OutputStream outputStream, @NonNull Object value) throws Exception;
-    @Nullable Object read(@NonNull InputStream inputStream) throws Exception;
+public interface Serializer extends InputStreamReader, OutputStreamWriter {
 }

@@ -7,7 +7,6 @@ import java.io.InputStream;
 import android.content.Context;
 
 import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
-import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReaders;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 
 public class FileLoadTask extends SimpleTask {
@@ -67,7 +66,7 @@ public class FileLoadTask extends SimpleTask {
     }
 
     protected Object handleStream(InputStream fis) throws Exception {
-        return handler.readStream(fis);
+        return handler.read(fis);
     }
 
     protected long getFileSize() {

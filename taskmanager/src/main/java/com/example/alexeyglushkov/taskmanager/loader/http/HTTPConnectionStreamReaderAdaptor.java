@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
-import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReaders;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -24,13 +23,13 @@ public class HTTPConnectionStreamReaderAdaptor implements HTTPConnectionStreamRe
     }
 
     @Override
-    public InputStream wrapInputStream(@NonNull InputStream stream) {
+    public InputStream wrapStream(@NonNull InputStream stream) {
         return stream;
     }
 
     @Override
-    public Object readStream(@NonNull InputStream data) throws Exception {
-        return reader.readStream(data);
+    public Object read(@NonNull InputStream data) throws Exception {
+        return reader.read(data);
     }
 
     @Override

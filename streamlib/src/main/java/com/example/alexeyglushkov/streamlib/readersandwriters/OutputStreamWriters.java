@@ -9,12 +9,12 @@ import java.io.OutputStream;
 
 public class OutputStreamWriters {
 
-    // call writeStream on a wrapped stream once and close the wrapped stream
+    // call write on a wrapped stream once and close the wrapped stream
     public static void writeOnce(OutputStreamWriter writer, OutputStream stream, Object object) throws Exception {
-        OutputStream wrappedStream = writer.wrapOutputStream(stream);
+        OutputStream wrappedStream = writer.wrapStream(stream);
 
         try {
-            writer.writeStream(wrappedStream, object);
+            writer.write(wrappedStream, object);
 
         } finally {
             try {

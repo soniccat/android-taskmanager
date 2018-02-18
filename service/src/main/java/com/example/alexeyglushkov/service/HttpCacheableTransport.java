@@ -6,7 +6,6 @@ import android.util.Log;
 
 import com.example.alexeyglushkov.cachemanager.StorageMetadata;
 import com.example.alexeyglushkov.cachemanager.StorageProvider;
-import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReaders;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionBytesReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpBytesTransport;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpURLConnectionProvider;
@@ -99,7 +98,7 @@ public class HttpCacheableTransport extends HttpBytesTransport {
         byte[] bytes = getCachedBytes(cache);
 
         if (bytes != null) {
-            Object result = byteArrayReader.readStream(new ByteArrayInputStream(bytes));
+            Object result = byteArrayReader.read(new ByteArrayInputStream(bytes));
 
             //TODO: think to call base menthod which wrap calling this two
             // now in base class something could be inserted after setHandleData and won't be called here

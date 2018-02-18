@@ -23,12 +23,12 @@ public class ObjectWriter implements OutputStreamWriter {
     }
 
     @Override
-    public @NonNull OutputStream wrapOutputStream(@NonNull OutputStream stream) throws IOException {
+    public @NonNull OutputStream wrapStream(@NonNull OutputStream stream) throws IOException {
         return new ObjectOutputStream(stream);
     }
 
     @Override
-    public void writeStream(@NonNull OutputStream stream, @NonNull Object object) throws IOException {
+    public void write(@NonNull OutputStream stream, @NonNull Object object) throws IOException {
         if (converter != null) {
             object = converter.convert(object);
         }
@@ -37,7 +37,7 @@ public class ObjectWriter implements OutputStreamWriter {
     }
 
     public void writeObjectToStream(@NonNull OutputStream stream, @NonNull Object object) throws IOException {
-        Assert.assertTrue("wrapOutputStream wasn't called", stream instanceof ObjectOutputStream);
+        Assert.assertTrue("wrapStream wasn't called", stream instanceof ObjectOutputStream);
 
         ObjectOutputStream objectStream = (ObjectOutputStream)stream;
         objectStream.writeObject(object);

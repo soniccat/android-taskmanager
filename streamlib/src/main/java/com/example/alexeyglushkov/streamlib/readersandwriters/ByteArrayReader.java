@@ -34,12 +34,12 @@ public class ByteArrayReader implements InputStreamReader {
     }
 
     @Override
-    public InputStream wrapInputStream(@NonNull InputStream stream) {
+    @NonNull public InputStream wrapStream(@NonNull InputStream stream) {
         return stream;
     }
 
     @Override
-    public Object readStream(@NonNull InputStream stream) throws IOException {
+    public Object read(@NonNull InputStream stream) throws IOException {
         byte[] byteArray = this.readStreamToByteArray(stream);
         if (keepByteArray) {
             this.byteArray = byteArray;

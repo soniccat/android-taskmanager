@@ -20,17 +20,17 @@ public class BitmapWriter implements OutputStreamWriter {
     }
 
     @Override
-    public @NonNull OutputStream wrapOutputStream(@NonNull OutputStream stream) {
+    public @NonNull OutputStream wrapStream(@NonNull OutputStream stream) {
         return stream;
     }
 
     @Override
-    public void writeStream(@NonNull OutputStream stream, @NonNull Object object) throws Exception {
+    public void write(@NonNull OutputStream stream, @NonNull Object object) throws Exception {
         Bitmap bitmap = (Bitmap)object;
         boolean isCompressed = bitmap.compress(format, quality, stream);
 
         if (!isCompressed) {
-            throw new Exception("BitmapWriter writeStream compress error");
+            throw new Exception("BitmapWriter write compress error");
         }
     }
 

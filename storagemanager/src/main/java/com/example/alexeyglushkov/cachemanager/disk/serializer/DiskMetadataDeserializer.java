@@ -28,31 +28,36 @@ public class DiskMetadataDeserializer extends CustomDeserializer<DiskStorageMeta
         String name = p.getCurrentName();
         boolean isHandled = false;
 
-        if (name.equals("contentSize")) {
-            long contentSize = _parseLong(p, ctxt);
-            metadata.setContentSize(contentSize);
-            isHandled = true;
+        switch (name) {
+            case "contentSize":
+                long contentSize = _parseLong(p, ctxt);
+                metadata.setContentSize(contentSize);
+                isHandled = true;
+                break;
 
-        } else if (name.equals("createTime")) {
-            long createTime = _parseLong(p, ctxt);
-            metadata.setCreateTime(createTime);
-            isHandled = true;
+            case "createTime":
+                long createTime = _parseLong(p, ctxt);
+                metadata.setCreateTime(createTime);
+                isHandled = true;
+                break;
 
-        } else if (name.equals("expireTime")) {
-            long expireTime = _parseLong(p, ctxt);
-            metadata.setExpireTime(expireTime);
-            isHandled = true;
+            case "expireTime":
+                long expireTime = _parseLong(p, ctxt);
+                metadata.setExpireTime(expireTime);
+                isHandled = true;
+                break;
 
-        } else if (name.equals("entryClass")) {
-            String className = _parseString(p, ctxt);
-            try {
-                metadata.setEntryClass(Class.forName(className));
+            case "entryClass":
+                String className = _parseString(p, ctxt);
+                try {
+                    metadata.setEntryClass(Class.forName(className));
 
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
 
-            isHandled = true;
+                isHandled = true;
+                break;
         }
 
         return isHandled;

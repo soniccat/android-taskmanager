@@ -12,12 +12,12 @@ import java.io.InputStream;
  */
 public class BitmapReader implements InputStreamReader {
     @Override
-    public InputStream wrapInputStream(@NonNull InputStream stream) {
+    public InputStream wrapStream(@NonNull InputStream stream) {
         return stream;
     }
 
     @Override
-    public Object readStream(@NonNull InputStream data) {
+    public Object read(@NonNull InputStream data) {
         return BitmapFactory.decodeStream(data);
     }
 

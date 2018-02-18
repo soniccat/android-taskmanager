@@ -22,12 +22,12 @@ public class StringReader implements InputStreamReader {
     }
 
     @Override
-    public InputStream wrapInputStream(@NonNull InputStream stream) {
+    public InputStream wrapStream(@NonNull InputStream stream) {
         return stream;
     }
 
     @Override
-    public Object readStream(@NonNull InputStream stream) throws Exception {
+    public Object read(@NonNull InputStream stream) throws Exception {
         Object object = this.readStreamToString(stream);
         if (stringHandler != null) {
             object = stringHandler.handleString((String)object);

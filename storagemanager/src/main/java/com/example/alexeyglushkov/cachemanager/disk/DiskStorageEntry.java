@@ -75,7 +75,6 @@ public class DiskStorageEntry implements StorageEntry {
         try {
             os = new BufferedOutputStream(new FileOutputStream(file));
             OutputStreamWriters.writeOnce(serializer, os, object);
-            serializer.write(os, object);
 
         } finally {
             if (os != null) {

@@ -1,5 +1,6 @@
 package com.example.alexeyglushkov.streamlib.serializers;
 
+import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
 import com.example.alexeyglushkov.streamlib.readersandwriters.OutputStreamWriter;
 import android.support.annotation.NonNull;
@@ -21,32 +22,28 @@ public class SimpleSerializer implements Serializer {
     }
 
     @Override
-    public void setOutputStreamWriter(@NonNull OutputStreamWriter writer) {
-        this.writer = writer;
+    public @NonNull InputStream wrapStream(@NonNull InputStream stream) throws Exception {
+        return reader.wrapStream(stream);
     }
 
     @Override
-    public void setInputStreamReader(@NonNull InputStreamReader reader) {
-        this.reader = reader;
-    }
-
-    @Override
-    public InputStream wrapInputStream(@NonNull InputStream stream) throws Exception {
-        return reader.wrapInputStream(stream);
-    }
-
-    @Override
-    public OutputStream wrapOutputStream(@NonNull OutputStream stream) throws Exception {
-        return writer.wrapOutputStream(stream);
+    public @NonNull OutputStream wrapStream(@NonNull OutputStream stream) throws Exception {
+        return writer.wrapStream(stream);
     }
 
     @Override
     public void write(@NonNull OutputStream outputStream, @NonNull Object value) throws Exception {
-        writer.writeStream(outputStream, value);
+        writer.write(outputStream, value);
     }
 
     @Override
     public @Nullable Object read(@NonNull InputStream inputStream) throws Exception {
-        return reader.readStream(inputStream);
+        return reader.read(inputStream);
+    }
+
+    @Override
+    public void setProgressUpdater(@NonNull ProgressUpdater progressUpdater) {
+        reader.setProgressUpdater(progressUpdater);
+        writer.setProgressUpdater(progressUpdater);
     }
 }

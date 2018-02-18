@@ -54,7 +54,6 @@ public class DiskStorageCleanerTest {
         Assert.assertEquals(1, cacheProvider.getEntries().size());
     }
 
-    @Test @UiThreadTest
     private void createEntry(DiskStorageProvider cacheProvider, String key, String value, long timeOffset) {
         DiskStorageMetadata metadata = new DiskStorageMetadata();
         metadata.setExpireTime(System.currentTimeMillis() / 1000L + timeOffset);

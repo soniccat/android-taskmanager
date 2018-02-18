@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.streamlib.readersandwriters;
 
+import android.support.annotation.NonNull;
+
 import com.example.alexeyglushkov.streamlib.convertors.Converter;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 
@@ -17,12 +19,12 @@ public class ByteArrayWriter implements OutputStreamWriter {
     }
 
     @Override
-    public OutputStream wrapOutputStream(OutputStream stream) {
+    public @NonNull OutputStream wrapStream(OutputStream stream) {
         return stream;
     }
 
     @Override
-    public void writeStream(OutputStream stream, Object object) throws Exception {
+    public void write(OutputStream stream, Object object) throws Exception {
         if (converter != null) {
             object = this.converter.convert(object);
         }

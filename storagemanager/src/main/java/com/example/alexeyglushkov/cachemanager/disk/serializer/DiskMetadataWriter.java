@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.cachemanager.disk.serializer;
 
+import android.support.annotation.NonNull;
+
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageMetadata;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 import com.example.alexeyglushkov.streamlib.readersandwriters.OutputStreamWriter;
@@ -14,12 +16,12 @@ import java.io.OutputStream;
  */
 public class DiskMetadataWriter implements OutputStreamWriter {
     @Override
-    public OutputStream wrapOutputStream(OutputStream stream) {
+    public @NonNull OutputStream wrapStream(@NonNull OutputStream stream) {
         return stream;
     }
 
     @Override
-    public void writeStream(OutputStream stream, Object object) throws IOException {
+    public void write(@NonNull OutputStream stream, @NonNull Object object) throws IOException {
         DiskStorageMetadata metadata = (DiskStorageMetadata)object;
 
         JsonFactory f = new JsonFactory();
@@ -30,7 +32,11 @@ public class DiskMetadataWriter implements OutputStreamWriter {
             g.writeNumberField("contentSize", metadata.getContentSize());
             g.writeNumberField("createTime", metadata.getCreateTime());
             g.writeNumberField("expireTime", metadata.getExpireTime());
-            g.writeStringField("entryClass", metadata.getEntryClass().getName());
+
+            Class entryClass = metadata.getEntryClass();
+            if (entryClass != null) {
+                g.writeStringField("entryClass", entryClass.getName());
+            }
 
         } finally {
             if (g != null) {
@@ -44,7 +50,7 @@ public class DiskMetadataWriter implements OutputStreamWriter {
     }
 
     @Override
-    public void setProgressUpdater(ProgressUpdater progressUpdater) {
+    public void setProgressUpdater(@NonNull ProgressUpdater progressUpdater) {
 
     }
 }

@@ -11,7 +11,7 @@ import java.io.InputStream;
  * Created by alexeyglushkov on 25.01.15.
  */
 public interface InputStreamReader {
-    InputStream wrapInputStream(@NonNull InputStream stream);
-    @Nullable Object readStream(@NonNull InputStream data) throws Exception;
+    @NonNull InputStream wrapStream(@NonNull InputStream stream) throws Exception;
+    @Nullable Object read(@NonNull InputStream data) throws Exception;
     void setProgressUpdater(@NonNull ProgressUpdater progressUpdater);
 }

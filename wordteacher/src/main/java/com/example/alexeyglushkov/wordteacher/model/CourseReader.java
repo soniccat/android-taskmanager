@@ -19,14 +19,14 @@ import java.io.InputStream;
 public class CourseReader implements InputStreamReader {
 
     @Override
-    public InputStream wrapInputStream(@NonNull InputStream stream) {
+    public InputStream wrapStream(@NonNull InputStream stream) {
         return stream;
     }
 
     @Override
-    public Object readStream(@NonNull InputStream data) throws IOException {
+    public Object read(@NonNull InputStream data) throws IOException {
         //StringReader reader = new StringReader(null);
-        //String str = (String)reader.readStream(data);
+        //String str = (String)reader.read(data);
 
         Object result = null;
         SimpleModule md = new SimpleModule("CourseModule", new Version(1,0,0,null,null,null));
