@@ -20,8 +20,8 @@ public class ObjectReader implements InputStreamReader {
     }
 
     @Override
-    public InputStream wrapStream(@NonNull InputStream stream) {
-        return null;
+    public @NonNull InputStream wrapStream(@NonNull InputStream stream) {
+        return stream;
     }
 
     @Override
