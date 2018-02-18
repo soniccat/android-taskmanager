@@ -14,6 +14,11 @@ import java.io.OutputStream;
  */
 public class DiskMetadataWriter implements OutputStreamWriter {
     @Override
+    public OutputStream wrapOutputStream(OutputStream stream) {
+        return stream;
+    }
+
+    @Override
     public void writeStream(OutputStream stream, Object object) throws IOException {
         DiskStorageMetadata metadata = (DiskStorageMetadata)object;
 

@@ -9,10 +9,10 @@ import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
 /**
  * Created by alexeyglushkov on 01.02.15.
  */
-public class BytesBitmapConvertor implements ByteArrayHandler {
+public class BytesBitmapConverter implements ByteArrayHandler {
     BitmapHandler bitmapHandler;
 
-    public BytesBitmapConvertor(BitmapHandler bitmapHandler) {
+    public BytesBitmapConverter(BitmapHandler bitmapHandler) {
         this.bitmapHandler = bitmapHandler;
     }
 

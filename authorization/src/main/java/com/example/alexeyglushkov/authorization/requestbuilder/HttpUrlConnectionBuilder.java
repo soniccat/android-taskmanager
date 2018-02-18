@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class HttpUrlConnectionBuilder
 {
-  private static final String TAG = "HttpUrlConnectionBuilder";
+  private static final String TAG = "HttpUrlCon...Builder";
   private static final String CONTENT_LENGTH = "Content-Length";
   private static final String CONTENT_TYPE = "Content-Type";
   public static final String DEFAULT_CONTENT_TYPE = "application/x-www-form-urlencoded";

@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.wordteacher.model;
 
+import android.support.annotation.NonNull;
+
 import com.example.alexeyglushkov.quizletservice.deserializers.QuizletTermDeserializer;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
@@ -17,7 +19,12 @@ import java.io.InputStream;
 public class CourseReader implements InputStreamReader {
 
     @Override
-    public Object readStream(InputStream data) throws IOException {
+    public InputStream wrapInputStream(@NonNull InputStream stream) {
+        return stream;
+    }
+
+    @Override
+    public Object readStream(@NonNull InputStream data) throws IOException {
         //StringReader reader = new StringReader(null);
         //String str = (String)reader.readStream(data);
 
@@ -37,7 +44,7 @@ public class CourseReader implements InputStreamReader {
     }
 
     @Override
-    public void setProgressUpdater(ProgressUpdater progressUpdater) {
+    public void setProgressUpdater(@NonNull ProgressUpdater progressUpdater) {
 
     }
 }

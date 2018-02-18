@@ -1,6 +1,6 @@
 package com.example.alexeyglushkov.streamlib.readersandwriters;
 
-import com.example.alexeyglushkov.streamlib.convertors.Convertor;
+import com.example.alexeyglushkov.streamlib.convertors.Converter;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 
 import java.io.IOException;
@@ -10,16 +10,21 @@ import java.io.OutputStream;
  * Created by alexeyglushkov on 27.09.15.
  */
 public class ByteArrayWriter implements OutputStreamWriter {
-    private Convertor convertor;
+    private Converter converter;
 
-    public ByteArrayWriter(Convertor convertor) {
-        this.convertor = convertor;
+    public ByteArrayWriter(Converter converter) {
+        this.converter = converter;
+    }
+
+    @Override
+    public OutputStream wrapOutputStream(OutputStream stream) {
+        return stream;
     }
 
     @Override
     public void writeStream(OutputStream stream, Object object) throws Exception {
-        if (convertor != null) {
-            object = this.convertor.convert(object);
+        if (converter != null) {
+            object = this.converter.convert(object);
         }
 
         byte[] buffer = (byte[])object;

@@ -8,6 +8,7 @@ import java.util.List;
 /**
  * Created by alexeyglushkov on 26.09.15.
  */
+// TODO: rename to keyvaluestorage
 public interface StorageProvider {
     void put(@NonNull String key, @NonNull Object value, @Nullable StorageMetadata metadata) throws Exception;
 

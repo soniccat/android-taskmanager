@@ -7,6 +7,7 @@ import java.io.InputStream;
 import android.content.Context;
 
 import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
+import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReaders;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 
 public class FileLoadTask extends SimpleTask {
@@ -33,6 +34,8 @@ public class FileLoadTask extends SimpleTask {
             InputStream fis = null;
 
             try {
+                // TODO: use InputStreamReaders.readOnce
+                // TODO: create FileReader
                 handler.setProgressUpdater(getPrivate().createProgressUpdater(getFileSize()));
 
                 fis = new BufferedInputStream(this.context.openFileInput(name));

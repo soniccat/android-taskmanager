@@ -1,9 +1,12 @@
 package com.example.alexeyglushkov.service;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.example.alexeyglushkov.cachemanager.StorageMetadata;
 import com.example.alexeyglushkov.cachemanager.StorageProvider;
+import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReaders;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionBytesReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpBytesTransport;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpURLConnectionProvider;
@@ -26,7 +29,7 @@ public class HttpCacheableTransport extends HttpBytesTransport {
         ONLY_STORE_TO_CACHE
     }
 
-    protected StorageProvider cache;
+    @Nullable private StorageProvider cache;
     private boolean needStore = false;
     private boolean deleteIfExpired = true;
     private CacheMode cacheMode = CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD;
@@ -40,7 +43,7 @@ public class HttpCacheableTransport extends HttpBytesTransport {
         this.cache = cache;
     }
 
-    public void setCache(StorageProvider cache) {
+    public void setCache(@NonNull StorageProvider cache) {
         this.cache = cache;
     }
 
@@ -62,39 +65,38 @@ public class HttpCacheableTransport extends HttpBytesTransport {
 
     @Override
     public void start() {
-        boolean canLoadTask = true;
+        boolean isCacheLoaded = true;
         if (cache != null && canLoadFromCache()) {
             try {
-                canLoadTask = handleCacheContent();
+                isCacheLoaded = handleCacheContent();
             } catch (Exception ex) {
                 Log.e(TAG, "handleCacheContent exception");
                 ex.printStackTrace();
             }
         }
 
-        if (canLoadTask) {
+        if (!isCacheLoaded) {
             needStore = cacheMode != CacheMode.IGNORE_CACHE;
             super.start();
         }
     }
 
     private boolean handleCacheContent() throws Exception {
-        boolean canLoadTaskAfter = true;
+        boolean isLoaded = false;
 
-        if (applyCacheContent()) {
-            canLoadTaskAfter = false;
+        if (cache != null && applyCacheContent()) {
+            isLoaded = true;
 
         } else if (cacheMode == CacheMode.ONLY_LOAD_FROM_CACHE) {
             setError(new CacheEmptyError(getCacheKey(), null));
-            canLoadTaskAfter = false;
         }
 
-        return canLoadTaskAfter;
+        return isLoaded;
     }
 
-    private boolean applyCacheContent() throws Exception {
+    private boolean applyCacheContent(@NonNull StorageProvider cache) throws Exception {
         boolean isApplied = false;
-        byte[] bytes = getCachedBytes();
+        byte[] bytes = getCachedBytes(cache);
 
         if (bytes != null) {
             Object result = byteArrayReader.readStream(new ByteArrayInputStream(bytes));
@@ -113,7 +115,7 @@ public class HttpCacheableTransport extends HttpBytesTransport {
                 cacheMode != CacheMode.ONLY_STORE_TO_CACHE;
     }
 
-    private byte[] getCachedBytes() throws Exception {
+    private byte[] getCachedBytes(@NonNull StorageProvider cache) throws Exception {
         String cacheKey = getCacheKey();
         StorageMetadata metadata = cache.getMetadata(cacheKey);
 

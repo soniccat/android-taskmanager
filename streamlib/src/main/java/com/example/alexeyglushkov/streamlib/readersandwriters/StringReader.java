@@ -1,5 +1,8 @@
 package com.example.alexeyglushkov.streamlib.readersandwriters;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 import com.example.alexeyglushkov.streamlib.handlers.StringHandler;
 
@@ -12,14 +15,19 @@ import java.io.InputStream;
  */
 public class StringReader implements InputStreamReader {
     //TODO: think about cancellation
-    private StringHandler stringHandler;
+    @Nullable private StringHandler stringHandler;
 
-    public StringReader(StringHandler handler) {
+    public StringReader(@Nullable StringHandler handler) {
         stringHandler = handler;
     }
 
     @Override
-    public Object readStream(InputStream stream) throws Exception {
+    public InputStream wrapInputStream(@NonNull InputStream stream) {
+        return stream;
+    }
+
+    @Override
+    public Object readStream(@NonNull InputStream stream) throws Exception {
         Object object = this.readStreamToString(stream);
         if (stringHandler != null) {
             object = stringHandler.handleString((String)object);
@@ -27,7 +35,7 @@ public class StringReader implements InputStreamReader {
         return object;
     }
 
-    public String readStreamToString(InputStream stream) throws Exception {
+    public String readStreamToString(@NonNull InputStream stream) throws Exception {
         StringBuilder builder = new StringBuilder();
         BufferedReader buffreader = null;
         
@@ -56,6 +64,6 @@ public class StringReader implements InputStreamReader {
     }
 
     @Override
-    public void setProgressUpdater(ProgressUpdater progressUpdater) {
+    public void setProgressUpdater(@NonNull ProgressUpdater progressUpdater) {
     }
 }

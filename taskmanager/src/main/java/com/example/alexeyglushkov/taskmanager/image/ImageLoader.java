@@ -5,7 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 
-import com.example.alexeyglushkov.streamlib.convertors.BytesBitmapConvertor;
+import com.example.alexeyglushkov.streamlib.convertors.BytesBitmapConverter;
 import com.example.alexeyglushkov.streamlib.readersandwriters.ByteArrayReader;
 import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionStreamReader;
@@ -28,7 +28,7 @@ public class ImageLoader {
     }
 
     public static Task loadImage(final Handler handler, final Image image, String destinationId, final ImageLoader.LoadCallback callback) {
-        InputStreamReader streamReader = new ByteArrayReader(new BytesBitmapConvertor(null));
+        InputStreamReader streamReader = new ByteArrayReader(new BytesBitmapConverter(null));
         HTTPConnectionStreamReader reader = new HTTPConnectionStreamReaderAdaptor(streamReader);
         final TransportTask transportTask = createTask(image, destinationId, reader);
 

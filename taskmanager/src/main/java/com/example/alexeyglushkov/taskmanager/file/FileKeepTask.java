@@ -31,6 +31,8 @@ public class FileKeepTask extends SimpleTask {
             BufferedOutputStream bufferedStream = null;
 
             try {
+                // TODO: use OutputStreamWriters.writeOnce
+                // TODO: create FileWriter
                 fos = this.context.openFileOutput(name, Context.MODE_PRIVATE);
                 bufferedStream = new BufferedOutputStream(fos);
                 getPrivate().setTaskError(writer.writeToStream(bufferedStream));

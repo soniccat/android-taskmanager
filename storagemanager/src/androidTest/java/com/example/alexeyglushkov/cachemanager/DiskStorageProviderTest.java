@@ -3,40 +3,55 @@ package com.example.alexeyglushkov.cachemanager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.annotation.UiThreadTest;
+import android.support.test.rule.UiThreadTestRule;
+import android.support.test.runner.AndroidJUnit4;
 import android.test.InstrumentationTestCase;
 
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageMetadata;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageProvider;
 import com.example.alexeyglushkov.streamlib.serializers.BitmapSerializer;
 
+import junit.framework.Assert;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import java.io.File;
 
 /**
  * Created by alexeyglushkov on 26.09.15.
  */
-public class DiskStorageProviderTest extends InstrumentationTestCase {
+@RunWith(AndroidJUnit4.class)
+public class DiskStorageProviderTest {
+    @Rule
+    public UiThreadTestRule rule = new UiThreadTestRule();
 
     DiskStorageProvider cacheProvider;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        File testDir = getInstrumentation().getContext().getDir("testDir", Context.MODE_PRIVATE);
+    @Before
+    public void setUp() throws Exception {
+        Context appContext = InstrumentationRegistry.getTargetContext();
+        File testDir = appContext.getDir("testDir", Context.MODE_PRIVATE);
         cacheProvider = new DiskStorageProvider(testDir);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
         cacheProvider.removeAll();
-        assertEquals(0, cacheProvider.getEntries().size());
+        Assert.assertEquals(0, cacheProvider.getEntries().size());
     }
 
+    @Test @UiThreadTest
     public void testGetDirectory() {
-        assertTrue(cacheProvider.getDirectory().getPath().endsWith("testDir"));
+        Assert.assertTrue(cacheProvider.getDirectory().getPath().endsWith("testDir"));
     }
 
+    @Test @UiThreadTest
     public void testStoreData() {
         // Arrange
         DiskStorageMetadata metadata = new DiskStorageMetadata();
@@ -52,20 +67,22 @@ public class DiskStorageProviderTest extends InstrumentationTestCase {
         }
 
         // Verify
-        assertNull(ex);
-        assertEquals("123", cacheProvider.getValue("1"));
+        Assert.assertNull(ex);
+        Assert.assertEquals("123", cacheProvider.getValue("1"));
 
         DiskStorageMetadata readMetadata = (DiskStorageMetadata)cacheProvider.getMetadata("1");
-        assertNotNull(readMetadata.getCreateTime());
-        assertEquals(555334, readMetadata.getExpireTime());
-        assertEquals(10, readMetadata.getContentSize());
-        assertEquals(String.class, readMetadata.getEntryClass());
-        assertTrue(readMetadata.getContentSize() != 0);
+        Assert.assertNotNull(readMetadata.getCreateTime());
+        Assert.assertEquals(555334, readMetadata.getExpireTime());
+        Assert.assertEquals(10, readMetadata.getContentSize());
+        Assert.assertEquals(String.class, readMetadata.getEntryClass());
+        Assert.assertTrue(readMetadata.getContentSize() != 0);
     }
 
+    @Test @UiThreadTest
     public void testStoreImage() {
         // Arrange
-        Bitmap bitmap = BitmapFactory.decodeResource(getInstrumentation().getContext().getResources(),
+        Context appContext = InstrumentationRegistry.getTargetContext();
+        Bitmap bitmap = BitmapFactory.decodeResource(appContext.getResources(),
                 R.drawable.imgtocache);
         cacheProvider.setSerializer(new BitmapSerializer(), Bitmap.class);
 
@@ -78,16 +95,17 @@ public class DiskStorageProviderTest extends InstrumentationTestCase {
         }
 
         // Verify
-        assertNull(ex);
-        assertNotNull(cacheProvider.getEntry("img"));
+        Assert.assertNull(ex);
+        Assert.assertNotNull(cacheProvider.getEntry("img"));
 
         Bitmap result = (Bitmap)cacheProvider.getValue("img");
         DiskStorageMetadata readMetadata = (DiskStorageMetadata)cacheProvider.getMetadata("img");
-        assertNotNull(result);
-        assertNotNull(readMetadata);
-        assertEquals(bitmap.getByteCount(), result.getByteCount());
+        Assert.assertNotNull(result);
+        Assert.assertNotNull(readMetadata);
+        Assert.assertEquals(bitmap.getByteCount(), result.getByteCount());
     }
 
+    @Test @UiThreadTest
     public void testEntryCount() {
         // Act
         Exception ex = null;
@@ -100,10 +118,11 @@ public class DiskStorageProviderTest extends InstrumentationTestCase {
         }
 
         // Verify
-        assertNull(ex);
-        assertEquals(3, cacheProvider.getEntryCount());
+        Assert.assertNull(ex);
+        Assert.assertEquals(3, cacheProvider.getEntryCount());
     }
 
+    @Test @UiThreadTest
     public void testRemove() {
         // Act
         Exception ex = null;
@@ -118,21 +137,24 @@ public class DiskStorageProviderTest extends InstrumentationTestCase {
         }
 
         // Verify
-        assertNull(ex);
-        assertEquals(2, cacheProvider.getEntryCount());
-        assertNull(cacheProvider.getEntry("2"));
+        Assert.assertNull(ex);
+        Assert.assertEquals(2, cacheProvider.getEntryCount());
+        Assert.assertNull(cacheProvider.getEntry("2"));
     }
 
+    @Test @UiThreadTest
     public void testCreateMetadata() {
         DiskStorageMetadata metadata = cacheProvider.createMetadata();
-        assertEquals(DiskStorageMetadata.class, metadata.getClass());
+        Assert.assertEquals(DiskStorageMetadata.class, metadata.getClass());
     }
 
+    @Test @UiThreadTest
     public void testSetDefaultSerializer() {
         // Act
+        Context appContext = InstrumentationRegistry.getTargetContext();
         cacheProvider.setDefaultSerializer(new BitmapSerializer());
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getInstrumentation().getContext().getResources(),
+        Bitmap bitmap = BitmapFactory.decodeResource(appContext.getResources(),
                 R.drawable.imgtocache);
 
         // Act
@@ -144,10 +166,10 @@ public class DiskStorageProviderTest extends InstrumentationTestCase {
         }
 
         // Verify
-        assertNull(ex);
+        Assert.assertNull(ex);
 
         Bitmap result = (Bitmap)cacheProvider.getValue("img");
-        assertNotNull(result);
-        assertEquals(bitmap.getByteCount(), result.getByteCount());
+        Assert.assertNotNull(result);
+        Assert.assertEquals(bitmap.getByteCount(), result.getByteCount());
     }
 }

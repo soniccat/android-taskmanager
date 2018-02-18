@@ -3,6 +3,7 @@ package com.example.alexeyglushkov.cachemanager.disk;
 import android.support.annotation.NonNull;
 
 import com.example.alexeyglushkov.cachemanager.StorageEntry;
+import com.example.alexeyglushkov.streamlib.readersandwriters.OutputStreamWriters;
 import com.example.alexeyglushkov.streamlib.serializers.Serializer;
 
 import android.support.annotation.Nullable;
@@ -67,10 +68,13 @@ public class DiskStorageEntry implements StorageEntry {
     }
 
     public void write() throws Exception {
+
+
         OutputStream os = null;
 
         try {
             os = new BufferedOutputStream(new FileOutputStream(file));
+            OutputStreamWriters.writeOnce(serializer, os, object);
             serializer.write(os, object);
 
         } finally {
@@ -90,7 +94,8 @@ public class DiskStorageEntry implements StorageEntry {
         }
 
         if (metadata != null) {
-            if (!metadata.getFile().delete()) {
+            File file = metadata.getFile();
+            if (file != null && !metadata.getFile().delete()) {
                 throw new Exception("DiskCacheEntry delete: can't delete metadata " + metadata.getFile().getAbsolutePath());
             }
         }

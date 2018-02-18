@@ -26,6 +26,9 @@
 
 package com.example.alexeyglushkov.streamlib.serializers;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
 import com.example.alexeyglushkov.streamlib.readersandwriters.OutputStreamWriter;
 
@@ -37,9 +40,12 @@ import java.io.OutputStream;
  */
 public interface Serializer {
 
-    void setOutputStreamWriter(OutputStreamWriter writer);
-    void setInputStreamReader(InputStreamReader reader);
+    void setOutputStreamWriter(@NonNull OutputStreamWriter writer);
+    void setInputStreamReader(@NonNull InputStreamReader reader);
 
-    void write(OutputStream outputStream, Object value) throws Exception;
-    Object read(InputStream inputStream) throws Exception;
+    InputStream wrapInputStream(@NonNull InputStream stream) throws Exception;
+    OutputStream wrapOutputStream(@NonNull OutputStream stream) throws Exception;
+
+    void write(@NonNull OutputStream outputStream, @NonNull Object value) throws Exception;
+    @Nullable Object read(@NonNull InputStream inputStream) throws Exception;
 }

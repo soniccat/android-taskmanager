@@ -1,7 +1,5 @@
 package com.example.alexeyglushkov.dropboxservice;
 
-import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
-import com.example.alexeyglushkov.streamlib.readersandwriters.ObjectReader;
 import com.example.alexeyglushkov.streamlib.serializers.Serializer;
 
 import java.io.BufferedInputStream;
@@ -12,7 +10,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Reader;
 
 /**
  * Created by alexeyglushkov on 11.09.16.

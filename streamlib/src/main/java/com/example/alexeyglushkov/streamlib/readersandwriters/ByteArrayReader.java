@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.streamlib.readersandwriters;
 
+import android.support.annotation.NonNull;
+
 import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 
@@ -32,7 +34,12 @@ public class ByteArrayReader implements InputStreamReader {
     }
 
     @Override
-    public Object readStream(InputStream stream) throws IOException {
+    public InputStream wrapInputStream(@NonNull InputStream stream) {
+        return stream;
+    }
+
+    @Override
+    public Object readStream(@NonNull InputStream stream) throws IOException {
         byte[] byteArray = this.readStreamToByteArray(stream);
         if (keepByteArray) {
             this.byteArray = byteArray;
@@ -48,7 +55,7 @@ public class ByteArrayReader implements InputStreamReader {
         return result;
     }
 
-    public byte[] readStreamToByteArray(InputStream stream) throws IOException {
+    public byte[] readStreamToByteArray(@NonNull InputStream stream) throws IOException {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         int nRead;
         byte[] data = new byte[1024];
@@ -87,7 +94,7 @@ public class ByteArrayReader implements InputStreamReader {
         return progressUpdater;
     }
 
-    public void setProgressUpdater(ProgressUpdater progressUpdater) {
+    public void setProgressUpdater(@NonNull  ProgressUpdater progressUpdater) {
         this.progressUpdater = progressUpdater;
     }
 }

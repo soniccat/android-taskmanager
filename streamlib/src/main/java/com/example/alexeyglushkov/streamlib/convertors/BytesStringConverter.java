@@ -8,10 +8,10 @@ import java.nio.charset.Charset;
 /**
  * Created by alexeyglushkov on 26.11.15.
  */
-public class BytesStringConvertor implements Convertor, ByteArrayHandler {
+public class BytesStringConverter implements Converter, ByteArrayHandler {
     private StringHandler stringHandler;
 
-    public BytesStringConvertor(StringHandler stringHandler) {
+    public BytesStringConverter(StringHandler stringHandler) {
         this.stringHandler = stringHandler;
     }
 

@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
+import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReaders;
 import com.example.alexeyglushkov.streamlib.readersandwriters.StringReader;
 import com.example.alexeyglushkov.taskmanager.loader.transport.TaskTransport;
 
@@ -109,11 +110,12 @@ public class HttpTaskTransport implements TaskTransport {
     }
 
     protected Object handleStream(InputStream stream) throws Exception {
-        return streamReader.readStream(stream);
+        return InputStreamReaders.readOnce(streamReader, stream);
     }
 
     @Override
     public void cancel() {
+        // it seems nothing to do here
     }
 
     //// Setters / Getters

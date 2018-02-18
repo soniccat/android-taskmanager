@@ -14,8 +14,12 @@ import java.io.OutputStream;
  */
 public class CourseWriter implements OutputStreamWriter {
     @Override
-    public void writeStream(OutputStream stream, Object object) throws Exception {
+    public OutputStream wrapOutputStream(OutputStream stream) {
+        return stream;
+    }
 
+    @Override
+    public void writeStream(OutputStream stream, Object object) throws Exception {
         Course course = (Course)object;
 
         JsonFactory f = new JsonFactory();

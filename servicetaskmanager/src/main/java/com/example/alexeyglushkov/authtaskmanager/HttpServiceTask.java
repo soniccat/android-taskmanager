@@ -4,7 +4,7 @@ import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
 import com.example.alexeyglushkov.cachemanager.StorageProvider;
 import com.example.alexeyglushkov.service.HttpCacheableTransport;
-import com.example.alexeyglushkov.streamlib.convertors.BytesStringConvertor;
+import com.example.alexeyglushkov.streamlib.convertors.BytesStringConverter;
 import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionBytesReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.TransportTask;
@@ -84,7 +84,7 @@ public class HttpServiceTask extends TransportTask implements IServiceTask {
     }
 
     protected ByteArrayHandler getReader() {
-        return new BytesStringConvertor(null);
+        return new BytesStringConverter(null);
     }
 
     @Override

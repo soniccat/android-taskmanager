@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.cachemanager.disk.serializer;
 
+import android.support.annotation.NonNull;
+
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageMetadata;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
@@ -16,7 +18,12 @@ import java.io.InputStream;
 public class DiskMetadataReader implements InputStreamReader {
 
     @Override
-    public Object readStream(InputStream data) throws IOException {
+    public InputStream wrapInputStream(@NonNull InputStream stream) {
+        return stream;
+    }
+
+    @Override
+    public Object readStream(@NonNull InputStream data) throws IOException {
         Object result = null;
         SimpleModule md = new SimpleModule("DiskMetadataModule", new Version(1,0,0,null,null,null));
         md.addDeserializer(DiskStorageMetadata.class, new DiskMetadataDeserializer(DiskStorageMetadata.class));
@@ -29,7 +36,7 @@ public class DiskMetadataReader implements InputStreamReader {
     }
 
     @Override
-    public void setProgressUpdater(ProgressUpdater progressUpdater) {
+    public void setProgressUpdater(@NonNull ProgressUpdater progressUpdater) {
 
     }
 }
