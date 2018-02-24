@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.streamlib.codecs;
 
+import android.support.annotation.Nullable;
+
 import com.example.alexeyglushkov.streamlib.convertors.Converter;
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.ObjectReader;
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.ObjectWriter;
@@ -12,7 +14,7 @@ public class ObjectCodec extends SimpleCodec {
         this(null, null);
     }
 
-    public ObjectCodec(Converter writerConverter, Converter readerConverter) {
+    public ObjectCodec(@Nullable Converter writerConverter, @Nullable Converter readerConverter) {
         super(new ObjectWriter(writerConverter), new ObjectReader(readerConverter));
     }
 }
