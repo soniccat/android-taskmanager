@@ -16,12 +16,13 @@ import java.io.OutputStream;
  */
 public class DiskMetadataWriter implements OutputStreamWriter {
     @Override
-    public @NonNull OutputStream wrapStream(@NonNull OutputStream stream) {
+    public @NonNull
+    void beginWrite(@NonNull OutputStream stream) {
         return stream;
     }
 
     @Override
-    public void write(@NonNull OutputStream stream, @NonNull Object object) throws IOException {
+    public void write(@NonNull Object object) throws IOException {
         DiskStorageMetadata metadata = (DiskStorageMetadata)object;
 
         JsonFactory f = new JsonFactory();

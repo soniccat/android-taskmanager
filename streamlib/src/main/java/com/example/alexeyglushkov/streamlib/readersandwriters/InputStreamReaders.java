@@ -9,19 +9,16 @@ import java.io.InputStream;
 
 public class InputStreamReaders {
 
-    // call read on a wrapped stream once and close the wrapped stream
+    // call read on a wrapped stream once and closeWrite the wrapped stream
     public static Object readOnce(InputStreamReader reader, InputStream stream) throws Exception {
         Object result = null;
-        InputStream wrappedStream = reader.wrapStream(stream);
+        reader.beginRead(stream);
 
         try {
-            result = reader.read(wrappedStream);
+            result = reader.read();
 
         } finally {
-            try {
-                wrappedStream.close();
-            } catch (IOException e) {
-            }
+            reader.closeRead();
         }
 
         return result;

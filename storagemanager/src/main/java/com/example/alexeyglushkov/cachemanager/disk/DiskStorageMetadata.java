@@ -13,7 +13,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -41,7 +40,7 @@ public class DiskStorageMetadata implements StorageMetadata
 
         try {
             os = new BufferedOutputStream(new FileOutputStream(file));
-            serializer.write(os, this);
+            serializer.write(this);
 
         } finally {
             if (os != null) {

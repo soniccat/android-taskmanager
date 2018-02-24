@@ -66,7 +66,7 @@ public class FileLoadTask extends SimpleTask {
     }
 
     protected Object handleStream(InputStream fis) throws Exception {
-        return handler.read(fis);
+        return handler.read();
     }
 
     protected long getFileSize() {

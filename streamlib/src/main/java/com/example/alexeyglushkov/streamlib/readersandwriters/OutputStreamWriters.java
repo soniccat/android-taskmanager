@@ -1,5 +1,8 @@
 package com.example.alexeyglushkov.streamlib.readersandwriters;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -9,18 +12,15 @@ import java.io.OutputStream;
 
 public class OutputStreamWriters {
 
-    // call write on a wrapped stream once and close the wrapped stream
-    public static void writeOnce(OutputStreamWriter writer, OutputStream stream, Object object) throws Exception {
-        OutputStream wrappedStream = writer.wrapStream(stream);
+    // call write on a wrapped stream once and closeWrite the wrapped stream
+    public static void writeOnce(@NonNull OutputStreamWriter writer, @NonNull OutputStream stream, @NonNull Object object) throws Exception {
+        writer.beginWrite(stream);
 
         try {
-            writer.write(wrappedStream, object);
+            writer.write(object);
 
         } finally {
-            try {
-                wrappedStream.close();
-            } catch (IOException e) {
-            }
+            writer.closeWrite();
         }
     }
 }

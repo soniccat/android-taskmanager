@@ -22,23 +22,35 @@ public class SimpleSerializer implements Serializer {
     }
 
     @Override
-    public @NonNull InputStream wrapStream(@NonNull InputStream stream) throws Exception {
-        return reader.wrapStream(stream);
+    public @NonNull
+    void beginRead(@NonNull InputStream stream) throws Exception {
+        return reader.beginRead(stream);
     }
 
     @Override
-    public @NonNull OutputStream wrapStream(@NonNull OutputStream stream) throws Exception {
-        return writer.wrapStream(stream);
+    public @NonNull
+    void beginWrite(@NonNull OutputStream stream) throws Exception {
+        return writer.beginWrite(stream);
     }
 
     @Override
-    public void write(@NonNull OutputStream outputStream, @NonNull Object value) throws Exception {
-        writer.write(outputStream, value);
+    public void write(@NonNull Object value) throws Exception {
+        writer.write(value);
     }
 
     @Override
-    public @Nullable Object read(@NonNull InputStream inputStream) throws Exception {
-        return reader.read(inputStream);
+    public @Nullable Object read() throws Exception {
+        return reader.read();
+    }
+
+    @Override
+    public void closeWrite() throws Exception {
+        writer.closeWrite();
+    }
+
+    @Override
+    public void closeRead() throws Exception {
+        reader.closeRead();
     }
 
     @Override

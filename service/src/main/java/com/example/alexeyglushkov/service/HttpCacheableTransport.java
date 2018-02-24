@@ -10,8 +10,6 @@ import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionBytesRea
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpBytesTransport;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpURLConnectionProvider;
 
-import java.io.ByteArrayInputStream;
-
 /**
  * Created by alexeyglushkov on 26.11.15.
  */
@@ -98,7 +96,7 @@ public class HttpCacheableTransport extends HttpBytesTransport {
         byte[] bytes = getCachedBytes(cache);
 
         if (bytes != null) {
-            Object result = byteArrayReader.read(new ByteArrayInputStream(bytes));
+            Object result = byteArrayReader.read();
 
             //TODO: think to call base menthod which wrap calling this two
             // now in base class something could be inserted after setHandleData and won't be called here

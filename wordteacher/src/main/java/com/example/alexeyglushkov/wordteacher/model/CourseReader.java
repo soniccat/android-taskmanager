@@ -19,12 +19,12 @@ import java.io.InputStream;
 public class CourseReader implements InputStreamReader {
 
     @Override
-    public InputStream wrapStream(@NonNull InputStream stream) {
+    public void beginRead(@NonNull InputStream stream) {
         return stream;
     }
 
     @Override
-    public Object read(@NonNull InputStream data) throws IOException {
+    public Object read() throws IOException {
         //StringReader reader = new StringReader(null);
         //String str = (String)reader.read(data);
 

@@ -1,10 +1,15 @@
 package com.example.alexeyglushkov.streamlib.readersandwriters;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
+import com.example.alexeyglushkov.tools.ExceptionTools;
 
+import junit.framework.Assert;
+
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +18,7 @@ import java.io.InputStream;
  * Created by alexeyglushkov on 25.01.15.
  */
 public class ByteArrayReader implements InputStreamReader {
+    private @Nullable InputStream stream;
     private ByteArrayHandler byteArrayHandler;
     private ProgressUpdater progressUpdater;
 
@@ -24,22 +30,31 @@ public class ByteArrayReader implements InputStreamReader {
         this.keepByteArray = keepByteArray;
     }
 
-    public ByteArrayReader(ByteArrayHandler handler) {
-        byteArrayHandler = handler;
-    }
-
     public ByteArrayReader(ByteArrayHandler handler, ProgressUpdater progressUpdater) {
-        byteArrayHandler = handler;
+        this(handler);
         this.progressUpdater = progressUpdater;
     }
 
-    @Override
-    @NonNull public InputStream wrapStream(@NonNull InputStream stream) {
-        return stream;
+    public ByteArrayReader(ByteArrayHandler handler) {
+        this.byteArrayHandler = handler;
     }
 
     @Override
-    public Object read(@NonNull InputStream stream) throws IOException {
+    public void beginRead(@NonNull InputStream stream) throws Exception {
+        ExceptionTools.throwIfNull(stream, "ByteArrayReader.beginRead: stream is null");
+        this.stream = new BufferedInputStream(stream);
+    }
+
+    @Override
+    public void closeRead() throws Exception {
+        ExceptionTools.throwIfNull(stream, "ByteArrayReader.close: stream is null");
+        stream.close();
+    }
+
+    @Override
+    public Object read() throws IOException {
+        ExceptionTools.throwIfNull(stream, "ByteArrayReader.read: stream is null");
+
         byte[] byteArray = this.readStreamToByteArray(stream);
         if (keepByteArray) {
             this.byteArray = byteArray;
@@ -55,7 +70,7 @@ public class ByteArrayReader implements InputStreamReader {
         return result;
     }
 
-    public byte[] readStreamToByteArray(@NonNull InputStream stream) throws IOException {
+    private byte[] readStreamToByteArray(@NonNull InputStream stream) throws IOException {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         int nRead;
         byte[] data = new byte[1024];

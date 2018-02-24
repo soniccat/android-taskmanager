@@ -23,13 +23,13 @@ public class HTTPConnectionStreamReaderAdaptor implements HTTPConnectionStreamRe
     }
 
     @Override
-    public InputStream wrapStream(@NonNull InputStream stream) {
+    public void beginRead(@NonNull InputStream stream) {
         return stream;
     }
 
     @Override
-    public Object read(@NonNull InputStream data) throws Exception {
-        return reader.read(data);
+    public Object read() throws Exception {
+        return reader.read();
     }
 
     @Override

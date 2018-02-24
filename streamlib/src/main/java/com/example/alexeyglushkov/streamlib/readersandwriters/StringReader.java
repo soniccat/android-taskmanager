@@ -15,6 +15,7 @@ import java.io.InputStream;
  */
 public class StringReader implements InputStreamReader {
     //TODO: think about cancellation
+    java.io.InputStreamReader reader;
     @Nullable private StringHandler stringHandler;
 
     public StringReader(@Nullable StringHandler handler) {
@@ -22,12 +23,12 @@ public class StringReader implements InputStreamReader {
     }
 
     @Override
-    public InputStream wrapStream(@NonNull InputStream stream) {
+    public void beginRead(@NonNull InputStream stream) {
         return stream;
     }
 
     @Override
-    public Object read(@NonNull InputStream stream) throws Exception {
+    public Object read() throws Exception {
         Object object = this.readStreamToString(stream);
         if (stringHandler != null) {
             object = stringHandler.handleString((String)object);

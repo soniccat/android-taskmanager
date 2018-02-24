@@ -1,10 +1,13 @@
 package com.example.alexeyglushkov.streamlib.readersandwriters;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.example.alexeyglushkov.streamlib.convertors.Converter;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
+import com.example.alexeyglushkov.tools.ExceptionTools;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -12,6 +15,7 @@ import java.io.OutputStream;
  * Created by alexeyglushkov on 27.09.15.
  */
 public class ByteArrayWriter implements OutputStreamWriter {
+    private @Nullable OutputStream stream;
     private Converter converter;
 
     public ByteArrayWriter(Converter converter) {
@@ -19,12 +23,21 @@ public class ByteArrayWriter implements OutputStreamWriter {
     }
 
     @Override
-    public @NonNull OutputStream wrapStream(OutputStream stream) {
-        return stream;
+    public void beginWrite(@NonNull OutputStream stream) {
+        ExceptionTools.throwIfNull(stream, "ByteArrayWriter.beginWrite: stream is null");
+        this.stream = new BufferedOutputStream(stream);
     }
 
     @Override
-    public void write(OutputStream stream, Object object) throws Exception {
+    public void closeWrite() throws Exception {
+        ExceptionTools.throwIfNull(stream, "ByteArrayWriter.closeWrite: stream is null");
+        stream.close();
+    }
+
+    @Override
+    public void write(@NonNull Object object) throws Exception {
+        ExceptionTools.throwIfNull(stream, "ByteArrayWriter.write: stream is null");
+
         if (converter != null) {
             object = this.converter.convert(object);
         }
@@ -33,12 +46,12 @@ public class ByteArrayWriter implements OutputStreamWriter {
         writeByteArray(stream, buffer);
     }
 
-    public void writeByteArray(OutputStream stream, byte[] buffer) throws IOException {
+    private void writeByteArray(OutputStream stream, byte[] buffer) throws IOException {
         stream.write(buffer);
     }
 
     @Override
-    public void setProgressUpdater(ProgressUpdater progressUpdater) {
+    public void setProgressUpdater(@NonNull ProgressUpdater progressUpdater) {
 
     }
 }
