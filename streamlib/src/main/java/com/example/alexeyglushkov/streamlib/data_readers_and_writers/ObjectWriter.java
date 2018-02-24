@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.streamlib.readersandwriters;
+package com.example.alexeyglushkov.streamlib.data_readers_and_writers;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,8 +7,8 @@ import com.example.alexeyglushkov.streamlib.convertors.Converter;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 import com.example.alexeyglushkov.tools.ExceptionTools;
 
-import junit.framework.Assert;
-
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -16,7 +16,7 @@ import java.io.OutputStream;
 /**
  * Created by alexeyglushkov on 04.10.15.
  */
-public class ObjectWriter implements OutputStreamWriter {
+public class ObjectWriter implements OutputStreamDataWriter {
     @Nullable private ObjectOutputStream stream;
     @Nullable private Converter converter;
 
@@ -27,12 +27,13 @@ public class ObjectWriter implements OutputStreamWriter {
     @Override
     public void beginWrite(@NonNull OutputStream stream) throws IOException {
         ExceptionTools.throwIfNull(stream, "ObjectWriter.beginWrite: stream is null");
-        this.stream = new ObjectOutputStream(stream);
+        this.stream = new ObjectOutputStream(new BufferedOutputStream(stream));
     }
 
     @Override
     public void closeWrite() throws Exception {
         ExceptionTools.throwIfNull(stream, "ObjectWriter.closeWrite: stream is null");
+        stream.close();
     }
 
     @Override

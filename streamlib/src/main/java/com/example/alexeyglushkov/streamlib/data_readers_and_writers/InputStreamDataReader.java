@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.streamlib.readersandwriters;
+package com.example.alexeyglushkov.streamlib.data_readers_and_writers;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,7 +10,7 @@ import java.io.InputStream;
 /**
  * Created by alexeyglushkov on 25.01.15.
  */
-public interface InputStreamReader {
+public interface InputStreamDataReader {
     void beginRead(@NonNull InputStream stream) throws Exception;
     @Nullable Object read() throws Exception;
     void closeRead() throws Exception;

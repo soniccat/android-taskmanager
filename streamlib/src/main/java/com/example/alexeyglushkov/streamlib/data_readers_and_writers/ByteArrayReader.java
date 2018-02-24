@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.streamlib.readersandwriters;
+package com.example.alexeyglushkov.streamlib.data_readers_and_writers;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -6,8 +6,6 @@ import android.support.annotation.Nullable;
 import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 import com.example.alexeyglushkov.tools.ExceptionTools;
-
-import junit.framework.Assert;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -17,7 +15,7 @@ import java.io.InputStream;
 /**
  * Created by alexeyglushkov on 25.01.15.
  */
-public class ByteArrayReader implements InputStreamReader {
+public class ByteArrayReader implements InputStreamDataReader {
     private @Nullable InputStream stream;
     private ByteArrayHandler byteArrayHandler;
     private ProgressUpdater progressUpdater;

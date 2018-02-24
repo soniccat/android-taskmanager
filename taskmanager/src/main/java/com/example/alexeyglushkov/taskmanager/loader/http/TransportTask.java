@@ -1,16 +1,8 @@
 package com.example.alexeyglushkov.taskmanager.loader.http;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
-
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
-import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
-import com.example.alexeyglushkov.streamlib.readersandwriters.StringReader;
 import com.example.alexeyglushkov.taskmanager.loader.transport.TaskTransport;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 

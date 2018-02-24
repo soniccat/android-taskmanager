@@ -3,9 +3,9 @@ package com.example.alexeyglushkov.cachemanager.disk;
 import android.support.annotation.NonNull;
 
 import com.example.alexeyglushkov.cachemanager.StorageEntry;
-import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReaders;
-import com.example.alexeyglushkov.streamlib.readersandwriters.OutputStreamWriters;
-import com.example.alexeyglushkov.streamlib.serializers.Serializer;
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStreamDataReaders;
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.OutputStreamDataWriters;
+import com.example.alexeyglushkov.streamlib.codecs.Codec;
 
 import android.support.annotation.Nullable;
 
@@ -14,7 +14,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -24,14 +23,14 @@ import java.io.OutputStream;
 public class DiskStorageEntry implements StorageEntry {
     @NonNull  private File file;
     @Nullable private Object object;
-    @NonNull  private Serializer serializer;
+    @NonNull  private Codec codec;
     @Nullable private DiskStorageMetadata metadata;
 
-    public DiskStorageEntry(@NonNull File file, @Nullable Object object, @Nullable DiskStorageMetadata metadata, @NonNull Serializer serializer) {
+    public DiskStorageEntry(@NonNull File file, @Nullable Object object, @Nullable DiskStorageMetadata metadata, @NonNull Codec codec) {
         this.file = file;
         this.object = object;
         this.metadata = metadata;
-        this.serializer = serializer;
+        this.codec = codec;
     }
 
     public String getFileName() {
@@ -48,13 +47,13 @@ public class DiskStorageEntry implements StorageEntry {
     }
 
     private void loadObject() throws Exception {
-        InputStream stream = new BufferedInputStream(new FileInputStream(file));
-        object = InputStreamReaders.readOnce(serializer, stream);
+        InputStream stream = new FileInputStream(file);
+        object = InputStreamDataReaders.readOnce(codec, stream);
     }
 
     public void write() throws Exception {
-        OutputStream os = new BufferedOutputStream(new FileOutputStream(file));;
-        OutputStreamWriters.writeOnce(serializer, os, object);
+        OutputStream os = new FileOutputStream(file);
+        OutputStreamDataWriters.writeOnce(codec, os, object);
     }
 
     @Override

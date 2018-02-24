@@ -1,8 +1,8 @@
 package com.example.alexeyglushkov.dropboxservice;
 
-import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReaders;
-import com.example.alexeyglushkov.streamlib.readersandwriters.OutputStreamWriters;
-import com.example.alexeyglushkov.streamlib.serializers.Serializer;
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStreamDataReaders;
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.OutputStreamDataWriters;
+import com.example.alexeyglushkov.streamlib.codecs.Codec;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -17,12 +17,12 @@ import java.io.OutputStream;
  * Created by alexeyglushkov on 11.09.16.
  */
 public class FileObjectMerger implements FileMerger {
-    private Serializer serializer;
+    private Codec codec;
     private ObjectMerger objectMerger;
     private File outFile;
 
-    public FileObjectMerger(Serializer serializer, ObjectMerger objectMerger, File outFile) {
-        this.serializer = serializer;
+    public FileObjectMerger(Codec codec, ObjectMerger objectMerger, File outFile) {
+        this.codec = codec;
         this.objectMerger = objectMerger;
         this.outFile = outFile;
     }
@@ -45,11 +45,11 @@ public class FileObjectMerger implements FileMerger {
 
     private Object readObject(File f1) throws Exception {
         InputStream stream = new BufferedInputStream(new FileInputStream(f1));
-        return InputStreamReaders.readOnce(serializer, stream);
+        return InputStreamDataReaders.readOnce(codec, stream);
     }
 
     private void writeObject(File file, Object obj) throws Exception {
         OutputStream stream = new BufferedOutputStream(new FileOutputStream(file));;
-        OutputStreamWriters.writeOnce(serializer, stream, obj);
+        OutputStreamDataWriters.writeOnce(codec, stream, obj);
     }
 }

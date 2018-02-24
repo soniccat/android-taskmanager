@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.streamlib.readersandwriters;
+package com.example.alexeyglushkov.streamlib.data_readers_and_writers;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,13 +7,14 @@ import com.example.alexeyglushkov.streamlib.convertors.Converter;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 import com.example.alexeyglushkov.tools.ExceptionTools;
 
+import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 
 /**
  * Created by alexeyglushkov on 01.02.15.
  */
-public class ObjectReader implements InputStreamReader {
+public class ObjectReader implements InputStreamDataReader {
     @Nullable private ObjectInputStream stream;
     @Nullable private Converter converter;
 
@@ -24,7 +25,7 @@ public class ObjectReader implements InputStreamReader {
     @Override
     public void beginRead(@NonNull InputStream stream) throws Exception {
         ExceptionTools.throwIfNull(stream, "ObjectReader.beginRead: stream is null");
-        this.stream = new ObjectInputStream(stream);
+        this.stream = new ObjectInputStream(new BufferedInputStream(stream));
     }
 
     @Override

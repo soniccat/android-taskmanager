@@ -1,6 +1,6 @@
 package com.example.alexeyglushkov.taskmanager.loader.http;
 
-import com.example.alexeyglushkov.streamlib.readersandwriters.ByteArrayReader;
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.ByteArrayReader;
 
 import java.net.HttpURLConnection;
 

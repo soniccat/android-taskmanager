@@ -4,9 +4,9 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
-import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
-import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReaders;
-import com.example.alexeyglushkov.streamlib.readersandwriters.StringReader;
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStreamDataReader;
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStreamDataReaders;
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.StringReader;
 import com.example.alexeyglushkov.taskmanager.loader.transport.TaskTransport;
 
 import java.io.BufferedInputStream;
@@ -110,7 +110,7 @@ public class HttpTaskTransport implements TaskTransport {
     }
 
     protected Object handleStream(InputStream stream) throws Exception {
-        return InputStreamReaders.readOnce(streamReader, stream);
+        return InputStreamDataReaders.readOnce(streamReader, stream);
     }
 
     @Override
@@ -149,7 +149,7 @@ public class HttpTaskTransport implements TaskTransport {
 
     // Getters
 
-    public InputStreamReader getStreamReader() {
+    public InputStreamDataReader getStreamReader() {
         return streamReader;
     }
 

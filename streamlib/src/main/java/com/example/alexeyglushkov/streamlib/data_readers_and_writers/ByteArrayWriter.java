@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.streamlib.readersandwriters;
+package com.example.alexeyglushkov.streamlib.data_readers_and_writers;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,7 +14,7 @@ import java.io.OutputStream;
 /**
  * Created by alexeyglushkov on 27.09.15.
  */
-public class ByteArrayWriter implements OutputStreamWriter {
+public class ByteArrayWriter implements OutputStreamDataWriter {
     private @Nullable OutputStream stream;
     private Converter converter;
 

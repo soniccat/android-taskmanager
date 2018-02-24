@@ -4,9 +4,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.example.alexeyglushkov.cachemanager.StorageMetadata;
-import com.example.alexeyglushkov.cachemanager.disk.serializer.DiskMetadataSerializer;
-import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReaders;
-import com.example.alexeyglushkov.streamlib.serializers.Serializer;
+import com.example.alexeyglushkov.cachemanager.disk.serializer.DiskMetadataCodec;
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStreamDataReaders;
+import com.example.alexeyglushkov.streamlib.codecs.Codec;
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.OutputStreamDataWriters;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -26,7 +27,8 @@ public class DiskStorageMetadata implements StorageMetadata
     private long expireDate;
     private @Nullable Class entryClass;
     private @Nullable File file;
-    private @NonNull Serializer serializer = createSerializer();
+    private @NonNull
+    Codec codec = createSerializer();
 
     //// Initialization
 
@@ -36,39 +38,15 @@ public class DiskStorageMetadata implements StorageMetadata
     //// Actions
 
     public void write() throws Exception {
-        OutputStream os = null;
-
-        try {
-            os = new BufferedOutputStream(new FileOutputStream(file));
-            serializer.write(this);
-
-        } finally {
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (Exception ex) {
-                }
-            }
-        }
+        OutputStreamDataWriters.writeOnce(codec, new FileOutputStream(file), this);
     }
 
     public static DiskStorageMetadata load(File file) throws Exception {
-        InputStream fis = null;
         DiskStorageMetadata result = null;
 
-        try {
-            fis = new BufferedInputStream(new FileInputStream(file));
-            Serializer serializer = createSerializer();
-
-            result = (DiskStorageMetadata)InputStreamReaders.readOnce(serializer, fis);
-            result.setFile(file);
-
-        } finally {
-            if (fis != null) {
-                fis.close();
-            }
-        }
-
+        Codec codec = createSerializer();
+        result = (DiskStorageMetadata) InputStreamDataReaders.readOnce(codec, new FileInputStream(file));
+        result.setFile(file);
         return result;
     }
 
@@ -78,8 +56,8 @@ public class DiskStorageMetadata implements StorageMetadata
 
     //// Construction Methods
 
-    private static Serializer createSerializer() {
-        return new DiskMetadataSerializer();
+    private static Codec createSerializer() {
+        return new DiskMetadataCodec();
     }
 
     //// Interfaces

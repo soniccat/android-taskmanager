@@ -24,19 +24,13 @@
  * THE SOFTWARE.
  */
 
-package com.example.alexeyglushkov.streamlib.serializers;
+package com.example.alexeyglushkov.streamlib.codecs;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
-import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
-import com.example.alexeyglushkov.streamlib.readersandwriters.OutputStreamWriter;
-
-import java.io.InputStream;
-import java.io.OutputStream;
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStreamDataReader;
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.OutputStreamDataWriter;
 
 /**
  * Serializer helps to save and to load values of some type to byte streams.
  */
-public interface Serializer extends InputStreamReader, OutputStreamWriter {
+public interface Codec extends InputStreamDataReader, OutputStreamDataWriter {
 }

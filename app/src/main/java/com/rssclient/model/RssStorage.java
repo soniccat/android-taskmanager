@@ -10,9 +10,9 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.example.alexeyglushkov.streamlib.readersandwriters.ByteArrayReader;
-import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
-import com.example.alexeyglushkov.streamlib.readersandwriters.ObjectReader;
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.ByteArrayReader;
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStreamDataReader;
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.ObjectReader;
 import com.example.alexeyglushkov.taskmanager.file.FileKeepTask;
 import com.example.alexeyglushkov.taskmanager.loader.file.FileLoadTask;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionStreamReader;
@@ -115,7 +115,7 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
 
     public void loadFeed(TaskManager taskManager, Context context, final RssFeed feed, final RssFeedCallback callback) {
 
-        InputStreamReader streamReader = new ByteArrayReader(feed.getDataHandler());
+        InputStreamDataReader streamReader = new ByteArrayReader(feed.getDataHandler());
         HTTPConnectionStreamReader reader = new HTTPConnectionStreamReaderAdaptor(streamReader);
         HttpTaskTransport transport = new HttpTaskTransport(feed, reader);
 

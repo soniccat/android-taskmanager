@@ -36,7 +36,7 @@ public class CourseHolder {
 
     public CourseHolder(File directory) {
         diskProvider = new DiskStorageProvider(directory);
-        diskProvider.setDefaultSerializer(new CourseSerializer());
+        diskProvider.setDefaultCodec(new CourseCodec());
     }
 
     //// Events

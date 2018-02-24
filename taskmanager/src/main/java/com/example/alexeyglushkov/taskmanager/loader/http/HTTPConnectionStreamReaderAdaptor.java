@@ -3,7 +3,7 @@ package com.example.alexeyglushkov.taskmanager.loader.http;
 import android.support.annotation.NonNull;
 
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
-import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStreamDataReader;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -12,9 +12,9 @@ import java.net.HttpURLConnection;
  * Created by alexeyglushkov on 31.10.15.
  */
 public class HTTPConnectionStreamReaderAdaptor implements HTTPConnectionStreamReader {
-    @NonNull private InputStreamReader reader;
+    @NonNull private InputStreamDataReader reader;
 
-    public HTTPConnectionStreamReaderAdaptor(@NonNull InputStreamReader reader) {
+    public HTTPConnectionStreamReaderAdaptor(@NonNull InputStreamDataReader reader) {
         this.reader = reader;
     }
 

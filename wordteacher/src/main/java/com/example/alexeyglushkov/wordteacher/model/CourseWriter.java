@@ -2,7 +2,7 @@ package com.example.alexeyglushkov.wordteacher.model;
 
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
-import com.example.alexeyglushkov.streamlib.readersandwriters.OutputStreamWriter;
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.OutputStreamDataWriter;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 
@@ -12,7 +12,7 @@ import java.io.OutputStream;
 /**
  * Created by alexeyglushkov on 08.05.16.
  */
-public class CourseWriter implements OutputStreamWriter {
+public class CourseWriter implements OutputStreamDataWriter {
     @Override
     public void beginWrite(OutputStream stream) {
         return stream;

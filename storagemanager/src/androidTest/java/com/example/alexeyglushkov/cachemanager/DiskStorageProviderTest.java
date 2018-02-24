@@ -7,11 +7,10 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.annotation.UiThreadTest;
 import android.support.test.rule.UiThreadTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.InstrumentationTestCase;
 
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageMetadata;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageProvider;
-import com.example.alexeyglushkov.streamlib.serializers.BitmapSerializer;
+import com.example.alexeyglushkov.streamlib.codecs.BitmapCodec;
 
 import junit.framework.Assert;
 
@@ -84,7 +83,7 @@ public class DiskStorageProviderTest {
         Context appContext = InstrumentationRegistry.getTargetContext();
         Bitmap bitmap = BitmapFactory.decodeResource(appContext.getResources(),
                 R.drawable.imgtocache);
-        cacheProvider.setSerializer(new BitmapSerializer(), Bitmap.class);
+        cacheProvider.setSerializer(new BitmapCodec(), Bitmap.class);
 
         // Act
         Exception ex = null;
@@ -152,7 +151,7 @@ public class DiskStorageProviderTest {
     public void testSetDefaultSerializer() {
         // Act
         Context appContext = InstrumentationRegistry.getTargetContext();
-        cacheProvider.setDefaultSerializer(new BitmapSerializer());
+        cacheProvider.setDefaultCodec(new BitmapCodec());
 
         Bitmap bitmap = BitmapFactory.decodeResource(appContext.getResources(),
                 R.drawable.imgtocache);

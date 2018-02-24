@@ -1,22 +1,18 @@
 package com.example.alexeyglushkov.cachemanager.disk;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.example.alexeyglushkov.cachemanager.StorageEntry;
 import com.example.alexeyglushkov.cachemanager.StorageMetadata;
 import com.example.alexeyglushkov.cachemanager.StorageProvider;
-import com.example.alexeyglushkov.streamlib.serializers.ObjectSerializer;
-import com.example.alexeyglushkov.streamlib.serializers.Serializer;
+import com.example.alexeyglushkov.streamlib.codecs.ObjectCodec;
+import com.example.alexeyglushkov.streamlib.codecs.Codec;
 
 import android.support.annotation.Nullable;
-
-import junit.framework.Assert;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,8 +31,9 @@ public class DiskStorageProvider implements StorageProvider {
     private static String METADATA_PREFIX = "_metadata";
 
     private @NonNull File directory;
-    private @NonNull Serializer defaultSerializer = new ObjectSerializer();
-    private @NonNull Map<Class, Serializer> serializerMap = new HashMap<>();
+    private @NonNull
+    Codec defaultCodec = new ObjectCodec();
+    private @NonNull Map<Class, Codec> serializerMap = new HashMap<>();
 
     private @NonNull Map<String, WeakReference<Object>> lockMap = new HashMap<>();
 
@@ -126,12 +123,12 @@ public class DiskStorageProvider implements StorageProvider {
         }
 
         try {
-            Serializer serializer = getSerializer(object.getClass());
-            if (serializer == null) {
+            Codec codec = getSerializer(object.getClass());
+            if (codec == null) {
                 throw new Exception("Can't find a serializer for " + object.getClass());
             }
 
-            DiskStorageEntry entry = new DiskStorageEntry(file, object, metadata, serializer);
+            DiskStorageEntry entry = new DiskStorageEntry(file, object, metadata, codec);
             entry.write();
 
             if (metadata != null) {
@@ -155,9 +152,9 @@ public class DiskStorageProvider implements StorageProvider {
         }
     }
 
-    private Serializer getSerializer(Class cl) {
-        Serializer serializer = serializerMap.get(cl);
-        return serializer == null ? defaultSerializer : serializer;
+    private Codec getSerializer(Class cl) {
+        Codec codec = serializerMap.get(cl);
+        return codec == null ? defaultCodec : codec;
     }
 
     private void writeMetadata(@NonNull DiskStorageMetadata metadata, @NonNull Object object, @NonNull String key, @NonNull File file) throws Exception {
@@ -229,26 +226,26 @@ public class DiskStorageProvider implements StorageProvider {
         }
 
         DiskStorageMetadata metadata = null;
-        Serializer serializer = null;
+        Codec codec = null;
         File metadataFile = getKeyMetadataFile(key);
 
         if (metadataFile.exists()) {
             try {
                 metadata = DiskStorageMetadata.load(metadataFile);
-                serializer = getSerializer(metadata.getEntryClass());
+                codec = getSerializer(metadata.getEntryClass());
 
             } catch (Exception e) {
-                serializer = defaultSerializer;
+                codec = defaultCodec;
             }
         } else {
-            serializer = defaultSerializer;
+            codec = defaultCodec;
         }
 
-        if (serializer == null) {
+        if (codec == null) {
             throw new Exception("Serializer is null");
         }
 
-        entry = new DiskStorageEntry(file, null, metadata, serializer);
+        entry = new DiskStorageEntry(file, null, metadata, codec);
         return entry;
     }
 
@@ -337,12 +334,12 @@ public class DiskStorageProvider implements StorageProvider {
 
     //// Setter
 
-    public void setSerializer(@NonNull  Serializer serializer, @NonNull Class cl) {
-        serializerMap.put(cl, serializer);
+    public void setSerializer(@NonNull Codec codec, @NonNull Class cl) {
+        serializerMap.put(cl, codec);
     }
 
-    public void setDefaultSerializer(@NonNull Serializer defaultSerializer) {
-        this.defaultSerializer = defaultSerializer;
+    public void setDefaultCodec(@NonNull Codec defaultCodec) {
+        this.defaultCodec = defaultCodec;
     }
 
     //// Getter

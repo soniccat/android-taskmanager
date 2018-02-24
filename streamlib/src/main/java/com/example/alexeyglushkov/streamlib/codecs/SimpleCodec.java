@@ -1,8 +1,8 @@
-package com.example.alexeyglushkov.streamlib.serializers;
+package com.example.alexeyglushkov.streamlib.codecs;
 
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
-import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
-import com.example.alexeyglushkov.streamlib.readersandwriters.OutputStreamWriter;
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStreamDataReader;
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.OutputStreamDataWriter;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -12,25 +12,23 @@ import java.io.OutputStream;
 /**
  * Created by alexeyglushkov on 04.10.15.
  */
-public class SimpleSerializer implements Serializer {
-    @NonNull private OutputStreamWriter writer;
-    @NonNull private InputStreamReader reader;
+public class SimpleCodec implements Codec {
+    @NonNull private OutputStreamDataWriter writer;
+    @NonNull private InputStreamDataReader reader;
 
-    public SimpleSerializer(@NonNull OutputStreamWriter writer, @NonNull InputStreamReader reader) {
+    public SimpleCodec(@NonNull OutputStreamDataWriter writer, @NonNull InputStreamDataReader reader) {
         this.writer = writer;
         this.reader = reader;
     }
 
     @Override
-    public @NonNull
-    void beginRead(@NonNull InputStream stream) throws Exception {
-        return reader.beginRead(stream);
+    public void beginRead(@NonNull InputStream stream) throws Exception {
+        reader.beginRead(stream);
     }
 
     @Override
-    public @NonNull
-    void beginWrite(@NonNull OutputStream stream) throws Exception {
-        return writer.beginWrite(stream);
+    public void beginWrite(@NonNull OutputStream stream) throws Exception {
+        writer.beginWrite(stream);
     }
 
     @Override

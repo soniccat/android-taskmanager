@@ -6,22 +6,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import android.content.Context;
 
-import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStreamDataReader;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 
 public class FileLoadTask extends SimpleTask {
     protected String fileName;
-    protected InputStreamReader handler;
+    protected InputStreamDataReader handler;
     protected Context context;
 
-    public FileLoadTask(String fileName, InputStreamReader dataHandler, Context context) {
+    public FileLoadTask(String fileName, InputStreamDataReader dataHandler, Context context) {
         super();
         this.context = context;
         this.fileName = fileName;
         this.handler = dataHandler;
     }
 
-    public void setHandler(InputStreamReader handler) {
+    public void setHandler(InputStreamDataReader handler) {
         this.handler = handler;
     }
 

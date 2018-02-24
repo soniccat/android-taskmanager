@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import com.example.alexeyglushkov.quizletservice.deserializers.QuizletTermDeserializer;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
-import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReader;
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStreamDataReader;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -16,7 +16,7 @@ import java.io.InputStream;
 /**
  * Created by alexeyglushkov on 08.05.16.
  */
-public class CourseReader implements InputStreamReader {
+public class CourseReader implements InputStreamDataReader {
 
     @Override
     public void beginRead(@NonNull InputStream stream) {

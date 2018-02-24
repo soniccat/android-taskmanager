@@ -39,7 +39,7 @@ import java.util.UUID;
 import com.example.alexeyglushkov.wordteacher.authorization.AuthActivityProxy;
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder;
 import com.example.alexeyglushkov.wordteacher.model.CourseMerger;
-import com.example.alexeyglushkov.wordteacher.model.CourseSerializer;
+import com.example.alexeyglushkov.wordteacher.model.CourseCodec;
 import com.example.alexeyglushkov.cachemanager.preference.PreferenceStorageProvider;
 
 public class MainApplication extends Application {
@@ -143,7 +143,7 @@ public class MainApplication extends Application {
             UUID outFileName = UUID.randomUUID();
             outFile = File.createTempFile(outFileName.toString(), "", getCacheDir());
 
-            FileMerger fileMerger = new FileObjectMerger(new CourseSerializer(), new CourseMerger(), outFile);
+            FileMerger fileMerger = new FileObjectMerger(new CourseCodec(), new CourseMerger(), outFile);
             DropboxFileMerger merger = new DropboxFileMerger(dropboxService.getApi(), tmpDir, fileMerger);
 
             merger.merge(localFile, dropboxEntry, completion);
