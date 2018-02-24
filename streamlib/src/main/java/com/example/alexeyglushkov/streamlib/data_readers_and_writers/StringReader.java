@@ -9,7 +9,6 @@ import com.example.alexeyglushkov.streamlib.handlers.StringHandler;
  * Created by alexeyglushkov on 01.02.15.
  */
 
-// TODO: write tests for that
 public class StringReader extends ByteArrayReader {
 
     public StringReader(StringHandler handler) {
