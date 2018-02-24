@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.example.alexeyglushkov.cachemanager.StorageMetadata;
 import com.example.alexeyglushkov.cachemanager.disk.serializer.DiskMetadataSerializer;
+import com.example.alexeyglushkov.streamlib.readersandwriters.InputStreamReaders;
 import com.example.alexeyglushkov.streamlib.serializers.Serializer;
 
 import java.io.BufferedInputStream;
@@ -59,7 +60,8 @@ public class DiskStorageMetadata implements StorageMetadata
         try {
             fis = new BufferedInputStream(new FileInputStream(file));
             Serializer serializer = createSerializer();
-            result = (DiskStorageMetadata)serializer.read(fis);
+
+            result = (DiskStorageMetadata)InputStreamReaders.readOnce(serializer, fis);
             result.setFile(file);
 
         } finally {

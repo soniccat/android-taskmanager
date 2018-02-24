@@ -83,7 +83,7 @@ public class HttpCacheableTransport extends HttpBytesTransport {
     private boolean handleCacheContent() throws Exception {
         boolean isLoaded = false;
 
-        if (cache != null && applyCacheContent()) {
+        if (cache != null && applyCacheContent(cache)) {
             isLoaded = true;
 
         } else if (cacheMode == CacheMode.ONLY_LOAD_FROM_CACHE) {
