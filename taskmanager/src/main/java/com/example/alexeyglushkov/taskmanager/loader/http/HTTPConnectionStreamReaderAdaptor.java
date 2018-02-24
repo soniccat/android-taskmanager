@@ -23,8 +23,13 @@ public class HTTPConnectionStreamReaderAdaptor implements HTTPConnectionStreamRe
     }
 
     @Override
-    public void beginRead(@NonNull InputStream stream) {
-        return stream;
+    public void beginRead(@NonNull InputStream stream) throws Exception {
+        reader.beginRead(stream);
+    }
+
+    @Override
+    public void closeRead() throws Exception {
+        reader.closeRead();
     }
 
     @Override

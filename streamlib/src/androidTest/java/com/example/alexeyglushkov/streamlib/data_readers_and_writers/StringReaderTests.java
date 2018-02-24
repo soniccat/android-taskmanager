@@ -58,7 +58,7 @@ public class StringReaderTests {
     }
 
     @Test
-    public void testReadTextFile() throws Exception {
+    public void testReadString() throws Exception {
         // Arrange
         reader = new StringReader(null);
 
@@ -81,6 +81,6 @@ public class StringReaderTests {
     private String getFilePath() {
         Context appContext = InstrumentationRegistry.getTargetContext();
         File testDir = appContext.getDir("StringReaderTestsDir", Context.MODE_PRIVATE);
-        return testDir + "/testReadTextFile";
+        return testDir + "/testReadString";
     }
 }

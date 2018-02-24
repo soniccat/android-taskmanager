@@ -179,7 +179,7 @@ public class HttpTaskTransport implements TaskTransport {
             String errorString = "";
             InputStream errorStream = connection.getErrorStream();
             if (errorStream != null) {
-                errorReader.readStreamToString(errorStream);
+                errorString = (String) InputStreamDataReaders.readOnce(errorReader, errorStream);
             }
 
             result = "HttpLoadTask load error, url " + connection.getURL() + " code: " + connection.getResponseCode() + " message: " + connection.getResponseMessage() + " response " + errorString;
