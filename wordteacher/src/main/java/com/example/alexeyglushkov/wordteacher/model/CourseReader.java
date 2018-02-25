@@ -6,10 +6,12 @@ import com.example.alexeyglushkov.quizletservice.deserializers.QuizletTermDeseri
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStreamDataReader;
+import com.example.alexeyglushkov.tools.ExceptionTools;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -18,13 +20,24 @@ import java.io.InputStream;
  */
 public class CourseReader implements InputStreamDataReader {
 
+    private InputStream stream;
+
     @Override
     public void beginRead(@NonNull InputStream stream) {
-        return stream;
+        ExceptionTools.throwIfNull(stream, "CourseReader.beginRead: stream is null");
+        this.stream = new BufferedInputStream(stream);
+    }
+
+    @Override
+    public void closeRead() throws Exception {
+        ExceptionTools.throwIfNull(stream, "CourseReader.closeRead: stream is null");
+        stream.close();
     }
 
     @Override
     public Object read() throws IOException {
+        ExceptionTools.throwIfNull(stream, "CourseReader.read: stream is null");
+
         //StringReader reader = new StringReader(null);
         //String str = (String)reader.read(data);
 
@@ -38,7 +51,7 @@ public class CourseReader implements InputStreamDataReader {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(md);
 
-        result = mapper.readValue(data, Course.class);
+        result = mapper.readValue(stream, Course.class);
 
         return result;
     }

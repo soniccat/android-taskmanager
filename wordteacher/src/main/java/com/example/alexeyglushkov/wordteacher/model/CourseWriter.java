@@ -1,8 +1,11 @@
 package com.example.alexeyglushkov.wordteacher.model;
 
+import android.support.annotation.NonNull;
+
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.OutputStreamDataWriter;
+import com.example.alexeyglushkov.tools.ExceptionTools;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 
@@ -13,13 +16,24 @@ import java.io.OutputStream;
  * Created by alexeyglushkov on 08.05.16.
  */
 public class CourseWriter implements OutputStreamDataWriter {
+    private OutputStream stream;
+
     @Override
-    public void beginWrite(OutputStream stream) {
-        return stream;
+    public void beginWrite(@NonNull OutputStream stream) {
+        ExceptionTools.throwIfNull(stream, "CourseWriter.beginWrite: stream is null");
+        this.stream = stream;
     }
 
     @Override
-    public void write(Object object) throws Exception {
+    public void closeWrite() throws Exception {
+        ExceptionTools.throwIfNull(stream, "CourseWriter.closeWrite: stream is null");
+        stream.close();
+    }
+
+    @Override
+    public void write(@NonNull Object object) throws Exception {
+        ExceptionTools.throwIfNull(stream, "CourseWriter.write: stream is null");
+
         Course course = (Course)object;
 
         JsonFactory f = new JsonFactory();
@@ -84,7 +98,7 @@ public class CourseWriter implements OutputStreamDataWriter {
     }
 
     @Override
-    public void setProgressUpdater(ProgressUpdater progressUpdater) {
+    public void setProgressUpdater(@NonNull ProgressUpdater progressUpdater) {
 
     }
 }
