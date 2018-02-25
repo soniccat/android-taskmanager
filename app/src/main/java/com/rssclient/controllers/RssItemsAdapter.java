@@ -15,6 +15,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.content.ContextCompat;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -78,7 +79,7 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> {
         final ViewHolder holder = (ViewHolder) convertView.getTag();
 
         RssItem item = values.get(position);
-        holder.text.setText(item.title());
+        holder.text.setText(position + ". " + item.title());
         holder.position = position;
 
         if (item.image() != null) {
@@ -86,6 +87,7 @@ public class RssItemsAdapter extends ArrayAdapter<RssItem> {
             loadImage(convertView, item);
         } else {
             holder.progressBar.setVisibility(View.INVISIBLE);
+            holder.imageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_launcher));
         }
 
         return convertView;

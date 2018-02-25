@@ -248,7 +248,7 @@ public class RssItemsActivity extends AppCompatActivity implements RssItemsAdapt
         Image image = item.image();
 
         //the position is used as a part of task id to handle the same images right
-        Task task = ImageLoader.loadImage(taskProvider.getHandler(), image, Integer.toString(position), getLoadImageCallback(item, this));
+        Task task = ImageLoader.loadImage(taskProvider.getHandler(), image, "_" + Integer.toString(position) + "_", getLoadImageCallback(item, this));
 
         Range<Integer> range = getVisibleRange();
         task.setTaskType(position%2 + 1);
