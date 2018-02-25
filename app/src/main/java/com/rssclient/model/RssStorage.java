@@ -13,6 +13,7 @@ import android.os.Parcelable;
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.ByteArrayReader;
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStreamDataReader;
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.ObjectReader;
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.ObjectWriter;
 import com.example.alexeyglushkov.taskmanager.file.FileKeepTask;
 import com.example.alexeyglushkov.taskmanager.loader.file.FileLoadTask;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionStreamReader;
@@ -72,7 +73,7 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
 
     public void keep(TaskManager taskManager, Context context, final RssStorageCallback callback) {
         final RssStorage storage = this;
-        final FileKeepTask keepTask = new FileKeepTask(getFileName(), new ObjectWriter(storage), context);
+        final FileKeepTask keepTask = new FileKeepTask(getFileName(), new ObjectWriter(null), storage, context);
         keepTask.setTaskCallback(new Task.Callback() {
             @Override
             public void onCompleted(boolean cancelled) {

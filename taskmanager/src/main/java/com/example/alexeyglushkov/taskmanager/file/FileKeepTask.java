@@ -2,23 +2,26 @@ package com.example.alexeyglushkov.taskmanager.file;
 
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 
 import android.content.Context;
 
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.OutputStreamDataWriter;
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.OutputStreamDataWriters;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 
 public class FileKeepTask extends SimpleTask {
-    Context context;
+    private Context context;
+    private String fileName;
+    private OutputStreamDataWriter writer;
+    private Object data;
 
-    //TODO: think about path
-    String fileName;
-    OutputStreamWriter writer;
-
-    public FileKeepTask(String fileName, OutputStreamWriter writer, Context context) {
+    public FileKeepTask(String fileName, OutputStreamDataWriter writer, Object data, Context context) {
         super();
         this.context = context;
         this.fileName = fileName;
         this.writer = writer;
+        this.data = data;
     }
 
     public void startTask(Callback callback) {
@@ -28,27 +31,15 @@ public class FileKeepTask extends SimpleTask {
             String name = this.fileName;
             FileOutputStream fos = null;
 
-            BufferedOutputStream bufferedStream = null;
-
             try {
-                // TODO: use OutputStreamWriters.writeOnce
-                // TODO: create FileWriter
                 fos = this.context.openFileOutput(name, Context.MODE_PRIVATE);
-                bufferedStream = new BufferedOutputStream(fos);
-                getPrivate().setTaskError(writer.writeToStream(bufferedStream));
+                OutputStreamDataWriters.writeOnce(writer, fos, data);
 
             } catch (Exception e) {
                 e.printStackTrace();
                 getPrivate().setTaskError(new Error("FileKeepTask exception: " + e.getMessage()));
 
             } finally {
-                try {
-                    if (bufferedStream != null) {
-                        bufferedStream.close();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
             }
         } else {
             getPrivate().setTaskError(new Error("Context is null"));

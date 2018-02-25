@@ -15,10 +15,6 @@ public class StringReader extends ByteArrayReader {
         super(createByteArrayHandler(handler), false);
     }
 
-    public StringReader(StringHandler handler, ProgressUpdater progressUpdater) {
-        super(createByteArrayHandler(handler), progressUpdater);
-    }
-
     private static ByteArrayHandler createByteArrayHandler(StringHandler handler) {
         return new BytesStringConverter(handler);
     }

@@ -28,11 +28,6 @@ public class ByteArrayReader implements InputStreamDataReader {
         this.keepByteArray = keepByteArray;
     }
 
-    public ByteArrayReader(ByteArrayHandler handler, ProgressUpdater progressUpdater) {
-        this(handler);
-        this.progressUpdater = progressUpdater;
-    }
-
     public ByteArrayReader(ByteArrayHandler handler) {
         this.byteArrayHandler = handler;
     }
@@ -91,20 +86,8 @@ public class ByteArrayReader implements InputStreamDataReader {
         return result.toByteArray();
     }
 
-    public ByteArrayHandler getByteArrayHandler() {
-        return byteArrayHandler;
-    }
-
-    public void setByteArrayHandler(ByteArrayHandler byteArrayHandler) {
-        this.byteArrayHandler = byteArrayHandler;
-    }
-
     public byte[] getByteArray() {
         return byteArray;
-    }
-
-    public ProgressUpdater getProgressUpdater() {
-        return progressUpdater;
     }
 
     public void setProgressUpdater(@NonNull  ProgressUpdater progressUpdater) {

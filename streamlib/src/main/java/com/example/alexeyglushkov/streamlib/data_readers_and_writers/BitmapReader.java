@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 import com.example.alexeyglushkov.tools.ExceptionTools;
 
+import java.io.BufferedInputStream;
 import java.io.InputStream;
 
 /**
@@ -18,7 +19,7 @@ public class BitmapReader implements InputStreamDataReader {
     @Override
     public void beginRead(@NonNull InputStream stream) {
         ExceptionTools.throwIfNull(stream, "BitmapReader.beginRead: stream is null");
-        this.stream = stream;
+        this.stream = new BufferedInputStream(stream);
     }
 
     @Override

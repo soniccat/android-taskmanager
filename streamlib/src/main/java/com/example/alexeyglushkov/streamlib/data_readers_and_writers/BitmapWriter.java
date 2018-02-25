@@ -7,6 +7,8 @@ import android.support.annotation.Nullable;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 import com.example.alexeyglushkov.tools.ExceptionTools;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.OutputStream;
 
 /**
@@ -25,7 +27,7 @@ public class BitmapWriter implements OutputStreamDataWriter {
     @Override
     public void beginWrite(@NonNull OutputStream stream) {
         ExceptionTools.throwIfNull(stream, "BitmapWriter.beginWrite: stream is null");
-        this.stream = stream;
+        this.stream = new BufferedOutputStream(stream);
     }
 
     @Override
