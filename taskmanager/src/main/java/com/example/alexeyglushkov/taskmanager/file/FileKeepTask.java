@@ -38,8 +38,6 @@ public class FileKeepTask extends SimpleTask {
             } catch (Exception e) {
                 e.printStackTrace();
                 getPrivate().setTaskError(new Error("FileKeepTask exception: " + e.getMessage()));
-
-            } finally {
             }
         } else {
             getPrivate().setTaskError(new Error("Context is null"));
