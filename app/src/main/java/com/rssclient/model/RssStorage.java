@@ -15,7 +15,7 @@ import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStream
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.ObjectReader;
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.ObjectWriter;
 import com.example.alexeyglushkov.taskmanager.file.FileKeepTask;
-import com.example.alexeyglushkov.taskmanager.loader.file.FileLoadTask;
+import com.example.alexeyglushkov.taskmanager.file.FileLoadTask;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionStreamReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionStreamReaderAdaptor;
 import com.example.alexeyglushkov.taskmanager.loader.http.TransportTask;

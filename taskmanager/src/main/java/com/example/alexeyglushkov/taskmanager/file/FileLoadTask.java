@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.taskmanager.loader.file;
+package com.example.alexeyglushkov.taskmanager.file;
 
 import java.io.BufferedInputStream;
 import java.io.File;

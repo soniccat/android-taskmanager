@@ -10,8 +10,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.ObjectReader;
+import com.example.alexeyglushkov.streamlib.data_readers_and_writers.ObjectWriter;
 import com.example.alexeyglushkov.taskmanager.file.FileKeepTask;
-import com.example.alexeyglushkov.taskmanager.loader.file.FileLoadTask;
+import com.example.alexeyglushkov.taskmanager.file.FileLoadTask;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManagerSnapshot;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
@@ -175,7 +176,7 @@ public class PlaygroundActivity extends AppCompatActivity implements TaskManager
 
     private void storeConfigList(List<TestTaskConfig> configList) {
         List<TestTaskConfig> listCopy = new ArrayList<TestTaskConfig>(configList);
-        taskManager.addTask(new FileKeepTask(CONFIGS_FILE_NAME, new ObjectWriter(listCopy), this));
+        taskManager.addTask(new FileKeepTask(CONFIGS_FILE_NAME, new ObjectWriter(null), listCopy, this));
     }
 
     private void loadConfigList(final LoadTaskConfigCallback callback) {
