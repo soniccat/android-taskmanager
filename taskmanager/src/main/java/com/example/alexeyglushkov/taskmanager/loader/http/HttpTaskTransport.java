@@ -51,7 +51,6 @@ public class HttpTaskTransport implements TaskTransport {
 
     @Override
     public void start() {
-        InputStream stream = null;
         HttpURLConnection connection = provider.getUrlConnection();
 
         try {
@@ -65,8 +64,8 @@ public class HttpTaskTransport implements TaskTransport {
             responseCode = connection.getResponseCode();
             Log.d("HttpLoadTask", "HttpLoadingContext: The response is: " + responseCode + "\n");
 
-            synchronized (this) {
-                progressUpdater = listener != null ? listener.getProgressUpdater(this, getContentLength()) : null;
+            progressUpdater = listener != null ? listener.getProgressUpdater(this, getContentLength()) : null;
+            if (progressUpdater != null) {
                 streamReader.setProgressUpdater(progressUpdater);
             }
 
@@ -76,7 +75,7 @@ public class HttpTaskTransport implements TaskTransport {
             } else {
                 streamReader.handleConnectionResponse(connection);
 
-                stream = new BufferedInputStream(connection.getInputStream());
+                InputStream stream = connection.getInputStream();
                 Object data = handleStream(stream);
 
                 if (listener == null || listener.needCancel(this)) {
@@ -98,13 +97,6 @@ public class HttpTaskTransport implements TaskTransport {
             Log.d("HttpLoadTask", error.toString());
 
         } finally {
-            try {
-                if (stream != null) {
-                    stream.close();
-                }
-            } catch (IOException ex) {
-            }
-
             connection.disconnect();
         }
     }
@@ -115,7 +107,7 @@ public class HttpTaskTransport implements TaskTransport {
 
     @Override
     public void cancel() {
-        // it seems nothing to do here
+        progressUpdater = null;
     }
 
     //// Setters / Getters
@@ -148,6 +140,12 @@ public class HttpTaskTransport implements TaskTransport {
     }
 
     // Getters
+
+
+    @Override
+    public ProgressUpdater getProgressUpdater() {
+        return progressUpdater;
+    }
 
     public InputStreamDataReader getStreamReader() {
         return streamReader;

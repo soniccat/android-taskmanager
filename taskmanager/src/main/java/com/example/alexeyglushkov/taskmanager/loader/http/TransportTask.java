@@ -14,7 +14,6 @@ public class TransportTask extends SimpleTask implements TaskTransport.Listener 
     protected Object handledData; // TODO: use result object and api
 
     private TaskTransport transport;
-    protected ProgressUpdater progressUpdater;
 
     protected TransportTask() {
         super();
@@ -90,20 +89,16 @@ public class TransportTask extends SimpleTask implements TaskTransport.Listener 
         transport.setListener(null);
         transport = null;
         handledData = null;
-        progressUpdater = null;
     }
 
     @Override
     public void cancelTask(Object info) {
-        if (progressUpdater != null) {
-            synchronized (this) {
-                ProgressUpdater updater = progressUpdater;
-                progressUpdater = null;
+        ProgressUpdater progressUpdater = transport.getProgressUpdater();
 
-                updater.cancel(info); // that calls this methods again
-            }
-        } else {
+        if (progressUpdater != null) {
             transport.cancel();
+            progressUpdater.cancel(info); // cancel will call this method again
+        } else {
             super.cancelTask(info);
         }
     }

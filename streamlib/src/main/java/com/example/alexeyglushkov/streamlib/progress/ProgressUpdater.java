@@ -41,8 +41,10 @@ public class ProgressUpdater implements ProgressInfo {
         if (progressMinChange == 0 || currentValue == contentSize || isSignificantChange) {
             lastTriggeredValue = currentValue;
 
-            if (this.listener != null) {
-                this.listener.onProgressUpdated(this);
+            synchronized (this) {
+                if (this.listener != null) {
+                    this.listener.onProgressUpdated(this);
+                }
             }
         }
     }
@@ -50,16 +52,23 @@ public class ProgressUpdater implements ProgressInfo {
     public void cancel(Object info) {
         isCancelled = true;
 
-        if (this.listener != null) {
-            this.listener.onProgressCancelled(this, info);
+        // cancel could be called from the thread of a task manager
+        // finish and append are called from the thread of a task
+        synchronized (this) {
+            if (this.listener != null) {
+                this.listener.onProgressCancelled(this, info);
+                this.listener = null;
+            }
         }
     }
 
     public void finish() {
         isFinished = true;
 
-        if (this.listener != null) {
-            this.listener.onProgressUpdated(this);
+        synchronized (this) {
+            if (this.listener != null) {
+                this.listener.onProgressUpdated(this);
+            }
         }
     }
 

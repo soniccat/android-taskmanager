@@ -14,6 +14,7 @@ public interface TaskTransport {
     void cancel();
     Listener getListener();
     void setListener(Listener listener);
+    ProgressUpdater getProgressUpdater();
 
     Object getData();
     Error getError();
