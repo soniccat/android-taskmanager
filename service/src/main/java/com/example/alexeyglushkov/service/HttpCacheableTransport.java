@@ -4,22 +4,16 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.example.alexeyglushkov.cachemanager.StorageMetadata;
-import com.example.alexeyglushkov.cachemanager.StorageProvider;
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStreamDataReaders;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionBytesReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpBytesTransport;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpURLConnectionProvider;
-import com.example.alexeyglushkov.tools.TimeTools;
 
 import java.io.ByteArrayInputStream;
 
 /**
  * Created by alexeyglushkov on 26.11.15.
  */
-// TODO: Think about an universal cache task, could be a decorator probably
-// TODO: try to create a TaskTransportDecorator
-// or a decorator for TaskProvider
 public class HttpCacheableTransport extends HttpBytesTransport {
     private static final String TAG = "CHLT";
 

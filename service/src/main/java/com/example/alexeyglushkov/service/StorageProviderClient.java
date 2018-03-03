@@ -22,12 +22,28 @@ public class StorageProviderClient {
     private CacheMode cacheMode = CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD;
     private @NonNull StorageProvider cache;
     private boolean deleteIfExpired = true;
+    private long defaultDuration;
 
     public StorageProviderClient(@NonNull StorageProvider cache) {
         this.cache = cache;
     }
 
     //// Actions
+
+    public void putValue(String key, Object value) throws Exception {
+        putValue(key, value, defaultDuration);
+    }
+
+    public void putValue(String key, Object value, long duration) throws Exception {
+        StorageMetadata metadata = cache.createMetadata();
+
+        if (duration != 0) {
+            long expireTime = TimeTools.currentTimeSeconds() + duration;
+            metadata.setExpireTime(expireTime);
+        }
+
+        cache.put(key, value, metadata);
+    }
 
     public @Nullable Object getCachedValue(String cacheKey) throws Exception {
         StorageMetadata metadata = cache.getMetadata(cacheKey);
@@ -42,17 +58,6 @@ public class StorageProviderClient {
             }
         }
         return result;
-    }
-
-    public void putValue(String key, Object value, long duration) throws Exception {
-        StorageMetadata metadata = cache.createMetadata();
-
-        if (duration != 0) {
-            long expireTime = TimeTools.currentTimeSeconds() + duration;
-            metadata.setExpireTime(expireTime);
-        }
-
-        cache.put(key, value, metadata);
     }
 
     //// Inner classes
@@ -80,6 +85,9 @@ public class StorageProviderClient {
         this.cacheMode = cacheMode;
     }
 
+    public void setDefaultDuration(long defaultDuration) {
+        this.defaultDuration = defaultDuration;
+    }
 
     // Getters
 
