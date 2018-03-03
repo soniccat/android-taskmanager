@@ -19,7 +19,7 @@ import java.io.ByteArrayInputStream;
  */
 // TODO: Think about an universal cache task, could be a decorator probably
 // TODO: try to create a TaskTransportDecorator
-    // or a decorator for TaskProvider
+// or a decorator for TaskProvider
 public class HttpCacheableTransport extends HttpBytesTransport {
     private static final String TAG = "CHLT";
 
@@ -100,10 +100,8 @@ public class HttpCacheableTransport extends HttpBytesTransport {
         byte[] bytes = getCachedBytes(cache);
 
         if (bytes != null) {
-            Object result = InputStreamDataReaders.readOnce(byteArrayReader ,new ByteArrayInputStream(bytes));
+            Object result = InputStreamDataReaders.readOnce(byteArrayReader, new ByteArrayInputStream(bytes));
 
-            //TODO: think to call base menthod which wrap calling this two
-            // now in base class something could be inserted after setHandleData and won't be called here
             setData(result);
             isApplied = true;
         }
