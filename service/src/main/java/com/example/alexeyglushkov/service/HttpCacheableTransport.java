@@ -10,6 +10,7 @@ import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStream
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionBytesReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpBytesTransport;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpURLConnectionProvider;
+import com.example.alexeyglushkov.tools.TimeTools;
 
 import java.io.ByteArrayInputStream;
 
@@ -139,8 +140,7 @@ public class HttpCacheableTransport extends HttpBytesTransport {
             StorageMetadata metadata = cache.createMetadata();
 
             if (cacheStoreDuration() != 0) {
-                // TODO: create a separate tools lib
-                long expireTime = System.currentTimeMillis() / 1000L + cacheStoreDuration();
+                long expireTime = TimeTools.currentTimeSeconds() + cacheStoreDuration();
                 metadata.setExpireTime(expireTime);
             }
 

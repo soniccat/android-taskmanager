@@ -8,6 +8,7 @@ import com.example.alexeyglushkov.cachemanager.disk.serializer.DiskMetadataCodec
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStreamDataReaders;
 import com.example.alexeyglushkov.streamlib.codecs.Codec;
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.OutputStreamDataWriters;
+import com.example.alexeyglushkov.tools.TimeTools;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -86,8 +87,7 @@ public class DiskStorageMetadata implements StorageMetadata
 
     @Override
     public boolean isExpired() {
-        long currentTime = System.currentTimeMillis() / 1000L;
-        boolean isExpired = hasExpireTime() && currentTime >= getExpireTime();
+        boolean isExpired = hasExpireTime() && TimeTools.currentTimeSeconds() >= getExpireTime();
         return isExpired;
     }
 

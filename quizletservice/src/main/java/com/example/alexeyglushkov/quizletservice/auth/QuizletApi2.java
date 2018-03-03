@@ -13,6 +13,7 @@ import com.example.alexeyglushkov.authorization.Tools.JsonTokenExtractor;
 import com.example.alexeyglushkov.authorization.Tools.TokenExtractor;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
 import com.example.alexeyglushkov.authorization.requestbuilder.Verb;
+import com.example.alexeyglushkov.tools.TimeTools;
 
 import junit.framework.Assert;
 
@@ -93,8 +94,7 @@ public class QuizletApi2 extends DefaultApi20 {
         credentials.setScopes(scope.split(" "));
 
         int expiresIn = jsonObject.getInt("expires_in");
-        long currentTime = System.currentTimeMillis() / 1000L;
-        credentials.setExpireTime(currentTime + expiresIn);
+        credentials.setExpireTime(TimeTools.currentTimeSeconds() + expiresIn);
         return credentials;
     }
 

@@ -32,4 +32,8 @@ public final class TimeTools {
 
         return sb.toString();
     }
+
+    public static long currentTimeSeconds() {
+        return System.currentTimeMillis() / 1000L;
+    }
 }

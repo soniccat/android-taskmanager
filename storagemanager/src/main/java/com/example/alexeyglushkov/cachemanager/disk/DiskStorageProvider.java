@@ -7,6 +7,7 @@ import com.example.alexeyglushkov.cachemanager.StorageMetadata;
 import com.example.alexeyglushkov.cachemanager.StorageProvider;
 import com.example.alexeyglushkov.streamlib.codecs.ObjectCodec;
 import com.example.alexeyglushkov.streamlib.codecs.Codec;
+import com.example.alexeyglushkov.tools.TimeTools;
 
 import android.support.annotation.Nullable;
 
@@ -159,7 +160,7 @@ public class DiskStorageProvider implements StorageProvider {
 
     private void writeMetadata(@NonNull DiskStorageMetadata metadata, @NonNull Object object, @NonNull String key, @NonNull File file) throws Exception {
         metadata.setFile(getKeyMetadataFile(key));
-        metadata.setCreateTime(System.currentTimeMillis() / 1000L);
+        metadata.setCreateTime(TimeTools.currentTimeSeconds());
         metadata.calculateSize(file);
         metadata.setEntryClass(object.getClass());
         metadata.write();

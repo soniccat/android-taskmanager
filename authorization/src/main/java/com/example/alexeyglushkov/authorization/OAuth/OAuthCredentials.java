@@ -1,6 +1,7 @@
 package com.example.alexeyglushkov.authorization.OAuth;
 
 import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
+import com.example.alexeyglushkov.tools.TimeTools;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,8 +35,7 @@ public class OAuthCredentials implements AuthCredentials, Serializable {
 
     @Override
     public boolean isExpired() {
-        long currentTime = System.currentTimeMillis() / 1000L;
-        return expireTime != 0 && currentTime > expireTime;
+        return expireTime != 0 && TimeTools.currentTimeSeconds() > expireTime;
     }
 
     // Getters / Setters

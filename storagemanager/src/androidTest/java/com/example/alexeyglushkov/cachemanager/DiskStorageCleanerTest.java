@@ -9,6 +9,7 @@ import android.test.InstrumentationTestCase;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageCleaner;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageMetadata;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageProvider;
+import com.example.alexeyglushkov.tools.TimeTools;
 
 import junit.framework.Assert;
 
@@ -56,7 +57,7 @@ public class DiskStorageCleanerTest {
 
     private void createEntry(DiskStorageProvider cacheProvider, String key, String value, long timeOffset) {
         DiskStorageMetadata metadata = new DiskStorageMetadata();
-        metadata.setExpireTime(System.currentTimeMillis() / 1000L + timeOffset);
+        metadata.setExpireTime(TimeTools.currentTimeSeconds() + timeOffset);
 
         Exception ex = null;
         try {
