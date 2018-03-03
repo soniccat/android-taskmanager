@@ -13,9 +13,9 @@ import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
 import com.example.alexeyglushkov.cachemanager.StorageCleaner;
-import com.example.alexeyglushkov.cachemanager.StorageProvider;
+import com.example.alexeyglushkov.cachemanager.Storage;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageCleaner;
-import com.example.alexeyglushkov.cachemanager.disk.DiskStorageProvider;
+import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
 import com.example.alexeyglushkov.tools.ContextProvider;
 import com.example.alexeyglushkov.dropboxservice.DropboxAccount;
 import com.example.alexeyglushkov.dropboxservice.DropboxCommandProvider;
@@ -40,7 +40,7 @@ import com.example.alexeyglushkov.wordteacher.authorization.AuthActivityProxy;
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder;
 import com.example.alexeyglushkov.wordteacher.model.CourseMerger;
 import com.example.alexeyglushkov.wordteacher.model.CourseCodec;
-import com.example.alexeyglushkov.cachemanager.preference.PreferenceStorageProvider;
+import com.example.alexeyglushkov.cachemanager.preference.PreferenceStorage;
 
 public class MainApplication extends Application {
     private @NonNull AccountStore accountStore;
@@ -51,7 +51,8 @@ public class MainApplication extends Application {
     private @NonNull CourseHolder courseHolder;
     private @NonNull TaskManager taskManager;
 
-    private @NonNull StorageProvider storageProvider;
+    private @NonNull
+    Storage storage;
 
     public static @NonNull MainApplication instance;
 
@@ -70,7 +71,7 @@ public class MainApplication extends Application {
         taskManager = new SimpleTaskManager(10);
 
         File cacheDir = getDir("ServiceCache", MODE_PRIVATE);
-        storageProvider = new DiskStorageProvider(cacheDir);
+        storage = new DiskStorage(cacheDir);
 
         cleanCache();
         loadAccountStore();
@@ -125,7 +126,7 @@ public class MainApplication extends Application {
                 super.startTask(callback);
 
                 StorageCleaner cleaner = new DiskStorageCleaner();
-                cleaner.clean(getStorageProvider());
+                cleaner.clean(getStorage());
 
                 getPrivate().handleTaskCompletion(callback);
             }
@@ -162,7 +163,7 @@ public class MainApplication extends Application {
 
     private void createQuizletService() throws Exception {
         Account quizletAccount = Networks.getAccount(Networks.Network.Quizlet);
-        QuizletServiceTaskProvider quizletCommandProvider = new QuizletServiceTaskProvider(getStorageProvider());
+        QuizletServiceTaskProvider quizletCommandProvider = new QuizletServiceTaskProvider(getStorage());
 
         String id = Integer.toString(quizletAccount.getServiceType());
         ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
@@ -178,7 +179,7 @@ public class MainApplication extends Application {
         String id = Integer.toString(dropboxAccount.getServiceType());
         ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
 
-        StorageProvider storage = new PreferenceStorageProvider("DropboxServicePref", getContextProvider());
+        Storage storage = new PreferenceStorage("DropboxServicePref", getContextProvider());
 
         dropboxService = new DropboxService(dropboxAccount, commandProvider, serviceCommandRunner, storage);
         dropboxService.setCallback(new DropboxService.Callback() {
@@ -217,8 +218,9 @@ public class MainApplication extends Application {
         return authWebClient;
     }
 
-    public @NonNull StorageProvider getStorageProvider() {
-        return storageProvider;
+    public @NonNull
+    Storage getStorage() {
+        return storage;
     }
 
     public @NonNull QuizletService getQuizletService() {

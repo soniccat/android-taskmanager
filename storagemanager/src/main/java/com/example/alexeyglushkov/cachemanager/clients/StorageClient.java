@@ -1,31 +1,29 @@
-package com.example.alexeyglushkov.service;
+package com.example.alexeyglushkov.cachemanager.clients;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.example.alexeyglushkov.cachemanager.StorageMetadata;
-import com.example.alexeyglushkov.cachemanager.StorageProvider;
+import com.example.alexeyglushkov.cachemanager.Storage;
 import com.example.alexeyglushkov.tools.TimeTools;
 
 /**
  * Created by alexeyglushkov on 03.03.18.
  */
 
-public class StorageProviderClient {
-    public enum CacheMode {
-        CHECK_CACHE_IF_ERROR_THEN_LOAD,
-        IGNORE_CACHE,
-        ONLY_LOAD_FROM_CACHE,
-        ONLY_STORE_TO_CACHE
-    }
-
+public class StorageClient implements IStorageClient {
     private CacheMode cacheMode = CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD;
-    private @NonNull StorageProvider cache;
+    private @NonNull Storage cache;
     private boolean deleteIfExpired = true;
     private long defaultDuration;
 
-    public StorageProviderClient(@NonNull StorageProvider cache) {
+    public StorageClient(@NonNull Storage cache) {
+        this(cache, 0);
+    }
+
+    public StorageClient(@NonNull Storage cache, long duration) {
         this.cache = cache;
+        this.defaultDuration = duration;
     }
 
     //// Actions
@@ -60,29 +58,16 @@ public class StorageProviderClient {
         return result;
     }
 
-    //// Inner classes
-
-    public static class CacheEmptyError extends Error {
-        private static final long serialVersionUID = -783104001989492147L;
-
-        private String cacheKey;
-
-        public CacheEmptyError(String cacheKey, Throwable throwable) {
-            super("Cache is empty", throwable);
-            this.cacheKey = cacheKey;
-        }
-
-        public String getCacheKey() {
-            return cacheKey;
-        }
-    }
-
     //// Setters / Getters
 
     // Setters
 
     public void setCacheMode(CacheMode cacheMode) {
         this.cacheMode = cacheMode;
+    }
+
+    public void setDeleteIfExpired(boolean deleteIfExpired) {
+        this.deleteIfExpired = deleteIfExpired;
     }
 
     public void setDefaultDuration(long defaultDuration) {
@@ -95,18 +80,8 @@ public class StorageProviderClient {
         return cacheMode;
     }
 
-    public boolean canLoadFromCache() {
-        return cacheMode != CacheMode.IGNORE_CACHE &&
-                cacheMode != CacheMode.ONLY_STORE_TO_CACHE;
-    }
-
-    public boolean canWriteToCache() {
-        return cacheMode != CacheMode.IGNORE_CACHE &&
-                cacheMode != CacheMode.ONLY_LOAD_FROM_CACHE;
-    }
-
     @NonNull
-    public StorageProvider getCache() {
+    public Storage getCache() {
         return cache;
     }
 }

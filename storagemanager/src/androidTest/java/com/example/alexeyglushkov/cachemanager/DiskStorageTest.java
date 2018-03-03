@@ -9,7 +9,7 @@ import android.support.test.rule.UiThreadTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageMetadata;
-import com.example.alexeyglushkov.cachemanager.disk.DiskStorageProvider;
+import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
 import com.example.alexeyglushkov.streamlib.codecs.BitmapCodec;
 
 import junit.framework.Assert;
@@ -26,17 +26,17 @@ import java.io.File;
  * Created by alexeyglushkov on 26.09.15.
  */
 @RunWith(AndroidJUnit4.class)
-public class DiskStorageProviderTest {
+public class DiskStorageTest {
     @Rule
     public UiThreadTestRule rule = new UiThreadTestRule();
 
-    DiskStorageProvider cacheProvider;
+    DiskStorage cacheProvider;
 
     @Before
     public void setUp() throws Exception {
         Context appContext = InstrumentationRegistry.getTargetContext();
         File testDir = appContext.getDir("testDir", Context.MODE_PRIVATE);
-        cacheProvider = new DiskStorageProvider(testDir);
+        cacheProvider = new DiskStorage(testDir);
     }
 
     @After

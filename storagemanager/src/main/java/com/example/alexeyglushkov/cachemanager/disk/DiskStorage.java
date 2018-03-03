@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.example.alexeyglushkov.cachemanager.StorageEntry;
 import com.example.alexeyglushkov.cachemanager.StorageMetadata;
-import com.example.alexeyglushkov.cachemanager.StorageProvider;
+import com.example.alexeyglushkov.cachemanager.Storage;
 import com.example.alexeyglushkov.streamlib.codecs.ObjectCodec;
 import com.example.alexeyglushkov.streamlib.codecs.Codec;
 import com.example.alexeyglushkov.tools.TimeTools;
@@ -28,7 +28,7 @@ import java.util.Set;
  */
 
 // TODO: check synchronization
-public class DiskStorageProvider implements StorageProvider {
+public class DiskStorage implements Storage {
     private static String METADATA_PREFIX = "_metadata";
 
     private @NonNull File directory;
@@ -36,9 +36,10 @@ public class DiskStorageProvider implements StorageProvider {
     Codec defaultCodec = new ObjectCodec();
     private @NonNull Map<Class, Codec> serializerMap = new HashMap<>();
 
+    // TODO: remove WeakReference I think
     private @NonNull Map<String, WeakReference<Object>> lockMap = new HashMap<>();
 
-    public DiskStorageProvider(@NonNull File directory) {
+    public DiskStorage(@NonNull File directory) {
         this.directory = directory;
     }
 
@@ -51,7 +52,7 @@ public class DiskStorageProvider implements StorageProvider {
     private void prepareDirectory() throws Exception {
         if (!directory.exists()) {
             if (!directory.mkdir()) {
-                throw new Exception("DiskStorageProvider.prepareDirectory.mkdir: can't create directory " + directory.getAbsolutePath());
+                throw new Exception("DiskStorage.prepareDirectory.mkdir: can't create directory " + directory.getAbsolutePath());
             }
         }
     }
@@ -149,7 +150,7 @@ public class DiskStorageProvider implements StorageProvider {
     private void createFile(File file) throws IOException {
         boolean isFileCreated = file.createNewFile();
         if (!isFileCreated) {
-            throw new IOException("DiskStorageProvider.write() createNewFile create error");
+            throw new IOException("DiskStorage.write() createNewFile create error");
         }
     }
 
@@ -225,7 +226,7 @@ public class DiskStorageProvider implements StorageProvider {
         File file = getKeyFile(key);
 
         if (!file.exists()) {
-            throw new FileNotFoundException("DiskStorageProvider.getEntryByKey() exists(): file doesn't exist");
+            throw new FileNotFoundException("DiskStorage.getEntryByKey() exists(): file doesn't exist");
         }
 
         DiskStorageMetadata metadata = null;
@@ -329,7 +330,7 @@ public class DiskStorageProvider implements StorageProvider {
 
         if (lastException == null) {
             if (!directory.delete()) {
-                throw new Exception("DiskStorageProvider.removeAll() delete(): remove directory error");
+                throw new Exception("DiskStorage.removeAll() delete(): remove directory error");
             }
         } else {
             throw lastException;

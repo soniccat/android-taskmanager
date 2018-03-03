@@ -19,8 +19,8 @@ import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnection
 import com.example.alexeyglushkov.authtaskmanager.HttpServiceTask;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
-import com.example.alexeyglushkov.cachemanager.StorageProvider;
-import com.example.alexeyglushkov.cachemanager.disk.DiskStorageProvider;
+import com.example.alexeyglushkov.cachemanager.Storage;
+import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.service.HttpCacheableTransport;
 import com.example.alexeyglushkov.service.SimpleService;
@@ -38,7 +38,7 @@ import java.util.List;
 public class MainActivity extends BaseActivity implements QuizletService.QuizletServiceListener {
     private static final String TAG = "MainActivity";
     private SimpleService service;
-    private StorageProvider storageProvider;
+    private Storage storage;
 
     private MainApplication getMainApplication() {
         return (MainApplication)getApplication();
@@ -119,7 +119,7 @@ public class MainActivity extends BaseActivity implements QuizletService.Quizlet
         builder.setUrl("https://api.foursquare.com/v2/users/self?v=20140806&m=foursquare");
 
         final HttpServiceTask cmd = new HttpServiceTask();
-        cmd.setCacheClient(storageProvider);
+        cmd.setCacheClient(storage);
         cmd.setConnectionBuilder(builder);
         cmd.setServiceCommandCallback(new ServiceCommand.CommandCallback() {
             @Override
@@ -148,12 +148,12 @@ public class MainActivity extends BaseActivity implements QuizletService.Quizlet
         service.setServiceCommandProvider(new ServiceTaskProvider());
         service.setServiceCommandRunner(new ServiceTaskRunner(getTaskManager(), "31234"));
 
-        storageProvider = getServiceCache();
+        storage = getServiceCache();
     }
 
-    private StorageProvider getServiceCache() {
+    private Storage getServiceCache() {
         File cacheDir = getDir("ServiceCache", MODE_PRIVATE);
-        return new DiskStorageProvider(cacheDir);
+        return new DiskStorage(cacheDir);
     }
 
     private void clearCache() {

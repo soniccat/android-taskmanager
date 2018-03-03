@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.cachemanager.StorageEntry;
-import com.example.alexeyglushkov.cachemanager.disk.DiskStorageProvider;
+import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by alexeyglushkov on 07.11.15.
  */
-public class AccountCacheStore extends DiskStorageProvider implements AccountStore {
+public class AccountCacheStore extends DiskStorage implements AccountStore {
 
     private boolean isLoaded = false;
     List<Account> accounts = new ArrayList<>();

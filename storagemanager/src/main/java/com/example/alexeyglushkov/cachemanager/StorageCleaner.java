@@ -7,5 +7,5 @@ import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
  */
 public interface StorageCleaner {
     void setProgressInfo(ProgressUpdater info);
-    void clean(StorageProvider provider);
+    void clean(Storage provider);
 }

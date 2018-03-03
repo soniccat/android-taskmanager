@@ -19,7 +19,7 @@ import com.example.alexeyglushkov.tools.HandlerTools;
 public class SimpleService implements Service {
     private Account account;
 
-    // TODO: could be not neccesarry
+    // TODO: could be not necessary
     protected ServiceCommandProvider commandProvider;
     protected ServiceCommandRunner commandRunner;
     protected ServiceCommand.CommandCallback authCompletion;

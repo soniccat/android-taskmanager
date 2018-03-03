@@ -4,11 +4,10 @@ import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.annotation.UiThreadTest;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.InstrumentationTestCase;
 
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageCleaner;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageMetadata;
-import com.example.alexeyglushkov.cachemanager.disk.DiskStorageProvider;
+import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
 import com.example.alexeyglushkov.tools.TimeTools;
 
 import junit.framework.Assert;
@@ -25,13 +24,13 @@ import java.io.File;
  */
 @RunWith(AndroidJUnit4.class)
 public class DiskStorageCleanerTest {
-    DiskStorageProvider cacheProvider;
+    DiskStorage cacheProvider;
 
     @Before
     public void setUp() throws Exception {
         Context appContext = InstrumentationRegistry.getTargetContext();
         File testDir = appContext.getDir("testDir", Context.MODE_PRIVATE);
-        cacheProvider = new DiskStorageProvider(testDir);
+        cacheProvider = new DiskStorage(testDir);
     }
 
     @After
@@ -55,7 +54,7 @@ public class DiskStorageCleanerTest {
         Assert.assertEquals(1, cacheProvider.getEntries().size());
     }
 
-    private void createEntry(DiskStorageProvider cacheProvider, String key, String value, long timeOffset) {
+    private void createEntry(DiskStorage cacheProvider, String key, String value, long timeOffset) {
         DiskStorageMetadata metadata = new DiskStorageMetadata();
         metadata.setExpireTime(TimeTools.currentTimeSeconds() + timeOffset);
 

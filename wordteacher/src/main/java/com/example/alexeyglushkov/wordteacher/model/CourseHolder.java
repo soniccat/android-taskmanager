@@ -5,7 +5,7 @@ import android.support.v4.util.Pair;
 
 import com.example.alexeyglushkov.cachemanager.StorageEntry;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageEntry;
-import com.example.alexeyglushkov.cachemanager.disk.DiskStorageProvider;
+import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.WeakRefList;
@@ -26,7 +26,8 @@ public class CourseHolder {
         Loaded
     }
 
-    private @NonNull DiskStorageProvider diskProvider;
+    private @NonNull
+    DiskStorage diskProvider;
     private @NonNull ArrayList<Course> courses = new ArrayList<>();
     private @NonNull WeakRefList<CourseHolderListener> listeners = new WeakRefList<>();
 
@@ -35,7 +36,7 @@ public class CourseHolder {
     //// Initialization
 
     public CourseHolder(File directory) {
-        diskProvider = new DiskStorageProvider(directory);
+        diskProvider = new DiskStorage(directory);
         diskProvider.setDefaultCodec(new CourseCodec());
     }
 

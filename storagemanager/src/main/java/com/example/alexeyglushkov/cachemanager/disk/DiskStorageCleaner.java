@@ -2,7 +2,7 @@ package com.example.alexeyglushkov.cachemanager.disk;
 
 import com.example.alexeyglushkov.cachemanager.StorageCleaner;
 import com.example.alexeyglushkov.cachemanager.StorageEntry;
-import com.example.alexeyglushkov.cachemanager.StorageProvider;
+import com.example.alexeyglushkov.cachemanager.Storage;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public class DiskStorageCleaner implements StorageCleaner {
     }
 
     @Override
-    public void clean(StorageProvider provider) {
+    public void clean(Storage provider) {
         List<StorageEntry> entries = provider.getEntries();
 
         for (StorageEntry entry : entries) {

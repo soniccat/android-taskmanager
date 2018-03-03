@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 import com.example.alexeyglushkov.cachemanager.StorageEntry;
 import com.example.alexeyglushkov.cachemanager.StorageMetadata;
-import com.example.alexeyglushkov.cachemanager.StorageProvider;
+import com.example.alexeyglushkov.cachemanager.Storage;
 import com.example.alexeyglushkov.tools.ContextProvider;
 
 import java.util.List;
@@ -13,11 +13,11 @@ import java.util.List;
 /**
  * Created by alexeyglushkov on 04.09.16.
  */
-public class PreferenceStorageProvider implements StorageProvider {
+public class PreferenceStorage implements Storage {
     private String name;
     private ContextProvider contextProvider;
 
-    public PreferenceStorageProvider(String name, ContextProvider contextProvider) {
+    public PreferenceStorage(String name, ContextProvider contextProvider) {
         this.name = name;
         this.contextProvider = contextProvider;
     }

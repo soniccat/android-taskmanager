@@ -7,7 +7,7 @@ import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
-import com.example.alexeyglushkov.cachemanager.StorageProvider;
+import com.example.alexeyglushkov.cachemanager.Storage;
 import com.example.alexeyglushkov.service.SimpleService;
 
 import java.io.File;
@@ -21,12 +21,12 @@ public class DropboxService extends SimpleService {
 
     private DropboxCommandProvider commandProvider;
     private DropboxAPI<AndroidAuthSession> api;
-    private StorageProvider storage;
+    private Storage storage;
 
     private long lastSyncDate = 0;
     private Callback callback;
 
-    public DropboxService(DropboxAccount account, DropboxCommandProvider commandProvider, ServiceCommandRunner commandRunner, StorageProvider storage) {
+    public DropboxService(DropboxAccount account, DropboxCommandProvider commandProvider, ServiceCommandRunner commandRunner, Storage storage) {
         setAccount(account);
         this.commandProvider = commandProvider;
         this.storage = storage;

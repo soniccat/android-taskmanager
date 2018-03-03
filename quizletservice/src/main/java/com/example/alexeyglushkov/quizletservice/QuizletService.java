@@ -7,11 +7,10 @@ import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProxy;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthCredentials;
+import com.example.alexeyglushkov.cachemanager.clients.IStorageClient;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
-import com.example.alexeyglushkov.service.HttpCacheableTransport;
 import com.example.alexeyglushkov.service.SimpleService;
-import com.example.alexeyglushkov.service.StorageProviderClient;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 import com.example.alexeyglushkov.taskmanager.task.WeakRefList;
 
@@ -64,7 +63,7 @@ public class QuizletService extends SimpleService {
 
     //// Actions
 
-    public ServiceCommandProxy loadSets(StorageProviderClient.CacheMode cacheMode, ProgressListener progressListener) {
+    public ServiceCommandProxy loadSets(IStorageClient.CacheMode cacheMode, ProgressListener progressListener) {
         ServiceCommand.CommandCallback callback = createLoadCallback(State.Loaded);
         setState(State.Loading);
 
@@ -78,14 +77,14 @@ public class QuizletService extends SimpleService {
         ServiceCommand.CommandCallback callback = createLoadCallback(State.Restored);
         setState(State.Loading);
 
-        ServiceCommandProxy proxy = createSetsCommandProxy(callback, StorageProviderClient.CacheMode.ONLY_LOAD_FROM_CACHE, progressListener);
+        ServiceCommandProxy proxy = createSetsCommandProxy(callback, IStorageClient.CacheMode.ONLY_LOAD_FROM_CACHE, progressListener);
         runCommand(proxy, false, callback);
 
         return proxy;
     }
 
     @NonNull
-    private ServiceCommandProxy createSetsCommandProxy(final ServiceCommand.CommandCallback callback, final StorageProviderClient.CacheMode cacheMode, final ProgressListener progressListener) {
+    private ServiceCommandProxy createSetsCommandProxy(final ServiceCommand.CommandCallback callback, final IStorageClient.CacheMode cacheMode, final ProgressListener progressListener) {
         return new ServiceCommandProxy() {
             private ServiceCommand cmd = null;
 
@@ -106,7 +105,7 @@ public class QuizletService extends SimpleService {
     }
 
     @NonNull
-    private QuizletSetsCommand createSetsCommand(final ServiceCommand.CommandCallback callback, final StorageProviderClient.CacheMode cacheMode, final ProgressListener progressListener) {
+    private QuizletSetsCommand createSetsCommand(final ServiceCommand.CommandCallback callback, final IStorageClient.CacheMode cacheMode, final ProgressListener progressListener) {
         final QuizletSetsCommand command = getQuizletCommandProvider().getLoadSetsCommand(SERVER, getOAuthCredentials().getUserId(), cacheMode, progressListener);
         command.setServiceCommandCallback(new ServiceCommand.CommandCallback() {
             @Override
