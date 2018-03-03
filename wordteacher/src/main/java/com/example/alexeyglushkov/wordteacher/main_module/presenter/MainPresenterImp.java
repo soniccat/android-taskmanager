@@ -77,7 +77,7 @@ public class MainPresenterImp implements
             pagerModule.reload();
         }
 
-        forceLoadSetsIfNeeded();
+        handleRestoreError();
     }
 
     @Override
@@ -199,12 +199,12 @@ public class MainPresenterImp implements
 
     //// Actions
 
-    private void handleLoadedQuizletSets() {
-        forceLoadSetsIfNeeded();
+    private void handleUninitializedQuizletSets() {
+        handleRestoreError();
     }
 
-    private void forceLoadSetsIfNeeded() {
-        if (getQuizletService().getState() == QuizletService.State.Restored) {
+    private void handleRestoreError() {
+        if (getQuizletService().getState() == QuizletService.State.RestoreError) {
             loadQuizletSets();
         }
     }
@@ -293,7 +293,7 @@ public class MainPresenterImp implements
 
     @Override
     public void onStateChanged(QuizletService service, QuizletService.State oldState) {
-        handleLoadedQuizletSets();
+        handleUninitializedQuizletSets();
     }
 
     @Override

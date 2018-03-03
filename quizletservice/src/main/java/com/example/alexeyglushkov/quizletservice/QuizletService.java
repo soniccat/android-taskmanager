@@ -28,6 +28,7 @@ public class QuizletService extends SimpleService {
     public enum State {
         Unitialized,
         Restored,
+        RestoreError,
         Loaded,
         Loading
     }
@@ -64,7 +65,7 @@ public class QuizletService extends SimpleService {
     //// Actions
 
     public ServiceCommandProxy loadSets(IStorageClient.CacheMode cacheMode, ProgressListener progressListener) {
-        ServiceCommand.CommandCallback callback = createLoadCallback(State.Loaded);
+        ServiceCommand.CommandCallback callback = createLoadCallback(State.Loaded, state);
         setState(State.Loading);
 
         ServiceCommandProxy proxy = createSetsCommandProxy(callback, cacheMode, progressListener);
@@ -74,7 +75,7 @@ public class QuizletService extends SimpleService {
     }
 
     public ServiceCommandProxy restore(ProgressListener progressListener) {
-        ServiceCommand.CommandCallback callback = createLoadCallback(State.Restored);
+        ServiceCommand.CommandCallback callback = createLoadCallback(State.Restored, State.RestoreError);
         setState(State.Loading);
 
         ServiceCommandProxy proxy = createSetsCommandProxy(callback, IStorageClient.CacheMode.ONLY_LOAD_FROM_CACHE, progressListener);
@@ -147,8 +148,7 @@ public class QuizletService extends SimpleService {
     //// Creation Methods
 
     @NonNull
-    private ServiceCommand.CommandCallback createLoadCallback(final State successState) {
-        final State oldState = this.state;
+    private ServiceCommand.CommandCallback createLoadCallback(final State successState, final State failState) {
         return new ServiceCommand.CommandCallback() {
             @Override
             public void onCompleted(Error error) {
@@ -156,7 +156,7 @@ public class QuizletService extends SimpleService {
                     setState(successState);
 
                 } else {
-                    setState(oldState);
+                    setState(failState);
                     onSetsLoadError(error);
                 }
             }

@@ -51,7 +51,8 @@ public class HttpCacheableTransport extends HttpBytesTransport {
             }
         }
 
-        if (!isCacheLoaded) {
+        boolean canStartLoading = cacheClient == null || cacheClient.getCacheMode() != IStorageClient.CacheMode.ONLY_LOAD_FROM_CACHE;
+        if (canStartLoading && !isCacheLoaded) {
             needStore = cacheClient != null && StorageClients.canWriteToCache(cacheClient);
             super.start();
         }
