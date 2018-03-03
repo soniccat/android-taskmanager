@@ -15,6 +15,7 @@ import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.service.HttpCacheableTransport;
+import com.example.alexeyglushkov.service.StorageProviderClient;
 import com.example.alexeyglushkov.streamlib.CancelError;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
@@ -210,7 +211,7 @@ public class MainPresenterImp implements
     }
 
     private void loadQuizletSets() {
-        HttpCacheableTransport.CacheMode cacheMode = HttpCacheableTransport.CacheMode.ONLY_STORE_TO_CACHE;
+        StorageProviderClient.CacheMode cacheMode = StorageProviderClient.CacheMode.ONLY_STORE_TO_CACHE;
         final ServiceCommandProxy[] cmdWrapper = new ServiceCommandProxy[1];
 
         ProgressListener progressListener = view.startProgress(new MainView.ProgressCallback() {
