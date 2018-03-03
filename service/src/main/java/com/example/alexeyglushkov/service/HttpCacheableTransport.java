@@ -152,14 +152,6 @@ public class HttpCacheableTransport extends HttpBytesTransport {
         }
     }
 
-//    // TODO: looks strange
-//    @Override
-//    public void setError(Error error) {
-//        if (getData() == null) {
-//            super.setError(error);
-//        }
-//    }
-
     public class CacheEmptyError extends Error {
         private static final long serialVersionUID = -783104001989492147L;
 
