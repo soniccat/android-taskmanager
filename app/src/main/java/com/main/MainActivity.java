@@ -119,7 +119,7 @@ public class MainActivity extends BaseActivity implements QuizletService.Quizlet
         builder.setUrl("https://api.foursquare.com/v2/users/self?v=20140806&m=foursquare");
 
         final HttpServiceTask cmd = new HttpServiceTask();
-        cmd.setCache(storageProvider);
+        cmd.setCacheClient(storageProvider);
         cmd.setConnectionBuilder(builder);
         cmd.setServiceCommandCallback(new ServiceCommand.CommandCallback() {
             @Override

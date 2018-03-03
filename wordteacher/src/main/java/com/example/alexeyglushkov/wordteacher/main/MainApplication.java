@@ -16,6 +16,7 @@ import com.example.alexeyglushkov.cachemanager.StorageCleaner;
 import com.example.alexeyglushkov.cachemanager.StorageProvider;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageCleaner;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageProvider;
+import com.example.alexeyglushkov.service.StorageProviderClient;
 import com.example.alexeyglushkov.tools.ContextProvider;
 import com.example.alexeyglushkov.dropboxservice.DropboxAccount;
 import com.example.alexeyglushkov.dropboxservice.DropboxCommandProvider;
@@ -51,7 +52,7 @@ public class MainApplication extends Application {
     private @NonNull CourseHolder courseHolder;
     private @NonNull TaskManager taskManager;
 
-    private @NonNull StorageProvider storageProvider;
+    private @NonNull StorageProviderClient storageProvider;
 
     public static @NonNull MainApplication instance;
 
@@ -70,7 +71,7 @@ public class MainApplication extends Application {
         taskManager = new SimpleTaskManager(10);
 
         File cacheDir = getDir("ServiceCache", MODE_PRIVATE);
-        storageProvider = new DiskStorageProvider(cacheDir);
+        storageProvider = new StorageProviderClient(new DiskStorageProvider(cacheDir));
 
         cleanCache();
         loadAccountStore();
@@ -218,7 +219,7 @@ public class MainApplication extends Application {
     }
 
     public @NonNull StorageProvider getStorageProvider() {
-        return storageProvider;
+        return storageProvider.getCache();
     }
 
     public @NonNull QuizletService getQuizletService() {

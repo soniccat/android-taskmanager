@@ -23,37 +23,20 @@ import java.io.ByteArrayInputStream;
 public class HttpCacheableTransport extends HttpBytesTransport {
     private static final String TAG = "CHLT";
 
-    public enum CacheMode {
-        CHECK_CACHE_IF_ERROR_THEN_LOAD,
-        IGNORE_CACHE,
-        ONLY_LOAD_FROM_CACHE,
-        ONLY_STORE_TO_CACHE
-    }
-
-    @Nullable private StorageProvider cache;
     private boolean needStore = false;
-    private boolean deleteIfExpired = true;
-    private CacheMode cacheMode = CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD;
+    private @Nullable StorageProviderClient cacheClient;
 
     public HttpCacheableTransport(HttpURLConnectionProvider provider, HTTPConnectionBytesReader handler) {
+        this(provider, handler, null);
+    }
+
+    public HttpCacheableTransport(HttpURLConnectionProvider provider, HTTPConnectionBytesReader handler, StorageProviderClient cacheClient) {
         super(provider, handler);
+        this.cacheClient = cacheClient;
     }
 
-    public HttpCacheableTransport(HttpURLConnectionProvider provider, HTTPConnectionBytesReader handler, StorageProvider cache) {
-        super(provider, handler);
-        this.cache = cache;
-    }
-
-    public void setCache(@NonNull StorageProvider cache) {
-        this.cache = cache;
-    }
-
-    public void setCacheMode(CacheMode cacheMode) {
-        this.cacheMode = cacheMode;
-    }
-
-    public void setDeleteIfExpired(boolean deleteIfExpired) {
-        this.deleteIfExpired = deleteIfExpired;
+    public void setCacheClient(@NonNull StorageProviderClient cacheClient) {
+        this.cacheClient = cacheClient;
     }
 
     protected long cacheStoreDuration() {
@@ -67,7 +50,7 @@ public class HttpCacheableTransport extends HttpBytesTransport {
     @Override
     public void start() {
         boolean isCacheLoaded = false;
-        if (cache != null && canLoadFromCache()) {
+        if (cacheClient != null && cacheClient.canLoadFromCache()) {
             try {
                 isCacheLoaded = handleCacheContent();
             } catch (Exception ex) {
@@ -77,7 +60,7 @@ public class HttpCacheableTransport extends HttpBytesTransport {
         }
 
         if (!isCacheLoaded) {
-            needStore = cacheMode != CacheMode.IGNORE_CACHE;
+            needStore = cacheClient != null && cacheClient.canWriteToCache();
             super.start();
         }
     }
@@ -85,19 +68,19 @@ public class HttpCacheableTransport extends HttpBytesTransport {
     private boolean handleCacheContent() throws Exception {
         boolean isLoaded = false;
 
-        if (cache != null && applyCacheContent(cache)) {
+        if (cacheClient != null && applyCacheContent(cacheClient)) {
             isLoaded = true;
 
-        } else if (cacheMode == CacheMode.ONLY_LOAD_FROM_CACHE) {
-            setError(new CacheEmptyError(getCacheKey(), null));
+        } else if (cacheClient != null && cacheClient.getCacheMode() == StorageProviderClient.CacheMode.ONLY_LOAD_FROM_CACHE) {
+            setError(new StorageProviderClient.CacheEmptyError(getCacheKey(), null));
         }
 
         return isLoaded;
     }
 
-    private boolean applyCacheContent(@NonNull StorageProvider cache) throws Exception {
+    private boolean applyCacheContent(@NonNull StorageProviderClient client) throws Exception {
         boolean isApplied = false;
-        byte[] bytes = getCachedBytes(cache);
+        byte[] bytes = getCachedBytes(client);
 
         if (bytes != null) {
             Object result = InputStreamDataReaders.readOnce(byteArrayReader, new ByteArrayInputStream(bytes));
@@ -109,61 +92,22 @@ public class HttpCacheableTransport extends HttpBytesTransport {
         return isApplied;
     }
 
-    private boolean canLoadFromCache() {
-        return cacheMode != CacheMode.IGNORE_CACHE &&
-                cacheMode != CacheMode.ONLY_STORE_TO_CACHE;
-    }
-
-    private byte[] getCachedBytes(@NonNull StorageProvider cache) throws Exception {
-        String cacheKey = getCacheKey();
-        StorageMetadata metadata = cache.getMetadata(cacheKey);
-
-        byte[] bytes = null;
-        if (metadata != null) {
-            if (deleteIfExpired && metadata.isExpired()) {
-                cache.remove(cacheKey);
-
-            } else {
-                bytes = (byte[]) cache.getValue(cacheKey);
-            }
-        }
-        return bytes;
+    private @Nullable byte[] getCachedBytes(@NonNull StorageProviderClient client) throws Exception {
+        return (byte[])client.getCachedValue(getCacheKey());
     }
 
     @Override
     public void setData(Object handledData) {
         super.setData(handledData);
 
-        if (needStore && cache != null) {
-            StorageMetadata metadata = cache.createMetadata();
-
-            if (cacheStoreDuration() != 0) {
-                long expireTime = TimeTools.currentTimeSeconds() + cacheStoreDuration();
-                metadata.setExpireTime(expireTime);
-            }
-
+        if (needStore && cacheClient != null) {
             try {
-                cache.put(getCacheKey(), byteArrayReader.getByteArray(), metadata);
+                cacheClient.putValue(getCacheKey(), byteArrayReader.getByteArray(), cacheStoreDuration());
 
             } catch (Exception e) {
                 Log.e(TAG, "cache.put exception");
                 e.printStackTrace();
             }
-        }
-    }
-
-    public class CacheEmptyError extends Error {
-        private static final long serialVersionUID = -783104001989492147L;
-
-        private String cacheKey;
-
-        public CacheEmptyError(String cacheKey, Throwable throwable) {
-            super("Cache is empty", throwable);
-            this.cacheKey = cacheKey;
-        }
-
-        public String getCacheKey() {
-            return cacheKey;
         }
     }
 }

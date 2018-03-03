@@ -176,6 +176,7 @@ public class DiskStorageProvider implements StorageProvider {
             try {
                 result = entry.getObject();
             } catch (Exception e) {
+                // TODO: throw exception outside
                 e.printStackTrace();
             }
         }
@@ -210,6 +211,7 @@ public class DiskStorageProvider implements StorageProvider {
             try {
                 entry = getEntryByKey(key);
             } catch (Exception e) {
+                // TODO: throw exception outside
                 e.printStackTrace();
             }
         }
@@ -283,6 +285,7 @@ public class DiskStorageProvider implements StorageProvider {
                             entries.add(entry);
 
                         } catch (Exception e) {
+                            // TODO: throw exception outside
                             e.printStackTrace();
                         }
                     }

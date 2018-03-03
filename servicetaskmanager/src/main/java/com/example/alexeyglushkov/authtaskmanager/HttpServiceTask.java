@@ -4,6 +4,7 @@ import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
 import com.example.alexeyglushkov.cachemanager.StorageProvider;
 import com.example.alexeyglushkov.service.HttpCacheableTransport;
+import com.example.alexeyglushkov.service.StorageProviderClient;
 import com.example.alexeyglushkov.streamlib.convertors.BytesStringConverter;
 import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionBytesReader;
@@ -24,12 +25,8 @@ public class HttpServiceTask extends TransportTask implements IServiceTask {
     private HttpUrlConnectionBuilder connectionBuilder = new HttpUrlConnectionBuilder();
 
     public HttpServiceTask() {
-        //TODO: we pass null and lose HTTPConnectionHandler handling (HTTPConnectionResponseReaderAdaptor)
-        //super(null, null);
         super();
         setTransport(createTransport());
-        //setProvider(getProvider());
-        //byteArrayReader.setByteArrayHandler(getReader());
         this.connectionBuilder = new HttpUrlConnectionBuilder();
     }
 
@@ -134,8 +131,8 @@ public class HttpServiceTask extends TransportTask implements IServiceTask {
         return transport.getResponseCode();
     }
 
-    public void setCache(StorageProvider cache) {
+    public void setCacheClient(StorageProviderClient cacheClient) {
         HttpCacheableTransport transport = (HttpCacheableTransport) getTransport();
-        transport.setCache(cache);
+        transport.setCacheClient(cacheClient);
     }
 }
