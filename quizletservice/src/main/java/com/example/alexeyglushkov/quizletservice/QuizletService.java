@@ -26,9 +26,8 @@ public class QuizletService extends SimpleService {
 
     // on error we return back to the state before loading
     public enum State {
-        Unitialized,
+        Uninitialized,
         Restored,
-        RestoreError,
         Loaded,
         Loading
     }
@@ -38,7 +37,7 @@ public class QuizletService extends SimpleService {
     private List<QuizletSet> sets = new ArrayList<>();
     private WeakRefList<QuizletServiceListener> listeners = new WeakRefList<>();
 
-    private State state = State.Unitialized;
+    private State state = State.Uninitialized;
 
     //// Initialization
 
@@ -64,18 +63,30 @@ public class QuizletService extends SimpleService {
 
     //// Actions
 
-    public ServiceCommandProxy loadSets(IStorageClient.CacheMode cacheMode, ProgressListener progressListener) {
+    public ServiceCommandProxy loadSets(ProgressListener progressListener) {
         ServiceCommand.CommandCallback callback = createLoadCallback(State.Loaded, state);
         setState(State.Loading);
 
-        ServiceCommandProxy proxy = createSetsCommandProxy(callback, cacheMode, progressListener);
+        ServiceCommandProxy proxy = createSetsCommandProxy(callback, IStorageClient.CacheMode.ONLY_STORE_TO_CACHE, progressListener);
         runCommand(proxy, true, callback);
 
         return proxy;
     }
 
-    public ServiceCommandProxy restore(ProgressListener progressListener) {
-        ServiceCommand.CommandCallback callback = createLoadCallback(State.Restored, State.RestoreError);
+    public ServiceCommandProxy restoreOrLoad(final ProgressListener progressListener) {
+        ServiceCommand.CommandCallback callback = new ServiceCommand.CommandCallback() {
+            @Override
+            public void onCompleted(Error error) {
+                if (error == null) {
+                    setState(State.Restored);
+                } else {
+                    setState(State.Uninitialized);
+                    if (getAccount().isAuthorized()) {
+                        loadSets(progressListener);
+                    }
+                }
+            }
+        };
         setState(State.Loading);
 
         ServiceCommandProxy proxy = createSetsCommandProxy(callback, IStorageClient.CacheMode.ONLY_LOAD_FROM_CACHE, progressListener);
@@ -220,6 +231,14 @@ public class QuizletService extends SimpleService {
 
     public State getState() {
         return state;
+    }
+
+    public boolean isLoading() {
+        return getState() == State.Loading;
+    }
+
+    public boolean hasData() {
+        return getSets().size() > 0;
     }
 
     // Cast Getters

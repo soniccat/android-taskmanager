@@ -3,6 +3,7 @@ package com.example.alexeyglushkov.authorization.Auth;
 /**
  * Created by alexeyglushkov on 15.11.15.
  */
+// TODO: think about account manager and account, extract properties in another object
 public interface Account {
     int getId();
     int getServiceType();

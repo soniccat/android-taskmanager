@@ -22,7 +22,7 @@ public class QuizletServiceTaskProvider extends ServiceTaskProvider implements Q
     public QuizletSetsCommand getLoadSetsCommand(String server, String userId, IStorageClient.CacheMode cacheMode, ProgressListener progressListener) {
         QuizletSetsTask task = new QuizletSetsTask(server, userId);
 
-        StorageClient storageClient = new StorageClient(storage, 30 * 60);
+        StorageClient storageClient = new StorageClient(storage, 0);
         storageClient.setCacheMode(cacheMode);
         task.setCacheClient(storageClient);
 

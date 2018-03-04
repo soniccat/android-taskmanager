@@ -9,6 +9,7 @@ import java.util.List;
  * Created by alexeyglushkov on 26.09.15.
  */
 // TODO: add exception throwing, create safe interface like SafeStorage with optGetValue/
+// TODO: add iterator support
 public interface Storage {
     void put(@NonNull String key, @NonNull Object value, @Nullable StorageMetadata metadata) throws Exception;
 

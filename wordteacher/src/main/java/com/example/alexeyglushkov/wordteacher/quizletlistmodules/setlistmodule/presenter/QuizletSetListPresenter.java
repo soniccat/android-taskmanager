@@ -29,14 +29,17 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet> imp
     private Bundle savedInstanceState;
 
     @Override
+    public void onViewCreated(Bundle savedInstanceState) {
+        super.onViewCreated(savedInstanceState);
+        getQuizletService().addListener(this);
+    }
+
+    @Override
     public void onViewStateRestored(ListViewInterface view, @Nullable final Bundle savedInstanceState) {
         super.onViewStateRestored(view, savedInstanceState);
-        getQuizletService().addListener(this);
 
         this.savedInstanceState = savedInstanceState;
-        if (getQuizletService().getState() != QuizletService.State.Unitialized) {
-            handleLoadedSets();
-        }
+        onServiceStateChanged();
     }
 
     private void restoreIfNeeded() {
@@ -52,10 +55,6 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet> imp
     public void onDestroyView() {
         super.onDestroyView();
         getQuizletService().removeListener(this);
-    }
-
-    private void onQuizletServiceLoaded() {
-        handleLoadedSets();
     }
 
     //// Actions
@@ -79,10 +78,19 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet> imp
 
     @Override
     public void onStateChanged(QuizletService service, QuizletService.State oldState) {
-        if (service.getState() == QuizletService.State.Loading) {
+        onServiceStateChanged();
+    }
+
+    private void onServiceStateChanged() {
+        QuizletService service = getQuizletService();
+        boolean hasData = service.hasData();
+        boolean isLoading = service.isLoading();
+
+        if (!hasData && isLoading) {
             view.showLoading();
-        } else {
-            onQuizletServiceLoaded();
+
+        } else if (hasData && !isLoading) {
+            handleLoadedSets();
         }
     }
 

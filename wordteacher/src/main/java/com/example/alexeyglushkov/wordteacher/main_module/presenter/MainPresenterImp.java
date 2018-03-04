@@ -76,8 +76,6 @@ public class MainPresenterImp implements
         if (savedInstanceState == null) {
             pagerModule.reload();
         }
-
-        handleRestoreError();
     }
 
     @Override
@@ -199,18 +197,7 @@ public class MainPresenterImp implements
 
     //// Actions
 
-    private void handleUninitializedQuizletSets() {
-        handleRestoreError();
-    }
-
-    private void handleRestoreError() {
-        if (getQuizletService().getState() == QuizletService.State.RestoreError) {
-            loadQuizletSets();
-        }
-    }
-
     private void loadQuizletSets() {
-        IStorageClient.CacheMode cacheMode = IStorageClient.CacheMode.ONLY_STORE_TO_CACHE;
         final ServiceCommandProxy[] cmdWrapper = new ServiceCommandProxy[1];
 
         ProgressListener progressListener = view.startProgress(new MainView.ProgressCallback() {
@@ -223,7 +210,7 @@ public class MainPresenterImp implements
             }
         });
 
-        ServiceCommandProxy commandProxy = getQuizletService().loadSets(cacheMode, progressListener);
+        ServiceCommandProxy commandProxy = getQuizletService().loadSets(progressListener);
         cmdWrapper[0] = commandProxy;
     }
 
@@ -293,7 +280,6 @@ public class MainPresenterImp implements
 
     @Override
     public void onStateChanged(QuizletService service, QuizletService.State oldState) {
-        handleUninitializedQuizletSets();
     }
 
     @Override

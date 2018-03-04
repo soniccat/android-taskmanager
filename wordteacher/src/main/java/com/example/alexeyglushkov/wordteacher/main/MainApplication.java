@@ -169,7 +169,7 @@ public class MainApplication extends Application {
         ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
 
         this.quizletService = new QuizletService(quizletAccount, quizletCommandProvider, serviceCommandRunner);
-        this.quizletService.restore(null);
+        this.quizletService.restoreOrLoad(null);
     }
 
     private void createDropboxService() throws Exception {
