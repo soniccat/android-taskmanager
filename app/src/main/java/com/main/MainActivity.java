@@ -20,6 +20,8 @@ import com.example.alexeyglushkov.authtaskmanager.HttpServiceTask;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
 import com.example.alexeyglushkov.cachemanager.Storage;
+import com.example.alexeyglushkov.cachemanager.clients.IStorageClient;
+import com.example.alexeyglushkov.cachemanager.clients.StorageClient;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.service.HttpCacheableTransport;
@@ -119,7 +121,9 @@ public class MainActivity extends BaseActivity implements QuizletService.Quizlet
         builder.setUrl("https://api.foursquare.com/v2/users/self?v=20140806&m=foursquare");
 
         final HttpServiceTask cmd = new HttpServiceTask();
-        cmd.setCacheClient(storage);
+        StorageClient storageClient = new StorageClient(storage, 0);
+        storageClient.setCacheMode(IStorageClient.CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD);
+        cmd.setCacheClient(storageClient);
         cmd.setConnectionBuilder(builder);
         cmd.setServiceCommandCallback(new ServiceCommand.CommandCallback() {
             @Override
@@ -166,7 +170,7 @@ public class MainActivity extends BaseActivity implements QuizletService.Quizlet
     }
 
     private void loadSets(boolean useCache) {
-        getMainApplication().getQuizletService().loadSets(HttpCacheableTransport.CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD, null);
+        getMainApplication().getQuizletService().loadSets(null);
     }
 
     // QuizletServiceListener
