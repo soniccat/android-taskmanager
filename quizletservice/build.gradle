@@ -20,9 +20,9 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(':service')
-    compile project(':authorization')
-    compile project(':jacksonlib')
-    compile project(':servicetaskmanager')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':service')
+    implementation project(':authorization')
+    implementation project(':jacksonlib')
+    implementation project(':servicetaskmanager')
 }
