@@ -32,8 +32,8 @@ dependencies {
     implementation project(':testsupport')
     implementation project(':streamlib')
     implementation project(':tools')
-    androidTestCompile 'junit:junit:4.12'
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestImplementation 'junit:junit:4.12'
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 }

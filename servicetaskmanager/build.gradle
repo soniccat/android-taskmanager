@@ -20,9 +20,11 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:' + project.ext.supportLibVersion
-    compile project(':authorization')
-    compile project(':taskmanager')
-    compile project(':service')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:' + project.ext.supportLibVersion
+    implementation project(':authorization')
+    implementation project(':taskmanager')
+    implementation project(':service')
+    implementation project(path: ':streamlib')
+    implementation project(path: ':storagemanager')
 }

@@ -27,6 +27,6 @@ allprojects {
         versionCode = 1
         versionName = "1.0"
 
-        supportLibVersion = "27.0.2"
+        supportLibVersion = "27.1.1"
     }
 }

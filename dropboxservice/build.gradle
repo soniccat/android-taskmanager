@@ -27,5 +27,9 @@ dependencies {
     implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
     implementation project(path: ':service')
     implementation project(path: ':authorization')
+    implementation project(path: ':taskmanager')
     implementation project(path: ':servicetaskmanager')
+    implementation project(path: ':streamlib')
+    implementation project(path: ':tools')
+    implementation project(path: ':storagemanager')
 }

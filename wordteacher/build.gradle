@@ -36,4 +36,11 @@ dependencies {
     implementation project(path: ':dropboxservice')
     implementation project(path: ':ui')
     implementation project(path: ':taskmanager')
+    implementation project(path: ':servicetaskmanager')
+    implementation project(path: ':service')
+    implementation project(path: ':jacksonlib')
+    implementation project(path: ':authorization')
+    implementation project(path: ':streamlib')
+    implementation project(path: ':storagemanager')
+    implementation project(path: ':tools')
 }
