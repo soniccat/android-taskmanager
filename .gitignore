@@ -31,6 +31,7 @@ proguard/
 .idea/workspace.xml
 .idea/gradle.xml
 .idea/libraries
+.idea/misc.xml
 
 # other
 *.iml
