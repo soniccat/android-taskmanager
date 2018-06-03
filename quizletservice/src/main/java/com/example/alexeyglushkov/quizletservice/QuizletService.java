@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.quizletservice;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
 import com.example.alexeyglushkov.authorization.Auth.Account;
@@ -25,19 +27,19 @@ import java.util.List;
 public class QuizletService extends SimpleService {
 
     // on error we return back to the state before loading
-    public enum State {
-        Uninitialized,
-        Restored,
-        Loaded,
-        Loading
-    }
+//    public enum State {
+//        Uninitialized,
+//        Restored,
+//        Loaded,
+//        Loading
+//    }
 
     static private final String SERVER = "https://api.quizlet.com/2.0";
 
-    private List<QuizletSet> sets = new ArrayList<>();
-    private WeakRefList<QuizletServiceListener> listeners = new WeakRefList<>();
+    private NonNullMutableLiveData<Resource<List<QuizletSet>>> sets
+            = new NonNullMutableLiveData<>(new Resource<List<QuizletSet>>());
 
-    private State state = State.Uninitialized;
+    //private State state = State.Uninitialized;
 
     //// Initialization
 
@@ -48,18 +50,18 @@ public class QuizletService extends SimpleService {
     }
 
     //// Events
-
-    private void onStateChanged(State oldState) {
-        for (WeakReference<QuizletServiceListener> ref : listeners) {
-            ref.get().onStateChanged(this, oldState);
-        }
-    }
-
-    private void onSetsLoadError(Error error) {
-        for (WeakReference<QuizletServiceListener> ref : listeners) {
-            ref.get().onLoadError(this, error);
-        }
-    }
+//
+//    private void onStateChanged(State oldState) {
+//        for (WeakReference<QuizletServiceListener> ref : listeners) {
+//            ref.get().onStateChanged(this, oldState);
+//        }
+//    }
+//
+//    private void onSetsLoadError(Error error) {
+//        for (WeakReference<QuizletServiceListener> ref : listeners) {
+//            ref.get().onLoadError(this, error);
+//        }
+//    }
 
     //// Actions
 
@@ -131,8 +133,7 @@ public class QuizletService extends SimpleService {
 
                 } else {
                     if (error == null) {
-                        sets.clear();
-                        sets.addAll(new ArrayList<>(Arrays.asList(command.getSets())));
+                        setValue(Arrays.asList(command.getSets());
                     }
 
                     if (callback != null) {
@@ -145,21 +146,21 @@ public class QuizletService extends SimpleService {
     }
 
     // Listeners
-
-    public void addListener(QuizletServiceListener listener) {
-        if (!listeners.contains(listener)) {
-            listeners.add(new WeakReference<>(listener));
-        }
-    }
-
-    public void removeListener(QuizletServiceListener listener) {
-        listeners.remove(listener);
-    }
+//
+//    public void addListener(QuizletServiceListener listener) {
+//        if (!listeners.contains(listener)) {
+//            listeners.add(new WeakReference<>(listener));
+//        }
+//    }
+//
+//    public void removeListener(QuizletServiceListener listener) {
+//        listeners.remove(listener);
+//    }
 
     //// Creation Methods
 
     @NonNull
-    private ServiceCommand.CommandCallback createLoadCallback(final State successState, final State failState) {
+    private ServiceCommand.CommandCallback createLoadCallback(final Resource.State successState, final Resource.State failState) {
         return new ServiceCommand.CommandCallback() {
             @Override
             public void onCompleted(Error error) {
@@ -167,8 +168,7 @@ public class QuizletService extends SimpleService {
                     setState(successState);
 
                 } else {
-                    setState(failState);
-                    onSetsLoadError(error);
+                    setError(failState, error);
                 }
             }
         };
@@ -176,16 +176,26 @@ public class QuizletService extends SimpleService {
 
     //// Setters
 
-    private void setState(State state) {
-        State oldState = this.state;
-        this.state = state;
-        onStateChanged(oldState);
+    private void setState(Resource.State newState) {
+        sets.setValue(sets.getValue().resource(newState));
+    }
+
+    private void setValue(Resource.State newState, List<QuizletSet> newSets) {
+        sets.setValue(sets.getValue().resource(newState, newSets));
+    }
+
+    private void setError(Error newError) {
+        sets.setValue(sets.getValue().resource(newError));
+    }
+
+    private void setError(Resource.State newState, Error newError) {
+        sets.setValue(sets.getValue().resource(newState, newError));
     }
 
     //// Getters
 
     public List<QuizletSet> getSets() {
-        return sets;
+        return sets.getValue().data;
     }
 
     public List<QuizletTerm> getTerms() {
@@ -219,10 +229,13 @@ public class QuizletService extends SimpleService {
     public QuizletSet getSet(long id) {
         QuizletSet result = null;
 
-        for (QuizletSet set : sets) {
-            if (set.getId() == id) {
-                result = set;
-                break;
+        List<QuizletSet> setList = sets.getValue().data;
+        if (setList != null) {
+            for (QuizletSet set : setList) {
+                if (set.getId() == id) {
+                    result = set;
+                    break;
+                }
             }
         }
 

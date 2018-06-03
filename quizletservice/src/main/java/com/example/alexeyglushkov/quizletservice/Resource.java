@@ -1,0 +1,50 @@
+package com.example.alexeyglushkov.quizletservice;
+
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+public class Resource<T> {
+    public enum State {
+        Uninitialized,
+        Restoring,
+        Restored,
+        Loading,
+        Loaded
+    }
+
+    @NonNull public final State state;
+    @Nullable public final T data;
+    @Nullable public final Error error;
+
+    public Resource() {
+        this.state = State.Uninitialized;
+        this.data = null;
+        this.error = null;
+    }
+
+    public Resource(@NonNull State status, @Nullable T data, @Nullable Error error) {
+        this.state = status;
+        this.data = data;
+        this.error = error;
+    }
+
+    Resource<T> resource(@NonNull State newState) {
+        return new Resource<>(newState, data, error);
+    }
+
+    Resource<T> resource(@NonNull Error newError) {
+        return new Resource<>(state, data, newError);
+    }
+
+    Resource<T> resource(@NonNull State newState, @NonNull Error newError) {
+        return new Resource<>(newState, data, newError);
+    }
+
+    Resource<T> resource(@NonNull T newData) {
+        return new Resource<>(state, newData, error);
+    }
+
+    Resource<T> resource(@NonNull State newState, @NonNull T newData) {
+        return new Resource<>(newState, newData, error);
+    }
+}

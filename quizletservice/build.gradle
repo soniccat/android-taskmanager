@@ -21,6 +21,8 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:support-annotations:' + project.ext.supportLibVersion
+    implementation 'android.arch.lifecycle:extensions:' + project.ext.archLifecycleVersion
+    annotationProcessor 'android.arch.lifecycle:compiler:' + rootProject.archLifecycleVersion
     implementation project(':service')
     implementation project(':authorization')
     implementation project(':jacksonlib')
