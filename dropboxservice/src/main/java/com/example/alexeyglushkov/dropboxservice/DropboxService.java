@@ -55,7 +55,7 @@ public class DropboxService extends SimpleService {
         DropboxSyncCommand cmd = commandProvider.getSyncCommand(srcPath, dstPath, lastSyncDate, getSyncCallback());
         cmd.setServiceCommandCallback(new ServiceCommand.CommandCallback() {
             @Override
-            public void onCompleted(Error error) {
+            public void onCompleted(ServiceCommand command, Error error) {
                 if (error == null) {
                     try {
                         storage.put(LAST_SYNC_DATE, (new Date()).getTime(), null);
@@ -63,7 +63,7 @@ public class DropboxService extends SimpleService {
                     }
                 }
 
-                callback.onCompleted(error);
+                callback.onCompleted(command, error);
             }
         });
 

@@ -9,10 +9,6 @@ import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProvider;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Semaphore;
-
 public class OAuth20AuthorizerImpl implements OAuth20Authorizer
 {
 	private static final String VERSION = "2.0";
@@ -61,7 +57,7 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
 		final ServiceCommand command = commandProvider.getServiceCommand(builder);
 		command.setServiceCommandCallback(new ServiceCommand.CommandCallback() {
 			@Override
-			public void onCompleted(Error error) {
+			public void onCompleted(ServiceCommand command, Error error) {
                 if (error != null) {
                     error = new AuthError("OAuthPocketServiceImpl authorize: Can't receive AccessToken", AuthError.Reason.InnerError, error);
                 }

@@ -6,9 +6,8 @@ import android.support.annotation.Nullable;
 public class Resource<T> {
     public enum State {
         Uninitialized,
-        Restoring,
         Restored,
-        Loading,
+        Loading, // for restoring too
         Loaded
     }
 
@@ -29,22 +28,14 @@ public class Resource<T> {
     }
 
     Resource<T> resource(@NonNull State newState) {
-        return new Resource<>(newState, data, error);
-    }
-
-    Resource<T> resource(@NonNull Error newError) {
-        return new Resource<>(state, data, newError);
+        return new Resource<>(newState, data, null);
     }
 
     Resource<T> resource(@NonNull State newState, @NonNull Error newError) {
         return new Resource<>(newState, data, newError);
     }
 
-    Resource<T> resource(@NonNull T newData) {
-        return new Resource<>(state, newData, error);
-    }
-
     Resource<T> resource(@NonNull State newState, @NonNull T newData) {
-        return new Resource<>(newState, newData, error);
+        return new Resource<>(newState, newData, null);
     }
 }

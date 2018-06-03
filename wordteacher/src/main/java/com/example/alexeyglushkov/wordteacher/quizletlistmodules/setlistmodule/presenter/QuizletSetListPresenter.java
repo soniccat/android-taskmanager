@@ -1,10 +1,12 @@
 package com.example.alexeyglushkov.wordteacher.quizletlistmodules.setlistmodule.presenter;
 
+import android.arch.lifecycle.Observer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.example.alexeyglushkov.quizletservice.QuizletService;
+import com.example.alexeyglushkov.quizletservice.Resource;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategyFactory;
@@ -16,30 +18,30 @@ import com.example.alexeyglushkov.wordteacher.main.Preferences;
 import com.example.alexeyglushkov.wordteacher.tools.SortOrderCompareStrategy;
 import com.example.alexeyglushkov.wordteacher.tools.Sortable;
 
+import java.util.List;
+
 /**
  * Created by alexeyglushkov on 30.10.16.
  */
 
 public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet> implements
         Sortable,
-        QuizletService.QuizletServiceListener {
+        Observer<Resource<List<QuizletSet>>> {
 
     public static String DEFAULT_TITLE = "Sets";
 
     private Bundle savedInstanceState;
 
     @Override
-    public void onViewCreated(Bundle savedInstanceState) {
-        super.onViewCreated(savedInstanceState);
-        getQuizletService().addListener(this);
-    }
-
-    @Override
     public void onViewStateRestored(ListViewInterface view, @Nullable final Bundle savedInstanceState) {
         super.onViewStateRestored(view, savedInstanceState);
 
         this.savedInstanceState = savedInstanceState;
-        onServiceStateChanged();
+        getQuizletService().getLiveSets().observeForever(this);
+
+        if (savedInstanceState != null) {
+            onServiceStateChanged(getQuizletService().getLiveSets().getValue());
+        }
     }
 
     private void restoreIfNeeded() {
@@ -54,7 +56,7 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet> imp
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        getQuizletService().removeListener(this);
+        getQuizletService().getLiveSets().removeObserver(this);
     }
 
     //// Actions
@@ -74,17 +76,20 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet> imp
         return DEFAULT_TITLE;
     }
 
-    // QuizletService.QuizletServiceListener
+    // Observer<Resource<List<QuizletSet>>>
 
     @Override
-    public void onStateChanged(QuizletService service, QuizletService.State oldState) {
-        onServiceStateChanged();
+    public void onChanged(@NonNull Resource<List<QuizletSet>> listResource) {
+        if (listResource.error != null) {
+            view.hideLoading();
+        } else {
+            onServiceStateChanged(listResource);
+        }
     }
 
-    private void onServiceStateChanged() {
-        QuizletService service = getQuizletService();
-        boolean hasData = service.hasData();
-        boolean isLoading = service.isLoading();
+    private void onServiceStateChanged(@NonNull Resource<List<QuizletSet>> listResource) {
+        boolean hasData = listResource.data != null && listResource.data.size() > 0;
+        boolean isLoading = listResource.state == Resource.State.Loading;
 
         if (!hasData && isLoading) {
             view.showLoading();
@@ -92,11 +97,6 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet> imp
         } else if (hasData && !isLoading) {
             handleLoadedSets();
         }
-    }
-
-    @Override
-    public void onLoadError(QuizletService service, Error error) {
-        view.hideLoading();
     }
 
     @NonNull

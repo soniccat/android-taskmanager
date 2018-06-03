@@ -72,7 +72,7 @@ public class SimpleService implements Service {
                 authorizeAndRun(proxy, anAuthCompletion);
 
             } else if (anAuthCompletion != null) {
-                anAuthCompletion.onCompleted(new Authorizer.AuthError(Authorizer.AuthError.Reason.NotAuthorized, null));
+                anAuthCompletion.onCompleted(null, new Authorizer.AuthError(Authorizer.AuthError.Reason.NotAuthorized, null));
             }
 
         } else {
@@ -90,7 +90,7 @@ public class SimpleService implements Service {
                     runCommand(proxy, false);
 
                 } else if (anAuthCompletion != null) {
-                    anAuthCompletion.onCompleted(error);
+                    anAuthCompletion.onCompleted(null, error);
                 }
             }
         });

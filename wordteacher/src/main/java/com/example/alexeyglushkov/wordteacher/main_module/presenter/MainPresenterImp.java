@@ -1,5 +1,6 @@
 package com.example.alexeyglushkov.wordteacher.main_module.presenter;
 
+import android.arch.lifecycle.Observer;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,8 +12,8 @@ import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProxy;
-import com.example.alexeyglushkov.cachemanager.clients.IStorageClient;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
+import com.example.alexeyglushkov.quizletservice.Resource;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.streamlib.CancelError;
@@ -58,8 +59,8 @@ import com.example.alexeyglushkov.wordteacher.tools.Sortable;
 public class MainPresenterImp implements
         MainPresenter,
         PagerModuleListener,
-        QuizletService.QuizletServiceListener,
-        CourseHolder.CourseHolderListener {
+        CourseHolder.CourseHolderListener,
+        Observer<Resource<List<QuizletSet>>> {
     private MainRouter router;
     private PagerModule pagerModule;
     private MainView view;
@@ -69,7 +70,7 @@ public class MainPresenterImp implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         getCourseHolder().addListener(this);
-        getQuizletService().addListener(this);
+        getQuizletService().getLiveSets().observeForever(this);
 
         router = createRouter();
         pagerModule = createPagerModule(savedInstanceState);
@@ -81,7 +82,7 @@ public class MainPresenterImp implements
     @Override
     public void onDestroy() {
         getCourseHolder().removeListener(this);
-        getQuizletService().removeListener(this);
+        getQuizletService().getLiveSets().removeObserver(this);
     }
 
     @Override
@@ -236,7 +237,7 @@ public class MainPresenterImp implements
     private void syncWithDropbox() {
         getMainApplication().getDropboxService().sync(getCourseHolder().getDirectory().getPath(), "/CoursesTest/", new ServiceCommand.CommandCallback() {
             @Override
-            public void onCompleted(Error error) {
+            public void onCompleted(ServiceCommand command, Error error) {
                 getTaskManager().addTask(getCourseHolder().getLoadCourseListTask());
             }
         });
@@ -276,24 +277,23 @@ public class MainPresenterImp implements
         view.invalidateToolbar();
     }
 
-    // QuizletService.QuizletServiceListener
+    // Observer<Resource<List<QuizletSet>>>
 
     @Override
-    public void onStateChanged(QuizletService service, QuizletService.State oldState) {
-    }
+    public void onChanged(@NonNull Resource<List<QuizletSet>> listResource) {
+        if (listResource.error != null) {
+            Error error = listResource.error;
+            boolean isCancelled = error instanceof CancelError;
+            if (error instanceof Authorizer.AuthError) {
+                isCancelled = ((Authorizer.AuthError)error).getReason() == Authorizer.AuthError.Reason.Cancelled;
+            }
 
-    @Override
-    public void onLoadError(QuizletService service, Error error) {
-        boolean isCancelled = error instanceof CancelError;
-        if (error instanceof Authorizer.AuthError) {
-            isCancelled = ((Authorizer.AuthError)error).getReason() == Authorizer.AuthError.Reason.Cancelled;
+            if (!isCancelled) {
+                view.showLoadError(error);
+            }
+
+            view.stopProgress();
         }
-
-        if (!isCancelled) {
-            view.showLoadError(error);
-        }
-
-        view.stopProgress();
     }
 
     // CourseHolder.CourseHolderListener

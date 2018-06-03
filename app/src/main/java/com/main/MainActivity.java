@@ -24,7 +24,6 @@ import com.example.alexeyglushkov.cachemanager.clients.IStorageClient;
 import com.example.alexeyglushkov.cachemanager.clients.StorageClient;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
-import com.example.alexeyglushkov.service.HttpCacheableTransport;
 import com.example.alexeyglushkov.service.SimpleService;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 import com.example.alexeyglushkov.taskmanager.task.Task;
@@ -127,7 +126,7 @@ public class MainActivity extends BaseActivity implements QuizletService.Quizlet
         cmd.setConnectionBuilder(builder);
         cmd.setServiceCommandCallback(new ServiceCommand.CommandCallback() {
             @Override
-            public void onCompleted(Error error) {
+            public void onCompleted(ServiceCommand command, Error error) {
                 Log.d(TAG, "finished " + cmd.getResponse());
             }
         });

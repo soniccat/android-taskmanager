@@ -27,6 +27,6 @@ public interface ServiceCommand extends ServiceCommandProxy{
     void clear();
 
     interface CommandCallback {
-        void onCompleted(Error error);
+        void onCompleted(ServiceCommand command, Error error);
     }
 }

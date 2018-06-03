@@ -1,7 +1,5 @@
 package com.example.alexeyglushkov.quizletservice;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
 import com.example.alexeyglushkov.authorization.Auth.Account;
@@ -14,9 +12,7 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.service.SimpleService;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
-import com.example.alexeyglushkov.taskmanager.task.WeakRefList;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,6 +32,7 @@ public class QuizletService extends SimpleService {
 
     static private final String SERVER = "https://api.quizlet.com/2.0";
 
+    @NonNull
     private NonNullMutableLiveData<Resource<List<QuizletSet>>> sets
             = new NonNullMutableLiveData<>(new Resource<List<QuizletSet>>());
 
@@ -66,8 +63,21 @@ public class QuizletService extends SimpleService {
     //// Actions
 
     public ServiceCommandProxy loadSets(ProgressListener progressListener) {
-        ServiceCommand.CommandCallback callback = createLoadCallback(State.Loaded, state);
-        setState(State.Loading);
+        final Resource.State previousState = sets.getValue().state;
+        ServiceCommand.CommandCallback callback = new ServiceCommand.CommandCallback() {
+            @Override
+            public void onCompleted(ServiceCommand command, Error error) {
+                if (error == null) {
+                    QuizletSetsCommand setsCommand = (QuizletSetsCommand)command;
+                    setState(Resource.State.Loaded, setsCommand.getSets());
+
+                } else {
+                    setError(previousState, error);
+                }
+            }
+        };
+
+        setState(Resource.State.Loading);
 
         ServiceCommandProxy proxy = createSetsCommandProxy(callback, IStorageClient.CacheMode.ONLY_STORE_TO_CACHE, progressListener);
         runCommand(proxy, true, callback);
@@ -78,18 +88,19 @@ public class QuizletService extends SimpleService {
     public ServiceCommandProxy restoreOrLoad(final ProgressListener progressListener) {
         ServiceCommand.CommandCallback callback = new ServiceCommand.CommandCallback() {
             @Override
-            public void onCompleted(Error error) {
+            public void onCompleted(ServiceCommand command, Error error) {
                 if (error == null) {
-                    setState(State.Restored);
+                    QuizletSetsCommand setsCommand = (QuizletSetsCommand)command;
+                    setState(Resource.State.Restored, setsCommand.getSets());
                 } else {
-                    setState(State.Uninitialized);
+                    setState(Resource.State.Uninitialized);
                     if (getAccount().isAuthorized()) {
                         loadSets(progressListener);
                     }
                 }
             }
         };
-        setState(State.Loading);
+        setState(Resource.State.Loading);
 
         ServiceCommandProxy proxy = createSetsCommandProxy(callback, IStorageClient.CacheMode.ONLY_LOAD_FROM_CACHE, progressListener);
         runCommand(proxy, false, callback);
@@ -98,7 +109,7 @@ public class QuizletService extends SimpleService {
     }
 
     @NonNull
-    private ServiceCommandProxy createSetsCommandProxy(final ServiceCommand.CommandCallback callback, final IStorageClient.CacheMode cacheMode, final ProgressListener progressListener) {
+    private ServiceCommandProxy createSetsCommandProxy(@NonNull final ServiceCommand.CommandCallback callback, final IStorageClient.CacheMode cacheMode, final ProgressListener progressListener) {
         return new ServiceCommandProxy() {
             private ServiceCommand cmd = null;
 
@@ -119,26 +130,19 @@ public class QuizletService extends SimpleService {
     }
 
     @NonNull
-    private QuizletSetsCommand createSetsCommand(final ServiceCommand.CommandCallback callback, final IStorageClient.CacheMode cacheMode, final ProgressListener progressListener) {
+    private QuizletSetsCommand createSetsCommand(@NonNull final ServiceCommand.CommandCallback callback, final IStorageClient.CacheMode cacheMode, final ProgressListener progressListener) {
         final QuizletSetsCommand command = getQuizletCommandProvider().getLoadSetsCommand(SERVER, getOAuthCredentials().getUserId(), cacheMode, progressListener);
         command.setServiceCommandCallback(new ServiceCommand.CommandCallback() {
             @Override
-            public void onCompleted(Error error) {
+            public void onCompleted(ServiceCommand command, Error error) {
 
                 // TODO: try to put this logic in SimpleService with option
                 if (command.getResponseCode() == 401) {
                     command.clear();
 
                     authorizeAndRun(command, callback);
-
                 } else {
-                    if (error == null) {
-                        setValue(Arrays.asList(command.getSets());
-                    }
-
-                    if (callback != null) {
-                        callback.onCompleted(error);
-                    }
+                    callback.onCompleted(command, error);
                 }
             }
         });
@@ -157,22 +161,6 @@ public class QuizletService extends SimpleService {
 //        listeners.remove(listener);
 //    }
 
-    //// Creation Methods
-
-    @NonNull
-    private ServiceCommand.CommandCallback createLoadCallback(final Resource.State successState, final Resource.State failState) {
-        return new ServiceCommand.CommandCallback() {
-            @Override
-            public void onCompleted(Error error) {
-                if (error == null) {
-                    setState(successState);
-
-                } else {
-                    setError(failState, error);
-                }
-            }
-        };
-    }
 
     //// Setters
 
@@ -180,12 +168,8 @@ public class QuizletService extends SimpleService {
         sets.setValue(sets.getValue().resource(newState));
     }
 
-    private void setValue(Resource.State newState, List<QuizletSet> newSets) {
+    private void setState(Resource.State newState, List<QuizletSet> newSets) {
         sets.setValue(sets.getValue().resource(newState, newSets));
-    }
-
-    private void setError(Error newError) {
-        sets.setValue(sets.getValue().resource(newError));
     }
 
     private void setError(Resource.State newState, Error newError) {
@@ -193,6 +177,11 @@ public class QuizletService extends SimpleService {
     }
 
     //// Getters
+
+    @NonNull
+    public NonNullMutableLiveData<Resource<List<QuizletSet>>> getLiveSets() {
+        return sets;
+    }
 
     public List<QuizletSet> getSets() {
         return sets.getValue().data;
@@ -242,17 +231,17 @@ public class QuizletService extends SimpleService {
         return result;
     }
 
-    public State getState() {
-        return state;
-    }
-
-    public boolean isLoading() {
-        return getState() == State.Loading;
-    }
-
-    public boolean hasData() {
-        return getSets().size() > 0;
-    }
+//    public State getState() {
+//        return state;
+//    }
+//
+//    public boolean isLoading() {
+//        return getState() == State.Loading;
+//    }
+//
+//    public boolean hasData() {
+//        return getSets().size() > 0;
+//    }
 
     // Cast Getters
 
@@ -266,8 +255,8 @@ public class QuizletService extends SimpleService {
 
     //// Interfaces
 
-    public interface QuizletServiceListener {
-        void onStateChanged(QuizletService service, State oldState);
-        void onLoadError(QuizletService service, Error error);
-    }
+//    public interface QuizletServiceListener {
+//        void onStateChanged(QuizletService service, State oldState);
+//        void onLoadError(QuizletService service, Error error);
+//    }
 }

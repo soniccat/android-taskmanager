@@ -109,7 +109,7 @@ public class HttpServiceTask extends TransportTask implements IServiceTask {
         setTaskCallback(new Task.Callback() {
             @Override
             public void onCompleted(boolean cancelled) {
-                callback.onCompleted(getCommandError());
+                callback.onCompleted(HttpServiceTask.this, getCommandError());
             }
         });
     }

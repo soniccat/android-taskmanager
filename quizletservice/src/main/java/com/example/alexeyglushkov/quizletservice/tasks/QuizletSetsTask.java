@@ -14,12 +14,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by alexeyglushkov on 03.04.16.
  */
 public class QuizletSetsTask extends HttpServiceTask implements QuizletSetsCommand {
-    private QuizletSet[] sets;
+    private List<QuizletSet> sets;
 
     public QuizletSetsTask(String server, String userId) {
         super();
@@ -37,7 +40,8 @@ public class QuizletSetsTask extends HttpServiceTask implements QuizletSetsComma
     @Override
     public void setHandledData(Object handledData) {
         super.setHandledData(handledData);
-        sets = parseSets(getResponse());
+        QuizletSet[] setArray = parseSets(getResponse());
+        sets = new ArrayList<>(Arrays.asList(setArray));
     }
 
     private QuizletSet[] parseSets(String setsResponse) {
@@ -60,7 +64,7 @@ public class QuizletSetsTask extends HttpServiceTask implements QuizletSetsComma
     }
 
     @Override
-    public QuizletSet[] getSets() {
+    public List<QuizletSet> getSets() {
         return sets;
     }
 }

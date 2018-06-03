@@ -1,10 +1,13 @@
 package com.example.alexeyglushkov.wordteacher.quizletlistmodules.termlistmodule.presenter;
 
+import android.arch.lifecycle.Observer;
+import android.database.Observable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.example.alexeyglushkov.quizletservice.QuizletService;
+import com.example.alexeyglushkov.quizletservice.Resource;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 
@@ -26,8 +29,8 @@ import com.example.alexeyglushkov.wordteacher.tools.Sortable;
 
 public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
         implements Sortable,
-        PagerModuleItemWithTitle, 
-        QuizletService.QuizletServiceListener {
+        PagerModuleItemWithTitle,
+        Observer<Resource<List<QuizletSet>>> {
     public static String DEFAULT_TITLE = "Cards";
 
     private Bundle savedInstanceState;
@@ -40,17 +43,17 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
 
         this.savedInstanceState = savedInstanceState;
 
-        getQuizletService().addListener(this);
-        if (getQuizletService().getState() != QuizletService.State.Uninitialized) {
-            handleLoadedSets();
-            view.reload(getItems());
-        }
+        getQuizletService().getLiveSets().observeForever(this);
+//        if (getQuizletService().getState() != QuizletService.State.Uninitialized) {
+//            handleLoadedSets();
+//            view.reload(getItems());
+//        }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        getQuizletService().removeListener(this);
+        getQuizletService().getLiveSets().removeObserver(this);
     }
 
     //// Actions
@@ -82,20 +85,24 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
 
     //// Interface
 
-    // QuizletService.QuizletServiceListener
+    // Observer<Resource<List<QuizletSet>>>
 
     @Override
-    public void onStateChanged(QuizletService service, QuizletService.State oldState) {
-        if (service.getState() == QuizletService.State.Loading) {
-            view.showLoading();
+    public void onChanged(@NonNull Resource<List<QuizletSet>> listResource) {
+        if (listResource.error != null) {
+            view.hideLoading();
+
         } else {
-            handleLoadedSets();
-        }
-    }
+            boolean hasData = listResource.data != null && listResource.data.size() > 0;
+            boolean isLoading = listResource.state == Resource.State.Loading;
 
-    @Override
-    public void onLoadError(QuizletService service, Error error) {
-        view.hideLoading();
+            if (!hasData && isLoading) {
+                view.showLoading();
+
+            } else if (hasData && !isLoading) {
+                handleLoadedSets();
+            }
+        }
     }
 
     // PagerModuleItemWithTitle
