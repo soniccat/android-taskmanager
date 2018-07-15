@@ -2,6 +2,8 @@ package com.example.alexeyglushkov.cachemanager.preference;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.example.alexeyglushkov.cachemanager.StorageEntry;
 import com.example.alexeyglushkov.cachemanager.StorageMetadata;
@@ -23,7 +25,7 @@ public class PreferenceStorage implements Storage {
     }
 
     @Override
-    public void put(String key, Object value, StorageMetadata metadata) throws Exception {
+    public void put(@NonNull String key, @NonNull Object value, StorageMetadata metadata) throws Exception {
         SharedPreferences.Editor editor = getWritePreference();
         if (value instanceof Integer) {
             editor.putInt(key, (int)value);
@@ -35,29 +37,29 @@ public class PreferenceStorage implements Storage {
     }
 
     @Override
-    public Object getValue(String key) {
+    public Object getValue(@NonNull String key) {
         return getReadPreference().getAll().get(key);
     }
 
     @Override
-    public StorageMetadata createMetadata() {
+    @Nullable public StorageMetadata createMetadata() {
         return null;
     }
 
     @Override
-    public StorageMetadata getMetadata(String key) {
+    public StorageMetadata getMetadata(@NonNull String key) {
         return null;
     }
 
     @Override
-    public void remove(String key) throws Exception {
+    public void remove(@NonNull String key) throws Exception {
         SharedPreferences.Editor editor = getWritePreference();
         editor.remove(key);
         editor.commit();
     }
 
     @Override
-    public StorageEntry getEntry(String key) {
+    public @Nullable StorageEntry getEntry(@NonNull String key) {
         return null;
     }
 
