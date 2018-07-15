@@ -14,11 +14,11 @@ import java.io.ObjectInputStream;
 /**
  * Created by alexeyglushkov on 01.02.15.
  */
-public class ObjectReader implements InputStreamDataReader {
+public class ObjectReader<T> implements InputStreamDataReader<T> {
     @Nullable private ObjectInputStream stream;
-    @Nullable private Converter converter;
+    @Nullable private Converter<Object, T> converter;
 
-    public ObjectReader(@Nullable Converter handler) {
+    public ObjectReader(@Nullable Converter<Object, T> handler) {
         converter = handler;
     }
 
@@ -35,15 +35,15 @@ public class ObjectReader implements InputStreamDataReader {
     }
 
     @Override
-    public @Nullable Object read() throws Exception {
+    public @Nullable T read() throws Exception {
         ExceptionTools.throwIfNull(stream, "ObjectReader.read: stream is null");
 
-        Object result = null;
+        T result = null;
         Object object = this.readStreamToObject(stream);
         if (converter != null) {
             result = converter.convert(object);
         } else {
-            result = object;
+            result = (T)object;
         }
 
         return result;

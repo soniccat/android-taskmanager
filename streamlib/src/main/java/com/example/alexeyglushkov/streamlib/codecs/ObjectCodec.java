@@ -9,12 +9,12 @@ import com.example.alexeyglushkov.streamlib.data_readers_and_writers.ObjectWrite
 /**
  * Created by alexeyglushkov on 04.10.15.
  */
-public class ObjectCodec extends SimpleCodec {
+public class ObjectCodec<T> extends SimpleCodec<T> {
     public ObjectCodec() {
         this(null, null);
     }
 
-    public ObjectCodec(@Nullable Converter writerConverter, @Nullable Converter readerConverter) {
-        super(new ObjectWriter(writerConverter), new ObjectReader(readerConverter));
+    public ObjectCodec(@Nullable Converter<T, Object> writerConverter, @Nullable Converter<Object, T> readerConverter) {
+        super(new ObjectWriter<T>(writerConverter), new ObjectReader<T>(readerConverter));
     }
 }

@@ -16,11 +16,11 @@ import java.io.OutputStream;
 /**
  * Created by alexeyglushkov on 04.10.15.
  */
-public class ObjectWriter implements OutputStreamDataWriter {
+public class ObjectWriter<T> implements OutputStreamDataWriter<T> {
     @Nullable private ObjectOutputStream stream;
-    @Nullable private Converter converter;
+    @Nullable private Converter<T, Object> converter;
 
-    public ObjectWriter(@Nullable Converter converter) {
+    public ObjectWriter(@Nullable Converter<T, Object> converter) {
         this.converter = converter;
     }
 
@@ -37,14 +37,17 @@ public class ObjectWriter implements OutputStreamDataWriter {
     }
 
     @Override
-    public void write(@NonNull Object object) throws IOException {
+    public void write(@NonNull T object) throws IOException {
         ExceptionTools.throwIfNull(stream, "ObjectWriter.write: stream is null");
 
+        Object toWriteObject = null;
         if (converter != null) {
-            object = converter.convert(object);
+            toWriteObject = converter.convert(object);
+        } else {
+            toWriteObject = object;
         }
 
-        writeObjectToStream(stream, object);
+        writeObjectToStream(stream, toWriteObject);
     }
 
     private void writeObjectToStream(@NonNull ObjectOutputStream stream, @NonNull Object object) throws IOException {

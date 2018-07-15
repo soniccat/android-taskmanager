@@ -1,5 +1,6 @@
 package com.example.alexeyglushkov.streamlib.data_readers_and_writers;
 
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,7 +14,7 @@ import java.io.InputStream;
 /**
  * Created by alexeyglushkov on 10.10.15.
  */
-public class BitmapReader implements InputStreamDataReader {
+public class BitmapReader implements InputStreamDataReader<Bitmap> {
     private @Nullable InputStream stream;
 
     @Override
@@ -23,7 +24,7 @@ public class BitmapReader implements InputStreamDataReader {
     }
 
     @Override
-    public Object read() {
+    public Bitmap read() {
         ExceptionTools.throwIfNull(stream, "BitmapReader.read: stream is null");
         return BitmapFactory.decodeStream(stream);
     }

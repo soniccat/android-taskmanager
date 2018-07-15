@@ -14,7 +14,7 @@ import java.io.OutputStream;
 /**
  * Created by alexeyglushkov on 10.10.15.
  */
-public class BitmapWriter implements OutputStreamDataWriter {
+public class BitmapWriter implements OutputStreamDataWriter<Bitmap> {
     private @Nullable OutputStream stream;
     private Bitmap.CompressFormat format;
     private int quality;
@@ -37,10 +37,8 @@ public class BitmapWriter implements OutputStreamDataWriter {
     }
 
     @Override
-    public void write(@NonNull Object object) throws Exception {
+    public void write(@NonNull Bitmap bitmap) throws Exception {
         ExceptionTools.throwIfNull(stream, "BitmapWriter.write: stream is null");
-
-        Bitmap bitmap = (Bitmap)object;
         boolean isCompressed = bitmap.compress(format, quality, stream);
 
         if (!isCompressed) {

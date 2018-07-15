@@ -11,7 +11,7 @@ import java.io.OutputStream;
 public class OutputStreamDataWriters {
 
     // call write on a wrapped stream once and closeWrite the wrapped stream
-    public static void writeOnce(@NonNull OutputStreamDataWriter writer, @NonNull OutputStream stream, @NonNull Object object) throws Exception {
+    public static <T> void writeOnce(@NonNull OutputStreamDataWriter<T> writer, @NonNull OutputStream stream, @NonNull T object) throws Exception {
         writer.beginWrite(stream);
 
         try {

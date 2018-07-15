@@ -30,11 +30,11 @@ public class HttpServiceTask extends TransportTask implements IServiceTask {
     }
 
     private HttpTaskTransport createTransport() {
-        final ByteArrayHandler handler = getReader();
+        final ByteArrayHandler<String> handler = getReader();
 
-        HttpCacheableTransport transport = new HttpCacheableTransport(getProvider(), new HTTPConnectionBytesReader() {
+        HttpCacheableTransport<String> transport = new HttpCacheableTransport<>(getProvider(), new HTTPConnectionBytesReader<String>() {
             @Override
-            public Object convert(Object object) {
+            public String convert(byte[] object) {
                 return handler.convert(object);
             }
 
@@ -74,8 +74,8 @@ public class HttpServiceTask extends TransportTask implements IServiceTask {
         };
     }
 
-    protected ByteArrayHandler getReader() {
-        return new BytesStringConverter(null);
+    protected ByteArrayHandler<String> getReader() {
+        return new BytesStringConverter();
     }
 
     @Override

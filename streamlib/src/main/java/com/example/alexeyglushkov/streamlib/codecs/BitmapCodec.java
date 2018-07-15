@@ -8,7 +8,7 @@ import com.example.alexeyglushkov.streamlib.data_readers_and_writers.BitmapWrite
 /**
  * Created by alexeyglushkov on 10.10.15.
  */
-public class BitmapCodec extends SimpleCodec {
+public class BitmapCodec extends SimpleCodec<Bitmap> {
     public BitmapCodec() {
         this(Bitmap.CompressFormat.PNG, 100);
     }
