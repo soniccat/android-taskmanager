@@ -24,7 +24,7 @@ import java.io.FileWriter;
 @RunWith(AndroidJUnit4.class)
 public class StringWriterTests {
 
-    private StringWriter writer;
+    private StringWriter<String> writer;
 
     @Before
     public void setUp() throws Exception {
@@ -58,7 +58,7 @@ public class StringWriterTests {
                 "The company is not yet profitable, having lost nearly $112 million last year. This shows significantly improved margins when compared to losses of $210 million for 2016 and $326 million for 2015.";
 
 
-        writer = new StringWriter(null);
+        writer = new StringWriter<>(null);
 
         String path = getFilePath();
         File file = new File(path);
@@ -73,7 +73,7 @@ public class StringWriterTests {
 
         // Verify
         FileInputStream is = new FileInputStream(file);
-        String readString = (String)InputStreamDataReaders.readOnce(new StringReader(null), is);
+        String readString = InputStreamDataReaders.readOnce(new StringReader<String>(null), is);
 
         Assert.assertEquals(testString, readString);
     }

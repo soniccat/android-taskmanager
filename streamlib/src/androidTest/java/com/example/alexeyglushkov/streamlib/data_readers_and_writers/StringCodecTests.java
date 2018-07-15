@@ -61,11 +61,10 @@ public class StringCodecTests {
     @org.junit.Test
     public void testReadAndWrite() throws Exception {
         // Arrange
-        StringCodec codec = new StringCodec(new Converter() {
+        StringCodec<Test> codec = new StringCodec<>(new Converter<Test, String>() {
             @Override
-            public Object convert(Object object) {
-                Test testObj = (Test)object;
-                return "#" + testObj.getA() + "#" + testObj.getB() + "#";
+            public String convert(Test object) {
+                return "#" + object.getA() + "#" + object.getB() + "#";
             }
 
         }, new StringHandler<Test>() {
@@ -75,8 +74,7 @@ public class StringCodecTests {
                 int a = Integer.parseInt(values[1]);
                 int b = Integer.parseInt(values[2]);
 
-                Test testObj = new Test(a, b);
-                return testObj;
+                return new Test(a, b);
             }
         });
 
@@ -88,7 +86,7 @@ public class StringCodecTests {
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toString().getBytes());
 
-        Test readObj = (Test) InputStreamDataReaders.readOnce(codec, inputStream);
+        Test readObj = InputStreamDataReaders.readOnce(codec, inputStream);
 
         // Verify
         Assert.assertEquals(testObj, readObj);

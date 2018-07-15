@@ -38,7 +38,7 @@ public class StringReaderTests {
             "\n" +
             "The company is not yet profitable, having lost nearly $112 million last year. This shows significantly improved margins when compared to losses of $210 million for 2016 and $326 million for 2015.";
 
-    private StringReader reader;
+    private StringReader<String> reader;
 
     @Before
     public void setUp() throws Exception {
@@ -60,7 +60,7 @@ public class StringReaderTests {
     @Test
     public void testReadString() throws Exception {
         // Arrange
-        reader = new StringReader(null);
+        reader = new StringReader<>(null);
 
         String path = getFilePath();
         File file = new File(path);
@@ -71,7 +71,7 @@ public class StringReaderTests {
 
         // Act
         FileInputStream is = new FileInputStream(file);
-        String readString = (String)InputStreamDataReaders.readOnce(reader, is);
+        String readString = InputStreamDataReaders.readOnce(reader, is);
 
         // Verify
         Assert.assertEquals(testString, readString);
