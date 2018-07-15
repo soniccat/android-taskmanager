@@ -42,12 +42,7 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
         super.onViewStateRestored(view, savedInstanceState);
 
         this.savedInstanceState = savedInstanceState;
-
         getQuizletService().getLiveSets().observeForever(this);
-//        if (getQuizletService().getState() != QuizletService.State.Uninitialized) {
-//            handleLoadedSets();
-//            view.reload(getItems());
-//        }
     }
 
     @Override

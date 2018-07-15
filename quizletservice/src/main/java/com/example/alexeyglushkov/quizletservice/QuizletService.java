@@ -22,21 +22,11 @@ import java.util.List;
  */
 public class QuizletService extends SimpleService {
 
-    // on error we return back to the state before loading
-//    public enum State {
-//        Uninitialized,
-//        Restored,
-//        Loaded,
-//        Loading
-//    }
-
     static private final String SERVER = "https://api.quizlet.com/2.0";
 
     @NonNull
     private NonNullMutableLiveData<Resource<List<QuizletSet>>> sets
             = new NonNullMutableLiveData<>(new Resource<List<QuizletSet>>());
-
-    //private State state = State.Uninitialized;
 
     //// Initialization
 
@@ -45,20 +35,6 @@ public class QuizletService extends SimpleService {
         setServiceCommandProvider(commandProvider);
         setServiceCommandRunner(commandRunner);
     }
-
-    //// Events
-//
-//    private void onStateChanged(State oldState) {
-//        for (WeakReference<QuizletServiceListener> ref : listeners) {
-//            ref.get().onStateChanged(this, oldState);
-//        }
-//    }
-//
-//    private void onSetsLoadError(Error error) {
-//        for (WeakReference<QuizletServiceListener> ref : listeners) {
-//            ref.get().onLoadError(this, error);
-//        }
-//    }
 
     //// Actions
 
@@ -149,19 +125,6 @@ public class QuizletService extends SimpleService {
         return command;
     }
 
-    // Listeners
-//
-//    public void addListener(QuizletServiceListener listener) {
-//        if (!listeners.contains(listener)) {
-//            listeners.add(new WeakReference<>(listener));
-//        }
-//    }
-//
-//    public void removeListener(QuizletServiceListener listener) {
-//        listeners.remove(listener);
-//    }
-
-
     //// Setters
 
     private void setState(Resource.State newState) {
@@ -231,18 +194,6 @@ public class QuizletService extends SimpleService {
         return result;
     }
 
-//    public State getState() {
-//        return state;
-//    }
-//
-//    public boolean isLoading() {
-//        return getState() == State.Loading;
-//    }
-//
-//    public boolean hasData() {
-//        return getSets().size() > 0;
-//    }
-
     // Cast Getters
 
     private OAuthCredentials getOAuthCredentials() {
@@ -252,11 +203,4 @@ public class QuizletService extends SimpleService {
     private QuizletCommandProvider getQuizletCommandProvider() {
         return (QuizletCommandProvider)commandProvider;
     }
-
-    //// Interfaces
-
-//    public interface QuizletServiceListener {
-//        void onStateChanged(QuizletService service, State oldState);
-//        void onLoadError(QuizletService service, Error error);
-//    }
 }
