@@ -1,6 +1,7 @@
 package com.example.alexeyglushkov.streamlib.data_readers_and_writers;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.example.alexeyglushkov.streamlib.convertors.Converter;
 
@@ -8,17 +9,19 @@ import com.example.alexeyglushkov.streamlib.convertors.Converter;
  * Created by alexeyglushkov on 24.02.18.
  */
 
-public class StringWriter extends ByteArrayWriter {
-    public StringWriter(final Converter converter) {
-        super(new Converter() {
+public class StringWriter<T> extends ByteArrayWriter<T> {
+    public StringWriter(@Nullable final Converter<T, String> converter) {
+        super(new Converter<T, byte[]>() {
             @Override
-            public Object convert(Object object) {
+            public byte[] convert(T object) {
+                String result = null;
                 if (converter != null) {
-                    object = converter.convert(object);
+                    result = converter.convert(object);
+                } else {
+                    result = (String)object;
                 }
 
-                String str = (String)object;
-                return str.getBytes();
+                return result.getBytes();
             }
         });
     }

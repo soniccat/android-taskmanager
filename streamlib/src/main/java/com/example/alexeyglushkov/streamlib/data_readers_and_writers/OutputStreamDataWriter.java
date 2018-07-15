@@ -11,9 +11,9 @@ import java.io.OutputStream;
  */
 // TODO: think about OutputDataWriter which rely on Object in beginWrite
 //       to be able to implement a database writer for example
-public interface OutputStreamDataWriter {
+public interface OutputStreamDataWriter<T> {
     void beginWrite(@NonNull OutputStream stream) throws Exception;
-    void write(@NonNull Object object) throws Exception;
+    void write(@NonNull T object) throws Exception;
     void closeWrite() throws Exception;
     void setProgressUpdater(@NonNull ProgressUpdater progressUpdater);
 }

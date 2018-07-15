@@ -12,11 +12,11 @@ import java.io.OutputStream;
 /**
  * Created by alexeyglushkov on 04.10.15.
  */
-public class SimpleCodec implements Codec {
-    @NonNull private OutputStreamDataWriter writer;
-    @NonNull private InputStreamDataReader reader;
+public class SimpleCodec<T> implements Codec<T> {
+    @NonNull private OutputStreamDataWriter<T> writer;
+    @NonNull private InputStreamDataReader<T> reader;
 
-    public SimpleCodec(@NonNull OutputStreamDataWriter writer, @NonNull InputStreamDataReader reader) {
+    public SimpleCodec(@NonNull OutputStreamDataWriter<T> writer, @NonNull InputStreamDataReader<T> reader) {
         this.writer = writer;
         this.reader = reader;
     }
@@ -32,12 +32,12 @@ public class SimpleCodec implements Codec {
     }
 
     @Override
-    public void write(@NonNull Object value) throws Exception {
+    public void write(@NonNull T value) throws Exception {
         writer.write(value);
     }
 
     @Override
-    public @Nullable Object read() throws Exception {
+    public @Nullable T read() throws Exception {
         return reader.read();
     }
 

@@ -7,6 +7,5 @@ import com.example.alexeyglushkov.streamlib.convertors.Converter;
 /**
  * Created by alexeyglushkov on 01.02.15.
  */
-public interface BitmapHandler extends Converter {
-    Object handleBitmap(Bitmap bitmap);
+public interface BitmapHandler<T> extends Converter<Bitmap, T> {
 }

@@ -9,8 +9,8 @@ import java.io.InputStream;
 public class InputStreamDataReaders {
 
     // call read on a wrapped stream once and closeWrite the wrapped stream
-    public static Object readOnce(InputStreamDataReader reader, InputStream stream) throws Exception {
-        Object result = null;
+    public static <T> T readOnce(InputStreamDataReader<T> reader, InputStream stream) throws Exception {
+        T result = null;
         reader.beginRead(stream);
 
         try {

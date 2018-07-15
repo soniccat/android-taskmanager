@@ -16,17 +16,17 @@ import java.io.ByteArrayInputStream;
 /**
  * Created by alexeyglushkov on 26.11.15.
  */
-public class HttpCacheableTransport extends HttpBytesTransport {
+public class HttpCacheableTransport<T> extends HttpBytesTransport<T> {
     private static final String TAG = "CHLT";
 
     private boolean needStore = false;
     private @Nullable IStorageClient cacheClient;
 
-    public HttpCacheableTransport(HttpURLConnectionProvider provider, HTTPConnectionBytesReader handler) {
+    public HttpCacheableTransport(HttpURLConnectionProvider provider, HTTPConnectionBytesReader<T> handler) {
         this(provider, handler, null);
     }
 
-    public HttpCacheableTransport(HttpURLConnectionProvider provider, HTTPConnectionBytesReader handler, @Nullable IStorageClient cacheClient) {
+    public HttpCacheableTransport(HttpURLConnectionProvider provider, HTTPConnectionBytesReader<T> handler, @Nullable IStorageClient cacheClient) {
         super(provider, handler);
         this.cacheClient = cacheClient;
     }

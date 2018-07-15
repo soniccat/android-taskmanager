@@ -28,7 +28,7 @@ public class ImageLoader {
     }
 
     public static Task loadImage(final Handler handler, final Image image, String destinationId, final ImageLoader.LoadCallback callback) {
-        InputStreamDataReader streamReader = new ByteArrayReader(new BytesBitmapConverter(null));
+        InputStreamDataReader streamReader = new ByteArrayReader(new BytesBitmapConverter());
         HTTPConnectionStreamReader reader = new HTTPConnectionStreamReaderAdaptor(streamReader);
         final TransportTask transportTask = createTask(image, destinationId, reader);
 

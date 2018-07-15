@@ -11,10 +11,10 @@ import java.net.HttpURLConnection;
 /**
  * Created by alexeyglushkov on 31.10.15.
  */
-public class HTTPConnectionStreamReaderAdaptor implements HTTPConnectionStreamReader {
-    @NonNull private InputStreamDataReader reader;
+public class HTTPConnectionStreamReaderAdaptor<T> implements HTTPConnectionStreamReader<T> {
+    @NonNull private InputStreamDataReader<T> reader;
 
-    public HTTPConnectionStreamReaderAdaptor(@NonNull InputStreamDataReader reader) {
+    public HTTPConnectionStreamReaderAdaptor(@NonNull InputStreamDataReader<T> reader) {
         this.reader = reader;
     }
 
@@ -33,7 +33,7 @@ public class HTTPConnectionStreamReaderAdaptor implements HTTPConnectionStreamRe
     }
 
     @Override
-    public Object read() throws Exception {
+    public T read() throws Exception {
         return reader.read();
     }
 

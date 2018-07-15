@@ -15,20 +15,20 @@ import java.io.InputStream;
 /**
  * Created by alexeyglushkov on 25.01.15.
  */
-public class ByteArrayReader implements InputStreamDataReader {
+public class ByteArrayReader<T> implements InputStreamDataReader<T> {
     private @Nullable InputStream stream;
-    private ByteArrayHandler byteArrayHandler;
+    private ByteArrayHandler<T> byteArrayHandler;
     private ProgressUpdater progressUpdater;
 
     private boolean keepByteArray;
     private byte[] byteArray;
 
-    public ByteArrayReader(ByteArrayHandler handler, boolean keepByteArray) {
+    public ByteArrayReader(ByteArrayHandler<T> handler, boolean keepByteArray) {
         byteArrayHandler = handler;
         this.keepByteArray = keepByteArray;
     }
 
-    public ByteArrayReader(ByteArrayHandler handler) {
+    public ByteArrayReader(ByteArrayHandler<T> handler) {
         this.byteArrayHandler = handler;
     }
 
@@ -45,7 +45,7 @@ public class ByteArrayReader implements InputStreamDataReader {
     }
 
     @Override
-    public Object read() throws IOException {
+    public T read() throws IOException {
         ExceptionTools.throwIfNull(stream, "ByteArrayReader.read: stream is null");
 
         byte[] byteArray = this.readStreamToByteArray(stream);
@@ -53,11 +53,11 @@ public class ByteArrayReader implements InputStreamDataReader {
             this.byteArray = byteArray;
         }
 
-        Object result = null;
+        T result = null;
         if (byteArrayHandler != null && byteArray != null) {
-            result = byteArrayHandler.handleByteArrayBuffer(byteArray);
+            result = byteArrayHandler.convert(byteArray);
         } else {
-            result = byteArray;
+            result = (T)byteArray;
         }
 
         return result;

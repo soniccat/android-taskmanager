@@ -68,20 +68,15 @@ public class StringCodecTests {
                 return "#" + testObj.getA() + "#" + testObj.getB() + "#";
             }
 
-        }, new StringHandler() {
+        }, new StringHandler<Test>() {
             @Override
-            public Object handleString(String data) {
+            public Test convert(String data) {
                 String[] values = data.split("#");
                 int a = Integer.parseInt(values[1]);
                 int b = Integer.parseInt(values[2]);
 
                 Test testObj = new Test(a, b);
                 return testObj;
-            }
-
-            @Override
-            public Object convert(Object object) {
-                return handleString((String)object);
             }
         });
 

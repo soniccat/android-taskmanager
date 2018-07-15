@@ -14,11 +14,11 @@ import java.io.OutputStream;
 /**
  * Created by alexeyglushkov on 27.09.15.
  */
-public class ByteArrayWriter implements OutputStreamDataWriter {
+public class ByteArrayWriter<T> implements OutputStreamDataWriter<T> {
     private @Nullable OutputStream stream;
-    private Converter converter;
+    private Converter<T, byte[]> converter;
 
-    public ByteArrayWriter(Converter converter) {
+    public ByteArrayWriter(Converter<T, byte[]> converter) {
         this.converter = converter;
     }
 
@@ -35,14 +35,16 @@ public class ByteArrayWriter implements OutputStreamDataWriter {
     }
 
     @Override
-    public void write(@NonNull Object object) throws Exception {
+    public void write(@NonNull T object) throws Exception {
         ExceptionTools.throwIfNull(stream, "ByteArrayWriter.write: stream is null");
 
+        byte[] buffer = null;
         if (converter != null) {
-            object = this.converter.convert(object);
+            buffer = this.converter.convert(object);
+        } else {
+            buffer = (byte[])object;
         }
 
-        byte[] buffer = (byte[])object;
         writeByteArray(stream, buffer);
     }
 

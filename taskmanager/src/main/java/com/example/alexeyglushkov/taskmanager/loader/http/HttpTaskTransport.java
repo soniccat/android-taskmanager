@@ -18,9 +18,9 @@ import java.net.HttpURLConnection;
  * Created by alexeyglushkov on 28.01.18.
  */
 
-public class HttpTaskTransport implements TaskTransport {
+public class HttpTaskTransport<T> implements TaskTransport {
     protected HttpURLConnectionProvider provider;
-    protected HTTPConnectionStreamReader streamReader;
+    protected HTTPConnectionStreamReader<T> streamReader;
 
     protected int contentLength;
     protected int responseCode;
@@ -33,7 +33,7 @@ public class HttpTaskTransport implements TaskTransport {
 
     private Listener listener;
 
-    public HttpTaskTransport(HttpURLConnectionProvider provider, HTTPConnectionStreamReader streamReader) {
+    public HttpTaskTransport(HttpURLConnectionProvider provider, HTTPConnectionStreamReader<T> streamReader) {
         this.provider = provider;
         this.streamReader = streamReader;
     }
@@ -118,7 +118,7 @@ public class HttpTaskTransport implements TaskTransport {
         isCancelled = true;
     }
 
-    protected void setStreamReader(HTTPConnectionStreamReader handler) {
+    protected void setStreamReader(HTTPConnectionStreamReader<T> handler) {
         this.streamReader = handler;
     }
 
@@ -173,11 +173,11 @@ public class HttpTaskTransport implements TaskTransport {
     private String getErrorString(HttpURLConnection connection) {
         String result = "HttpLoadTask load error";
         try {
-            StringReader errorReader = new StringReader(null);
+            StringReader<String> errorReader = new StringReader<String>(null);
             String errorString = "";
             InputStream errorStream = connection.getErrorStream();
             if (errorStream != null) {
-                errorString = (String) InputStreamDataReaders.readOnce(errorReader, errorStream);
+                errorString = InputStreamDataReaders.readOnce(errorReader, errorStream);
             }
 
             result = "HttpLoadTask load error, url " + connection.getURL() + " code: " + connection.getResponseCode() + " message: " + connection.getResponseMessage() + " response " + errorString;

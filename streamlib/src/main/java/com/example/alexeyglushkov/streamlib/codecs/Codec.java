@@ -32,5 +32,5 @@ import com.example.alexeyglushkov.streamlib.data_readers_and_writers.OutputStrea
 /**
  * Serializer helps to save and to load values of some type to byte streams.
  */
-public interface Codec extends InputStreamDataReader, OutputStreamDataWriter {
+public interface Codec<T> extends InputStreamDataReader<T>, OutputStreamDataWriter<T> {
 }

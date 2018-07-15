@@ -35,12 +35,7 @@ public class HttpServiceTask extends TransportTask implements IServiceTask {
         HttpCacheableTransport transport = new HttpCacheableTransport(getProvider(), new HTTPConnectionBytesReader() {
             @Override
             public Object convert(Object object) {
-                return handleByteArrayBuffer((byte[])object);
-            }
-
-            @Override
-            public Object handleByteArrayBuffer(byte[] byteArray) {
-                return handler.handleByteArrayBuffer(byteArray);
+                return handler.convert(object);
             }
 
             @Override
