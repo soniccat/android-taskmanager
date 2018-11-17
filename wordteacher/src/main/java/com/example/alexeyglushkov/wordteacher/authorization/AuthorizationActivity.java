@@ -1,7 +1,7 @@
 package com.example.alexeyglushkov.wordteacher.authorization;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 

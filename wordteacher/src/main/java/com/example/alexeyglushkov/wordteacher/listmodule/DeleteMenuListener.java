@@ -1,8 +1,8 @@
 package com.example.alexeyglushkov.wordteacher.listmodule;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
+import androidx.annotation.NonNull;
+import com.google.android.material.snackbar.Snackbar;
 import android.view.View;
 
 import com.example.alexeyglushkov.wordteacher.R;

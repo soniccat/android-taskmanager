@@ -1,11 +1,9 @@
 package com.example.alexeyglushkov.streamlib.data_readers_and_writers;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
-
-import com.example.alexeyglushkov.streamlib.handlers.StringHandler;
+import androidx.annotation.NonNull;
+import androidx.test.InstrumentationRegistry;
+import androidx.test.runner.AndroidJUnit4;
 
 import junit.framework.Assert;
 
@@ -16,7 +14,6 @@ import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 
 /**

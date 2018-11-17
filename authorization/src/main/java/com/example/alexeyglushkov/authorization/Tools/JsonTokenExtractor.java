@@ -2,7 +2,7 @@ package com.example.alexeyglushkov.authorization.Tools;
 
 import com.example.alexeyglushkov.authorization.OAuth.Token;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -26,8 +26,8 @@ import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 import com.example.alexeyglushkov.taskmanager.ui.TaskManagerView;
 
 import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Pair;
@@ -37,7 +37,7 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 
 public class RssItemsActivity extends AppCompatActivity implements RssItemsAdapter.RssItemsAdapterListener, TaskManagerSnapshot.OnSnapshotChangedListener, ProgressListener {

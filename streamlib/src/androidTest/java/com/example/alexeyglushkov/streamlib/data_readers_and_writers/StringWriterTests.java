@@ -1,9 +1,9 @@
 package com.example.alexeyglushkov.streamlib.data_readers_and_writers;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.annotation.NonNull;
+import androidx.test.InstrumentationRegistry;
+import androidx.test.runner.AndroidJUnit4;
 
 import junit.framework.Assert;
 

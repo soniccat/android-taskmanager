@@ -1,8 +1,10 @@
 package com.example.alexeyglushkov.authorization.OAuth;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import java.io.Serializable;
+
+import androidx.annotation.NonNull;
 
 /**
  * Represents an OAuth token (either request or access token) and its secret
@@ -23,42 +25,35 @@ public class Token implements Serializable
    * @param token token value. Can't be null.
    * @param secret token secret. Can't be null.
    */
-  public Token(String token, String secret)
-  {
+  public Token(String token, String secret) {
     this(token, secret, null);
   }
 
-  public Token(String token, String secret, String rawResponse)
-  {
-    Assert.assertTrue(token != null);
-    Assert.assertTrue(secret != null);
+  public Token(String token, String secret, String rawResponse) {
+    Assert.assertNotNull(token);
+    Assert.assertNotNull(secret);
 
     this.token = token;
     this.secret = secret;
     this.rawResponse = rawResponse;
   }
 
-  public String getToken()
-  {
+  public String getToken() {
     return token;
   }
 
-  public String getSecret()
-  {
+  public String getSecret() {
     return secret;
   }
 
-  public String getRawResponse()
-  {
-    if (rawResponse == null)
-    {
+  public String getRawResponse() {
+    if (rawResponse == null) {
       throw new IllegalStateException("This token object was not constructed by scribe and does not have a rawResponse");
     }
     return rawResponse;
   }
 
-  public String getParameter(String parameter)
-  {
+  public String getParameter(String parameter) {
     String value = null;
     for (String str : this.getRawResponse().split("&"))
     {
@@ -74,17 +69,15 @@ public class Token implements Serializable
     return value;
   }
 
-  @Override
-  public String toString()
-  {
+  @Override @NonNull
+  public String toString() {
     return String.format("Token[%s , %s]", token, secret);
   }
 
   /**
    * Returns true if the token is empty (token = "", secret = "")
    */
-  public boolean isEmpty()
-  {
+  public boolean isEmpty() {
     return "".equals(this.token) && "".equals(this.secret);
   }
 
@@ -93,14 +86,12 @@ public class Token implements Serializable
    *
    * Useful for two legged OAuth.
    */
-  public static Token empty()
-  {
+  public static Token empty() {
     return new Token("", "");
   }
 
   @Override
-  public boolean equals(Object o)
-  {
+  public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
@@ -109,8 +100,7 @@ public class Token implements Serializable
   }
 
   @Override
-  public int hashCode()
-  {
-    return 31 * token.hashCode() + secret.hashCode();
+  public int hashCode() {
+    return 31 * token.hashCode() + 31 * secret.hashCode();
   }
 }

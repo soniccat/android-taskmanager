@@ -1,23 +1,17 @@
 package com.example.alexeyglushkov.authorization.Api;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
-import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.OAuth.OAuth20AuthorizerImpl;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthConfig;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthConstants;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthCredentials;
-import com.example.alexeyglushkov.authorization.OAuth.TokenExtractor20Impl;
-import com.example.alexeyglushkov.authorization.Tools.TokenExtractor;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
-import com.example.alexeyglushkov.authorization.requestbuilder.Verb;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Default implementation of the OAuth protocol, version 2.0 (draft 11)

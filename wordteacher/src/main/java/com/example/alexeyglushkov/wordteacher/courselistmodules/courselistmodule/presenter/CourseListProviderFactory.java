@@ -2,7 +2,7 @@ package com.example.alexeyglushkov.wordteacher.courselistmodules.courselistmodul
 
 import android.os.Bundle;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import java.util.List;
 

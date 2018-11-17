@@ -1,16 +1,16 @@
 package com.example.alexeyglushkov.cachemanager;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.annotation.UiThreadTest;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.InstrumentationRegistry;
+import androidx.test.annotation.UiThreadTest;
+import androidx.test.runner.AndroidJUnit4;
 
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageCleaner;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageMetadata;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
 import com.example.alexeyglushkov.tools.TimeTools;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.After;
 import org.junit.Before;

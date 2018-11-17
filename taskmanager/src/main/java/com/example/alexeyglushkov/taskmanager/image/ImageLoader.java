@@ -3,7 +3,7 @@ package com.example.alexeyglushkov.taskmanager.image;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.example.alexeyglushkov.streamlib.convertors.BytesBitmapConverter;
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.ByteArrayReader;
@@ -16,7 +16,7 @@ import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.Tasks;
 import com.example.alexeyglushkov.tools.HandlerTools;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 // Because Image doesn't store loaded data we should use ImageLoader to get the data from callback
 

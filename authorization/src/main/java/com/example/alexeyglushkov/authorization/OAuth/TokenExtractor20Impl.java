@@ -2,7 +2,7 @@ package com.example.alexeyglushkov.authorization.OAuth;
 
 import com.example.alexeyglushkov.authorization.Tools.TokenExtractor;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;

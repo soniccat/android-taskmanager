@@ -6,7 +6,7 @@ import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import java.util.List;
 

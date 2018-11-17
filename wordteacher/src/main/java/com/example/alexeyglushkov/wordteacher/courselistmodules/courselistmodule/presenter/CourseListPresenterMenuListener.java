@@ -1,8 +1,8 @@
 package com.example.alexeyglushkov.wordteacher.courselistmodules.courselistmodule.presenter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.PopupMenu;
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 

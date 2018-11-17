@@ -1,6 +1,6 @@
 package com.example.alexeyglushkov.cachemanager.disk;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.example.alexeyglushkov.cachemanager.StorageEntry;
 import com.example.alexeyglushkov.cachemanager.StorageMetadata;
@@ -9,7 +9,7 @@ import com.example.alexeyglushkov.streamlib.codecs.ObjectCodec;
 import com.example.alexeyglushkov.streamlib.codecs.Codec;
 import com.example.alexeyglushkov.tools.TimeTools;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.io.FileNotFoundException;

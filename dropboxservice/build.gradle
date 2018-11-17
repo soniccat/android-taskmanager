@@ -20,8 +20,8 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    testImplementation 'junit:junit:4.12'
-    implementation 'com.android.support:appcompat-v7:' + project.ext.supportLibVersion
+    implementation 'junit:junit:' + project.ext.junitVersion
+    implementation 'androidx.appcompat:appcompat:' + project.ext.appCompatVersion
     api files('libs/dropbox-android-sdk-1.6.3.jar')
     implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
     implementation project(path: ':service')

@@ -5,7 +5,7 @@ import android.content.Intent;
 
 import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import java.lang.ref.WeakReference;
 

@@ -1,6 +1,6 @@
 package com.example.alexeyglushkov.dropboxservice;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;

@@ -1,7 +1,7 @@
 package com.example.alexeyglushkov.wordteacher.quizletlistmodules.termlistmodule.presenter;
 
 import android.content.Context;
-import android.support.v7.widget.PopupMenu;
+import androidx.appcompat.widget.PopupMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;

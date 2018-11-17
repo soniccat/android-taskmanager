@@ -2,8 +2,8 @@ package com.example.alexeyglushkov.wordteacher.learningmodule.presenter;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.presenter.ActivityModuleItem;
 import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.view.ActivityModuleItemView;
@@ -24,7 +24,6 @@ import com.example.alexeyglushkov.wordteacher.main.MainApplication;
 import com.example.alexeyglushkov.wordteacher.model.Card;
 import com.example.alexeyglushkov.wordteacher.model.Course;
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder;
-import com.example.alexeyglushkov.wordteacher.sessionresultmodule.presenter.SessionResultPresenter;
 
 /**
  * Created by alexeyglushkov on 08.01.17.

@@ -1,7 +1,7 @@
 package com.example.alexeyglushkov.dropboxservice;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.RESTUtility;
@@ -11,7 +11,7 @@ import com.example.alexeyglushkov.authtaskmanager.IServiceTask;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTask;
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import java.io.File;
 import java.util.ArrayList;

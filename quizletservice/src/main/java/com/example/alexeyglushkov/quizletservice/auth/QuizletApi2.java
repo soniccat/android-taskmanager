@@ -1,6 +1,6 @@
 package com.example.alexeyglushkov.quizletservice.auth;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Base64;
 
 import com.example.alexeyglushkov.authorization.Api.DefaultApi20;
@@ -8,20 +8,15 @@ import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthConfig;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthConstants;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthCredentials;
-import com.example.alexeyglushkov.authorization.OAuth.Token;
-import com.example.alexeyglushkov.authorization.Tools.JsonTokenExtractor;
-import com.example.alexeyglushkov.authorization.Tools.TokenExtractor;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
 import com.example.alexeyglushkov.authorization.requestbuilder.Verb;
 import com.example.alexeyglushkov.tools.TimeTools;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.Random;
 

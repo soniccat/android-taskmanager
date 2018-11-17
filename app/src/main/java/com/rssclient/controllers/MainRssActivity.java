@@ -1,6 +1,5 @@
 package com.rssclient.controllers;
 
-import java.io.Serializable;
 import java.net.MalformedURLException;
 
 import java.net.URL;
@@ -11,7 +10,7 @@ import com.rssclient.model.RssFeed;
 import com.rssclient.model.RssStorage;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;

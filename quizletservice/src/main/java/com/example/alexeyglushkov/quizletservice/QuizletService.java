@@ -1,6 +1,6 @@
 package com.example.alexeyglushkov.quizletservice;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
@@ -14,7 +14,6 @@ import com.example.alexeyglushkov.service.SimpleService;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**

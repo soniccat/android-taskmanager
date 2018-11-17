@@ -1,6 +1,6 @@
 package com.example.alexeyglushkov.wordteacher.quizletlistmodules.setlistmodule.view;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.wordteacher.R;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import java.util.Locale;
 

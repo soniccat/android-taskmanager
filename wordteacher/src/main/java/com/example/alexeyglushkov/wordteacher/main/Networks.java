@@ -1,6 +1,6 @@
 package com.example.alexeyglushkov.wordteacher.main;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.dropbox.client2.android.AndroidAuthSession;
 import com.dropbox.client2.session.AppKeyPair;
@@ -19,7 +19,7 @@ import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package com.example.alexeyglushkov.cachemanager.disk;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.example.alexeyglushkov.cachemanager.StorageMetadata;
 import com.example.alexeyglushkov.cachemanager.disk.serializer.DiskMetadataCodec;
@@ -10,13 +10,9 @@ import com.example.alexeyglushkov.streamlib.codecs.Codec;
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.OutputStreamDataWriters;
 import com.example.alexeyglushkov.tools.TimeTools;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
  * Created by alexeyglushkov on 04.10.15.

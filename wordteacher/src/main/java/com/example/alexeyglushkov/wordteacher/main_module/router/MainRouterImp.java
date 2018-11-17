@@ -3,12 +3,11 @@ package com.example.alexeyglushkov.wordteacher.main_module.router;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.presenter.ActivityPresenter;
 import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.presenter.ActivityPresenterImp;
 import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.view.ActivityModuleView;
-import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.view.ActivityModuleViewImp;
 import com.example.alexeyglushkov.wordteacher.learningmodule.LearnActivity;
 import com.example.alexeyglushkov.wordteacher.learningmodule.presenter.LearnPresenterImp;
 import com.example.alexeyglushkov.wordteacher.learningmodule.LearnActivityFactory;

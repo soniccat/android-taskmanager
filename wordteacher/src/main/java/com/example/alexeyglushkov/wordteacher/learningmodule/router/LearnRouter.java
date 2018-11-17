@@ -1,7 +1,7 @@
 package com.example.alexeyglushkov.wordteacher.learningmodule.router;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.example.alexeyglushkov.wordteacher.model.LearnSession;
 

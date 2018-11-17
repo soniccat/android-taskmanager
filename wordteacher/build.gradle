@@ -26,11 +26,11 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:' + project.ext.supportLibVersion
-    implementation 'com.android.support:design:' + project.ext.supportLibVersion
-    implementation 'com.android.support:cardview-v7:' + project.ext.supportLibVersion
-    implementation 'com.android.support:support-annotations:' + project.ext.supportLibVersion
+    implementation 'androidx.appcompat:appcompat:' + project.ext.appCompatVersion
+    implementation "com.google.android.material:material:" + project.ext.materialVersion
+    implementation 'androidx.recyclerview:recyclerview:' + project.ext.appRecyclerViewVersion
     implementation 'android.arch.lifecycle:extensions:' + project.ext.archLifecycleVersion
+    implementation 'junit:junit:' + project.ext.junitVersion
     annotationProcessor 'android.arch.lifecycle:compiler:' + rootProject.archLifecycleVersion
     implementation project(path: ':quizletservice')
     implementation project(path: ':authcachemanager')

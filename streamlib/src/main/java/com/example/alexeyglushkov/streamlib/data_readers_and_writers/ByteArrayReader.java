@@ -1,7 +1,7 @@
 package com.example.alexeyglushkov.streamlib.data_readers_and_writers;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;

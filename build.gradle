@@ -5,7 +5,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.2'
+        classpath 'com.android.tools.build:gradle:3.2.1'
         classpath 'de.mobilej.unmock:UnMockPlugin:0.3.0'
     }
 }
@@ -17,16 +17,22 @@ allprojects {
     }
 
     project.ext {
-        compileSdkVersion = 27
+        compileSdkVersion = 28
         minSdkVersion = 14
-        targetSdkVersion = 27
+        targetSdkVersion = 28
         minifyEnabled = false
 
         applicationId = "com.example.alexeyglushkov.wordteacher"
         versionCode = 1
         versionName = "1.0"
 
-        supportLibVersion = "27.1.1"
-        archLifecycleVersion = "1.1.1"
+        appRecyclerViewVersion = "1.0.0"
+        junitVersion="4.12"
+        cardViewVersion = "1.0.0"
+        materialVersion = "1.0.0"
+        legacySupportVersion = "1.0.0"
+        annotationVersion = "1.0.0"
+        appCompatVersion = "1.0.0"
+        archLifecycleVersion = "2.0.0-rc01"
     }
 }

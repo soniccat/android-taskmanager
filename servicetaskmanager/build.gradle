@@ -20,7 +20,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:' + project.ext.supportLibVersion
+    implementation 'androidx.appcompat:appcompat:' + project.ext.appCompatVersion
     implementation project(':authorization')
     implementation project(':taskmanager')
     implementation project(':service')

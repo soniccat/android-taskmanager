@@ -2,8 +2,8 @@ package com.example.alexeyglushkov.wordteacher.main_module.view;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 import android.view.View;
 
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;

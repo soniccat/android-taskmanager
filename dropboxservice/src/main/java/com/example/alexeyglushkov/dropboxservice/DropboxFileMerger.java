@@ -1,13 +1,11 @@
 package com.example.alexeyglushkov.dropboxservice;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
-import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.UUID;
 
 /**

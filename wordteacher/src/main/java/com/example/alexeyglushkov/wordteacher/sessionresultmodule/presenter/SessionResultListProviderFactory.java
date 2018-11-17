@@ -7,7 +7,7 @@ import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProviderFac
 import com.example.alexeyglushkov.wordteacher.model.LearnSession;
 import com.example.alexeyglushkov.wordteacher.sessionresultmodule.view.SessionResultAdapterView;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import java.util.List;
 

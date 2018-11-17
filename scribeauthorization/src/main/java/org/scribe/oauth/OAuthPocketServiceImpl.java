@@ -1,9 +1,8 @@
 package org.scribe.oauth;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
-import org.scribe.builder.api.DefaultApi20;
 import org.scribe.builder.api.PocketApi20;
 import org.scribe.model.OAuthConfig;
 import org.scribe.model.OAuthConstants;

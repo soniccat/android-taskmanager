@@ -3,7 +3,7 @@ package com.example.alexeyglushkov.authorization.OAuth;
 import com.example.alexeyglushkov.authorization.Api.OAuthApi;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 /**
  * Implementation of the Builder pattern, with a fluent interface that creates a

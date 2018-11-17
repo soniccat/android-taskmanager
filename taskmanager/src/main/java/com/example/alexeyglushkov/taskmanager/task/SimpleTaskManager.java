@@ -3,14 +3,14 @@ package com.example.alexeyglushkov.taskmanager.task;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 import android.util.SparseArray;
 
 import com.example.alexeyglushkov.streamlib.CancelError;
 import com.example.alexeyglushkov.tools.HandlerTools;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package com.example.alexeyglushkov.taskmanager.loader.http;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 import com.example.alexeyglushkov.taskmanager.loader.transport.TaskTransport;

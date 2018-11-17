@@ -1,6 +1,6 @@
 package com.example.alexeyglushkov.authorization.requestbuilder;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;

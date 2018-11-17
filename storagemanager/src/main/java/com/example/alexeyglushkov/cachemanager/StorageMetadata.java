@@ -1,9 +1,7 @@
 package com.example.alexeyglushkov.cachemanager;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
-import java.io.Serializable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Created by alexeyglushkov on 02.05.16.

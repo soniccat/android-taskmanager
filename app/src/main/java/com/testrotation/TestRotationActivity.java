@@ -1,9 +1,9 @@
 package com.testrotation;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
@@ -14,10 +14,6 @@ import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskImpl;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 import com.example.alexeyglushkov.taskmanager.task.TaskManagerSnapshot;
-import com.example.alexeyglushkov.taskmanager.task.TaskPool;
-import com.example.alexeyglushkov.taskmanager.task.TaskProvider;
-import com.example.alexeyglushkov.taskmanager.task.WeakRefList;
-import com.example.alexeyglushkov.taskmanager.ui.TaskBarView;
 import com.example.alexeyglushkov.taskmanager.ui.TaskManagerView;
 import com.main.MainApplication;
 import com.rssclient.controllers.R;

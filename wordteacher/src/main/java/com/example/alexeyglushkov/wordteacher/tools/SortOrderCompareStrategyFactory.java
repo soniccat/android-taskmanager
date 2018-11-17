@@ -1,7 +1,7 @@
 package com.example.alexeyglushkov.wordteacher.tools;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategy;
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategyFactory;

@@ -1,31 +1,14 @@
 package com.authorization;
 
-import android.app.LoaderManager;
-import android.content.AsyncTaskLoader;
-import android.content.Context;
-import android.content.Loader;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.example.alexeyglushkov.authcachemanager.AccountCacheStore;
-import com.example.alexeyglushkov.authorization.Auth.Account;
-import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
-import com.example.alexeyglushkov.authorization.Auth.Authorizer;
-import com.example.alexeyglushkov.authorization.Api.Foursquare2Api;
-import com.example.alexeyglushkov.authorization.Auth.SimpleAccount;
-import com.example.alexeyglushkov.authorization.OAuth.OAuth20Authorizer;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient;
-import com.example.alexeyglushkov.authorization.OAuth.OAuthAuthorizerBuilder;
-import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider;
-import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
-import com.main.MainApplication;
 import com.main.Networks;
 import com.rssclient.controllers.R;
-
-import java.io.File;
 
 /**
  * Created by alexeyglushkov on 24.10.15.

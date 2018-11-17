@@ -1,14 +1,12 @@
 package com.example.alexeyglushkov.taskmanager.task;
 
 import android.os.Handler;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.example.alexeyglushkov.tools.HandlerTools;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * Created by alexeyglushkov on 28.05.17.

@@ -1,32 +1,24 @@
 package com.rssclient.controllers;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 import com.example.alexeyglushkov.taskmanager.image.Image;
-import com.example.alexeyglushkov.taskmanager.image.ImageLoader;
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
 import com.example.alexeyglushkov.tools.HandlerTools;
 import com.rssclient.model.RssItem;
-import com.example.alexeyglushkov.taskmanager.task.*;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.os.Handler;
-import android.os.Looper;
-import android.support.v4.content.ContextCompat;
-import android.util.Pair;
+
+import androidx.core.content.ContextCompat;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import junit.framework.Assert;
 
 public class RssItemsAdapter extends ArrayAdapter<RssItem> {
     private final Context context;

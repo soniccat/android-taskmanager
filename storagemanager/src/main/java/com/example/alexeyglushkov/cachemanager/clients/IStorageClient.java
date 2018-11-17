@@ -1,6 +1,6 @@
 package com.example.alexeyglushkov.cachemanager.clients;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Created by alexeyglushkov on 03.03.18.

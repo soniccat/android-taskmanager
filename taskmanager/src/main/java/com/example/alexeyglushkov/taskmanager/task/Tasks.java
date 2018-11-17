@@ -5,7 +5,7 @@ import android.util.Log;
 
 import com.example.alexeyglushkov.tools.HandlerTools;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 /**
  * Created by alexeyglushkov on 28.12.14.

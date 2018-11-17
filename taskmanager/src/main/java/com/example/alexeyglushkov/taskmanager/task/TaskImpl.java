@@ -8,7 +8,7 @@ import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 import com.example.alexeyglushkov.tools.HandlerTools;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

@@ -8,7 +8,7 @@ android {
         targetSdkVersion project.ext.targetSdkVersion
         versionCode project.ext.versionCode
         versionName project.ext.versionName
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -23,16 +23,16 @@ android {
 }
 
 dependencies {
-    implementation 'com.android.support:support-v4:'  + project.ext.supportLibVersion
-    implementation 'com.android.support:appcompat-v7:'  + project.ext.supportLibVersion
+    implementation 'androidx.legacy:legacy-support-v4:'  + project.ext.legacySupportVersion
+    implementation 'androidx.appcompat:appcompat:' + project.ext.appCompatVersion
     implementation 'com.google.dexmaker:dexmaker:1.2'
     implementation 'com.google.dexmaker:dexmaker-mockito:1.2'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':testsupport')
     implementation project(':streamlib')
     implementation project(':tools')
-    androidTestImplementation 'junit:junit:4.12'
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
+    implementation 'junit:junit:' + project.ext.junitVersion
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
+        exclude group: 'androidx.annotation', module: 'annotation'
     })
 }

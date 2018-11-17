@@ -1,7 +1,7 @@
 package com.example.alexeyglushkov.wordteacher.main_module.router;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.example.alexeyglushkov.wordteacher.model.Card;
 

@@ -1,6 +1,6 @@
 package com.example.alexeyglushkov.wordteacher.model;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;

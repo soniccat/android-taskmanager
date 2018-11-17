@@ -1,7 +1,7 @@
 package com.example.alexeyglushkov.wordteacher.ui;
 
 import android.content.Context;
-import android.support.v4.view.animation.FastOutLinearInInterpolator;
+import androidx.interpolator.view.animation.FastOutLinearInInterpolator;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;

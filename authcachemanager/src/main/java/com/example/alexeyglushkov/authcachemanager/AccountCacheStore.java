@@ -1,6 +1,6 @@
 package com.example.alexeyglushkov.authcachemanager;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;

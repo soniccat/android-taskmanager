@@ -1,6 +1,6 @@
 package com.main;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.example.alexeyglushkov.authorization.Api.Foursquare2Api;
 import com.example.alexeyglushkov.quizletservice.auth.QuizletApi2;
@@ -15,7 +15,7 @@ import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import java.util.List;
 

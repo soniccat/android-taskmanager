@@ -5,7 +5,7 @@ import android.os.Bundle;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import java.util.List;
 

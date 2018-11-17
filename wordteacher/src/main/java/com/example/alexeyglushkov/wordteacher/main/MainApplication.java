@@ -3,7 +3,7 @@ package com.example.alexeyglushkov.wordteacher.main;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.dropbox.client2.DropboxAPI;
 import com.example.alexeyglushkov.authcachemanager.AccountCacheStore;
@@ -31,7 +31,7 @@ import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManager;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import java.io.File;
 import java.util.UUID;

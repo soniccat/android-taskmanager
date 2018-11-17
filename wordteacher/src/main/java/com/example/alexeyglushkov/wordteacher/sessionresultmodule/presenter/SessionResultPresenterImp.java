@@ -1,7 +1,7 @@
 package com.example.alexeyglushkov.wordteacher.sessionresultmodule.presenter;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.presenter.ActivityModuleItem;
 import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.view.ActivityModuleItemView;

@@ -2,7 +2,7 @@ package com.example.alexeyglushkov.wordteacher.learningmodule.presenter;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.example.alexeyglushkov.wordteacher.learningmodule.LearnModule;
 import com.example.alexeyglushkov.wordteacher.learningmodule.view.LearnView;

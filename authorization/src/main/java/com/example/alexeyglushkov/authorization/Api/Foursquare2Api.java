@@ -8,7 +8,7 @@ import com.example.alexeyglushkov.authorization.Tools.TokenExtractor;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
 import com.example.alexeyglushkov.authorization.requestbuilder.Verb;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

@@ -1,19 +1,14 @@
 package com.example.alexeyglushkov.wordteacher.sessionresultmodule;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.Toolbar;
-import android.util.AttributeSet;
-import android.view.MenuItem;
-import android.view.View;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 
-import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.view.ActivityModuleView;
+import android.view.MenuItem;
+
 import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.view.ActivityModuleViewImp;
 import com.example.alexeyglushkov.wordteacher.R;
 
-import com.example.alexeyglushkov.wordteacher.main.BaseActivity;
-import com.example.alexeyglushkov.wordteacher.sessionresultmodule.view.SessionResultFragment;
 import com.example.alexeyglushkov.wordteacher.sessionresultmodule.view.SessionResultView;
 
 /**

@@ -1,7 +1,7 @@
 package com.example.alexeyglushkov.cachemanager.disk.serializer;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageMetadata;
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
