@@ -16,7 +16,7 @@ import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.Resource;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
-import com.example.alexeyglushkov.streamlib.CancelError;
+import com.example.alexeyglushkov.tools.CancelError;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 

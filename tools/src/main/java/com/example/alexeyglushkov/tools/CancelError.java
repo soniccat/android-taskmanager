@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.streamlib;
+package com.example.alexeyglushkov.tools;
 
 /**
  * Created by alexeyglushkov on 29.10.16.

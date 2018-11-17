@@ -8,6 +8,7 @@ import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProvider;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
+import com.example.alexeyglushkov.tools.CancelError;
 
 public class OAuth20AuthorizerImpl implements OAuth20Authorizer
 {
@@ -121,7 +122,14 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
 		OAuthWebClient.Callback callback = new OAuthWebClient.Callback() {
 			@Override
 			public void onReceivedError(Error error) {
-				AuthError authError = new AuthError(AuthError.Reason.InnerError, error);
+				AuthError.Reason reason;
+				if (error instanceof CancelError) {
+					reason = AuthError.Reason.Cancelled;
+				} else {
+					reason = AuthError.Reason.InnerError;
+				}
+
+				AuthError authError = new AuthError(reason, error);
                 onFinished(null, authError);
 			}
 

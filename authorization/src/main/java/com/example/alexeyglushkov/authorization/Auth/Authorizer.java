@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.authorization.Auth;
 
+import androidx.annotation.NonNull;
+
 /**
  * Created by alexeyglushkov on 31.10.15.
  */
@@ -20,22 +22,22 @@ public interface Authorizer {
         public enum Reason {
             InnerError,
             UnknownError,
-            Cancelled, // TODO: think about how to use with CancelError class
+            Cancelled,
             NotAuthorized // for services
         }
 
-        protected Reason reason;
+        protected @NonNull Reason reason;
 
-        public Reason getReason() {
+        public @NonNull Reason getReason() {
             return reason;
         }
 
-        public AuthError(Reason reason, Throwable throwable) {
+        public AuthError(@NonNull Reason reason, Throwable throwable) {
             super(throwable);
             this.reason = reason;
         }
 
-        public AuthError(String detailMessage, Reason reason, Throwable throwable) {
+        public AuthError(String detailMessage, @NonNull Reason reason, Throwable throwable) {
             super(detailMessage, throwable);
             this.reason = reason;
         }

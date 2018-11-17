@@ -1,11 +1,14 @@
 package com.example.alexeyglushkov.wordteacher.authorization;
 
 import android.os.Bundle;
+
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient;
+import com.example.alexeyglushkov.tools.CancelError;
 import com.example.alexeyglushkov.wordteacher.R;
 
 import com.example.alexeyglushkov.wordteacher.main.Networks;
@@ -20,7 +23,7 @@ public class AuthorizationActivity extends AppCompatActivity implements OAuthWeb
     private WebView webView;
 
     // TODO: think about pending intent or something else
-    private OAuthWebClient.Callback webCallback;
+    private @Nullable OAuthWebClient.Callback webCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +37,10 @@ public class AuthorizationActivity extends AppCompatActivity implements OAuthWeb
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (url.startsWith(Networks.CALLBACK_URL)) {
-                    webCallback.onResult(url);
+                    if (webCallback != null) {
+                        webCallback.onResult(url);
+                        webCallback = null;
+                    }
                     finish();
                     return true;
                 }
@@ -45,7 +51,10 @@ public class AuthorizationActivity extends AppCompatActivity implements OAuthWeb
             @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 super.onReceivedError(view, errorCode, description, failingUrl);
-                webCallback.onReceivedError(new Error("AuthorizationActivity webView error " + errorCode + " " + description));
+                if (webCallback != null) {
+                    webCallback.onReceivedError(new Error("AuthorizationActivity webView error " + errorCode + " " + description));
+                    webCallback = null;
+                }
                 finish();
             }
         });
@@ -56,6 +65,11 @@ public class AuthorizationActivity extends AppCompatActivity implements OAuthWeb
 
     @Override
     public void finish() {
+        if (webCallback != null) {
+            webCallback.onReceivedError(new CancelError());
+            webCallback = null;
+        }
+
         super.finish();
 
         if (AuthActivityProxy.getCurrentActivity() == this) {

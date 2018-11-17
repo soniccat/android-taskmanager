@@ -7,7 +7,7 @@ import androidx.annotation.Nullable;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.example.alexeyglushkov.streamlib.CancelError;
+import com.example.alexeyglushkov.tools.CancelError;
 import com.example.alexeyglushkov.tools.HandlerTools;
 
 import org.junit.Assert;
