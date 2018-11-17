@@ -80,21 +80,18 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet> imp
 
     @Override
     public void onChanged(@NonNull Resource<List<QuizletSet>> listResource) {
-        if (listResource.error != null) {
-            view.hideLoading();
-        } else {
-            onServiceStateChanged(listResource);
-        }
+        onServiceStateChanged(listResource);
     }
 
     private void onServiceStateChanged(@NonNull Resource<List<QuizletSet>> listResource) {
         boolean hasData = listResource.data != null && listResource.data.size() > 0;
         boolean isLoading = listResource.state == Resource.State.Loading;
 
-        if (!hasData && isLoading) {
+        if (listResource.error != null) {
+            view.hideLoading();
+        } else if (isLoading) {
             view.showLoading();
-
-        } else if (hasData && !isLoading) {
+        } else if (hasData) {
             handleLoadedSets();
         }
     }
