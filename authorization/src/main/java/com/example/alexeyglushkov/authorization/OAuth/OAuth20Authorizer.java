@@ -3,6 +3,9 @@ package com.example.alexeyglushkov.authorization.OAuth;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 
+import io.reactivex.Observable;
+import io.reactivex.Single;
+
 /**
  * The com.example.alexeyglushkov.wordteacher.main Scribe object.
  * 
@@ -12,27 +15,7 @@ import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
  */
 public interface OAuth20Authorizer extends Authorizer
 {
-  /**
-   * Retrieve the access token
-   * 
-   * @param requestToken request token (obtained previously)
-   * @param verifier verifier code
-   * @return access token
-   */
-  void retrieveAccessToken(String code, OAuthCompletion completion);
-  
-  /**
-   * Returns the URL where you should redirect your users to authenticate
-   * your application.
-   * 
-   * @param requestToken the request token you need to authorize
-   * @return the URL where you should redirect your users
-   */
+  Single<ServiceCommand> retrieveAccessToken(String code);
   String getAuthorizationUrl();
-
   void setWebClient(OAuthWebClient webClient);
-
-  interface OAuthCompletion {
-    void onCompleted(ServiceCommand command, AuthError error);
-  }
 }

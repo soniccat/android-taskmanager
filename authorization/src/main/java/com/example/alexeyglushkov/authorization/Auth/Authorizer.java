@@ -1,20 +1,18 @@
 package com.example.alexeyglushkov.authorization.Auth;
 
 import androidx.annotation.NonNull;
+import io.reactivex.Observable;
+import io.reactivex.Single;
 
 /**
  * Created by alexeyglushkov on 31.10.15.
  */
 public interface Authorizer {
-    void authorize(AuthorizerCompletion completion);
+    Single<AuthCredentials> authorize();
     void signCommand(ServiceCommand command, AuthCredentials credentials);
 
     void setServiceCommandProvider(ServiceCommandProvider provider);
     void setServiceCommandRunner(ServiceCommandRunner runner);
-
-    interface AuthorizerCompletion {
-        void onFinished(AuthCredentials credentials, AuthError error);
-    }
 
     class AuthError extends Error {
         private static final long serialVersionUID = 6206983256074915330L;

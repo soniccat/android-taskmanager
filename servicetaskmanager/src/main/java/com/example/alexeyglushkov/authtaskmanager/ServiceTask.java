@@ -36,16 +36,6 @@ public abstract class ServiceTask extends SimpleTask implements IServiceTask {
     }
 
     @Override
-    public void setServiceCommandCallback(final CommandCallback callback) {
-        setTaskCallback(new Task.Callback() {
-            @Override
-            public void onCompleted(boolean cancelled) {
-                callback.onCompleted(ServiceTask.this, getCommandError());
-            }
-        });
-    }
-
-    @Override
     public ServiceCommand getServiceCommand() {
         return this;
     }

@@ -1,9 +1,11 @@
 package com.example.alexeyglushkov.authorization.Auth;
 
+import io.reactivex.Single;
+
 /**
  * Created by alexeyglushkov on 01.11.15.
  */
 public interface ServiceCommandRunner {
-    void run(ServiceCommand command);
+    Single<ServiceCommand> run(ServiceCommand command);
     void cancel(ServiceCommand command);
 }

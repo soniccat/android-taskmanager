@@ -10,6 +10,8 @@ import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
 import com.example.alexeyglushkov.tools.CancelError;
 
+import io.reactivex.Single;
+
 public class OAuth20AuthorizerImpl implements OAuth20Authorizer
 {
 	private static final String VERSION = "2.0";
@@ -51,7 +53,7 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
 	}
 
 	@Override
-	public void retrieveAccessToken(String code, final OAuthCompletion completion) {
+	public Single<ServiceCommand> retrieveAccessToken(String code) {
 		HttpUrlConnectionBuilder builder = new HttpUrlConnectionBuilder();
 		api.fillAccessTokenConnectionBuilder(builder, config, code);
 
@@ -61,6 +63,7 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
 			public void onCompleted(ServiceCommand command, Error error) {
                 if (error != null) {
                     error = new AuthError("OAuthPocketServiceImpl authorize: Can't receive AccessToken", AuthError.Reason.InnerError, error);
+
                 }
 
 				completion.onCompleted(command, (AuthError)error);
@@ -84,16 +87,16 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
 	}
 
 	@Override
-	public void authorize(final AuthorizerCompletion completion) {
+	public Single<AuthCredentials> authorize() {
 		webAuthorization(new WebAuthCallback() {
             @Override
             public void onFinished(String code, AuthError error) {
-                onWebAuthFinished(code, error, completion);
+                onWebAuthFinished(code, error);
             }
         });
 	}
 
-    private void onWebAuthFinished(String code, AuthError error, final AuthorizerCompletion completion) {
+    private Single<AuthCredentials> onWebAuthFinished(String code, AuthError error) {
         if (code == null || error != null) {
             completion.onFinished(null, error);
 

@@ -22,11 +22,6 @@ public interface ServiceCommand extends ServiceCommandProxy{
 
     Error getCommandError();
     boolean isCancelled();
-    void setServiceCommandCallback(CommandCallback callback);
 
     void clear();
-
-    interface CommandCallback {
-        void onCompleted(ServiceCommand command, Error error);
-    }
 }

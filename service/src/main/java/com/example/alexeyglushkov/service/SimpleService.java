@@ -13,6 +13,8 @@ import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.service.Service;
 import com.example.alexeyglushkov.tools.HandlerTools;
 
+import io.reactivex.Single;
+
 /**
  * Created by alexeyglushkov on 26.11.15.
  */
@@ -66,7 +68,7 @@ public class SimpleService implements Service {
     }
 
     @Override
-    public void runCommand(final ServiceCommandProxy proxy, final boolean canSignIn, ServiceCommand.CommandCallback anAuthCompletion) {
+    public Single<ServiceCommand> runCommand(final ServiceCommandProxy proxy, final boolean canSignIn) {
         if (!account.isAuthorized()) {
             if (canSignIn) {
                 authorizeAndRun(proxy, anAuthCompletion);
@@ -82,7 +84,7 @@ public class SimpleService implements Service {
         }
     }
 
-    protected void authorizeAndRun(final ServiceCommandProxy proxy, final ServiceCommand.CommandCallback anAuthCompletion) {
+    protected Single<ServiceCommand> authorizeAndRun(final ServiceCommandProxy proxy) {
         authorize(new Authorizer.AuthorizerCompletion() {
             @Override
             public void onFinished(AuthCredentials credentials, Authorizer.AuthError error) {
