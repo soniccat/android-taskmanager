@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.authorization.Auth;
 
+import io.reactivex.Single;
+
 /**
  * Created by alexeyglushkov on 15.11.15.
  */
@@ -18,7 +20,7 @@ public interface Account {
     void store() throws Exception;
 
     // Method should be called not on com.example.alexeyglushkov.wordteacher.main thread to be able show auth activity for OAuth20AuthorizerImpl
-    void authorize(final Authorizer.AuthorizerCompletion completion);
+    Single<AuthCredentials> authorize();
 
     void signCommand(ServiceCommand command);
 }

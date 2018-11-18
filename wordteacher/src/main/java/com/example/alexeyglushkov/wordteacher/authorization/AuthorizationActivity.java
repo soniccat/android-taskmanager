@@ -4,6 +4,9 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -23,7 +26,7 @@ public class AuthorizationActivity extends AppCompatActivity implements OAuthWeb
     private WebView webView;
 
     // TODO: think about pending intent or something else
-    private @Nullable OAuthWebClient.Callback webCallback;
+    //private @Nullable OAuthWebClient.Callback webCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,10 +40,7 @@ public class AuthorizationActivity extends AppCompatActivity implements OAuthWeb
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (url.startsWith(Networks.CALLBACK_URL)) {
-                    if (webCallback != null) {
-                        webCallback.onResult(url);
-                        webCallback = null;
-                    }
+                    AuthActivityProxy.finish(url, null);
                     finish();
                     return true;
                 }
@@ -51,41 +51,38 @@ public class AuthorizationActivity extends AppCompatActivity implements OAuthWeb
             @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 super.onReceivedError(view, errorCode, description, failingUrl);
-                if (webCallback != null) {
-                    webCallback.onReceivedError(new Error("AuthorizationActivity webView error " + errorCode + " " + description));
-                    webCallback = null;
-                }
+                Error error = new Error("AuthorizationActivity webView error " + errorCode + " " + description);
+                AuthActivityProxy.finish(null, error);
                 finish();
             }
         });
 
         String url = getIntent().getExtras().getString(LOAD_URL);
-        loadUrl(url, AuthActivityProxy.getCurrentCallback());
+        loadUrl(url);
     }
 
     @Override
     public void finish() {
-        if (webCallback != null) {
-            webCallback.onReceivedError(new CancelError());
-            webCallback = null;
-        }
+        AuthActivityProxy.finish(null, new CancelError());
 
         super.finish();
 
         if (AuthActivityProxy.getCurrentActivity() == this) {
             AuthActivityProxy.setCurrentActivity(null);
-            AuthActivityProxy.setCurrentCallback(null);
+            //AuthActivityProxy.setCurrentCallback(null);
         }
     }
 
     @Override
-    public void loadUrl(final String url, final Callback callback) {
+    public Single<String> loadUrl(final String url) {
         AuthorizationActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 webView.loadUrl(url);
-                webCallback = callback;
+                //webCallback = callback;
             }
         });
+
+        return AuthActivityProxy.getAuthResult();
     }
 }

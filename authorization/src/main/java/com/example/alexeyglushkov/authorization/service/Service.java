@@ -20,7 +20,7 @@ public interface Service {
     void setServiceCommandRunner(ServiceCommandRunner runner);
 
     // for cases when auth failed and a command isn't created
-    void setAuthCompletion(ServiceCommand.CommandCallback authCompletion);
+    //void setAuthCompletion(ServiceCommand.CommandCallback authCompletion);
 
     // pass a ServiceCommandProxy to create the command after authorization
     Single<ServiceCommand> runCommand(ServiceCommandProxy proxy);

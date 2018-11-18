@@ -99,15 +99,15 @@ public class HttpServiceTask extends TransportTask implements IServiceTask {
         return getTaskStatus() == Status.Cancelled;
     }
 
-    @Override
-    public void setServiceCommandCallback(final ServiceCommand.CommandCallback callback) {
-        setTaskCallback(new Task.Callback() {
-            @Override
-            public void onCompleted(boolean cancelled) {
-                callback.onCompleted(HttpServiceTask.this, getCommandError());
-            }
-        });
-    }
+//    @Override
+//    public void setServiceCommandCallback(final ServiceCommand.CommandCallback callback) {
+//        setTaskCallback(new Task.Callback() {
+//            @Override
+//            public void onCompleted(boolean cancelled) {
+//                callback.onCompleted(HttpServiceTask.this, getCommandError());
+//            }
+//        });
+//    }
 
     @Override
     public ServiceCommand getServiceCommand() {

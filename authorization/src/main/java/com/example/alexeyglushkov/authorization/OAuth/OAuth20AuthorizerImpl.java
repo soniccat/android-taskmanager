@@ -10,7 +10,12 @@ import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
 import com.example.alexeyglushkov.tools.CancelError;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Single;
+import io.reactivex.SingleSource;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 
 public class OAuth20AuthorizerImpl implements OAuth20Authorizer
 {
@@ -58,19 +63,25 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
 		api.fillAccessTokenConnectionBuilder(builder, config, code);
 
 		final ServiceCommand command = commandProvider.getServiceCommand(builder);
-		command.setServiceCommandCallback(new ServiceCommand.CommandCallback() {
+//		command.setServiceCommandCallback(new ServiceCommand.CommandCallback() {
+//			@Override
+//			public void onCompleted(ServiceCommand command, Error error) {
+//                if (error != null) {
+//                    error = new AuthError("OAuthPocketServiceImpl authorize: Can't receive AccessToken", AuthError.Reason.InnerError, error);
+//
+//                }
+//
+//				completion.onCompleted(command, (AuthError)error);
+//			}
+//		});
+
+		return commandRunner.run(command).onErrorResumeNext(new Function<Throwable, SingleSource<ServiceCommand>>() {
 			@Override
-			public void onCompleted(ServiceCommand command, Error error) {
-                if (error != null) {
-                    error = new AuthError("OAuthPocketServiceImpl authorize: Can't receive AccessToken", AuthError.Reason.InnerError, error);
-
-                }
-
-				completion.onCompleted(command, (AuthError)error);
+			public SingleSource<ServiceCommand> apply(Throwable throwable) throws Exception {
+				Error err = new AuthError("OAuth20AuthorizerImpl authorize: Can't receive AccessToken", AuthError.Reason.InnerError, throwable);
+				return Single.error(err);
 			}
 		});
-
-		commandRunner.run(command);
 	}
 
 	/**
@@ -88,80 +99,141 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
 
 	@Override
 	public Single<AuthCredentials> authorize() {
-		webAuthorization(new WebAuthCallback() {
-            @Override
-            public void onFinished(String code, AuthError error) {
-                onWebAuthFinished(code, error);
-            }
-        });
+//		webAuthorization(new WebAuthCallback() {
+//            @Override
+//            public void onFinished(String code, AuthError error) {
+//                onWebAuthFinished(code, error);
+//            }
+//        });
+
+		return webAuthorization().flatMap(new Function<String, SingleSource<? extends AuthCredentials>>() {
+			@Override
+			public SingleSource<? extends AuthCredentials> apply(String s) throws Exception {
+				return onWebAuthFinished(s);
+			}
+		});
 	}
 
-    private Single<AuthCredentials> onWebAuthFinished(String code, AuthError error) {
-        if (code == null || error != null) {
-            completion.onFinished(null, error);
+    private Single<? extends AuthCredentials> onWebAuthFinished(String code) {
+        if (code == null) {
+            return Single.error(new Error("OAuth20AuthorizerImpl authorize: empty code"));
 
         } else {
-            retrieveAccessToken(code, new OAuthCompletion() {
-                @Override
-                public void onCompleted(ServiceCommand command, AuthError error) {
-                    if (error == null) {
-                        String response = command.getResponse();
-                        OAuthCredentials authCredentials = api.createCredentials(response);
-                        if (authCredentials != null && authCredentials.isValid()) {
-                            completion.onFinished(authCredentials, null);
-                        } else {
-                            AuthError localError = new AuthError("OAuthPocketServiceImpl authorize: Can't parse AccessToken", AuthError.Reason.UnknownError, null);
-                            completion.onFinished(null, localError);
-                        }
-                    } else {
-                        completion.onFinished(null, error);
-                    }
-                }
-            });
+//            retrieveAccessToken(code, new OAuthCompletion() {
+//                @Override
+//                public void onCompleted(ServiceCommand command, AuthError error) {
+//                    if (error == null) {
+//                        String response = command.getResponse();
+//                        OAuthCredentials authCredentials = api.createCredentials(response);
+//                        if (authCredentials != null && authCredentials.isValid()) {
+//                            completion.onFinished(authCredentials, null);
+//                        } else {
+//                            AuthError localError = new AuthError("OAuthPocketServiceImpl authorize: Can't parse AccessToken", AuthError.Reason.UnknownError, null);
+//                            completion.onFinished(null, localError);
+//                        }
+//                    } else {
+//                        completion.onFinished(null, error);
+//                    }
+//                }
+//            });
+
+			return retrieveAccessToken(code).flatMap(new Function<ServiceCommand, SingleSource<? extends AuthCredentials>>() {
+				@Override
+				public SingleSource<? extends AuthCredentials> apply(ServiceCommand command) throws Exception {
+					String response = command.getResponse();
+					OAuthCredentials authCredentials = api.createCredentials(response);
+
+					Single<? extends AuthCredentials> result;
+					if (authCredentials != null && authCredentials.isValid()) {
+						result = Single.just(authCredentials);
+					} else {
+						AuthError localError = new AuthError("OAuth20AuthorizerImpl authorize: Can't parse AccessToken", AuthError.Reason.UnknownError, null);
+						result = Single.error(localError);
+					}
+
+					return result;
+				}
+			});
         }
     }
 
-	private void webAuthorization(final WebAuthCallback authCallback) {
-		OAuthWebClient.Callback callback = new OAuthWebClient.Callback() {
+	private Single<String> webAuthorization() {
+//		OAuthWebClient.Callback callback = new OAuthWebClient.Callback() {
+//			@Override
+//			public void onReceivedError(Error error) {
+//				AuthError.Reason reason;
+//				if (error instanceof CancelError) {
+//					reason = AuthError.Reason.Cancelled;
+//				} else {
+//					reason = AuthError.Reason.InnerError;
+//				}
+//
+//				AuthError authError = new AuthError(reason, error);
+//                onFinished(null, authError);
+//			}
+//
+//			@Override
+//			public void onResult(String resultUrl) {
+//                Uri uri = Uri.parse(resultUrl);
+//
+//                String code = null;
+//                AuthError error = null;
+//                if (isCancelled(uri)) {
+//                    error = new AuthError(AuthError.Reason.Cancelled, null);
+//
+//                } else {
+//                    code = getCode(uri);
+//                    if (code == null) {
+//                        error = new AuthError("OAuthPocketServiceImpl authorize: Can't parse code", AuthError.Reason.UnknownError, null);
+//                    }
+//                }
+//
+//                onFinished(code, error);
+//			}
+//
+//            private void onFinished(String code, AuthError error) {
+//                authCallback.onFinished(code, error);
+//            }
+//		};
+
+        String url = getAuthorizationUrl();
+		return getWebClient().loadUrl(url).flatMap(new Function<String, SingleSource<? extends String>>() {
 			@Override
-			public void onReceivedError(Error error) {
+			public SingleSource<? extends String> apply(String url) throws Exception {
+				Uri uri = Uri.parse(url);
+
+				String code = null;
+				AuthError error = null;
+				if (isCancelled(uri)) {
+					error = new AuthError(AuthError.Reason.Cancelled, null);
+
+				} else {
+					code = getCode(uri);
+					if (code == null) {
+						error = new AuthError("OAuth20AuthorizerImpl authorize: Can't parse code", AuthError.Reason.UnknownError, null);
+					}
+				}
+
+				if (error != null) {
+					return Single.error(error);
+				} else {
+					return Single.just(code);
+				}
+			}
+		}).onErrorResumeNext(new Function<Throwable, SingleSource<? extends String>>() {
+			@Override
+			public SingleSource<? extends String> apply(Throwable throwable) throws Exception {
 				AuthError.Reason reason;
-				if (error instanceof CancelError) {
+				if (throwable instanceof CancelError) {
 					reason = AuthError.Reason.Cancelled;
 				} else {
 					reason = AuthError.Reason.InnerError;
 				}
 
-				AuthError authError = new AuthError(reason, error);
-                onFinished(null, authError);
+				AuthError authError = new AuthError(reason, throwable);
+                return Single.error(authError);
 			}
-
-			@Override
-			public void onResult(String resultUrl) {
-                Uri uri = Uri.parse(resultUrl);
-
-                String code = null;
-                AuthError error = null;
-                if (isCancelled(uri)) {
-                    error = new AuthError(AuthError.Reason.Cancelled, null);
-
-                } else {
-                    code = getCode(uri);
-                    if (code == null) {
-                        error = new AuthError("OAuthPocketServiceImpl authorize: Can't parse code", AuthError.Reason.UnknownError, null);
-                    }
-                }
-
-                onFinished(code, error);
-			}
-
-            private void onFinished(String code, AuthError error) {
-                authCallback.onFinished(code, error);
-            }
-		};
-
-        String url = getAuthorizationUrl();
-		getWebClient().loadUrl(url, callback);
+		});
 	}
 
 	private String getCode(Uri uri) {
@@ -178,7 +250,7 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
 		api.signCommand(command, oAuthCredentials);
 	}
 
-	private interface WebAuthCallback {
-		void onFinished(String code, AuthError error);
-	}
+//	private interface WebAuthCallback {
+//		void onFinished(String code, AuthError error);
+//	}
 }

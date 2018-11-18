@@ -4,6 +4,10 @@ import com.example.alexeyglushkov.authorization.OAuth.OAuthConstants;
 
 import java.io.Serializable;
 
+import io.reactivex.Single;
+import io.reactivex.SingleSource;
+import io.reactivex.functions.Function;
+
 /**
  * Created by alexeyglushkov on 15.11.15.
  */
@@ -64,21 +68,35 @@ public class SimpleAccount implements Account, Serializable {
         return authorizer;
     }
 
-    public void authorize(final Authorizer.AuthorizerCompletion completion) {
-        authorizer.authorize(new Authorizer.AuthorizerCompletion() {
+    public Single<AuthCredentials> authorize() {
+//        authorizer.authorize(new Authorizer.AuthorizerCompletion() {
+//            @Override
+//            public void onFinished(AuthCredentials credentials, Authorizer.AuthError error) {
+//                if (credentials != null && error == null) {
+//                    try {
+//                        updateCredentials(credentials);
+//
+//                    } catch (Exception e) {
+//                        error = new Authorizer.AuthError(Authorizer.AuthError.Reason.InnerError, e);
+//                    }
+//                }
+//
+//                if (completion != null) {
+//                    completion.onFinished(credentials, error);
+//                }
+//            }
+//        });
+
+        return authorizer.authorize().flatMap(new Function<AuthCredentials, SingleSource<? extends AuthCredentials>>() {
             @Override
-            public void onFinished(AuthCredentials credentials, Authorizer.AuthError error) {
-                if (credentials != null && error == null) {
-                    try {
-                        updateCredentials(credentials);
+            public SingleSource<? extends AuthCredentials> apply(AuthCredentials authCredentials) throws Exception {
+                try {
+                    updateCredentials(credentials);
+                    return Single.just(authCredentials);
 
-                    } catch (Exception e) {
-                        error = new Authorizer.AuthError(Authorizer.AuthError.Reason.InnerError, e);
-                    }
-                }
-
-                if (completion != null) {
-                    completion.onFinished(credentials, error);
+                } catch (Exception e) {
+                    Error error = new Authorizer.AuthError(Authorizer.AuthError.Reason.InnerError, e);
+                    return Single.error(error);
                 }
             }
         });

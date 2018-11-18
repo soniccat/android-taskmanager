@@ -31,10 +31,12 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:' + project.ext.appRecyclerViewVersion
     implementation 'android.arch.lifecycle:extensions:' + project.ext.archLifecycleVersion
     implementation 'junit:junit:' + project.ext.junitVersion
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.0'
     annotationProcessor 'android.arch.lifecycle:compiler:' + rootProject.archLifecycleVersion
     implementation project(path: ':quizletservice')
     implementation project(path: ':authcachemanager')
-    implementation project(path: ':dropboxservice')
+    //implementation project(path: ':dropboxservice')
     implementation project(path: ':ui')
     implementation project(path: ':taskmanager')
     implementation project(path: ':servicetaskmanager')
