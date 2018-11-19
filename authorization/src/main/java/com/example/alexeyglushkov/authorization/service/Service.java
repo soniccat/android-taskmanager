@@ -23,8 +23,8 @@ public interface Service {
     //void setAuthCompletion(ServiceCommand.CommandCallback authCompletion);
 
     // pass a ServiceCommandProxy to create the command after authorization
-    Single<ServiceCommand> runCommand(ServiceCommandProxy proxy);
-    Single<ServiceCommand> runCommand(ServiceCommandProxy proxy, boolean canSignIn);
+    <T extends ServiceCommand> Single<T> runCommand(T command);
+    <T extends ServiceCommand> Single<T> runCommand(final T command, final boolean canSignIn);
 
     public void cancel(ServiceCommand cmd);
 }

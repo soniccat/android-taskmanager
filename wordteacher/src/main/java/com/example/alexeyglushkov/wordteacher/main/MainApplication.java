@@ -5,7 +5,7 @@ import android.app.Application;
 import android.content.Context;
 import androidx.annotation.NonNull;
 
-import com.dropbox.client2.DropboxAPI;
+//import com.dropbox.client2.DropboxAPI;
 import com.example.alexeyglushkov.authcachemanager.AccountCacheStore;
 import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
@@ -17,13 +17,6 @@ import com.example.alexeyglushkov.cachemanager.Storage;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageCleaner;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
 import com.example.alexeyglushkov.tools.ContextProvider;
-import com.example.alexeyglushkov.dropboxservice.DropboxAccount;
-import com.example.alexeyglushkov.dropboxservice.DropboxCommandProvider;
-import com.example.alexeyglushkov.dropboxservice.DropboxFileMerger;
-import com.example.alexeyglushkov.dropboxservice.DropboxService;
-import com.example.alexeyglushkov.dropboxservice.DropboxServiceTaskProvider;
-import com.example.alexeyglushkov.dropboxservice.FileMerger;
-import com.example.alexeyglushkov.dropboxservice.FileObjectMerger;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.tasks.QuizletServiceTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
@@ -47,7 +40,7 @@ public class MainApplication extends Application {
     private @NonNull OAuthWebClient authWebClient;
 
     private @NonNull QuizletService quizletService;
-    private @NonNull DropboxService dropboxService;
+    //private @NonNull DropboxService dropboxService;
     private @NonNull CourseHolder courseHolder;
     private @NonNull TaskManager taskManager;
 
@@ -85,7 +78,7 @@ public class MainApplication extends Application {
     private void onAccountStoreLoaded() {
         try {
             createQuizletService();
-            createDropboxService();
+            //createDropboxService();
 
         } catch (Exception ex) {
             finishApp(ex);
@@ -135,24 +128,24 @@ public class MainApplication extends Application {
         taskManager.addTask(cleanTask);
     }
 
-    private void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxEntry, DropboxCommandProvider.MergeCompletion completion) {
-        File outFile;
-
-        try {
-            File tmpDir = getCacheDir();
-
-            UUID outFileName = UUID.randomUUID();
-            outFile = File.createTempFile(outFileName.toString(), "", getCacheDir());
-
-            FileMerger fileMerger = new FileObjectMerger(new CourseCodec(), new CourseMerger(), outFile);
-            DropboxFileMerger merger = new DropboxFileMerger(dropboxService.getApi(), tmpDir, fileMerger);
-
-            merger.merge(localFile, dropboxEntry, completion);
-
-        } catch (Exception ex) {
-            completion.completed(null, new Error("Merge exception", ex));
-        }
-    }
+//    private void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxEntry, DropboxCommandProvider.MergeCompletion completion) {
+//        File outFile;
+//
+//        try {
+//            File tmpDir = getCacheDir();
+//
+//            UUID outFileName = UUID.randomUUID();
+//            outFile = File.createTempFile(outFileName.toString(), "", getCacheDir());
+//
+//            FileMerger fileMerger = new FileObjectMerger(new CourseCodec(), new CourseMerger(), outFile);
+//            DropboxFileMerger merger = new DropboxFileMerger(dropboxService.getApi(), tmpDir, fileMerger);
+//
+//            merger.merge(localFile, dropboxEntry, completion);
+//
+//        } catch (Exception ex) {
+//            completion.completed(null, new Error("Merge exception", ex));
+//        }
+//    }
 
     //// Creation Methods
 
@@ -169,26 +162,26 @@ public class MainApplication extends Application {
         ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
 
         this.quizletService = new QuizletService(quizletAccount, quizletCommandProvider, serviceCommandRunner);
-        this.quizletService.restoreOrLoad(null);
+        this.quizletService.restoreOrLoad(null).subscribe();
     }
 
-    private void createDropboxService() throws Exception {
-        DropboxAccount dropboxAccount = (DropboxAccount)Networks.getAccount(Networks.Network.Dropbox);
-        DropboxCommandProvider commandProvider = new DropboxServiceTaskProvider();
-
-        String id = Integer.toString(dropboxAccount.getServiceType());
-        ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
-
-        Storage storage = new PreferenceStorage("DropboxServicePref", getContextProvider());
-
-        dropboxService = new DropboxService(dropboxAccount, commandProvider, serviceCommandRunner, storage);
-        dropboxService.setCallback(new DropboxService.Callback() {
-            @Override
-            public void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxEntry, DropboxCommandProvider.MergeCompletion completion) {
-                MainApplication.this.merge(localFile, dropboxEntry, completion);
-            }
-        });
-    }
+//    private void createDropboxService() throws Exception {
+//        DropboxAccount dropboxAccount = (DropboxAccount)Networks.getAccount(Networks.Network.Dropbox);
+//        DropboxCommandProvider commandProvider = new DropboxServiceTaskProvider();
+//
+//        String id = Integer.toString(dropboxAccount.getServiceType());
+//        ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
+//
+//        Storage storage = new PreferenceStorage("DropboxServicePref", getContextProvider());
+//
+//        dropboxService = new DropboxService(dropboxAccount, commandProvider, serviceCommandRunner, storage);
+//        dropboxService.setCallback(new DropboxService.Callback() {
+//            @Override
+//            public void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxEntry, DropboxCommandProvider.MergeCompletion completion) {
+//                MainApplication.this.merge(localFile, dropboxEntry, completion);
+//            }
+//        });
+//    }
 
     //// Getters
 
@@ -227,9 +220,9 @@ public class MainApplication extends Application {
         return quizletService;
     }
 
-    public @NonNull DropboxService getDropboxService() {
-        return dropboxService;
-    }
+//    public @NonNull DropboxService getDropboxService() {
+//        return dropboxService;
+//    }
 
     // Cast Getters
 

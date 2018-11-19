@@ -1,6 +1,12 @@
 package com.example.alexeyglushkov.quizletservice;
 
 import androidx.annotation.NonNull;
+import io.reactivex.Single;
+import io.reactivex.SingleEmitter;
+import io.reactivex.SingleOnSubscribe;
+import io.reactivex.SingleSource;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 
 import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
@@ -12,6 +18,7 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.service.SimpleService;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,90 +44,99 @@ public class QuizletService extends SimpleService {
 
     //// Actions
 
-    public ServiceCommandProxy loadSets(ProgressListener progressListener) {
+    public Single<QuizletSetsCommand> loadSets(ProgressListener progressListener) {
         final Resource.State previousState = sets.getValue().state;
-        ServiceCommand.CommandCallback callback = new ServiceCommand.CommandCallback() {
-            @Override
-            public void onCompleted(ServiceCommand command, Error error) {
-                if (error == null) {
-                    QuizletSetsCommand setsCommand = (QuizletSetsCommand)command;
-                    setState(Resource.State.Loaded, setsCommand.getSets());
-
-                } else {
-                    setError(previousState, error);
-                }
-            }
-        };
+//        ServiceCommand.CommandCallback callback = new ServiceCommand.CommandCallback() {
+//            @Override
+//            public void onCompleted(ServiceCommand command, Error error) {
+//                if (error == null) {
+//                    QuizletSetsCommand setsCommand = (QuizletSetsCommand)command;
+//                    setState(Resource.State.Loaded, setsCommand.getSets());
+//
+//                } else {
+//                    setError(previousState, error);
+//                }
+//            }
+//        };
 
         setState(Resource.State.Loading);
 
-        ServiceCommandProxy proxy = createSetsCommandProxy(callback, IStorageClient.CacheMode.ONLY_STORE_TO_CACHE, progressListener);
-        runCommand(proxy, true, callback);
-
-        return proxy;
-    }
-
-    public ServiceCommandProxy restoreOrLoad(final ProgressListener progressListener) {
-        ServiceCommand.CommandCallback callback = new ServiceCommand.CommandCallback() {
+        QuizletSetsCommand command = createSetsCommand(IStorageClient.CacheMode.ONLY_STORE_TO_CACHE, progressListener);
+        return runCommand(command, true).doOnSuccess(new Consumer<QuizletSetsCommand>() {
             @Override
-            public void onCompleted(ServiceCommand command, Error error) {
-                if (error == null) {
-                    QuizletSetsCommand setsCommand = (QuizletSetsCommand)command;
-                    setState(Resource.State.Restored, setsCommand.getSets());
-                } else {
-                    setState(Resource.State.Uninitialized);
-                    if (getAccount().isAuthorized()) {
-                        loadSets(progressListener);
-                    }
-                }
+            public void accept(QuizletSetsCommand quizletSetsCommand) throws Exception {
+                setState(Resource.State.Loaded, quizletSetsCommand.getSets());
             }
-        };
-        setState(Resource.State.Loading);
-
-        ServiceCommandProxy proxy = createSetsCommandProxy(callback, IStorageClient.CacheMode.ONLY_LOAD_FROM_CACHE, progressListener);
-        runCommand(proxy, false, callback);
-
-        return proxy;
-    }
-
-    @NonNull
-    private ServiceCommandProxy createSetsCommandProxy(@NonNull final ServiceCommand.CommandCallback callback, final IStorageClient.CacheMode cacheMode, final ProgressListener progressListener) {
-        return new ServiceCommandProxy() {
-            private ServiceCommand cmd = null;
-
+        }).doOnError(new Consumer<Throwable>() {
             @Override
-            public ServiceCommand getServiceCommand() {
-                if (cmd == null) {
-                    cmd = createSetsCommand(callback, cacheMode, progressListener);
-                }
-
-                return cmd;
-            }
-
-            @Override
-            public boolean isEmpty() {
-                return cmd == null;
-            }
-        };
-    }
-
-    @NonNull
-    private QuizletSetsCommand createSetsCommand(@NonNull final ServiceCommand.CommandCallback callback, final IStorageClient.CacheMode cacheMode, final ProgressListener progressListener) {
-        final QuizletSetsCommand command = getQuizletCommandProvider().getLoadSetsCommand(SERVER, getOAuthCredentials().getUserId(), cacheMode, progressListener);
-        command.setServiceCommandCallback(new ServiceCommand.CommandCallback() {
-            @Override
-            public void onCompleted(ServiceCommand command, Error error) {
-
-                // TODO: try to put this logic in SimpleService with option
-                if (command.getResponseCode() == 401) {
-                    command.clear();
-
-                    authorizeAndRun(command, callback);
-                } else {
-                    callback.onCompleted(command, error);
-                }
+            public void accept(Throwable throwable) throws Exception {
+                setError(previousState, throwable);
             }
         });
+    }
+
+    public Single<QuizletSetsCommand> restoreOrLoad(final ProgressListener progressListener) {
+//        ServiceCommand.CommandCallback callback = new ServiceCommand.CommandCallback() {
+//            @Override
+//            public void onCompleted(ServiceCommand command, Error error) {
+//                if (error == null) {
+//                    QuizletSetsCommand setsCommand = (QuizletSetsCommand)command;
+//                    setState(Resource.State.Restored, setsCommand.getSets());
+//                } else {
+//                    setState(Resource.State.Uninitialized);
+//                    if (getAccount().isAuthorized()) {
+//                        loadSets(progressListener);
+//                    }
+//                }
+//            }
+//        };
+        setState(Resource.State.Loading);
+
+        QuizletSetsCommand command = createSetsCommand(IStorageClient.CacheMode.ONLY_LOAD_FROM_CACHE, progressListener);
+        return runCommand(command, false)
+                .doOnSuccess(new Consumer<QuizletSetsCommand>() {
+                    @Override
+                    public void accept(QuizletSetsCommand quizletSetsCommand) throws Exception {
+                        setState(Resource.State.Restored, quizletSetsCommand.getSets());
+                    }
+                })
+                .onErrorResumeNext(new Function<Throwable, SingleSource<? extends QuizletSetsCommand>>() {
+                    @Override
+                    public SingleSource<? extends QuizletSetsCommand> apply(Throwable throwable) throws Exception {
+                        setState(Resource.State.Uninitialized);
+                        if (getAccount().isAuthorized()) {
+                            return loadSets(progressListener);
+                        }
+
+                        return Single.error(throwable);
+                    }
+                });
+    }
+
+//    @NonNull
+//    private ServiceCommandProxy createSetsCommandProxy(final IStorageClient.CacheMode cacheMode, final ProgressListener progressListener) {
+//        return new ServiceCommandProxy() {
+//            private ServiceCommand cmd = null;
+//
+//            @Override
+//            public ServiceCommand getServiceCommand() {
+//                if (cmd == null) {
+//                    cmd = createSetsCommand(cacheMode, progressListener);
+//                }
+//
+//                return cmd;
+//            }
+//
+//            @Override
+//            public boolean isEmpty() {
+//                return cmd == null;
+//            }
+//        };
+//    }
+
+    @NonNull
+    private QuizletSetsCommand createSetsCommand(final IStorageClient.CacheMode cacheMode, final ProgressListener progressListener) {
+        final QuizletSetsCommand command = getQuizletCommandProvider().getLoadSetsCommand(SERVER, getOAuthCredentials().getUserId(), cacheMode, progressListener);
         return command;
     }
 
@@ -134,7 +150,7 @@ public class QuizletService extends SimpleService {
         sets.setValue(sets.getValue().resource(newState, newSets));
     }
 
-    private void setError(Resource.State newState, Error newError) {
+    private void setError(Resource.State newState, Throwable newError) {
         sets.setValue(sets.getValue().resource(newState, newError));
     }
 

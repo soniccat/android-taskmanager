@@ -62,8 +62,8 @@ public class SimpleService implements Service {
 //        authCompletion = anAuthCompletion;
 //    }
 
-    public Single<ServiceCommand> runCommand(ServiceCommandProxy proxy) {
-        return runCommand(proxy, true/*, authCompletion*/);
+    public <T extends ServiceCommand> Single<T> runCommand(T command) {
+        return runCommand(command, true/*, authCompletion*/);
     }
 
 //    @Override
@@ -72,10 +72,10 @@ public class SimpleService implements Service {
 //    }
 
     @Override
-    public Single<ServiceCommand> runCommand(final ServiceCommandProxy proxy, final boolean canSignIn) {
+    public <T extends ServiceCommand> Single<T> runCommand(final T command, final boolean canSignIn) {
         if (!account.isAuthorized()) {
             if (canSignIn) {
-                return authorizeAndRun(proxy/*, anAuthCompletion*/);
+                return authorizeAndRun(command/*, anAuthCompletion*/);
 
             } else /*if (anAuthCompletion != null)*/ {
                 //anAuthCompletion.onCompleted(null, new Authorizer.AuthError(Authorizer.AuthError.Reason.NotAuthorized, null));
@@ -84,17 +84,27 @@ public class SimpleService implements Service {
             }
 
         } else {
-            ServiceCommand serviceCommand = proxy.getServiceCommand();
-            account.signCommand(serviceCommand);
-            return commandRunner.run(serviceCommand);
+            account.signCommand(command);
+            return commandRunner.run(command)
+                    .onErrorResumeNext(new Function<Throwable, SingleSource<T>>() {
+                @Override
+                public SingleSource<T> apply(Throwable throwable) throws Exception {
+                    if (command.getResponseCode() == 401) {
+                        command.clear();
+                        return authorizeAndRun(command);
+                    } else {
+                        return Single.error(throwable);
+                    }
+                }
+            });
         }
     }
 
-    protected Single<ServiceCommand> authorizeAndRun(final ServiceCommandProxy proxy) {
-        return authorize().flatMap(new Function<AuthCredentials, SingleSource<? extends ServiceCommand>>() {
+    protected <T extends ServiceCommand> Single<T> authorizeAndRun(final T command) {
+        return authorize().flatMap(new Function<AuthCredentials, SingleSource<T>>() {
             @Override
-            public SingleSource<ServiceCommand> apply(AuthCredentials authCredentials) throws Exception {
-                return runCommand(proxy, false);
+            public SingleSource<T> apply(AuthCredentials authCredentials) throws Exception {
+                return runCommand(command, false);
             }
         });
 

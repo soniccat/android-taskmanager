@@ -13,7 +13,7 @@ public class Resource<T> {
 
     @NonNull public final State state;
     @Nullable public final T data;
-    @Nullable public final Error error;
+    @Nullable public final Throwable error;
 
     public Resource() {
         this.state = State.Uninitialized;
@@ -21,7 +21,7 @@ public class Resource<T> {
         this.error = null;
     }
 
-    public Resource(@NonNull State status, @Nullable T data, @Nullable Error error) {
+    public Resource(@NonNull State status, @Nullable T data, @Nullable Throwable error) {
         this.state = status;
         this.data = data;
         this.error = error;
@@ -31,7 +31,7 @@ public class Resource<T> {
         return new Resource<>(newState, data, null);
     }
 
-    Resource<T> resource(@NonNull State newState, @NonNull Error newError) {
+    Resource<T> resource(@NonNull State newState, @NonNull Throwable newError) {
         return new Resource<>(newState, data, newError);
     }
 
