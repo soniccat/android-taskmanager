@@ -31,9 +31,6 @@ import java.util.UUID;
 
 import com.example.alexeyglushkov.wordteacher.authorization.AuthActivityProxy;
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder;
-import com.example.alexeyglushkov.wordteacher.model.CourseMerger;
-import com.example.alexeyglushkov.wordteacher.model.CourseCodec;
-import com.example.alexeyglushkov.cachemanager.preference.PreferenceStorage;
 
 public class MainApplication extends Application {
     private @NonNull AccountStore accountStore;

@@ -15,7 +15,7 @@ import com.example.alexeyglushkov.uimodulesandclasses.pagermodule.view.PagerView
  */
 
 public interface MainView {
-    void showLoadError(@NonNull Error error);
+    void showLoadError(@NonNull Throwable error);
     void showException(@NonNull Exception ex);
     void showToolbarBackButton();
     void hideToolbarBackButton();

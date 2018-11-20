@@ -206,7 +206,7 @@ public class MainActivity extends BaseActivity implements
         loadingButton.stopLoading();
     }
 
-    private void showLoadErrorSnackBar(Error error) {
+    private void showLoadErrorSnackBar(Throwable error) {
         String errorString;
         if (error instanceof Authorizer.AuthError) {
             errorString = getString(R.string.error_auth_error);
@@ -219,7 +219,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     @Override
-    public void showLoadError(@NonNull Error error) {
+    public void showLoadError(@NonNull Throwable error) {
         showLoadErrorSnackBar(error);
     }
 

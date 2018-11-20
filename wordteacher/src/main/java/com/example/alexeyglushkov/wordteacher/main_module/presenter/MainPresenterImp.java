@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import io.reactivex.disposables.Disposable;
+
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -13,6 +15,7 @@ import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProxy;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
+import com.example.alexeyglushkov.quizletservice.QuizletSetsCommand;
 import com.example.alexeyglushkov.quizletservice.Resource;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
@@ -199,20 +202,32 @@ public class MainPresenterImp implements
     //// Actions
 
     private void loadQuizletSets() {
-        final ServiceCommandProxy[] cmdWrapper = new ServiceCommandProxy[1];
+//        final ServiceCommand[] cmdWrapper = new ServiceCommand[1];
 
+//        ProgressListener progressListener = view.startProgress(new MainView.ProgressCallback() {
+//            @Override
+//            public void onCancelled() {
+//                // while authorization it could be empty
+//                if (cmdWrapper[0] != null && !cmdWrapper[0].isEmpty()) {
+//                    getQuizletService().cancel(cmdWrapper[0].getServiceCommand());
+//                }
+//            }
+//        });
+
+//        ServiceCommand command = getQuizletService().loadSets(progressListener);
+//        cmdWrapper[0] = command;
+
+        final Disposable[] disposable = new Disposable[1];
         ProgressListener progressListener = view.startProgress(new MainView.ProgressCallback() {
             @Override
             public void onCancelled() {
                 // while authorization it could be empty
-                if (cmdWrapper[0] != null && !cmdWrapper[0].isEmpty()) {
-                    getQuizletService().cancel(cmdWrapper[0].getServiceCommand());
+                if (disposable[0] != null && !disposable[0].isDisposed()) {
+                    disposable[0].dispose();
                 }
             }
         });
-
-        ServiceCommandProxy commandProxy = getQuizletService().loadSets(progressListener);
-        cmdWrapper[0] = commandProxy;
+        disposable[0] = getQuizletService().loadSets(progressListener).subscribe();
     }
 
     private void updateToolbarBackButton() {
@@ -235,12 +250,12 @@ public class MainPresenterImp implements
     }
 
     private void syncWithDropbox() {
-        getMainApplication().getDropboxService().sync(getCourseHolder().getDirectory().getPath(), "/CoursesTest/", new ServiceCommand.CommandCallback() {
-            @Override
-            public void onCompleted(ServiceCommand command, Error error) {
-                getTaskManager().addTask(getCourseHolder().getLoadCourseListTask());
-            }
-        });
+//        getMainApplication().getDropboxService().sync(getCourseHolder().getDirectory().getPath(), "/CoursesTest/", new ServiceCommand.CommandCallback() {
+//            @Override
+//            public void onCompleted(ServiceCommand command, Error error) {
+//                getTaskManager().addTask(getCourseHolder().getLoadCourseListTask());
+//            }
+//        });
     }
 
     // Backstack
@@ -282,7 +297,7 @@ public class MainPresenterImp implements
     @Override
     public void onChanged(@NonNull Resource<List<QuizletSet>> listResource) {
         if (listResource.error != null) {
-            Error error = listResource.error;
+            Throwable error = listResource.error;
             boolean isCancelled = error instanceof CancelError;
             if (error instanceof Authorizer.AuthError) {
                 isCancelled = ((Authorizer.AuthError)error).getReason() == Authorizer.AuthError.Reason.Cancelled;
