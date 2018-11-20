@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import androidx.annotation.NonNull;
+import io.reactivex.internal.functions.Functions;
 
 //import com.dropbox.client2.DropboxAPI;
 import com.example.alexeyglushkov.authcachemanager.AccountCacheStore;
@@ -16,6 +17,7 @@ import com.example.alexeyglushkov.cachemanager.StorageCleaner;
 import com.example.alexeyglushkov.cachemanager.Storage;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageCleaner;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
+import com.example.alexeyglushkov.quizletservice.QuizletSetsCommand;
 import com.example.alexeyglushkov.tools.ContextProvider;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.tasks.QuizletServiceTaskProvider;
@@ -159,7 +161,7 @@ public class MainApplication extends Application {
         ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
 
         this.quizletService = new QuizletService(quizletAccount, quizletCommandProvider, serviceCommandRunner);
-        this.quizletService.restoreOrLoad(null).subscribe();
+        this.quizletService.restoreOrLoad(null).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
     }
 
 //    private void createDropboxService() throws Exception {

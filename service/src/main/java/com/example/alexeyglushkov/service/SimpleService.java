@@ -142,7 +142,7 @@ public class SimpleService implements Service {
 //    }
 
     private void startAuthThreadIfNeeded() {
-        if (authThread != null) {
+        if (authThread == null) {
             authThread = new HandlerThread("SimpleService Auth Thread");
             authThread.start();
         }

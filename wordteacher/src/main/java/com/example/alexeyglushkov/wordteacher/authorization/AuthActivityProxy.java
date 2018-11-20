@@ -52,6 +52,7 @@ public class AuthActivityProxy implements OAuthWebClient {
 
         } else {
             emitter.onNext(url);
+            emitter.onComplete();
         }
     }
 

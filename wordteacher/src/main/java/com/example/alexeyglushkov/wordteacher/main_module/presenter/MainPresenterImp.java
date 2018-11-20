@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.functions.Functions;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -227,7 +228,7 @@ public class MainPresenterImp implements
                 }
             }
         });
-        disposable[0] = getQuizletService().loadSets(progressListener).subscribe();
+        disposable[0] = getQuizletService().loadSets(progressListener).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
     }
 
     private void updateToolbarBackButton() {

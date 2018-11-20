@@ -91,7 +91,7 @@ public class SimpleAccount implements Account, Serializable {
             @Override
             public SingleSource<? extends AuthCredentials> apply(AuthCredentials authCredentials) throws Exception {
                 try {
-                    updateCredentials(credentials);
+                    updateCredentials(authCredentials);
                     return Single.just(authCredentials);
 
                 } catch (Exception e) {

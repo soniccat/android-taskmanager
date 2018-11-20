@@ -24,6 +24,7 @@ public class AuthorizationActivity extends AppCompatActivity implements OAuthWeb
     public static final String LOAD_URL = "LOAD_URL";
 
     private WebView webView;
+    private boolean isHandled;
 
     // TODO: think about pending intent or something else
     //private @Nullable OAuthWebClient.Callback webCallback;
@@ -41,6 +42,7 @@ public class AuthorizationActivity extends AppCompatActivity implements OAuthWeb
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (url.startsWith(Networks.CALLBACK_URL)) {
                     AuthActivityProxy.finish(url, null);
+                    isHandled = true;
                     finish();
                     return true;
                 }
@@ -53,6 +55,7 @@ public class AuthorizationActivity extends AppCompatActivity implements OAuthWeb
                 super.onReceivedError(view, errorCode, description, failingUrl);
                 Error error = new Error("AuthorizationActivity webView error " + errorCode + " " + description);
                 AuthActivityProxy.finish(null, error);
+                isHandled = true;
                 finish();
             }
         });
@@ -63,7 +66,9 @@ public class AuthorizationActivity extends AppCompatActivity implements OAuthWeb
 
     @Override
     public void finish() {
-        AuthActivityProxy.finish(null, new CancelError());
+        if (!isHandled) {
+            AuthActivityProxy.finish(null, new CancelError());
+        }
 
         super.finish();
 

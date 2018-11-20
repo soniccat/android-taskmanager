@@ -1,14 +1,19 @@
 package com.example.alexeyglushkov.quizletservice;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
 import io.reactivex.SingleSource;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.operators.single.SingleJust;
+import io.reactivex.plugins.RxJavaPlugins;
 
 import com.example.alexeyglushkov.authorization.Auth.Account;
+import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProxy;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
@@ -44,7 +49,7 @@ public class QuizletService extends SimpleService {
 
     //// Actions
 
-    public Single<QuizletSetsCommand> loadSets(ProgressListener progressListener) {
+    public Single<QuizletSetsCommand> loadSets(final ProgressListener progressListener) {
         final Resource.State previousState = sets.getValue().state;
 //        ServiceCommand.CommandCallback callback = new ServiceCommand.CommandCallback() {
 //            @Override
@@ -61,8 +66,14 @@ public class QuizletService extends SimpleService {
 
         setState(Resource.State.Loading);
 
-        QuizletSetsCommand command = createSetsCommand(IStorageClient.CacheMode.ONLY_STORE_TO_CACHE, progressListener);
-        return runCommand(command, true).doOnSuccess(new Consumer<QuizletSetsCommand>() {
+        return authorizeIfNeeded()
+        .flatMap(new Function<AuthCredentials, SingleSource<? extends QuizletSetsCommand>>() {
+            @Override
+            public SingleSource<? extends QuizletSetsCommand> apply(AuthCredentials authCredentials) throws Exception {
+                QuizletSetsCommand command = createSetsCommand(IStorageClient.CacheMode.ONLY_STORE_TO_CACHE, progressListener);
+                return runCommand(command, true);
+            }
+        }).doOnSuccess(new Consumer<QuizletSetsCommand>() {
             @Override
             public void accept(QuizletSetsCommand quizletSetsCommand) throws Exception {
                 setState(Resource.State.Loaded, quizletSetsCommand.getSets());
@@ -90,27 +101,44 @@ public class QuizletService extends SimpleService {
 //                }
 //            }
 //        };
+
         setState(Resource.State.Loading);
 
-        QuizletSetsCommand command = createSetsCommand(IStorageClient.CacheMode.ONLY_LOAD_FROM_CACHE, progressListener);
-        return runCommand(command, false)
-                .doOnSuccess(new Consumer<QuizletSetsCommand>() {
-                    @Override
-                    public void accept(QuizletSetsCommand quizletSetsCommand) throws Exception {
-                        setState(Resource.State.Restored, quizletSetsCommand.getSets());
+        return justOrError(getAccount().getCredentials())
+            .flatMap(new Function<AuthCredentials, SingleSource<? extends QuizletSetsCommand>>() {
+                @Override
+                public SingleSource<? extends QuizletSetsCommand> apply(AuthCredentials authCredentials) throws Exception {
+                    QuizletSetsCommand command = createSetsCommand(IStorageClient.CacheMode.ONLY_LOAD_FROM_CACHE, progressListener);
+                    return runCommand(command, false);
+                }
+            }).doOnSuccess(new Consumer<QuizletSetsCommand>() {
+                @Override
+                public void accept(QuizletSetsCommand quizletSetsCommand) throws Exception {
+                    setState(Resource.State.Restored, quizletSetsCommand.getSets());
+                }
+            }).onErrorResumeNext(new Function<Throwable, SingleSource<? extends QuizletSetsCommand>>() {
+                @Override
+                public SingleSource<? extends QuizletSetsCommand> apply(Throwable throwable) throws Exception {
+                    setState(Resource.State.Uninitialized);
+                    if (getAccount().isAuthorized()) {
+                        return loadSets(progressListener);
                     }
-                })
-                .onErrorResumeNext(new Function<Throwable, SingleSource<? extends QuizletSetsCommand>>() {
-                    @Override
-                    public SingleSource<? extends QuizletSetsCommand> apply(Throwable throwable) throws Exception {
-                        setState(Resource.State.Uninitialized);
-                        if (getAccount().isAuthorized()) {
-                            return loadSets(progressListener);
-                        }
 
-                        return Single.error(throwable);
-                    }
-                });
+                    return Single.error(throwable);
+                }
+            });
+    }
+
+    public static <T> Single<T> justOrError(@Nullable final T item) {
+        return item != null ? Single.just(item) : Single.<T>error(new Error("not authorized"));
+    }
+
+    private Single<AuthCredentials> authorizeIfNeeded() {
+        if (!getAccount().isAuthorized()) {
+            return authorize();
+        } else {
+            return justOrError(getAccount().getCredentials());
+        }
     }
 
 //    @NonNull

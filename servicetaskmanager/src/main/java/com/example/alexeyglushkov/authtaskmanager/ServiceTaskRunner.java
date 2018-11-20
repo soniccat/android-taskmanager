@@ -16,6 +16,7 @@ import java.util.concurrent.Callable;
 import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
+import io.reactivex.functions.Action;
 
 /**
  * Created by alexeyglushkov on 04.11.15.
@@ -31,11 +32,12 @@ public class ServiceTaskRunner implements ServiceCommandRunner {
     }
 
     @Override
-    public Single<ServiceCommand> run(final ServiceCommand command) {
-        return Single.create(new SingleOnSubscribe<ServiceCommand>() {
+    public <T extends ServiceCommand> Single<T> run(final T command) {
+        final IServiceTask serviceTask = (IServiceTask)command;
+
+        return Single.create(new SingleOnSubscribe<T>() {
             @Override
-            public void subscribe(final SingleEmitter<ServiceCommand> emitter) throws Exception {
-                IServiceTask serviceTask = (IServiceTask)command;
+            public void subscribe(final SingleEmitter<T> emitter) throws Exception {
                 serviceTask.setTaskCallback(new Task.Callback() {
                     @Override
                     public void onCompleted(boolean cancelled) {
@@ -49,11 +51,16 @@ public class ServiceTaskRunner implements ServiceCommandRunner {
                 });
                 taskProvider.addTask(serviceTask);
             }
+        }).doOnDispose(new Action() {
+            @Override
+            public void run() throws Exception {
+                cancel(serviceTask);
+            }
         });
     }
 
     @Override
-    public void cancel(ServiceCommand command) {
+    public <T extends ServiceCommand> void cancel(T command) {
         IServiceTask serviceTask = (IServiceTask)command;
         taskManager.cancel(serviceTask, null);
     }
