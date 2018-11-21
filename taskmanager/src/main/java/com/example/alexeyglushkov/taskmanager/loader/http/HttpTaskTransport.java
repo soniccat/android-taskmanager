@@ -24,7 +24,7 @@ public class HttpTaskTransport<T> implements TaskTransport {
     protected int responseCode;
 
     private boolean isCancelled;
-    private Object data;
+    private T data;
     private Error error;
 
     private ProgressUpdater progressUpdater;
@@ -54,7 +54,7 @@ public class HttpTaskTransport<T> implements TaskTransport {
         try {
             connection.connect();
 
-            int length = connection.getContentLength(); //386020
+            int length = connection.getContentLength();
             if (length != -1) {
                 setContentLength(length);
             }
@@ -74,17 +74,13 @@ public class HttpTaskTransport<T> implements TaskTransport {
                 streamReader.handleConnectionResponse(connection);
 
                 InputStream stream = connection.getInputStream();
-                Object data = handleStream(stream);
+                T data = handleStream(stream);
 
                 if (listener == null || listener.needCancel(this)) {
                     setIsCancelled();
 
                 } else {
-                    if (data instanceof Error) {
-                        setError((Error) data);
-                    } else {
-                        setData(data);
-                    }
+                    setData(data);
                 }
             }
 
@@ -99,7 +95,7 @@ public class HttpTaskTransport<T> implements TaskTransport {
         }
     }
 
-    protected Object handleStream(InputStream stream) throws Exception {
+    protected T handleStream(InputStream stream) throws Exception {
         return InputStreamDataReaders.readOnce(streamReader, stream);
     }
 
@@ -133,7 +129,7 @@ public class HttpTaskTransport<T> implements TaskTransport {
         this.error = error;
     }
 
-    public void setData(Object data) {
+    public void setData(T data) {
         this.data = data;
     }
 

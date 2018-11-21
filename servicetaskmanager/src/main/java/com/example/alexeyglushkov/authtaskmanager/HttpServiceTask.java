@@ -1,6 +1,5 @@
 package com.example.alexeyglushkov.authtaskmanager;
 
-import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
 import com.example.alexeyglushkov.service.HttpCacheableTransport;
 import com.example.alexeyglushkov.cachemanager.clients.IStorageClient;
@@ -10,10 +9,8 @@ import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionBytesRea
 import com.example.alexeyglushkov.taskmanager.loader.http.TransportTask;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpTaskTransport;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpURLConnectionProvider;
-import com.example.alexeyglushkov.taskmanager.task.Task;
 
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 /**

@@ -17,7 +17,7 @@ import java.io.ByteArrayInputStream;
  * Created by alexeyglushkov on 26.11.15.
  */
 public class HttpCacheableTransport<T> extends HttpBytesTransport<T> {
-    private static final String TAG = "CHLT";
+    private static final String TAG = "HTTPCacheableTr";
 
     private boolean needStore = false;
     private @Nullable IStorageClient cacheClient;
@@ -42,7 +42,7 @@ public class HttpCacheableTransport<T> extends HttpBytesTransport<T> {
     @Override
     public void start() {
         boolean isCacheLoaded = false;
-        if (cacheClient != null && StorageClients.canLoadFromCache(cacheClient)) {
+        if (StorageClients.canLoadFromCache(cacheClient)) {
             try {
                 isCacheLoaded = handleCacheContent();
             } catch (Exception ex) {
@@ -53,7 +53,7 @@ public class HttpCacheableTransport<T> extends HttpBytesTransport<T> {
 
         boolean canStartLoading = cacheClient == null || cacheClient.getCacheMode() != IStorageClient.CacheMode.ONLY_LOAD_FROM_CACHE;
         if (canStartLoading && !isCacheLoaded) {
-            needStore = cacheClient != null && StorageClients.canWriteToCache(cacheClient);
+            needStore = StorageClients.canWriteToCache(cacheClient);
             super.start();
         }
     }
@@ -76,7 +76,7 @@ public class HttpCacheableTransport<T> extends HttpBytesTransport<T> {
         byte[] bytes = getCachedBytes(client);
 
         if (bytes != null) {
-            Object result = InputStreamDataReaders.readOnce(byteArrayReader, new ByteArrayInputStream(bytes));
+            T result = InputStreamDataReaders.readOnce(byteArrayReader, new ByteArrayInputStream(bytes));
 
             setData(result);
             isApplied = true;
@@ -90,7 +90,7 @@ public class HttpCacheableTransport<T> extends HttpBytesTransport<T> {
     }
 
     @Override
-    public void setData(Object handledData) {
+    public void setData(T handledData) {
         super.setData(handledData);
 
         if (needStore && cacheClient != null) {
