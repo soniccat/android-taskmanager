@@ -11,8 +11,6 @@ import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 // Reader is an extended Handler
 
 public class TransportTask extends SimpleTask implements TaskTransport.Listener {
-    protected Object handledData; // TODO: use result object and api
-
     private TaskTransport transport;
 
     protected TransportTask() {
@@ -58,23 +56,15 @@ public class TransportTask extends SimpleTask implements TaskTransport.Listener 
             if (e != null) {
                 setError(e);
             } else {
-                setHandledData(d);
+                setTaskResult(d);
             }
         }
 
         getPrivate().handleTaskCompletion(callback);
     }
 
-    public Object getHandledData() {
-        return handledData;
-    }
-
     public void setError(Error error) {
         getPrivate().setTaskError(error);
-    }
-
-    public void setHandledData(Object handledData) {
-        this.handledData = handledData;
     }
 
     @Override
@@ -88,7 +78,6 @@ public class TransportTask extends SimpleTask implements TaskTransport.Listener 
 
         transport.setListener(null);
         transport = null;
-        handledData = null;
     }
 
     @Override

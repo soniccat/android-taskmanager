@@ -78,8 +78,8 @@ public class ImageLoader {
                 //ignore a cancelled result
                 if (callback != null && transportTask.getTaskStatus() == Task.Status.Finished) {
                     Bitmap bitmap = null;
-                    if (transportTask.getHandledData() != null) {
-                        bitmap = (Bitmap) transportTask.getHandledData();
+                    if (transportTask.getTaskResult() != null) {
+                        bitmap = (Bitmap) transportTask.getTaskResult();
                     }
 
                     if (image instanceof ImageWithData) {

@@ -38,8 +38,8 @@ public class QuizletSetsTask extends HttpServiceTask implements QuizletSetsComma
     }
 
     @Override
-    public void setHandledData(Object handledData) {
-        super.setHandledData(handledData);
+    public void setTaskResult(Object handledData) {
+        super.setTaskResult(handledData);
         QuizletSet[] setArray = parseSets(getResponse());
         sets = new ArrayList<>(Arrays.asList(setArray));
     }

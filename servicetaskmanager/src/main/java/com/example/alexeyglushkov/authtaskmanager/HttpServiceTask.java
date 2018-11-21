@@ -75,7 +75,7 @@ public class HttpServiceTask extends TransportTask implements IServiceTask {
     //TODO: consider to create a servicetaskimpl (subclass of TaskImpl) to remove duplication
     @Override
     public String getResponse() {
-        return (String)getHandledData();
+        return (String)getTaskResult();
     }
 
     @Override
