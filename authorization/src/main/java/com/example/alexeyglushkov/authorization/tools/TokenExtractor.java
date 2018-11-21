@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.authorization.Tools;
+package com.example.alexeyglushkov.authorization.tools;
 
 import com.example.alexeyglushkov.authorization.OAuth.Token;
 

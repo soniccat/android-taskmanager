@@ -13,7 +13,7 @@ import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnection
 // TaskManager
 
     //TODO: implement simple subclass
-public interface ServiceCommand extends ServiceCommandProxy{
+public interface ServiceCommand {
 
     // TODO: it seems these 3 methods could be not necessary (see dropbox upload command)
     HttpUrlConnectionBuilder getConnectionBulder();

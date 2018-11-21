@@ -16,6 +16,9 @@ import java.util.concurrent.Callable;
 import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
+import io.reactivex.SingleSource;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.functions.Action;
 
 /**
@@ -33,28 +36,32 @@ public class ServiceTaskRunner implements ServiceCommandRunner {
 
     @Override
     public <T extends ServiceCommand> Single<T> run(final T command) {
-        final IServiceTask serviceTask = (IServiceTask)command;
-
         return Single.create(new SingleOnSubscribe<T>() {
             @Override
             public void subscribe(final SingleEmitter<T> emitter) throws Exception {
+                final IServiceTask serviceTask = (IServiceTask)command;
                 serviceTask.setTaskCallback(new Task.Callback() {
                     @Override
                     public void onCompleted(boolean cancelled) {
-                        Error error = command.getCommandError();
-                        if (error != null) {
-                            emitter.onError(error);
-                        } else {
-                            emitter.onSuccess(command);
+                        if (!emitter.isDisposed()) {
+                            Error error = command.getCommandError();
+                            if (error != null) {
+                                emitter.onError(error);
+                            } else {
+                                emitter.onSuccess(command);
+                            }
                         }
                     }
                 });
+
+                emitter.setDisposable(Disposables.fromRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        cancel(serviceTask);
+                    }
+                }));
+
                 taskProvider.addTask(serviceTask);
-            }
-        }).doOnDispose(new Action() {
-            @Override
-            public void run() throws Exception {
-                cancel(serviceTask);
             }
         });
     }

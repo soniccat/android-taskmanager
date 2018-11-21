@@ -2,16 +2,10 @@ package com.example.alexeyglushkov.authorization.Api;
 
 import com.example.alexeyglushkov.authorization.OAuth.OAuthConstants;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthCredentials;
-import com.example.alexeyglushkov.authorization.Tools.JsonTokenExtractor;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthConfig;
-import com.example.alexeyglushkov.authorization.Tools.TokenExtractor;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
-import com.example.alexeyglushkov.authorization.requestbuilder.Verb;
 
 import org.junit.Assert;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 // TODO: refactor as QuizletApi
 public class Foursquare2Api extends DefaultApi20

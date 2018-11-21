@@ -1,6 +1,6 @@
 package com.example.alexeyglushkov.authorization.OAuth;
 
-import com.example.alexeyglushkov.authorization.Tools.TokenExtractor;
+import com.example.alexeyglushkov.authorization.tools.TokenExtractor;
 
 import org.junit.Assert;
 

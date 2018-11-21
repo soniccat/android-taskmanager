@@ -13,10 +13,7 @@ import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
-import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
-import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProxy;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
-import com.example.alexeyglushkov.quizletservice.QuizletSetsCommand;
 import com.example.alexeyglushkov.quizletservice.Resource;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
@@ -228,6 +225,7 @@ public class MainPresenterImp implements
                 }
             }
         });
+
         disposable[0] = getQuizletService().loadSets(progressListener).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
     }
 

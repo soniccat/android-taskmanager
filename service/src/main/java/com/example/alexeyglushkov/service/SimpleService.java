@@ -8,16 +8,14 @@ import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProvider;
-import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProxy;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.service.Service;
-import com.example.alexeyglushkov.tools.HandlerTools;
 
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import tools.RxTools;
 
 /**
  * Created by alexeyglushkov on 26.11.15.
@@ -25,14 +23,11 @@ import io.reactivex.functions.Function;
 public class SimpleService implements Service {
     private Account account;
 
-    // TODO: could be not necessary
     protected ServiceCommandProvider commandProvider;
     protected ServiceCommandRunner commandRunner;
-    //protected ServiceCommand.CommandCallback authCompletion;
 
     // to run authorization
     private HandlerThread authThread;
-    //private Handler authHandler;
 
     public void init() {
     }
@@ -57,28 +52,17 @@ public class SimpleService implements Service {
         this.commandRunner = runner;
     }
 
-//    @Override
-//    public void setAuthCompletion(ServiceCommand.CommandCallback anAuthCompletion) {
-//        authCompletion = anAuthCompletion;
-//    }
-
     public <T extends ServiceCommand> Single<T> runCommand(T command) {
-        return runCommand(command, true/*, authCompletion*/);
+        return runCommand(command, true);
     }
-
-//    @Override
-//    public void runCommand(ServiceCommandProxy proxy, boolean canSignIn) {
-//        runCommand(proxy, canSignIn, authCompletion);
-//    }
 
     @Override
     public <T extends ServiceCommand> Single<T> runCommand(final T command, final boolean canSignIn) {
         if (!account.isAuthorized()) {
             if (canSignIn) {
-                return authorizeAndRun(command/*, anAuthCompletion*/);
+                return authorizeAndRun(command);
 
-            } else /*if (anAuthCompletion != null)*/ {
-                //anAuthCompletion.onCompleted(null, new Authorizer.AuthError(Authorizer.AuthError.Reason.NotAuthorized, null));
+            } else {
                 Error error = new Authorizer.AuthError(Authorizer.AuthError.Reason.NotAuthorized, null);
                 return Single.error(error);
             }
@@ -107,39 +91,20 @@ public class SimpleService implements Service {
                 return runCommand(command, false);
             }
         });
+    }
 
-//        authorize(new Authorizer.AuthorizerCompletion() {
-//            @Override
-//            public void onFinished(AuthCredentials credentials, Authorizer.AuthError error) {
-//                if (error == null) {
-//                    runCommand(proxy, false);
-//
-//                } else if (anAuthCompletion != null) {
-//                    anAuthCompletion.onCompleted(null, error);
-//                }
-//            }
-//        });
+    public Single<AuthCredentials> authorizeIfNeeded() {
+        if (!getAccount().isAuthorized()) {
+            return authorize();
+        } else {
+            return RxTools.justOrError(getAccount().getCredentials());
+        }
     }
 
     protected Single<AuthCredentials> authorize() {
         startAuthThreadIfNeeded();
         return account.authorize().subscribeOn(AndroidSchedulers.from(authThread.getLooper()));
-
-//        runAsync(new Runnable() {
-//            @Override
-//            public void run() {
-//                account.authorize(completion);
-//            }
-//        });
     }
-
-//    private Handler getAuthHandler() {
-//        if (authHandler == null) {
-//            createAuthHandler();
-//        }
-//
-//        return authHandler;
-//    }
 
     private void startAuthThreadIfNeeded() {
         if (authThread == null) {
@@ -151,8 +116,4 @@ public class SimpleService implements Service {
     public void cancel(ServiceCommand cmd) {
         commandRunner.cancel(cmd);
     }
-
-//    private void runAsync(Runnable runnable) {
-//        HandlerTools.runOnHandlerThread(getAuthHandler(), runnable);
-//    }
 }
