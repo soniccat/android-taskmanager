@@ -83,9 +83,7 @@ public class LoadingButton extends FrameLayout {
             Log.d("test", "progress " + currentValue);
         }
 
-        if (progressInfo.isFinished()) {
-            stopLoading();
-        }
+        // don't call stopLoading if isFinished as we wan't to wait when a loading task finishes
     }
 
     private void onCancel() {

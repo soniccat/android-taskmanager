@@ -26,7 +26,6 @@ public class HttpServiceTask extends TransportTask implements IServiceTask {
     public HttpServiceTask() {
         super();
         setTransport(createTransport());
-        this.connectionBuilder = new HttpUrlConnectionBuilder();
     }
 
     private HttpTaskTransport createTransport() {
@@ -62,14 +61,7 @@ public class HttpServiceTask extends TransportTask implements IServiceTask {
 
             @Override
             public URL getURL() {
-                URL url = null;
-                try {
-                    //TODO: return URL from builder
-                    url = new URL(connectionBuilder.getStringUrl());
-                } catch (MalformedURLException ex) {
-                }
-
-                return url;
+                return getConnectionBulder().getUrl();
             }
         };
     }

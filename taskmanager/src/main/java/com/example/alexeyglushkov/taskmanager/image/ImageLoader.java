@@ -28,8 +28,8 @@ public class ImageLoader {
     }
 
     public static Task loadImage(final Handler handler, final Image image, String destinationId, final ImageLoader.LoadCallback callback) {
-        InputStreamDataReader streamReader = new ByteArrayReader(new BytesBitmapConverter());
-        HTTPConnectionStreamReader reader = new HTTPConnectionStreamReaderAdaptor(streamReader);
+        InputStreamDataReader<Bitmap> streamReader = new ByteArrayReader<>(new BytesBitmapConverter());
+        HTTPConnectionStreamReader<Bitmap> reader = new HTTPConnectionStreamReaderAdaptor<>(streamReader);
         final TransportTask transportTask = createTask(image, destinationId, reader);
 
         Task.Callback taskCallback = getTaskCallback(transportTask, image, callback);
@@ -53,8 +53,8 @@ public class ImageLoader {
     }
 
     @NonNull
-    private static TransportTask createTask(Image image, String destinationId, HTTPConnectionStreamReader reader) {
-        HttpTaskTransport transport = new HttpTaskTransport(image, reader);
+    private static TransportTask createTask(Image image, String destinationId, HTTPConnectionStreamReader<Bitmap> reader) {
+        HttpTaskTransport<Bitmap> transport = new HttpTaskTransport<>(image, reader);
         transport.setContentLength(image.getByteSize());
 
         final TransportTask transportTask = new TransportTask(transport);

@@ -43,7 +43,7 @@ public class ServiceTaskRunner implements ServiceCommandRunner {
                 serviceTask.setTaskCallback(new Task.Callback() {
                     @Override
                     public void onCompleted(boolean cancelled) {
-                        if (!emitter.isDisposed()) {
+                        if (!emitter.isDisposed() && !cancelled) {
                             Error error = command.getCommandError();
                             if (error != null) {
                                 emitter.onError(error);
