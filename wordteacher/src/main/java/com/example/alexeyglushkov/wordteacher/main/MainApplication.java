@@ -17,7 +17,7 @@ import com.example.alexeyglushkov.cachemanager.StorageCleaner;
 import com.example.alexeyglushkov.cachemanager.Storage;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageCleaner;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
-import com.example.alexeyglushkov.quizletservice.QuizletSetsCommand;
+import com.example.alexeyglushkov.quizletservice.QuizletRepository;
 import com.example.alexeyglushkov.tools.ContextProvider;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.tasks.QuizletServiceTaskProvider;
@@ -29,7 +29,6 @@ import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 import org.junit.Assert;
 
 import java.io.File;
-import java.util.UUID;
 
 import com.example.alexeyglushkov.wordteacher.authorization.AuthActivityProxy;
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder;
@@ -38,7 +37,7 @@ public class MainApplication extends Application {
     private @NonNull AccountStore accountStore;
     private @NonNull OAuthWebClient authWebClient;
 
-    private @NonNull QuizletService quizletService;
+    private @NonNull QuizletRepository quizletRepository;
     //private @NonNull DropboxService dropboxService;
     private @NonNull CourseHolder courseHolder;
     private @NonNull TaskManager taskManager;
@@ -92,7 +91,7 @@ public class MainApplication extends Application {
     //// Actions
 
     public void loadAccountStore() {
-        // TODO: make it async, but have to handle nil quizletService
+        // IDEA: make it async, but have to handle nil quizletService
         File authDir = getDir("AuthFolder", Context.MODE_PRIVATE);
         this.accountStore = new AccountCacheStore(authDir);
         this.accountStore.load();
@@ -160,8 +159,9 @@ public class MainApplication extends Application {
         String id = Integer.toString(quizletAccount.getServiceType());
         ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
 
-        this.quizletService = new QuizletService(quizletAccount, quizletCommandProvider, serviceCommandRunner);
-        this.quizletService.restoreOrLoad(null).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
+        QuizletService quizletService = new QuizletService(quizletAccount, quizletCommandProvider, serviceCommandRunner);
+        this.quizletRepository = new QuizletRepository(quizletService);
+        this.quizletRepository.restoreOrLoad(null).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
     }
 
 //    private void createDropboxService() throws Exception {
@@ -215,8 +215,9 @@ public class MainApplication extends Application {
         return storage;
     }
 
-    public @NonNull QuizletService getQuizletService() {
-        return quizletService;
+    public @NonNull
+    QuizletRepository getQuizletRepository() {
+        return quizletRepository;
     }
 
 //    public @NonNull DropboxService getDropboxService() {

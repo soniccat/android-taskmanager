@@ -6,7 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.alexeyglushkov.quizletservice.QuizletService;
+import com.example.alexeyglushkov.quizletservice.QuizletRepository;
 import com.example.alexeyglushkov.quizletservice.Resource;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
@@ -42,13 +42,13 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
         super.onViewStateRestored(view, savedInstanceState);
 
         this.savedInstanceState = savedInstanceState;
-        getQuizletService().getLiveSets().observeForever(this);
+        getQuizletRepository().getLiveSets().observeForever(this);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        getQuizletService().getLiveSets().removeObserver(this);
+        getQuizletRepository().getLiveSets().removeObserver(this);
     }
 
     //// Actions
@@ -70,7 +70,7 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
 
     @NonNull
     protected QuizletTermListProviderFactory createProviderFactory() {
-        return new QuizletTermListProviderFactory(getQuizletService());
+        return new QuizletTermListProviderFactory(getQuizletRepository());
     }
 
     @Override
@@ -153,8 +153,8 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
         return MainApplication.instance;
     }
 
-    private QuizletService getQuizletService() {
-        return getMainApplication().getQuizletService();
+    private QuizletRepository getQuizletRepository() {
+        return getMainApplication().getQuizletRepository();
     }
 
     // Cast Getters

@@ -121,7 +121,7 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet> imp
     }
 
     public QuizletService getQuizletService() {
-        return getMainApplication().getQuizletService();
+        return getMainApplication().getQuizletRepository();
     }
 
     // Data Getters

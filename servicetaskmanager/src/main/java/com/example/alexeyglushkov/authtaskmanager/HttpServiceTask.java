@@ -16,6 +16,7 @@ import java.net.URL;
 /**
  * Created by alexeyglushkov on 04.11.15.
  */
+// TODO: try to remove TransportTask sublcassing
 public class HttpServiceTask extends TransportTask implements IServiceTask {
 
     private HttpUrlConnectionBuilder connectionBuilder = new HttpUrlConnectionBuilder();

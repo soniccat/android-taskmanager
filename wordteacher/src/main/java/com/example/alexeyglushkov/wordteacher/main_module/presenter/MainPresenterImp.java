@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
-import com.example.alexeyglushkov.quizletservice.QuizletService;
+import com.example.alexeyglushkov.quizletservice.QuizletRepository;
 import com.example.alexeyglushkov.quizletservice.Resource;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
@@ -72,7 +72,7 @@ public class MainPresenterImp implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         getCourseHolder().addListener(this);
-        getQuizletService().getLiveSets().observeForever(this);
+        getQuizletRepository().getLiveSets().observeForever(this);
 
         router = createRouter();
         pagerModule = createPagerModule(savedInstanceState);
@@ -84,7 +84,7 @@ public class MainPresenterImp implements
     @Override
     public void onDestroy() {
         getCourseHolder().removeListener(this);
-        getQuizletService().getLiveSets().removeObserver(this);
+        getQuizletRepository().getLiveSets().removeObserver(this);
     }
 
     @Override
@@ -201,21 +201,6 @@ public class MainPresenterImp implements
     //// Actions
 
     private void loadQuizletSets() {
-//        final ServiceCommand[] cmdWrapper = new ServiceCommand[1];
-
-//        ProgressListener progressListener = view.startProgress(new MainView.ProgressCallback() {
-//            @Override
-//            public void onCancelled() {
-//                // while authorization it could be empty
-//                if (cmdWrapper[0] != null && !cmdWrapper[0].isEmpty()) {
-//                    getQuizletService().cancel(cmdWrapper[0].getServiceCommand());
-//                }
-//            }
-//        });
-
-//        ServiceCommand command = getQuizletService().loadSets(progressListener);
-//        cmdWrapper[0] = command;
-
         final Disposable[] disposable = new Disposable[1];
         ProgressListener progressListener = view.startProgress(new MainView.ProgressCallback() {
             @Override
@@ -227,7 +212,7 @@ public class MainPresenterImp implements
             }
         });
 
-        disposable[0] = getQuizletService().loadSets(progressListener).doFinally(new Action() {
+        disposable[0] = getQuizletRepository().loadSets(progressListener).doFinally(new Action() {
             @Override
             public void run() throws Exception {
                 view.stopProgress();
@@ -626,8 +611,8 @@ public class MainPresenterImp implements
     }
 
     @NonNull
-    public QuizletService getQuizletService() {
-        return getMainApplication().getQuizletService();
+    public QuizletRepository getQuizletRepository() {
+        return getMainApplication().getQuizletRepository();
     }
 
     // Module Getters

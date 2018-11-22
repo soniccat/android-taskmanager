@@ -6,10 +6,6 @@ import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 import com.example.alexeyglushkov.taskmanager.loader.transport.TaskTransport;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 
-// Reader - object which converts a stream to an object of another data type and then delegates it to its streamReader or just return it if streamReader is empty
-// Handler - object which converts a stream or other input type to an object of another data type and return it, after that it is stored in handledData
-// Reader is an extended Handler
-
 public class TransportTask extends SimpleTask implements TaskTransport.Listener {
     private TaskTransport transport;
 

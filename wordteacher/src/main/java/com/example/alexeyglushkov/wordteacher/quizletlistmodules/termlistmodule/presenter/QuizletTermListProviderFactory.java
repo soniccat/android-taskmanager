@@ -2,6 +2,7 @@ package com.example.alexeyglushkov.wordteacher.quizletlistmodules.termlistmodule
 
 import android.os.Bundle;
 
+import com.example.alexeyglushkov.quizletservice.QuizletRepository;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
@@ -17,7 +18,7 @@ import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProviderFac
  * Created by alexeyglushkov on 20.08.16.
  */
 public class QuizletTermListProviderFactory implements StorableListProviderFactory<QuizletTerm> {
-    private QuizletService service;
+    private QuizletRepository service;
 
     //// Initialization
 
