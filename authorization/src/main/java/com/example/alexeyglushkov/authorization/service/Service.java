@@ -1,6 +1,7 @@
 package com.example.alexeyglushkov.authorization.service;
 
 import com.example.alexeyglushkov.authorization.Auth.Account;
+import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProvider;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
@@ -19,5 +20,5 @@ public interface Service {
     <T extends ServiceCommand> Single<T> runCommand(T command);
     <T extends ServiceCommand> Single<T> runCommand(final T command, final boolean canSignIn);
 
-    public void cancel(ServiceCommand cmd);
+    void cancel(ServiceCommand cmd);
 }

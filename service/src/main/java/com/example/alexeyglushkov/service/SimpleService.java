@@ -84,7 +84,7 @@ public class SimpleService implements Service {
         }
     }
 
-    protected <T extends ServiceCommand> Single<T> authorizeAndRun(final T command) {
+    public <T extends ServiceCommand> Single<T> authorizeAndRun(final T command) {
         return authorize().flatMap(new Function<AuthCredentials, SingleSource<T>>() {
             @Override
             public SingleSource<T> apply(AuthCredentials authCredentials) throws Exception {
@@ -101,7 +101,7 @@ public class SimpleService implements Service {
         }
     }
 
-    protected Single<AuthCredentials> authorize() {
+    public Single<AuthCredentials> authorize() {
         startAuthThreadIfNeeded();
         return account.authorize().subscribeOn(AndroidSchedulers.from(authThread.getLooper()));
     }

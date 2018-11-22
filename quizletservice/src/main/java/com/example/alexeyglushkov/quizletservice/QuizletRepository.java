@@ -28,15 +28,15 @@ public class QuizletRepository {
 
     //// Actions
 
-    public Single<QuizletSetsCommand> loadSets(final ProgressListener progressListener) {
+    public Single<List<QuizletSet>> loadSets(final ProgressListener progressListener) {
         final Resource.State previousState = sets.getValue().state;
         setState(Resource.State.Loading);
 
         return service.loadSets(progressListener)
-                .doOnSuccess(new Consumer<QuizletSetsCommand>() {
+                .doOnSuccess(new Consumer<List<QuizletSet>>() {
                     @Override
-                    public void accept(QuizletSetsCommand quizletSetsCommand) throws Exception {
-                        setState(Resource.State.Loaded, new ArrayList<>(Arrays.asList(quizletSetsCommand.getResponse())));
+                    public void accept(List<QuizletSet> sets) throws Exception {
+                        setState(Resource.State.Loaded, sets);
                     }
                 }).doOnError(new Consumer<Throwable>() {
                     @Override
@@ -51,18 +51,18 @@ public class QuizletRepository {
                 });
     }
 
-    public Single<QuizletSetsCommand> restoreOrLoad(final ProgressListener progressListener) {
+    public Single<List<QuizletSet>> restoreOrLoad(final ProgressListener progressListener) {
         setState(Resource.State.Loading);
 
         return service.restoreSets(progressListener)
-                .doOnSuccess(new Consumer<QuizletSetsCommand>() {
+                .doOnSuccess(new Consumer<List<QuizletSet>>() {
                     @Override
-                    public void accept(QuizletSetsCommand quizletSetsCommand) throws Exception {
-                        setState(Resource.State.Restored, new ArrayList<>(Arrays.asList(quizletSetsCommand.getResponse())));
+                    public void accept(List<QuizletSet> sets) throws Exception {
+                        setState(Resource.State.Restored, sets);
                     }
-                }).onErrorResumeNext(new Function<Throwable, SingleSource<? extends QuizletSetsCommand>>() {
+                }).onErrorResumeNext(new Function<Throwable, SingleSource<? extends List<QuizletSet>>>() {
                     @Override
-                    public SingleSource<? extends QuizletSetsCommand> apply(Throwable throwable) throws Exception {
+                    public SingleSource<? extends List<QuizletSet>> apply(Throwable throwable) throws Exception {
                         setState(Resource.State.Uninitialized);
                         if (service.getAccount().isAuthorized()) {
                             return loadSets(progressListener);

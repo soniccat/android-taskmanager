@@ -11,8 +11,13 @@ import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthCredentials;
 import com.example.alexeyglushkov.cachemanager.clients.IStorageClient;
+import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.service.SimpleService;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by alexeyglushkov on 26.03.16.
@@ -31,7 +36,7 @@ public class QuizletService extends SimpleService {
 
     //// Actions
 
-    public Single<QuizletSetsCommand> loadSets(final ProgressListener progressListener) {
+    public Single<List<QuizletSet>> loadSets(final ProgressListener progressListener) {
         return authorizeIfNeeded()
         .flatMap(new Function<AuthCredentials, SingleSource<? extends QuizletSetsCommand>>() {
             @Override
@@ -39,16 +44,26 @@ public class QuizletService extends SimpleService {
                 QuizletSetsCommand command = createSetsCommand(IStorageClient.CacheMode.ONLY_STORE_TO_CACHE, progressListener);
                 return runCommand(command, true);
             }
+        }).flatMap(new Function<QuizletSetsCommand, SingleSource<? extends List<QuizletSet>>>() {
+            @Override
+            public SingleSource<? extends List<QuizletSet>> apply(QuizletSetsCommand quizletSetsCommand) throws Exception {
+                return Single.just(new ArrayList<>(Arrays.asList(quizletSetsCommand.getResponse())));
+            }
         });
     }
 
-    public Single<QuizletSetsCommand> restoreSets(final ProgressListener progressListener) {
+    public Single<List<QuizletSet>> restoreSets(final ProgressListener progressListener) {
         return RxTools.justOrError(getAccount().getCredentials())
             .flatMap(new Function<AuthCredentials, SingleSource<? extends QuizletSetsCommand>>() {
                 @Override
                 public SingleSource<? extends QuizletSetsCommand> apply(AuthCredentials authCredentials) throws Exception {
                     QuizletSetsCommand command = createSetsCommand(IStorageClient.CacheMode.ONLY_LOAD_FROM_CACHE, progressListener);
                     return runCommand(command, false);
+                }
+            }).flatMap(new Function<QuizletSetsCommand, SingleSource<? extends List<QuizletSet>>>() {
+                @Override
+                public SingleSource<? extends List<QuizletSet>> apply(QuizletSetsCommand quizletSetsCommand) throws Exception {
+                    return Single.just(new ArrayList<>(Arrays.asList(quizletSetsCommand.getResponse())));
                 }
             });
     }
