@@ -9,7 +9,7 @@ import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 public class TransportTask extends SimpleTask implements TaskTransport.Listener {
     private TaskTransport transport;
 
-    protected TransportTask() {
+    public TransportTask() {
         super();
     }
 

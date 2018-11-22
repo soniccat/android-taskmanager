@@ -16,7 +16,7 @@ import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
-import com.example.alexeyglushkov.authtaskmanager.HttpServiceTask;
+import com.example.alexeyglushkov.authtaskmanager.HttpServiceCommand;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
 import com.example.alexeyglushkov.cachemanager.Storage;
@@ -119,7 +119,7 @@ public class MainActivity extends BaseActivity implements QuizletService.Quizlet
         HttpUrlConnectionBuilder builder = new HttpUrlConnectionBuilder();
         builder.setUrl("https://api.foursquare.com/v2/users/self?v=20140806&m=foursquare");
 
-        final HttpServiceTask cmd = new HttpServiceTask();
+        final HttpServiceCommand cmd = new HttpServiceCommand();
         StorageClient storageClient = new StorageClient(storage, 0);
         storageClient.setCacheMode(IStorageClient.CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD);
         cmd.setCacheClient(storageClient);

@@ -7,7 +7,6 @@ import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.taskmanager.task.StackTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
-import com.example.alexeyglushkov.taskmanager.task.TaskPool;
 import com.example.alexeyglushkov.taskmanager.task.TaskProvider;
 
 import java.util.concurrent.Callable;
@@ -31,7 +30,7 @@ public class ServiceTaskRunner implements ServiceCommandRunner {
     }
 
     @Override
-    public <T extends ServiceCommand> Single<T> run(final T command) {
+    public <T extends ServiceCommand<U>, U> Single<T> run(final T command) {
         return Single.create(new SingleOnSubscribe<T>() {
             @Override
             public void subscribe(final SingleEmitter<T> emitter) throws Exception {
@@ -59,21 +58,22 @@ public class ServiceTaskRunner implements ServiceCommandRunner {
         });
     }
 
-    public <T extends ServiceCommand> void run(final T command, final Callback callback) {
+    public <T extends ServiceCommand<U>, U> void run(final T command, final Callback callback) {
         final IServiceTask serviceTask = (IServiceTask)command;
-        serviceTask.setTaskCallback(new Task.Callback() {
+        Task task = serviceTask.getTask();
+        task.setTaskCallback(new Task.Callback() {
             @Override
             public void onCompleted(boolean cancelled) {
                 callback.onCompleted(serviceTask.getCommandError(), cancelled);
             }
         });
-        taskProvider.addTask(serviceTask);
+        taskProvider.addTask(task);
 
     }
 
     @Override
-    public <T extends ServiceCommand> void cancel(T command) {
+    public <T extends ServiceCommand<U>, U> void cancel(T command) {
         IServiceTask serviceTask = (IServiceTask)command;
-        taskManager.cancel(serviceTask, null);
+        taskManager.cancel(serviceTask.getTask(), null);
     }
 }

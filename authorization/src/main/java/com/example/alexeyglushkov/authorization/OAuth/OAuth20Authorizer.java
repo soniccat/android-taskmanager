@@ -15,7 +15,7 @@ import io.reactivex.Single;
  */
 public interface OAuth20Authorizer extends Authorizer
 {
-  Single<ServiceCommand> retrieveAccessToken(String code);
+  Single<ServiceCommand<String>> retrieveAccessToken(String code);
   String getAuthorizationUrl();
   void setWebClient(OAuthWebClient webClient);
 }

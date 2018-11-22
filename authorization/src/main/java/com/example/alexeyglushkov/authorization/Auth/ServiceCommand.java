@@ -13,11 +13,11 @@ import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnection
 // TaskManager
 
     //TODO: implement simple subclass
-public interface ServiceCommand {
+public interface ServiceCommand<T> {
 
     // TODO: it seems these 3 methods could be not necessary (see dropbox upload command)
     HttpUrlConnectionBuilder getConnectionBuilder();
-    String getResponse();
+    T getResponse();
     int getResponseCode();
 
     Error getCommandError();

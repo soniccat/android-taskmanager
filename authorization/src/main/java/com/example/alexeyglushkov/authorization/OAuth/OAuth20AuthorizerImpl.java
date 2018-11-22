@@ -8,6 +8,7 @@ import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProvider;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
+import com.example.alexeyglushkov.streamlib.convertors.BytesStringConverter;
 import com.example.alexeyglushkov.tools.CancelError;
 
 import io.reactivex.Observable;
@@ -58,15 +59,15 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
 	}
 
 	@Override
-	public Single<ServiceCommand> retrieveAccessToken(String code) {
+	public Single<ServiceCommand<String>> retrieveAccessToken(String code) {
 		HttpUrlConnectionBuilder builder = new HttpUrlConnectionBuilder();
 		api.fillAccessTokenConnectionBuilder(builder, config, code);
 
-		final ServiceCommand command = commandProvider.getServiceCommand(builder);
+		final ServiceCommand<String> command = commandProvider.getServiceCommand(builder, new BytesStringConverter());
 
-		return commandRunner.run(command).onErrorResumeNext(new Function<Throwable, SingleSource<ServiceCommand>>() {
+		return commandRunner.run(command).onErrorResumeNext(new Function<Throwable, SingleSource<? extends ServiceCommand<String>>>() {
 			@Override
-			public SingleSource<ServiceCommand> apply(Throwable throwable) throws Exception {
+			public SingleSource<? extends ServiceCommand<String>> apply(Throwable throwable) throws Exception {
 				Error err = new AuthError("OAuth20AuthorizerImpl authorize: Can't receive AccessToken", AuthError.Reason.InnerError, throwable);
 				return Single.error(err);
 			}

@@ -1,9 +1,7 @@
 package com.example.alexeyglushkov.quizletservice.tasks;
 
-import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
-import com.example.alexeyglushkov.authtaskmanager.HttpServiceTask;
+import com.example.alexeyglushkov.authtaskmanager.HttpServiceCommand;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
-import com.example.alexeyglushkov.quizletservice.QuizletSetsCommand;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletUser;
 import com.example.alexeyglushkov.quizletservice.deserializers.QuizletSetDeserializer;
@@ -21,20 +19,17 @@ import java.util.List;
 /**
  * Created by alexeyglushkov on 03.04.16.
  */
-public class QuizletSetsTask extends HttpServiceTask implements QuizletSetsCommand {
+public class QuizletSetsCommand extends HttpServiceCommand implements com.example.alexeyglushkov.quizletservice.QuizletSetsCommand {
     private List<QuizletSet> sets;
 
-    public QuizletSetsTask(String server, String userId) {
+    public QuizletSetsCommand(String server, String userId) {
         super();
         build(server, userId);
     }
 
     private void build(String server, String userId) {
-        HttpUrlConnectionBuilder requestBuilder = new HttpUrlConnectionBuilder();
-
         String url = server + "/users/" + userId + "/sets";
-        requestBuilder.setUrl(url);
-        setConnectionBuilder(requestBuilder);
+        getConnectionBuilder().setUrl(url);
     }
 
     @Override
