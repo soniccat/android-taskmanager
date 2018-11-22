@@ -96,6 +96,6 @@ public class QuizletApi2 extends DefaultApi20 {
     @Override
     public void signCommand(ServiceCommand command, OAuthCredentials credentials) {
         String authString = "Bearer " + credentials.getAccessToken();
-        command.getConnectionBulder().addHeader("Authorization", authString);
+        command.getConnectionBuilder().addHeader("Authorization", authString);
     }
 }

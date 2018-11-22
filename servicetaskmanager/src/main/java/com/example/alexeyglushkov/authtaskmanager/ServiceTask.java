@@ -9,7 +9,7 @@ import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 public abstract class ServiceTask extends SimpleTask implements IServiceTask {
 
     @Override
-    public HttpUrlConnectionBuilder getConnectionBulder() {
+    public HttpUrlConnectionBuilder getConnectionBuilder() {
         return null;
     }
 

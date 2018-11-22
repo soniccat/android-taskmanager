@@ -1,7 +1,5 @@
 package com.example.alexeyglushkov.quizletservice;
 
-import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
-import com.example.alexeyglushkov.cachemanager.clients.IStorageClient;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;

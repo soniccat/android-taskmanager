@@ -4,7 +4,6 @@ import android.os.Handler;
 
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
-import com.example.alexeyglushkov.taskmanager.task.PriorityTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.StackTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
@@ -16,10 +15,7 @@ import java.util.concurrent.Callable;
 import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
-import io.reactivex.SingleSource;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
-import io.reactivex.functions.Action;
 
 /**
  * Created by alexeyglushkov on 04.11.15.
@@ -40,11 +36,17 @@ public class ServiceTaskRunner implements ServiceCommandRunner {
             @Override
             public void subscribe(final SingleEmitter<T> emitter) throws Exception {
                 final IServiceTask serviceTask = (IServiceTask)command;
-                serviceTask.setTaskCallback(new Task.Callback() {
+                emitter.setDisposable(Disposables.fromRunnable(new Runnable() {
                     @Override
-                    public void onCompleted(boolean cancelled) {
+                    public void run() {
+                        cancel(serviceTask);
+                    }
+                }));
+
+                run(serviceTask, new Callback() {
+                    @Override
+                    public void onCompleted(Error error, boolean cancelled) {
                         if (!emitter.isDisposed() && !cancelled) {
-                            Error error = command.getCommandError();
                             if (error != null) {
                                 emitter.onError(error);
                             } else {
@@ -53,17 +55,20 @@ public class ServiceTaskRunner implements ServiceCommandRunner {
                         }
                     }
                 });
-
-                emitter.setDisposable(Disposables.fromRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        cancel(serviceTask);
-                    }
-                }));
-
-                taskProvider.addTask(serviceTask);
             }
         });
+    }
+
+    public <T extends ServiceCommand> void run(final T command, final Callback callback) {
+        final IServiceTask serviceTask = (IServiceTask)command;
+        serviceTask.setTaskCallback(new Task.Callback() {
+            @Override
+            public void onCompleted(boolean cancelled) {
+                callback.onCompleted(serviceTask.getCommandError(), cancelled);
+            }
+        });
+        taskProvider.addTask(serviceTask);
+
     }
 
     @Override

@@ -54,12 +54,12 @@ public class HttpServiceTask extends TransportTask implements IServiceTask {
         return new HttpURLConnectionProvider() {
             @Override
             public HttpURLConnection getUrlConnection() {
-                return getConnectionBulder().build();
+                return getConnectionBuilder().build();
             }
 
             @Override
             public URL getURL() {
-                return getConnectionBulder().getUrl();
+                return getConnectionBuilder().getUrl();
             }
         };
     }
@@ -69,7 +69,7 @@ public class HttpServiceTask extends TransportTask implements IServiceTask {
     }
 
     @Override
-    public HttpUrlConnectionBuilder getConnectionBulder() {
+    public HttpUrlConnectionBuilder getConnectionBuilder() {
         return connectionBuilder;
     }
 

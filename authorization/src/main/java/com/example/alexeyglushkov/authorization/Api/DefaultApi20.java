@@ -70,7 +70,7 @@ public abstract class DefaultApi20 implements OAuthApi
     public abstract OAuthCredentials createCredentials(String response);
 
     public void signCommand(ServiceCommand command, OAuthCredentials credentials) {
-        command.getConnectionBulder().addQuerystringParameter(OAuthConstants.TOKEN, credentials.getAccessToken());
+        command.getConnectionBuilder().addQuerystringParameter(OAuthConstants.TOKEN, credentials.getAccessToken());
     }
 
     @Nullable

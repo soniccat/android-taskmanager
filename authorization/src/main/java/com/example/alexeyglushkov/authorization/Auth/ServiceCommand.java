@@ -16,7 +16,7 @@ import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnection
 public interface ServiceCommand {
 
     // TODO: it seems these 3 methods could be not necessary (see dropbox upload command)
-    HttpUrlConnectionBuilder getConnectionBulder();
+    HttpUrlConnectionBuilder getConnectionBuilder();
     String getResponse();
     int getResponseCode();
 
