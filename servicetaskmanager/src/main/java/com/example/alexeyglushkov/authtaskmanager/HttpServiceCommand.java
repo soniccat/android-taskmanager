@@ -21,11 +21,13 @@ import java.net.URL;
  */
 public class HttpServiceCommand<T> implements IServiceTask<T> {
     private TransportTask task;
-    private HttpUrlConnectionBuilder connectionBuilder = new HttpUrlConnectionBuilder();
+    private HttpUrlConnectionBuilder connectionBuilder;
 
-    public HttpServiceCommand(ByteArrayHandler<T> handler) {
+    public HttpServiceCommand(HttpUrlConnectionBuilder builder, ByteArrayHandler<T> handler) {
         super();
-        task = new TransportTask(new Transport<T>(connectionBuilder, handler));
+        task = new TransportTask();
+        setConnectionBuilder(builder);
+        task.setTransport(new Transport<T>(connectionBuilder, handler));
     }
 
     //// Interface methods
@@ -39,7 +41,7 @@ public class HttpServiceCommand<T> implements IServiceTask<T> {
 
     // Setters
 
-    public void setConnectionBuilder(HttpUrlConnectionBuilder connectionBuilder) {
+    private void setConnectionBuilder(HttpUrlConnectionBuilder connectionBuilder) {
         this.connectionBuilder = connectionBuilder;
         task.setTaskId(connectionBuilder.getStringUrl());
         task.setLoadPolicy(Task.LoadPolicy.CancelAdded);

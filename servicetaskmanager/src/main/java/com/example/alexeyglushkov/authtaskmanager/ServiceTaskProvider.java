@@ -11,8 +11,7 @@ import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
 public class ServiceTaskProvider implements ServiceCommandProvider {
     @Override
     public <T> ServiceCommand<T> getServiceCommand(HttpUrlConnectionBuilder builder, ByteArrayHandler<T> handler) {
-        HttpServiceCommand<T> httpServiceCommand = new HttpServiceCommand<>(handler);
-        httpServiceCommand.setConnectionBuilder(builder);
+        HttpServiceCommand<T> httpServiceCommand = new HttpServiceCommand<>(builder, handler);
         return httpServiceCommand;
     }
 }

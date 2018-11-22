@@ -18,7 +18,7 @@ public class TransportTask extends SimpleTask implements TaskTransport.Listener 
         setTransport(transport);
     }
 
-    protected void setTransport(@NonNull TaskTransport transport) {
+    public void setTransport(@NonNull TaskTransport transport) {
         TaskTransport oldTransport = getTransport();
         if (oldTransport != null && oldTransport.getListener() == this) {
             oldTransport.setListener(null);

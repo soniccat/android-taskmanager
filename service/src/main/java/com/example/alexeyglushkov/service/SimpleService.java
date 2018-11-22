@@ -1,6 +1,5 @@
 package com.example.alexeyglushkov.service;
 
-import android.os.Handler;
 import android.os.HandlerThread;
 
 import com.example.alexeyglushkov.authorization.Auth.Account;

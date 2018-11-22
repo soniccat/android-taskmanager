@@ -1,5 +1,6 @@
 package com.example.alexeyglushkov.quizletservice.tasks;
 
+import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
 import com.example.alexeyglushkov.authtaskmanager.HttpServiceCommand;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
@@ -23,19 +24,23 @@ import java.util.List;
 public class QuizletSetsCommand extends HttpServiceCommand<QuizletSet[]>
         implements com.example.alexeyglushkov.quizletservice.QuizletSetsCommand {
     public QuizletSetsCommand(String server, String userId) {
-        super(new ByteArrayHandler<QuizletSet[]>() {
+        super(createBuilder(server, userId), createHandler());
+    }
+
+    static private HttpUrlConnectionBuilder createBuilder(String server, String userId) {
+        HttpUrlConnectionBuilder builder = new HttpUrlConnectionBuilder();
+        String url = server + "/users/" + userId + "/sets";
+        builder.setUrl(url);
+        return builder;
+    }
+
+    private static ByteArrayHandler<QuizletSet[]> createHandler() {
+        return new ByteArrayHandler<QuizletSet[]>() {
             @Override
             public QuizletSet[] convert(byte[] bytes) {
                 return parseSets(bytes);
             }
-        });
-
-        build(server, userId);
-    }
-
-    private void build(String server, String userId) {
-        String url = server + "/users/" + userId + "/sets";
-        getConnectionBuilder().setUrl(url);
+        };
     }
 
     static private QuizletSet[] parseSets(byte[] bytes) {
