@@ -30,7 +30,7 @@ public class ServiceTaskRunner implements ServiceCommandRunner {
     }
 
     @Override
-    public <T extends ServiceCommand<U>, U> Single<T> run(final T command) {
+    public <T extends ServiceCommand<?>> Single<T> run(final T command) {
         return Single.create(new SingleOnSubscribe<T>() {
             @Override
             public void subscribe(final SingleEmitter<T> emitter) throws Exception {
@@ -58,7 +58,7 @@ public class ServiceTaskRunner implements ServiceCommandRunner {
         });
     }
 
-    public <T extends ServiceCommand<U>, U> void run(final T command, final Callback callback) {
+    public <T extends ServiceCommand<?>> void run(final T command, final Callback callback) {
         final IServiceTask serviceTask = (IServiceTask)command;
         Task task = serviceTask.getTask();
         task.setTaskCallback(new Task.Callback() {
@@ -72,7 +72,7 @@ public class ServiceTaskRunner implements ServiceCommandRunner {
     }
 
     @Override
-    public <T extends ServiceCommand<U>, U> void cancel(T command) {
+    public <T extends ServiceCommand<?>> void cancel(T command) {
         IServiceTask serviceTask = (IServiceTask)command;
         taskManager.cancel(serviceTask.getTask(), null);
     }

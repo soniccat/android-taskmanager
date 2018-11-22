@@ -11,11 +11,8 @@ import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnection
 import com.example.alexeyglushkov.streamlib.convertors.BytesStringConverter;
 import com.example.alexeyglushkov.tools.CancelError;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
-import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 
 public class OAuth20AuthorizerImpl implements OAuth20Authorizer
@@ -58,6 +55,8 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
 		this.config = config;
 	}
 
+	// TODO: parse code here instead of retrieveAccessToken
+	// TODO: use Single<String> instead of Single<ServiceCommand<String>>
 	@Override
 	public Single<ServiceCommand<String>> retrieveAccessToken(String code) {
 		HttpUrlConnectionBuilder builder = new HttpUrlConnectionBuilder();
@@ -92,19 +91,19 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
 		return webAuthorization().flatMap(new Function<String, SingleSource<? extends AuthCredentials>>() {
 			@Override
 			public SingleSource<? extends AuthCredentials> apply(String s) throws Exception {
-				return onWebAuthFinished(s);
+				return extractAccessToken(s);
 			}
 		});
 	}
 
-    private Single<? extends AuthCredentials> onWebAuthFinished(String code) {
+    private Single<? extends AuthCredentials> extractAccessToken(String code) {
         if (code == null) {
             return Single.error(new Error("OAuth20AuthorizerImpl authorize: empty code"));
 
         } else {
-			return retrieveAccessToken(code).flatMap(new Function<ServiceCommand, SingleSource<? extends AuthCredentials>>() {
+			return retrieveAccessToken(code).flatMap(new Function<ServiceCommand<String>, SingleSource<? extends AuthCredentials>>() {
 				@Override
-				public SingleSource<? extends AuthCredentials> apply(ServiceCommand command) throws Exception {
+				public SingleSource<? extends AuthCredentials> apply(ServiceCommand<String> command) throws Exception {
 					String response = command.getResponse();
 					OAuthCredentials authCredentials = api.createCredentials(response);
 

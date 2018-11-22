@@ -8,6 +8,5 @@ import java.util.List;
 /**
  * Created by alexeyglushkov on 03.04.16.
  */
-public interface QuizletSetsCommand extends ServiceCommand {
-    List<QuizletSet> getSets();
+public interface QuizletSetsCommand extends ServiceCommand<QuizletSet[]> {
 }

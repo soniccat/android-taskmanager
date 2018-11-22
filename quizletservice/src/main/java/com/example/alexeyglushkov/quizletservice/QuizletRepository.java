@@ -5,6 +5,7 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -35,7 +36,7 @@ public class QuizletRepository {
                 .doOnSuccess(new Consumer<QuizletSetsCommand>() {
                     @Override
                     public void accept(QuizletSetsCommand quizletSetsCommand) throws Exception {
-                        setState(Resource.State.Loaded, quizletSetsCommand.getSets());
+                        setState(Resource.State.Loaded, new ArrayList<>(Arrays.asList(quizletSetsCommand.getResponse())));
                     }
                 }).doOnError(new Consumer<Throwable>() {
                     @Override
@@ -57,7 +58,7 @@ public class QuizletRepository {
                 .doOnSuccess(new Consumer<QuizletSetsCommand>() {
                     @Override
                     public void accept(QuizletSetsCommand quizletSetsCommand) throws Exception {
-                        setState(Resource.State.Restored, quizletSetsCommand.getSets());
+                        setState(Resource.State.Restored, new ArrayList<>(Arrays.asList(quizletSetsCommand.getResponse())));
                     }
                 }).onErrorResumeNext(new Function<Throwable, SingleSource<? extends QuizletSetsCommand>>() {
                     @Override

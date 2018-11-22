@@ -7,6 +7,7 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletUser;
 import com.example.alexeyglushkov.quizletservice.deserializers.QuizletSetDeserializer;
 import com.example.alexeyglushkov.quizletservice.deserializers.QuizletTermDeserializer;
 import com.example.alexeyglushkov.quizletservice.deserializers.QuizletUserDeserializer;
+import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -19,11 +20,16 @@ import java.util.List;
 /**
  * Created by alexeyglushkov on 03.04.16.
  */
-public class QuizletSetsCommand extends HttpServiceCommand implements com.example.alexeyglushkov.quizletservice.QuizletSetsCommand {
-    private List<QuizletSet> sets;
-
+public class QuizletSetsCommand extends HttpServiceCommand<QuizletSet[]>
+        implements com.example.alexeyglushkov.quizletservice.QuizletSetsCommand {
     public QuizletSetsCommand(String server, String userId) {
-        super();
+        super(new ByteArrayHandler<QuizletSet[]>() {
+            @Override
+            public QuizletSet[] convert(byte[] bytes) {
+                return parseSets(bytes);
+            }
+        });
+
         build(server, userId);
     }
 
@@ -32,14 +38,7 @@ public class QuizletSetsCommand extends HttpServiceCommand implements com.exampl
         getConnectionBuilder().setUrl(url);
     }
 
-    @Override
-    public void setTaskResult(Object handledData) {
-        super.setTaskResult(handledData);
-        QuizletSet[] setArray = parseSets(getResponse());
-        sets = new ArrayList<>(Arrays.asList(setArray));
-    }
-
-    private QuizletSet[] parseSets(String setsResponse) {
+    static private QuizletSet[] parseSets(byte[] bytes) {
         QuizletSet[] result = null;
         try {
             SimpleModule md = new SimpleModule("QuizletModule", new Version(1,0,0,null,null,null));
@@ -50,16 +49,11 @@ public class QuizletSetsCommand extends HttpServiceCommand implements com.exampl
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(md);
 
-            result = mapper.readValue(setsResponse, QuizletSet[].class);
+            result = mapper.readValue(bytes, QuizletSet[].class);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return result;
-    }
-
-    @Override
-    public List<QuizletSet> getSets() {
-        return sets;
     }
 }
