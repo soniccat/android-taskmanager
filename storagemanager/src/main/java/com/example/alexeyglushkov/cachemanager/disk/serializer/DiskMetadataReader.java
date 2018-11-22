@@ -18,7 +18,7 @@ import java.io.InputStream;
 /**
  * Created by alexeyglushkov on 11.09.16.
  */
-public class DiskMetadataReader implements InputStreamDataReader {
+public class DiskMetadataReader implements InputStreamDataReader<DiskStorageMetadata> {
     private @Nullable InputStream stream;
 
     @Override
@@ -34,10 +34,10 @@ public class DiskMetadataReader implements InputStreamDataReader {
     }
 
     @Override
-    public Object read() throws IOException {
+    public DiskStorageMetadata read() throws IOException {
         ExceptionTools.throwIfNull(stream, "DiskMetadataReader.read: stream is null");
 
-        Object result = null;
+        DiskStorageMetadata result = null;
         SimpleModule md = new SimpleModule("DiskMetadataModule", new Version(1,0,0,null,null,null));
         md.addDeserializer(DiskStorageMetadata.class, new DiskMetadataDeserializer(DiskStorageMetadata.class));
 

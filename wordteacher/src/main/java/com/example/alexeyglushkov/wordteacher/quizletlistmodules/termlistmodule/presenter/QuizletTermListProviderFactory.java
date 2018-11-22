@@ -18,13 +18,13 @@ import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProviderFac
  * Created by alexeyglushkov on 20.08.16.
  */
 public class QuizletTermListProviderFactory implements StorableListProviderFactory<QuizletTerm> {
-    private QuizletRepository service;
+    private QuizletRepository repository;
 
     //// Initialization
 
-    public QuizletTermListProviderFactory(QuizletService service) {
-        Assert.assertNotNull(service);
-        this.service = service;
+    public QuizletTermListProviderFactory(QuizletRepository repository) {
+        Assert.assertNotNull(repository);
+        this.repository = repository;
     }
 
     //// Overridden methods
@@ -56,10 +56,10 @@ public class QuizletTermListProviderFactory implements StorableListProviderFacto
         StorableListProvider<QuizletTerm> result = null;
 
         if (QuizletTermListProvider.canRestore(bundle)) {
-            result = new QuizletTermListProvider(bundle, service);
+            result = new QuizletTermListProvider(bundle, repository);
 
         } else if (QuizletSetTermListProvider.canRestore(bundle)) {
-            result = new QuizletSetTermListProvider(bundle, service);
+            result = new QuizletSetTermListProvider(bundle, repository);
 
         } else {
             result = createDefault();
@@ -83,7 +83,7 @@ public class QuizletTermListProviderFactory implements StorableListProviderFacto
 
             @Override
             public List<QuizletTerm> getList() {
-                return service.getTerms();
+                return repository.getTerms();
             }
         };
     }

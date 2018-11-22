@@ -2,6 +2,7 @@ package com.example.alexeyglushkov.wordteacher.quizletlistmodules.termlistmodule
 
 import android.os.Bundle;
 
+import com.example.alexeyglushkov.quizletservice.QuizletRepository;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 
@@ -43,7 +44,7 @@ public class QuizletTermListProvider extends SimpleStorableListProvider<QuizletT
     @Override
     public void restore(Bundle bundle, Object context) {
         long[] ids = bundle.getLongArray(STORE_TERM_IDS);
-        items = getQuizletTerms(ids, (QuizletService) context);
+        items = getQuizletTerms(ids, (QuizletRepository) context);
     }
 
     //// Getters
@@ -59,10 +60,10 @@ public class QuizletTermListProvider extends SimpleStorableListProvider<QuizletT
         return ids;
     }
 
-    private List<QuizletTerm> getQuizletTerms(long[] ids, QuizletService service) {
+    private List<QuizletTerm> getQuizletTerms(long[] ids, QuizletRepository repository) {
         List<QuizletTerm> terms = new ArrayList<>();
         for (long id : ids) {
-            QuizletTerm term = service.getTerm(id);
+            QuizletTerm term = repository.getTerm(id);
             terms.add(term);
         }
 

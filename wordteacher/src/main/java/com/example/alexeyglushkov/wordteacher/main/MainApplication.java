@@ -42,8 +42,7 @@ public class MainApplication extends Application {
     private @NonNull CourseHolder courseHolder;
     private @NonNull TaskManager taskManager;
 
-    private @NonNull
-    Storage storage;
+    private @NonNull Storage storage;
 
     public static @NonNull MainApplication instance;
 

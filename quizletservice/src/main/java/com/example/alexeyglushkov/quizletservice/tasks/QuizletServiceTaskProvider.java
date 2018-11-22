@@ -5,7 +5,7 @@ import com.example.alexeyglushkov.cachemanager.Storage;
 import com.example.alexeyglushkov.cachemanager.clients.IStorageClient;
 import com.example.alexeyglushkov.quizletservice.QuizletCommandProvider;
 import com.example.alexeyglushkov.quizletservice.QuizletSetsCommand;
-import com.example.alexeyglushkov.cachemanager.clients.StorageClient;
+import com.example.alexeyglushkov.cachemanager.clients.SimpleStorageClient;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 
 /**
@@ -22,7 +22,7 @@ public class QuizletServiceTaskProvider extends ServiceTaskProvider implements Q
     public QuizletSetsCommand getLoadSetsCommand(String server, String userId, IStorageClient.CacheMode cacheMode, ProgressListener progressListener) {
         QuizletSetsTask task = new QuizletSetsTask(server, userId);
 
-        StorageClient storageClient = new StorageClient(storage, 0);
+        SimpleStorageClient storageClient = new SimpleStorageClient(storage, 0);
         storageClient.setCacheMode(cacheMode);
         task.setCacheClient(storageClient);
 

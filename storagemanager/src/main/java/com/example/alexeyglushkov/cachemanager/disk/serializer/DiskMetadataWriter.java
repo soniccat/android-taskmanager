@@ -16,7 +16,7 @@ import java.io.OutputStream;
 /**
  * Created by alexeyglushkov on 11.09.16.
  */
-public class DiskMetadataWriter implements OutputStreamDataWriter {
+public class DiskMetadataWriter implements OutputStreamDataWriter<DiskStorageMetadata> {
     private @Nullable OutputStream stream;
 
     @Override
@@ -32,10 +32,8 @@ public class DiskMetadataWriter implements OutputStreamDataWriter {
     }
 
     @Override
-    public void write(@NonNull Object object) throws IOException {
+    public void write(@NonNull DiskStorageMetadata metadata) throws IOException {
         ExceptionTools.throwIfNull(stream, "DiskMetadataReader.write: stream is null");
-
-        DiskStorageMetadata metadata = (DiskStorageMetadata)object;
 
         JsonFactory f = new JsonFactory();
         JsonGenerator g = null;

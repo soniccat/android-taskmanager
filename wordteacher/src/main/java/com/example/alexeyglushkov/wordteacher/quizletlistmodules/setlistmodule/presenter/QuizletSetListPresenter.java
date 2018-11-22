@@ -5,7 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.alexeyglushkov.quizletservice.QuizletService;
+import com.example.alexeyglushkov.quizletservice.QuizletRepository;
 import com.example.alexeyglushkov.quizletservice.Resource;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 
@@ -37,10 +37,10 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet> imp
         super.onViewStateRestored(view, savedInstanceState);
 
         this.savedInstanceState = savedInstanceState;
-        getQuizletService().getLiveSets().observeForever(this);
+        getQuizletRepository().getLiveSets().observeForever(this);
 
         if (savedInstanceState != null) {
-            onServiceStateChanged(getQuizletService().getLiveSets().getValue());
+            onServiceStateChanged(getQuizletRepository().getLiveSets().getValue());
         }
     }
 
@@ -56,7 +56,7 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet> imp
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        getQuizletService().getLiveSets().removeObserver(this);
+        getQuizletRepository().getLiveSets().removeObserver(this);
     }
 
     //// Actions
@@ -98,7 +98,7 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet> imp
 
     @NonNull
     protected QuizletSetListProviderFactory createProviderFactory() {
-        return new QuizletSetListProviderFactory(getQuizletService());
+        return new QuizletSetListProviderFactory(getQuizletRepository());
     }
 
     public CompareStrategyFactory<QuizletSet> createCompareStrategyFactory() {
@@ -120,7 +120,7 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet> imp
         return MainApplication.instance;
     }
 
-    public QuizletService getQuizletService() {
+    public QuizletRepository getQuizletRepository() {
         return getMainApplication().getQuizletRepository();
     }
 

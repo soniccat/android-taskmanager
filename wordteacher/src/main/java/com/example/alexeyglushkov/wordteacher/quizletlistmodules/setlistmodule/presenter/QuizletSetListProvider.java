@@ -2,6 +2,7 @@ package com.example.alexeyglushkov.wordteacher.quizletlistmodules.setlistmodule.
 
 import android.os.Bundle;
 
+import com.example.alexeyglushkov.quizletservice.QuizletRepository;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 
@@ -22,7 +23,7 @@ public class QuizletSetListProvider extends SimpleStorableListProvider<QuizletSe
         super(items);
     }
 
-    public QuizletSetListProvider(Bundle bundle, QuizletService service) {
+    public QuizletSetListProvider(Bundle bundle, QuizletRepository service) {
         super(null);
         restore(bundle, service);
     }
@@ -43,7 +44,7 @@ public class QuizletSetListProvider extends SimpleStorableListProvider<QuizletSe
     @Override
     public void restore(Bundle bundle, Object context) {
         long[] ids = bundle.getLongArray(STORE_SET_IDS);
-        items = getQuizletSets(ids, (QuizletService)context);
+        items = getQuizletSets(ids, (QuizletRepository) context);
     }
 
     //// Getters
@@ -59,10 +60,10 @@ public class QuizletSetListProvider extends SimpleStorableListProvider<QuizletSe
         return ids;
     }
 
-    private List<QuizletSet> getQuizletSets(long[] ids, QuizletService service) {
+    private List<QuizletSet> getQuizletSets(long[] ids, QuizletRepository repository) {
         List<QuizletSet> sets = new ArrayList<>();
         for (long id : ids) {
-            QuizletSet set = service.getSet(id);
+            QuizletSet set = repository.getSet(id);
             sets.add(set);
         }
 

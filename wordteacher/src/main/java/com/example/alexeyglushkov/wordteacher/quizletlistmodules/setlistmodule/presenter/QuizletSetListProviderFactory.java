@@ -2,6 +2,7 @@ package com.example.alexeyglushkov.wordteacher.quizletlistmodules.setlistmodule.
 
 import android.os.Bundle;
 
+import com.example.alexeyglushkov.quizletservice.QuizletRepository;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 
@@ -16,13 +17,13 @@ import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProviderFac
  * Created by alexeyglushkov on 20.08.16.
  */
 public class QuizletSetListProviderFactory implements StorableListProviderFactory<QuizletSet> {
-    private QuizletService service;
+    private QuizletRepository repository;
 
     //// Initialization
 
-    public QuizletSetListProviderFactory(QuizletService service) {
-        Assert.assertNotNull(service);
-        this.service = service;
+    public QuizletSetListProviderFactory(QuizletRepository repository) {
+        Assert.assertNotNull(repository);
+        this.repository = repository;
     }
 
     //// Interface methods
@@ -45,7 +46,7 @@ public class QuizletSetListProviderFactory implements StorableListProviderFactor
         StorableListProvider<QuizletSet> result = null;
 
         if (QuizletSetListProvider.canRestore(bundle)) {
-            result = new QuizletSetListProvider(bundle, service);
+            result = new QuizletSetListProvider(bundle, repository);
 
         } else {
             result = createDefault();
@@ -67,7 +68,7 @@ public class QuizletSetListProviderFactory implements StorableListProviderFactor
 
             @Override
             public List<QuizletSet> getList() {
-                return service.getSets();
+                return repository.getSets();
             }
         };
     }

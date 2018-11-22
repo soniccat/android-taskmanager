@@ -11,17 +11,19 @@ import com.example.alexeyglushkov.tools.TimeTools;
  * Created by alexeyglushkov on 03.03.18.
  */
 
-public class StorageClient implements IStorageClient {
+// Supports isExpired
+
+public class SimpleStorageClient implements IStorageClient {
     private CacheMode cacheMode = CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD;
     private @NonNull Storage cache;
     private boolean deleteIfExpired = true;
     private long defaultDuration;
 
-    public StorageClient(@NonNull Storage cache) {
+    public SimpleStorageClient(@NonNull Storage cache) {
         this(cache, 0);
     }
 
-    public StorageClient(@NonNull Storage cache, long duration) {
+    public SimpleStorageClient(@NonNull Storage cache, long duration) {
         this.cache = cache;
         this.defaultDuration = duration;
     }

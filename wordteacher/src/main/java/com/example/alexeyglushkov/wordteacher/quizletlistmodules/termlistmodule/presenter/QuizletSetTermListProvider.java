@@ -2,7 +2,7 @@ package com.example.alexeyglushkov.wordteacher.quizletlistmodules.termlistmodule
 
 import android.os.Bundle;
 
-import com.example.alexeyglushkov.quizletservice.QuizletService;
+import com.example.alexeyglushkov.quizletservice.QuizletRepository;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 
@@ -24,7 +24,7 @@ public class QuizletSetTermListProvider implements StorableListProvider<QuizletT
         this.set = set;
     }
 
-    public QuizletSetTermListProvider(Bundle bundle, QuizletService service) {
+    public QuizletSetTermListProvider(Bundle bundle, QuizletRepository service) {
         restore(bundle, service);
     }
 
@@ -45,7 +45,7 @@ public class QuizletSetTermListProvider implements StorableListProvider<QuizletT
     public void restore(Bundle bundle, Object context) {
         long setId = bundle.getLong(PARENT_SET_ID);
 
-        QuizletService service = (QuizletService)context;
+        QuizletRepository service = (QuizletRepository)context;
         set = service.getSet(setId);
     }
 
