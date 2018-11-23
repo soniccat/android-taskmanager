@@ -4,10 +4,14 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.Serializable;
+
 /**
  * Created by alexeyglushkov on 02.04.16.
  */
-public class QuizletTerm implements Parcelable {
+public class QuizletTerm implements Parcelable, Serializable {
+    private static final long serialVersionUID = -6211744973878309135L;
+
     private long id;
     private long setId;
     private String term;

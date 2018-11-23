@@ -631,7 +631,7 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
     private void cancelTaskOnThread(Task task, final Object info) {
         checkHandlerThread();
 
-        if (!task.getPrivate().getNeedCancelTask()) {
+        if (!task.getPrivate().getNeedCancelTask() && !Tasks.isTaskCompleted(task)) {
             Task.Status st = task.getTaskStatus();
             task.getPrivate().cancelTask(info);
 

@@ -1,9 +1,13 @@
 package com.example.alexeyglushkov.quizletservice.entities;
 
+import java.io.Serializable;
+
 /**
  * Created by alexeyglushkov on 27.03.16.
  */
-public class QuizletUser {
+public class QuizletUser implements Serializable {
+    private static final long serialVersionUID = 4254004416559222553L;
+
     private long id;
     private String name;
     private String type;

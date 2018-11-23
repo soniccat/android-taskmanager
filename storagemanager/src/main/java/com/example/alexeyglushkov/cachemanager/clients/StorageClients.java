@@ -1,6 +1,5 @@
 package com.example.alexeyglushkov.cachemanager.clients;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
@@ -9,23 +8,23 @@ import androidx.annotation.Nullable;
 
 public class StorageClients {
 
-    public static boolean canLoadFromCache(@Nullable IStorageClient client) {
+    public static boolean canLoadFromCache(@Nullable StorageClient client) {
         if (client == null) {
             return false;
         }
 
-        IStorageClient.CacheMode cacheMode = client.getCacheMode();
-        return cacheMode != IStorageClient.CacheMode.IGNORE_CACHE &&
-                cacheMode != IStorageClient.CacheMode.ONLY_STORE_TO_CACHE;
+        StorageClient.CacheMode cacheMode = client.getCacheMode();
+        return cacheMode != StorageClient.CacheMode.IGNORE_CACHE &&
+                cacheMode != StorageClient.CacheMode.ONLY_STORE_TO_CACHE;
     }
 
-    public static boolean canWriteToCache(@Nullable IStorageClient client) {
+    public static boolean canWriteToCache(@Nullable StorageClient client) {
         if (client == null) {
             return false;
         }
 
-        IStorageClient.CacheMode cacheMode = client.getCacheMode();
-        return cacheMode != IStorageClient.CacheMode.IGNORE_CACHE &&
-                cacheMode != IStorageClient.CacheMode.ONLY_LOAD_FROM_CACHE;
+        StorageClient.CacheMode cacheMode = client.getCacheMode();
+        return cacheMode != StorageClient.CacheMode.IGNORE_CACHE &&
+                cacheMode != StorageClient.CacheMode.ONLY_LOAD_FROM_CACHE;
     }
 }

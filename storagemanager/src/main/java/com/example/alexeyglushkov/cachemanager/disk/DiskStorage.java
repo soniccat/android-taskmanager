@@ -32,8 +32,8 @@ public class DiskStorage implements Storage {
     private static String METADATA_PREFIX = "_metadata";
 
     private @NonNull File directory;
-    private @NonNull
-    Codec defaultCodec = new ObjectCodec();
+    private @NonNull Codec defaultCodec = new ObjectCodec();
+
     private @NonNull Map<Class, Codec> serializerMap = new HashMap<>();
 
     // TODO: remove WeakReference I think

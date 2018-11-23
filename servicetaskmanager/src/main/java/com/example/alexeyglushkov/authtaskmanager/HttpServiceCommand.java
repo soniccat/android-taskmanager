@@ -2,15 +2,11 @@ package com.example.alexeyglushkov.authtaskmanager;
 
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
 import com.example.alexeyglushkov.service.HttpCacheableTransport;
-import com.example.alexeyglushkov.cachemanager.clients.IStorageClient;
-import com.example.alexeyglushkov.streamlib.convertors.BytesStringConverter;
+import com.example.alexeyglushkov.cachemanager.clients.StorageClient;
 import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionBytesReader;
-import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionStreamReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.TransportTask;
-import com.example.alexeyglushkov.taskmanager.loader.http.HttpTaskTransport;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpURLConnectionProvider;
-import com.example.alexeyglushkov.taskmanager.loader.transport.TaskTransport;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 
 import java.net.HttpURLConnection;
@@ -47,7 +43,7 @@ public class HttpServiceCommand<T> implements IServiceTask<T> {
         task.setLoadPolicy(Task.LoadPolicy.CancelAdded);
     }
 
-    public void setCacheClient(IStorageClient cacheClient) {
+    public void setCacheClient(StorageClient cacheClient) {
         Transport transport = (Transport) task.getTransport();
         transport.setCacheClient(cacheClient);
     }

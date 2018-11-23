@@ -10,7 +10,7 @@ import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthCredentials;
-import com.example.alexeyglushkov.cachemanager.clients.IStorageClient;
+import com.example.alexeyglushkov.cachemanager.clients.StorageClient;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.service.SimpleService;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
@@ -41,7 +41,7 @@ public class QuizletService extends SimpleService {
         .flatMap(new Function<AuthCredentials, SingleSource<? extends QuizletSetsCommand>>() {
             @Override
             public SingleSource<? extends QuizletSetsCommand> apply(AuthCredentials authCredentials) throws Exception {
-                QuizletSetsCommand command = createSetsCommand(IStorageClient.CacheMode.ONLY_STORE_TO_CACHE, progressListener);
+                QuizletSetsCommand command = createSetsCommand(StorageClient.CacheMode.IGNORE_CACHE, progressListener);
                 return runCommand(command, true);
             }
         }).flatMap(new Function<QuizletSetsCommand, SingleSource<? extends List<QuizletSet>>>() {
@@ -57,7 +57,7 @@ public class QuizletService extends SimpleService {
             .flatMap(new Function<AuthCredentials, SingleSource<? extends QuizletSetsCommand>>() {
                 @Override
                 public SingleSource<? extends QuizletSetsCommand> apply(AuthCredentials authCredentials) throws Exception {
-                    QuizletSetsCommand command = createSetsCommand(IStorageClient.CacheMode.ONLY_LOAD_FROM_CACHE, progressListener);
+                    QuizletSetsCommand command = createSetsCommand(StorageClient.CacheMode.IGNORE_CACHE, progressListener);
                     return runCommand(command, false);
                 }
             }).flatMap(new Function<QuizletSetsCommand, SingleSource<? extends List<QuizletSet>>>() {
@@ -69,7 +69,7 @@ public class QuizletService extends SimpleService {
     }
 
     @NonNull
-    private QuizletSetsCommand createSetsCommand(final IStorageClient.CacheMode cacheMode, final ProgressListener progressListener) {
+    private QuizletSetsCommand createSetsCommand(final StorageClient.CacheMode cacheMode, final ProgressListener progressListener) {
         final QuizletSetsCommand command = getQuizletCommandProvider().getLoadSetsCommand(SERVER, getOAuthCredentials().getUserId(), cacheMode, progressListener);
         return command;
     }

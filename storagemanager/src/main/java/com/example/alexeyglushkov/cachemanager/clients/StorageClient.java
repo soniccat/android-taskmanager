@@ -6,7 +6,7 @@ import androidx.annotation.Nullable;
  * Created by alexeyglushkov on 03.03.18.
  */
 
-public interface IStorageClient {
+public interface StorageClient {
     enum CacheMode {
         CHECK_CACHE_IF_ERROR_THEN_LOAD,
         IGNORE_CACHE,

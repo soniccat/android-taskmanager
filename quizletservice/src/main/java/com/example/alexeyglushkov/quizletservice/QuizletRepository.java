@@ -1,7 +1,12 @@
 package com.example.alexeyglushkov.quizletservice;
 
+import com.example.alexeyglushkov.cachemanager.Storage;
+import com.example.alexeyglushkov.cachemanager.clients.StorageClient;
+import com.example.alexeyglushkov.cachemanager.clients.SimpleStorageClient;
+import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
+import com.example.alexeyglushkov.streamlib.codecs.ObjectCodec;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 
 import java.util.ArrayList;
@@ -15,14 +20,20 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 
 public class QuizletRepository {
-    private QuizletService service;
+    private @NonNull QuizletService service;
+    private @NonNull StorageClient storageClient;
 
     @NonNull
     private NonNullMutableLiveData<Resource<List<QuizletSet>>> sets
             = new NonNullMutableLiveData<>(new Resource<List<QuizletSet>>());
 
-    public QuizletRepository(QuizletService service) {
+    public QuizletRepository(@NonNull QuizletService service, @NonNull Storage storage) {
         this.service = service;
+        if (storage instanceof DiskStorage) {
+            DiskStorage diskStorage = (DiskStorage)storage;
+            diskStorage.setSerializer(new ObjectCodec(), List.class);
+        }
+        storageClient = new SimpleStorageClient(storage, 0);
     }
 
     //// Actions
@@ -35,6 +46,7 @@ public class QuizletRepository {
                 .doOnSuccess(new Consumer<List<QuizletSet>>() {
                     @Override
                     public void accept(List<QuizletSet> sets) throws Exception {
+                        storageClient.putValue("quizlet_sets", sets);
                         setState(Resource.State.Loaded, sets);
                     }
                 }).doOnError(new Consumer<Throwable>() {
@@ -53,7 +65,19 @@ public class QuizletRepository {
     public Single<List<QuizletSet>> restoreOrLoad(final ProgressListener progressListener) {
         setState(Resource.State.Loading);
 
-        return service.restoreSets(progressListener)
+        List<QuizletSet> sets = new ArrayList<>();
+        try {
+            List<QuizletSet> cachedValue = (List<QuizletSet>)storageClient.getCachedValue("quizlet_sets");
+            if (cachedValue != null) {
+                sets = cachedValue;
+                setState(Resource.State.Restored, sets);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return Single.just(sets);
+        /*service.restoreSets(progressListener)
                 .doOnSuccess(new Consumer<List<QuizletSet>>() {
                     @Override
                     public void accept(List<QuizletSet> sets) throws Exception {
@@ -74,7 +98,7 @@ public class QuizletRepository {
                     public void run() throws Exception {
                         setState(Resource.State.Uninitialized);
                     }
-                });
+                });*/
     }
 
     //// Setters / Getters

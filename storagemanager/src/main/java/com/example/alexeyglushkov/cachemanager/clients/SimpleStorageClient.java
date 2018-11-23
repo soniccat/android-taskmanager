@@ -13,7 +13,7 @@ import com.example.alexeyglushkov.tools.TimeTools;
 
 // Supports isExpired
 
-public class SimpleStorageClient implements IStorageClient {
+public class SimpleStorageClient implements StorageClient {
     private CacheMode cacheMode = CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD;
     private @NonNull Storage cache;
     private boolean deleteIfExpired = true;

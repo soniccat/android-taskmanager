@@ -14,10 +14,10 @@ import java.util.List;
 /**
  * Created by alexeyglushkov on 07.11.15.
  */
+// TODO: replace extending with a var
 public class AccountCacheStore extends DiskStorage implements AccountStore {
-
     private boolean isLoaded = false;
-    List<Account> accounts = new ArrayList<>();
+    private List<Account> accounts = new ArrayList<>();
 
     public AccountCacheStore(File directory) {
         super(directory);

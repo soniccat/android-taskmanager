@@ -159,7 +159,7 @@ public class MainApplication extends Application {
         ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
 
         QuizletService quizletService = new QuizletService(quizletAccount, quizletCommandProvider, serviceCommandRunner);
-        this.quizletRepository = new QuizletRepository(quizletService);
+        this.quizletRepository = new QuizletRepository(quizletService, getStorage());
         this.quizletRepository.restoreOrLoad(null).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
     }
 
