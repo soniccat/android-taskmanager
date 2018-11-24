@@ -10,8 +10,7 @@ import java.util.List;
 public interface AccountStore {
     void putAccount(Account account) throws Exception;
 
-    @Nullable
-    Account getAccount(int key);
+    @Nullable Account getAccount(int key) throws Exception;
     int getAccountCount();
     int getMaxAccountId();
 
@@ -22,5 +21,5 @@ public interface AccountStore {
 
     // TODO: provide async loader
     boolean isLoaded();
-    void load();
+    void load() throws Exception;
 }

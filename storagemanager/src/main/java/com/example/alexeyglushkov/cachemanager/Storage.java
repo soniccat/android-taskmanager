@@ -13,14 +13,14 @@ import java.util.List;
 public interface Storage {
     void put(@NonNull String key, @NonNull Object value, @Nullable StorageMetadata metadata) throws Exception;
 
-    @Nullable Object getValue(@NonNull String key);
+    @Nullable Object getValue(@NonNull String key) throws Exception;
 
     @NonNull StorageMetadata createMetadata();
 
-    @Nullable StorageMetadata getMetadata(@NonNull String key);
+    @Nullable StorageMetadata getMetadata(@NonNull String key) throws Exception;
     void remove(@NonNull String key) throws Exception;
 
-    @Nullable StorageEntry getEntry(@NonNull String key);
-    List<StorageEntry> getEntries();
+    @Nullable StorageEntry getEntry(@NonNull String key) throws Exception;
+    List<StorageEntry> getEntries() throws Exception;
     void removeAll() throws Exception;
 }

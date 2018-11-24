@@ -34,10 +34,11 @@ public class DiskStorage implements Storage {
     private @NonNull File directory;
     private @NonNull Codec defaultCodec = new ObjectCodec();
 
-    private @NonNull Map<Class, Codec> serializerMap = new HashMap<>();
+    private @NonNull Map<String, Codec> keySerializerMap = new HashMap<>();
+    private @NonNull Map<Class, Codec> classSerializerMap = new HashMap<>();
 
-    // TODO: remove WeakReference I think
-    private @NonNull Map<String, WeakReference<Object>> lockMap = new HashMap<>();
+    // TODO: need to clear this lockMap somewhere
+    private @NonNull Map<String, Object> lockMap = new HashMap<>();
 
     public DiskStorage(@NonNull File directory) {
         this.directory = directory;
@@ -67,7 +68,7 @@ public class DiskStorage implements Storage {
         return new File(directory.getPath() + File.separator + fileName);
     }
 
-    private boolean isMetadataFile(File file) {
+    private boolean isMetadataFile(@NonNull File file) {
         return file.getName().endsWith(METADATA_PREFIX);
     }
 
@@ -81,10 +82,10 @@ public class DiskStorage implements Storage {
     }
 
     private static final Set<Character> ReservedCharsSet = new HashSet<>(Arrays.asList(
-            new Character[] {'/','|','"','?','*','<','>','\\',':','+','[',']'}
+            '/','|','"','?','*','<','>','\\',':','+','[',']'
     ));
 
-    private String getKeyName(String fileName) {
+    private String getKeyName(@NonNull String fileName) {
         StringBuilder builder = new StringBuilder(fileName);
         for (int i = 0; i < builder.length(); i++) {
             char c = builder.charAt(i);
@@ -96,24 +97,17 @@ public class DiskStorage implements Storage {
         return builder.toString();
     }
 
-    synchronized private Object getLockObject(String key) {
-        WeakReference<Object> lockObjectRef = lockMap.get(key);
-        Object lockObject = null;
-        if (lockObjectRef != null) {
-            lockObject = lockObjectRef.get();
-            if (lockObject == null) {
-                lockObject = createLockObject(key);
-            }
-        } else {
+    synchronized private Object getLockObject(@NonNull String key) {
+        Object lockObject = lockMap.get(key);
+        if (lockObject == null) {
             lockObject = createLockObject(key);
         }
         return lockObject;
     }
 
-    private Object createLockObject(String key) {
-        Object lockObject;
-        lockObject = new Object();
-        lockMap.put(key, new WeakReference<>(lockObject));
+    private Object createLockObject(@NonNull String key) {
+        Object lockObject = new Object();
+        lockMap.put(key, lockObject);
         return lockObject;
     }
 
@@ -125,7 +119,7 @@ public class DiskStorage implements Storage {
         }
 
         try {
-            Codec codec = getSerializer(object.getClass());
+            Codec codec = getSerializer(key, object.getClass());
             if (codec == null) {
                 throw new Exception("Can't find a serializer for " + object.getClass());
             }
@@ -147,15 +141,18 @@ public class DiskStorage implements Storage {
         }
     }
 
-    private void createFile(File file) throws IOException {
+    private void createFile(@NonNull File file) throws IOException {
         boolean isFileCreated = file.createNewFile();
         if (!isFileCreated) {
             throw new IOException("DiskStorage.write() createNewFile create error");
         }
     }
 
-    private Codec getSerializer(Class cl) {
-        Codec codec = serializerMap.get(cl);
+    private Codec getSerializer(@Nullable String key, @Nullable Class cl) {
+        Codec codec = key != null ? keySerializerMap.get(key) : null;
+        if (codec == null) {
+            codec = cl != null ? classSerializerMap.get(cl) : null;
+        }
         return codec == null ? defaultCodec : codec;
     }
 
@@ -169,17 +166,12 @@ public class DiskStorage implements Storage {
 
     @Override
     @Nullable
-    public Object getValue(@NonNull  String key) {
+    public Object getValue(@NonNull  String key) throws Exception {
         Object result = null;
         DiskStorageEntry entry = (DiskStorageEntry)getEntry(key);
 
         if (entry != null) {
-            try {
-                result = entry.getObject();
-            } catch (Exception e) {
-                // TODO: throw exception outside
-                e.printStackTrace();
-            }
+            result = entry.getObject();
         }
 
         return result;
@@ -192,7 +184,7 @@ public class DiskStorage implements Storage {
     }
 
     @Nullable
-    public StorageMetadata getMetadata(@NonNull String key) {
+    public StorageMetadata getMetadata(@NonNull String key) throws Exception {
         StorageMetadata result = null;
         StorageEntry entry = getEntry(key);
         if (entry != null) {
@@ -203,18 +195,13 @@ public class DiskStorage implements Storage {
 
     @Override
     @Nullable
-    public StorageEntry getEntry(@NonNull String fileName) {
+    public StorageEntry getEntry(@NonNull String fileName) throws Exception {
         StorageEntry entry = null;
         String key = getKeyName(fileName);
         Object lockObject = getLockObject(key);
 
         synchronized (lockObject) {
-            try {
-                entry = getEntryByKey(key);
-            } catch (Exception e) {
-                // TODO: throw exception outside
-                e.printStackTrace();
-            }
+            entry = getEntryByKey(key);
         }
 
         return entry;
@@ -236,7 +223,11 @@ public class DiskStorage implements Storage {
         if (metadataFile.exists()) {
             try {
                 metadata = DiskStorageMetadata.load(metadataFile);
-                codec = getSerializer(metadata.getEntryClass());
+                if (metadata != null) {
+                    codec = getSerializer(key, metadata.getEntryClass());
+                } else {
+                    codec = defaultCodec;
+                }
 
             } catch (Exception e) {
                 codec = defaultCodec;
@@ -264,9 +255,8 @@ public class DiskStorage implements Storage {
         }
     }
 
-    // TODO: think about returning interface instead
     @Override
-    public List<StorageEntry> getEntries() {
+    public List<StorageEntry> getEntries() throws Exception {
         List<StorageEntry> entries = new ArrayList<>();
         if (!directory.exists()) {
             return entries;
@@ -281,14 +271,8 @@ public class DiskStorage implements Storage {
                     Object lockObject = getLockObject(key);
 
                     synchronized (lockObject) {
-                        try {
-                            StorageEntry entry = getEntryByKey(key);
-                            entries.add(entry);
-
-                        } catch (Exception e) {
-                            // TODO: throw exception outside
-                            e.printStackTrace();
-                        }
+                        StorageEntry entry = getEntryByKey(key);
+                        entries.add(entry);
                     }
                 }
             }
@@ -311,36 +295,29 @@ public class DiskStorage implements Storage {
     }
 
     public void removeAll() throws Exception {
-        Exception lastException = null;
-
         List<StorageEntry> entries = getEntries();
         for (StorageEntry file : entries) {
             DiskStorageEntry diskCacheEntry = (DiskStorageEntry)file;
             String key = diskCacheEntry.getFileName();
             Object lockObject = getLockObject(key);
             synchronized (lockObject) {
-                try {
-                    file.delete();
-
-                } catch (Exception e) {
-                    lastException = e;
-                }
+                file.delete();
             }
         }
 
-        if (lastException == null) {
-            if (!directory.delete()) {
-                throw new Exception("DiskStorage.removeAll() delete(): remove directory error");
-            }
-        } else {
-            throw lastException;
+        if (!directory.delete()) {
+            throw new Exception("DiskStorage.removeAll() delete(): remove directory error");
         }
     }
 
     //// Setter
 
     public void setSerializer(@NonNull Codec codec, @NonNull Class cl) {
-        serializerMap.put(cl, codec);
+        classSerializerMap.put(cl, codec);
+    }
+
+    public void setSerializer(@NonNull Codec codec, @NonNull String key) {
+        keySerializerMap.put(key, codec);
     }
 
     public void setDefaultCodec(@NonNull Codec defaultCodec) {

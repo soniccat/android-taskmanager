@@ -3,8 +3,12 @@ package com.example.alexeyglushkov.wordteacher.main;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
+import io.reactivex.functions.Action;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.schedulers.Schedulers;
 
 //import com.dropbox.client2.DropboxAPI;
 import com.example.alexeyglushkov.authcachemanager.AccountCacheStore;
@@ -15,15 +19,13 @@ import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
 import com.example.alexeyglushkov.cachemanager.StorageCleaner;
 import com.example.alexeyglushkov.cachemanager.Storage;
-import com.example.alexeyglushkov.cachemanager.disk.DiskStorageCleaner;
+import com.example.alexeyglushkov.cachemanager.SimpleStorageCleaner;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
 import com.example.alexeyglushkov.quizletservice.QuizletRepository;
 import com.example.alexeyglushkov.tools.ContextProvider;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.tasks.QuizletServiceTaskProvider;
-import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManager;
-import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
 import org.junit.Assert;
@@ -34,6 +36,8 @@ import com.example.alexeyglushkov.wordteacher.authorization.AuthActivityProxy;
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder;
 
 public class MainApplication extends Application {
+    private static final String TAG = "MainApplication";
+
     private @NonNull AccountStore accountStore;
     private @NonNull OAuthWebClient authWebClient;
 
@@ -93,7 +97,12 @@ public class MainApplication extends Application {
         // IDEA: make it async, but have to handle nil quizletService
         File authDir = getDir("AuthFolder", Context.MODE_PRIVATE);
         this.accountStore = new AccountCacheStore(authDir);
-        this.accountStore.load();
+        try {
+            this.accountStore.load();
+        } catch (Exception e) {
+            Log.e(TAG, "Can't load account store");
+            e.printStackTrace();
+        }
         restoreAccounts((AccountCacheStore)this.accountStore);
         onAccountStoreLoaded();
     }
@@ -110,19 +119,10 @@ public class MainApplication extends Application {
     }
 
     public void cleanCache() {
-        final Task cleanTask = new SimpleTask() {
-            @Override
-            public void startTask(Callback callback) {
-                super.startTask(callback);
-
-                StorageCleaner cleaner = new DiskStorageCleaner();
-                cleaner.clean(getStorage());
-
-                getPrivate().handleTaskCompletion(callback);
-            }
-        };
-
-        taskManager.addTask(cleanTask);
+        StorageCleaner cleaner = new SimpleStorageCleaner();
+        cleaner.clean(getStorage())
+                .subscribeOn(Schedulers.io())
+                .subscribe(Functions.EMPTY_ACTION, Functions.emptyConsumer());
     }
 
 //    private void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxEntry, DropboxCommandProvider.MergeCompletion completion) {

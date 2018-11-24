@@ -52,21 +52,21 @@ public class QuizletService extends SimpleService {
         });
     }
 
-    public Single<List<QuizletSet>> restoreSets(final ProgressListener progressListener) {
-        return RxTools.justOrError(getAccount().getCredentials())
-            .flatMap(new Function<AuthCredentials, SingleSource<? extends QuizletSetsCommand>>() {
-                @Override
-                public SingleSource<? extends QuizletSetsCommand> apply(AuthCredentials authCredentials) throws Exception {
-                    QuizletSetsCommand command = createSetsCommand(StorageClient.CacheMode.IGNORE_CACHE, progressListener);
-                    return runCommand(command, false);
-                }
-            }).flatMap(new Function<QuizletSetsCommand, SingleSource<? extends List<QuizletSet>>>() {
-                @Override
-                public SingleSource<? extends List<QuizletSet>> apply(QuizletSetsCommand quizletSetsCommand) throws Exception {
-                    return Single.just(new ArrayList<>(Arrays.asList(quizletSetsCommand.getResponse())));
-                }
-            });
-    }
+//    public Single<List<QuizletSet>> restoreSets(final ProgressListener progressListener) {
+//        return RxTools.justOrError(getAccount().getCredentials())
+//            .flatMap(new Function<AuthCredentials, SingleSource<? extends QuizletSetsCommand>>() {
+//                @Override
+//                public SingleSource<? extends QuizletSetsCommand> apply(AuthCredentials authCredentials) throws Exception {
+//                    QuizletSetsCommand command = createSetsCommand(StorageClient.CacheMode.ONLY_LOAD_FROM_CACHE, progressListener);
+//                    return runCommand(command, false);
+//                }
+//            }).flatMap(new Function<QuizletSetsCommand, SingleSource<? extends List<QuizletSet>>>() {
+//                @Override
+//                public SingleSource<? extends List<QuizletSet>> apply(QuizletSetsCommand quizletSetsCommand) throws Exception {
+//                    return Single.just(new ArrayList<>(Arrays.asList(quizletSetsCommand.getResponse())));
+//                }
+//            });
+//    }
 
     @NonNull
     private QuizletSetsCommand createSetsCommand(final StorageClient.CacheMode cacheMode, final ProgressListener progressListener) {

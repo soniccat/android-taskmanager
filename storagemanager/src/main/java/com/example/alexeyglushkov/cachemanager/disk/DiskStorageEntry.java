@@ -35,7 +35,7 @@ public class DiskStorageEntry implements StorageEntry {
         return file.getName();
     }
 
-    @NonNull
+    @Nullable
     public Object getObject() throws Exception {
         if (object == null) {
             loadObject();
@@ -51,7 +51,9 @@ public class DiskStorageEntry implements StorageEntry {
 
     public void write() throws Exception {
         OutputStream os = new FileOutputStream(file);
-        OutputStreamDataWriters.writeOnce(codec, os, object);
+        if (object != null) {
+            OutputStreamDataWriters.writeOnce(codec, os, object);
+        }
     }
 
     @Override

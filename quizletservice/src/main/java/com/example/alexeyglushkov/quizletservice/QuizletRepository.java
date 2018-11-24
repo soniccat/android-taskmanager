@@ -1,5 +1,6 @@
 package com.example.alexeyglushkov.quizletservice;
 
+import com.example.alexeyglushkov.authtaskmanager.ServiceTask;
 import com.example.alexeyglushkov.cachemanager.Storage;
 import com.example.alexeyglushkov.cachemanager.clients.StorageClient;
 import com.example.alexeyglushkov.cachemanager.clients.SimpleStorageClient;
@@ -8,6 +9,8 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.streamlib.codecs.ObjectCodec;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
+import com.example.alexeyglushkov.taskmanager.task.Task;
+import com.example.alexeyglushkov.taskmanager.task.TaskImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +21,7 @@ import io.reactivex.SingleSource;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import tools.RxTools;
 
 public class QuizletRepository {
     private @NonNull QuizletService service;
@@ -29,10 +33,6 @@ public class QuizletRepository {
 
     public QuizletRepository(@NonNull QuizletService service, @NonNull Storage storage) {
         this.service = service;
-        if (storage instanceof DiskStorage) {
-            DiskStorage diskStorage = (DiskStorage)storage;
-            diskStorage.setSerializer(new ObjectCodec(), List.class);
-        }
         storageClient = new SimpleStorageClient(storage, 0);
     }
 
@@ -63,42 +63,49 @@ public class QuizletRepository {
     }
 
     public Single<List<QuizletSet>> restoreOrLoad(final ProgressListener progressListener) {
+        final Resource.State previousState = sets.getValue().state;
         setState(Resource.State.Loading);
 
-        List<QuizletSet> sets = new ArrayList<>();
-        try {
-            List<QuizletSet> cachedValue = (List<QuizletSet>)storageClient.getCachedValue("quizlet_sets");
-            if (cachedValue != null) {
-                sets = cachedValue;
-                setState(Resource.State.Restored, sets);
+        ServiceTask<List<QuizletSet>> task = new ServiceTask<List<QuizletSet>>() {
+            public void onStart() {
+                try {
+                    List<QuizletSet> cachedValue = (List<QuizletSet>)storageClient.getCachedValue("quizlet_sets");
+                    if (cachedValue != null) {
+                        setResult(cachedValue);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        };
 
-        return Single.just(sets);
-        /*service.restoreSets(progressListener)
-                .doOnSuccess(new Consumer<List<QuizletSet>>() {
-                    @Override
-                    public void accept(List<QuizletSet> sets) throws Exception {
-                        setState(Resource.State.Restored, sets);
+        return service.runCommand(task)
+            .flatMap(new Function<ServiceTask<List<QuizletSet>>, SingleSource<? extends List<QuizletSet>>>() {
+                @Override
+                public SingleSource<? extends List<QuizletSet>> apply(ServiceTask<List<QuizletSet>> serviceTask) throws Exception {
+                    return RxTools.justOrError(serviceTask.getResponse());
+                }
+            }).doOnSuccess(new Consumer<List<QuizletSet>>() {
+                @Override
+                public void accept(List<QuizletSet> quizletSets) throws Exception {
+                    setState(Resource.State.Restored, quizletSets);
+                }
+            }).onErrorResumeNext(new Function<Throwable, SingleSource<? extends List<QuizletSet>>>() {
+                @Override
+                public SingleSource<? extends List<QuizletSet>> apply(Throwable throwable) throws Exception {
+                    setState(previousState);
+                    if (service.getAccount().isAuthorized()) {
+                        return loadSets(progressListener);
                     }
-                }).onErrorResumeNext(new Function<Throwable, SingleSource<? extends List<QuizletSet>>>() {
-                    @Override
-                    public SingleSource<? extends List<QuizletSet>> apply(Throwable throwable) throws Exception {
-                        setState(Resource.State.Uninitialized);
-                        if (service.getAccount().isAuthorized()) {
-                            return loadSets(progressListener);
-                        }
 
-                        return Single.error(throwable);
-                    }
-                }).doOnDispose(new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        setState(Resource.State.Uninitialized);
-                    }
-                });*/
+                    return Single.error(throwable);
+                }
+            }).doOnDispose(new Action() {
+                @Override
+                public void run() throws Exception {
+                    setState(previousState);
+                }
+            });
     }
 
     //// Setters / Getters

@@ -38,4 +38,6 @@ dependencies {
         exclude group: 'androidx.annotation', module: 'annotation'
     })
     implementation project(path: ':tools')
+    implementation 'io.reactivex.rxjava2:rxandroid:' + project.ext.rxAndroidVersion
+    implementation 'io.reactivex.rxjava2:rxjava:' + project.ext.rxJavaVersion
 }

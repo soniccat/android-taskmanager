@@ -51,10 +51,6 @@ public class SimpleService implements Service {
         this.commandRunner = runner;
     }
 
-    public <T extends ServiceCommand> Single<T> runCommand(T command) {
-        return runCommand(command, true);
-    }
-
     @Override
     public <T extends ServiceCommand> Single<T> runCommand(final T command, final boolean canSignIn) {
         if (!account.isAuthorized()) {
@@ -68,19 +64,23 @@ public class SimpleService implements Service {
 
         } else {
             account.signCommand(command);
-            return commandRunner.run(command)
-                    .onErrorResumeNext(new Function<Throwable, SingleSource<T>>() {
-                @Override
-                public SingleSource<T> apply(Throwable throwable) throws Exception {
-                    if (command.getResponseCode() == 401) {
-                        command.clear();
-                        return authorizeAndRun(command);
-                    } else {
-                        return Single.error(throwable);
-                    }
-                }
-            });
+            return runCommand(command);
         }
+    }
+
+    public <T extends ServiceCommand> Single<T> runCommand(final T command) {
+        return commandRunner.run(command)
+                .onErrorResumeNext(new Function<Throwable, SingleSource<T>>() {
+                    @Override
+                    public SingleSource<T> apply(Throwable throwable) throws Exception {
+                        if (command.getResponseCode() == 401) {
+                            command.clear();
+                            return authorizeAndRun(command);
+                        } else {
+                            return Single.error(throwable);
+                        }
+                    }
+                });
     }
 
     public <T extends ServiceCommand> Single<T> authorizeAndRun(final T command) {

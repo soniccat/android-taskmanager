@@ -38,12 +38,14 @@ public class DiskStorageMetadata implements StorageMetadata
         OutputStreamDataWriters.writeOnce(codec, new FileOutputStream(file), this);
     }
 
-    public static DiskStorageMetadata load(File file) throws Exception {
+    public static @Nullable DiskStorageMetadata load(File file) throws Exception {
         DiskStorageMetadata result = null;
 
         Codec codec = createSerializer();
         result = (DiskStorageMetadata) InputStreamDataReaders.readOnce(codec, new FileInputStream(file));
-        result.setFile(file);
+        if (result != null) {
+            result.setFile(file);
+        }
         return result;
     }
 

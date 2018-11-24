@@ -5,7 +5,6 @@ import androidx.test.InstrumentationRegistry;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.runner.AndroidJUnit4;
 
-import com.example.alexeyglushkov.cachemanager.disk.DiskStorageCleaner;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageMetadata;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
 import com.example.alexeyglushkov.tools.TimeTools;
@@ -23,7 +22,7 @@ import java.io.File;
  * Created by alexeyglushkov on 10.10.15.
  */
 @RunWith(AndroidJUnit4.class)
-public class DiskStorageCleanerTest {
+public class SimpleStorageCleanerTest {
     DiskStorage cacheProvider;
 
     @Before
@@ -48,7 +47,7 @@ public class DiskStorageCleanerTest {
 
         Assert.assertEquals(3, cacheProvider.getEntries().size());
 
-        DiskStorageCleaner cleaner = new DiskStorageCleaner();
+        SimpleStorageCleaner cleaner = new SimpleStorageCleaner();
         cleaner.clean(cacheProvider);
 
         Assert.assertEquals(1, cacheProvider.getEntries().size());

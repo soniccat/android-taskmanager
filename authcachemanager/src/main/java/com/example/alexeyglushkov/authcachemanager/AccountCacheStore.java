@@ -31,7 +31,7 @@ public class AccountCacheStore extends DiskStorage implements AccountStore {
 
     @Override
     @Nullable
-    public Account getAccount(int key) {
+    public Account getAccount(int key) throws Exception {
         return (Account)getValue(Integer.toString(key));
     }
 
@@ -79,19 +79,14 @@ public class AccountCacheStore extends DiskStorage implements AccountStore {
     }
 
     @Override
-    public void load() {
+    public void load() throws Exception {
         List<StorageEntry> entries = getEntries();
         List<Account> accounts = new ArrayList<>();
 
         for (StorageEntry entry : entries) {
-            try {
-                Account account = (Account)entry.getObject();
-                account.setAuthCredentialStore(this);
-                accounts.add(account);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            Account account = (Account)entry.getObject();
+            account.setAuthCredentialStore(this);
+            accounts.add(account);
         }
 
         this.accounts = accounts;

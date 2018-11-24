@@ -82,20 +82,14 @@ public class CourseHolder {
 
     //
 
-    public ArrayList<Course> loadCourses() {
+    public ArrayList<Course> loadCourses() throws Exception {
         ArrayList<Course> courses = new ArrayList<>();
 
         List<StorageEntry> entries = diskProvider.getEntries();
         for (StorageEntry entry : entries) {
             DiskStorageEntry diskEntry = (DiskStorageEntry)entry;
-
-            try {
-                Course course = (Course)diskEntry.getObject();
-                courses.add(course);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            Course course = (Course)diskEntry.getObject();
+            courses.add(course);
         }
 
         return courses;
@@ -219,13 +213,22 @@ public class CourseHolder {
 
     //// Getters
 
+    // TODO: use async storage
     public Task getLoadCourseListTask() {
         final Task task = new SimpleTask() {
             @Override
             public void startTask(Callback callback) {
                 super.startTask(callback);
-                ArrayList<Course> courses = loadCourses();
-                getPrivate().setTaskResult(courses);
+
+                ArrayList<Course> courses = null;
+                try {
+                    courses = loadCourses();
+                    getPrivate().setTaskResult(courses);
+
+                } catch (Exception e) {
+                    getPrivate().setTaskError(new Error(e));
+                }
+
                 getPrivate().handleTaskCompletion(callback);
             }
         };
