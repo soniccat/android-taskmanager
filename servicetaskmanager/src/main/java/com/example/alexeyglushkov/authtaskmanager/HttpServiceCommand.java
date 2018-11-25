@@ -2,7 +2,7 @@ package com.example.alexeyglushkov.authtaskmanager;
 
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
 import com.example.alexeyglushkov.service.HttpCacheableTransport;
-import com.example.alexeyglushkov.cachemanager.clients.StorageClient;
+import com.example.alexeyglushkov.cachemanager.clients.Cache;
 import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionBytesReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.TransportTask;
@@ -20,9 +20,10 @@ public class HttpServiceCommand<T> extends BaseServiceTask<T> {
 
     public HttpServiceCommand(HttpUrlConnectionBuilder builder, ByteArrayHandler<T> handler) {
         super();
-        task = new TransportTask();
+        TransportTask task = new TransportTask();
         setConnectionBuilder(builder);
         task.setTransport(new Transport<T>(connectionBuilder, handler));
+        setTask(task);
     }
 
     //// Setters / Getters
@@ -35,8 +36,8 @@ public class HttpServiceCommand<T> extends BaseServiceTask<T> {
         task.setLoadPolicy(Task.LoadPolicy.CancelAdded);
     }
 
-    public void setCacheClient(StorageClient cacheClient) {
-        Transport transport = (Transport) task.getTransport();
+    public void setCacheClient(Cache cacheClient) {
+        Transport transport = (Transport) getTransportTask().getTransport();
         transport.setCacheClient(cacheClient);
     }
 
@@ -49,8 +50,12 @@ public class HttpServiceCommand<T> extends BaseServiceTask<T> {
 
     @Override
     public int getResponseCode() {
-        Transport transport = (Transport) task.getTransport();
+        Transport transport = (Transport) getTransportTask().getTransport();
         return transport.getResponseCode();
+    }
+
+    private TransportTask getTransportTask() {
+        return (TransportTask)getTask();
     }
 
     //// Classes
@@ -60,7 +65,7 @@ public class HttpServiceCommand<T> extends BaseServiceTask<T> {
             super(createProvider(builder), createStreamReader(handler));
         }
 
-        static private <T>HttpURLConnectionProvider createProvider(final HttpUrlConnectionBuilder builder) {
+        static private HttpURLConnectionProvider createProvider(final HttpUrlConnectionBuilder builder) {
             return new HttpURLConnectionProvider() {
                 @Override
                 public HttpURLConnection getUrlConnection() {

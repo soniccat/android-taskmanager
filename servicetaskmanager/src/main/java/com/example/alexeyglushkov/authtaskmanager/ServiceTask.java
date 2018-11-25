@@ -33,19 +33,4 @@ public abstract class ServiceTask<T> extends BaseServiceTask<T> {
     protected void setError(Error err) {
         task.getPrivate().setTaskError(err);
     }
-
-    @Override
-    public HttpUrlConnectionBuilder getConnectionBuilder() {
-        return null;
-    }
-
-    @Override
-    public T getResponse() {
-        return (T)task.getTaskResult();
-    }
-
-    @Override
-    public int getResponseCode() {
-        return 0;
-    }
 }

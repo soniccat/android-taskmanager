@@ -13,24 +13,24 @@ import com.example.alexeyglushkov.tools.TimeTools;
 
 // Supports isExpired
 
-public class SimpleStorageClient implements StorageClient {
+public class SimpleCache implements Cache {
     private CacheMode cacheMode = CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD;
     private @NonNull Storage cache;
     private boolean deleteIfExpired = true;
     private long defaultDuration;
 
-    public SimpleStorageClient(@NonNull Storage cache) {
+    public SimpleCache(@NonNull Storage cache) {
         this(cache, 0);
     }
 
-    public SimpleStorageClient(@NonNull Storage cache, long duration) {
+    public SimpleCache(@NonNull Storage cache, long duration) {
         this.cache = cache;
         this.defaultDuration = duration;
     }
 
     //// Actions
 
-    public void putValue(String key, Object value) throws Exception {
+    public void putValue(@NonNull String key, @NonNull Object value) throws Exception {
         putValue(key, value, defaultDuration);
     }
 
@@ -45,16 +45,16 @@ public class SimpleStorageClient implements StorageClient {
         cache.put(key, value, metadata);
     }
 
-    public @Nullable Object getCachedValue(String cacheKey) throws Exception {
+    public @Nullable <T> T getCachedValue(@NonNull String cacheKey) throws Exception {
         StorageMetadata metadata = cache.getMetadata(cacheKey);
 
-        Object result = null;
+        T result = null;
         if (metadata != null) {
             if (deleteIfExpired && metadata.isExpired()) {
                 cache.remove(cacheKey);
 
             } else {
-                result = cache.getValue(cacheKey);
+                result = (T)cache.getValue(cacheKey);
             }
         }
         return result;

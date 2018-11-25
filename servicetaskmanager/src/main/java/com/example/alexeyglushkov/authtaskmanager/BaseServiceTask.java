@@ -1,9 +1,17 @@
 package com.example.alexeyglushkov.authtaskmanager;
 
-import com.example.alexeyglushkov.taskmanager.loader.http.TransportTask;
+import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
 import com.example.alexeyglushkov.taskmanager.task.Task;
+import com.example.alexeyglushkov.taskmanager.task.Tasks;
 
-public abstract class BaseServiceTask<T> implements IServiceTask<T> {
+import androidx.annotation.NonNull;
+import io.reactivex.Completable;
+import io.reactivex.Maybe;
+import io.reactivex.Single;
+
+import androidx.annotation.Nullable;
+
+public class BaseServiceTask<T> implements IServiceTask<T> {
     protected Task task;
 
     //// Initialization
@@ -11,7 +19,19 @@ public abstract class BaseServiceTask<T> implements IServiceTask<T> {
     public BaseServiceTask() {
     }
 
-    public BaseServiceTask(Task task) {
+    public static <T> BaseServiceTask<T> fromSingle(Single<T> single) {
+        return new BaseServiceTask<>(Tasks.fromSingle(single));
+    }
+
+    public static <T> BaseServiceTask<T> fromMaybe(Maybe<T> maybe) {
+        return new BaseServiceTask<>(Tasks.fromMaybe(maybe));
+    }
+
+    public static BaseServiceTask<Object> fromCompletable(Completable completable) {
+        return new BaseServiceTask<>(Tasks.fromCompletable(completable));
+    }
+
+    protected BaseServiceTask(Task task) {
         this.task = task;
     }
 
@@ -33,12 +53,12 @@ public abstract class BaseServiceTask<T> implements IServiceTask<T> {
     // Getters
 
     @Override
-    public Task getTask() {
+    public @NonNull Task getTask() {
         return task;
     }
 
     @Override
-    public T getResponse() {
+    public @Nullable T getResponse() {
         Object result = task.getTaskResult();
         return result != null ? (T)result : null;
     }
@@ -51,5 +71,15 @@ public abstract class BaseServiceTask<T> implements IServiceTask<T> {
     @Override
     public boolean isCancelled() {
         return task.getTaskStatus() == Task.Status.Cancelled;
+    }
+
+    @Override
+    public HttpUrlConnectionBuilder getConnectionBuilder() {
+        return null;
+    }
+
+    @Override
+    public int getResponseCode() {
+        return 0;
     }
 }

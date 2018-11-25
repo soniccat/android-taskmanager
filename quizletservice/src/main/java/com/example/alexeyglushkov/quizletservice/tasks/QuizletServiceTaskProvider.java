@@ -2,9 +2,9 @@ package com.example.alexeyglushkov.quizletservice.tasks;
 
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider;
 import com.example.alexeyglushkov.cachemanager.Storage;
-import com.example.alexeyglushkov.cachemanager.clients.StorageClient;
+import com.example.alexeyglushkov.cachemanager.clients.Cache;
 import com.example.alexeyglushkov.quizletservice.QuizletCommandProvider;
-import com.example.alexeyglushkov.cachemanager.clients.SimpleStorageClient;
+import com.example.alexeyglushkov.cachemanager.clients.SimpleCache;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 
 /**
@@ -18,10 +18,10 @@ public class QuizletServiceTaskProvider extends ServiceTaskProvider implements Q
     }
 
     @Override
-    public com.example.alexeyglushkov.quizletservice.QuizletSetsCommand getLoadSetsCommand(String server, String userId, StorageClient.CacheMode cacheMode, ProgressListener progressListener) {
+    public com.example.alexeyglushkov.quizletservice.QuizletSetsCommand getLoadSetsCommand(String server, String userId, Cache.CacheMode cacheMode, ProgressListener progressListener) {
         QuizletSetsCommand task = new QuizletSetsCommand(server, userId);
 
-        SimpleStorageClient storageClient = new SimpleStorageClient(storage, 0);
+        SimpleCache storageClient = new SimpleCache(storage, 0);
         storageClient.setCacheMode(cacheMode);
         task.setCacheClient(storageClient);
 

@@ -4,8 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.util.Log;
 
-import com.example.alexeyglushkov.cachemanager.clients.StorageClient;
-import com.example.alexeyglushkov.cachemanager.clients.StorageClients;
+import com.example.alexeyglushkov.cachemanager.clients.Cache;
+import com.example.alexeyglushkov.cachemanager.clients.CacheStatus;
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStreamDataReaders;
 import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionBytesReader;
 import com.example.alexeyglushkov.taskmanager.loader.http.HttpBytesTransport;
@@ -20,18 +20,19 @@ public class HttpCacheableTransport<T> extends HttpBytesTransport<T> {
     private static final String TAG = "HTTPCacheableTr";
 
     private boolean needStore = false;
-    private @Nullable StorageClient cacheClient;
+    private @Nullable
+    Cache cacheClient;
 
     public HttpCacheableTransport(HttpURLConnectionProvider provider, HTTPConnectionBytesReader<T> handler) {
         this(provider, handler, null);
     }
 
-    public HttpCacheableTransport(HttpURLConnectionProvider provider, HTTPConnectionBytesReader<T> handler, @Nullable StorageClient cacheClient) {
+    public HttpCacheableTransport(HttpURLConnectionProvider provider, HTTPConnectionBytesReader<T> handler, @Nullable Cache cacheClient) {
         super(provider, handler);
         this.cacheClient = cacheClient;
     }
 
-    public void setCacheClient(@NonNull StorageClient cacheClient) {
+    public void setCacheClient(@NonNull Cache cacheClient) {
         this.cacheClient = cacheClient;
     }
 
@@ -42,7 +43,7 @@ public class HttpCacheableTransport<T> extends HttpBytesTransport<T> {
     @Override
     public void start() {
         boolean isCacheLoaded = false;
-        if (StorageClients.canLoadFromCache(cacheClient)) {
+        if (CacheStatus.canLoadFromCache(cacheClient)) {
             try {
                 isCacheLoaded = handleCacheContent();
             } catch (Exception ex) {
@@ -51,9 +52,9 @@ public class HttpCacheableTransport<T> extends HttpBytesTransport<T> {
             }
         }
 
-        boolean canStartLoading = cacheClient == null || cacheClient.getCacheMode() != StorageClient.CacheMode.ONLY_LOAD_FROM_CACHE;
+        boolean canStartLoading = cacheClient == null || cacheClient.getCacheMode() != Cache.CacheMode.ONLY_LOAD_FROM_CACHE;
         if (canStartLoading && !isCacheLoaded) {
-            needStore = StorageClients.canWriteToCache(cacheClient);
+            needStore = CacheStatus.canWriteToCache(cacheClient);
             super.start();
         }
     }
@@ -64,14 +65,14 @@ public class HttpCacheableTransport<T> extends HttpBytesTransport<T> {
         if (cacheClient != null && applyCacheContent(cacheClient)) {
             isLoaded = true;
 
-        } else if (cacheClient != null && cacheClient.getCacheMode() == StorageClient.CacheMode.ONLY_LOAD_FROM_CACHE) {
-            setError(new StorageClient.CacheEmptyError(getCacheKey(), null));
+        } else if (cacheClient != null && cacheClient.getCacheMode() == Cache.CacheMode.ONLY_LOAD_FROM_CACHE) {
+            setError(new Cache.CacheEmptyError(getCacheKey(), null));
         }
 
         return isLoaded;
     }
 
-    private boolean applyCacheContent(@NonNull StorageClient client) throws Exception {
+    private boolean applyCacheContent(@NonNull Cache client) throws Exception {
         boolean isApplied = false;
         byte[] bytes = getCachedBytes(client);
 
@@ -85,7 +86,7 @@ public class HttpCacheableTransport<T> extends HttpBytesTransport<T> {
         return isApplied;
     }
 
-    private @Nullable byte[] getCachedBytes(@NonNull StorageClient client) throws Exception {
+    private @Nullable byte[] getCachedBytes(@NonNull Cache client) throws Exception {
         return (byte[])client.getCachedValue(getCacheKey());
     }
 

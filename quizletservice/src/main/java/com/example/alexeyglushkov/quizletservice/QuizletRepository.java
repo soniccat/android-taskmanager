@@ -1,21 +1,22 @@
 package com.example.alexeyglushkov.quizletservice;
 
+import com.example.alexeyglushkov.authtaskmanager.BaseServiceTask;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTask;
 import com.example.alexeyglushkov.cachemanager.Storage;
-import com.example.alexeyglushkov.cachemanager.clients.StorageClient;
-import com.example.alexeyglushkov.cachemanager.clients.SimpleStorageClient;
-import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
+import com.example.alexeyglushkov.cachemanager.clients.Cache;
+import com.example.alexeyglushkov.cachemanager.clients.RxCache;
+import com.example.alexeyglushkov.cachemanager.clients.RxCacheAdapter;
+import com.example.alexeyglushkov.cachemanager.clients.SimpleCache;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
-import com.example.alexeyglushkov.streamlib.codecs.ObjectCodec;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
-import com.example.alexeyglushkov.taskmanager.task.Task;
-import com.example.alexeyglushkov.taskmanager.task.TaskImpl;
+import com.example.alexeyglushkov.taskmanager.task.Tasks;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
 import io.reactivex.functions.Action;
@@ -25,7 +26,7 @@ import tools.RxTools;
 
 public class QuizletRepository {
     private @NonNull QuizletService service;
-    private @NonNull StorageClient storageClient;
+    private @NonNull RxCache cache;
 
     @NonNull
     private NonNullMutableLiveData<Resource<List<QuizletSet>>> sets
@@ -33,7 +34,7 @@ public class QuizletRepository {
 
     public QuizletRepository(@NonNull QuizletService service, @NonNull Storage storage) {
         this.service = service;
-        storageClient = new SimpleStorageClient(storage, 0);
+        cache = new RxCacheAdapter(new SimpleCache(storage, 0));
     }
 
     //// Actions
@@ -46,7 +47,7 @@ public class QuizletRepository {
                 .doOnSuccess(new Consumer<List<QuizletSet>>() {
                     @Override
                     public void accept(List<QuizletSet> sets) throws Exception {
-                        storageClient.putValue("quizlet_sets", sets);
+                        cache.putValue("quizlet_sets", sets);
                         setState(Resource.State.Loaded, sets);
                     }
                 }).doOnError(new Consumer<Throwable>() {
@@ -66,23 +67,11 @@ public class QuizletRepository {
         final Resource.State previousState = sets.getValue().state;
         setState(Resource.State.Loading);
 
-        ServiceTask<List<QuizletSet>> task = new ServiceTask<List<QuizletSet>>() {
-            public void onStart() {
-                try {
-                    List<QuizletSet> cachedValue = (List<QuizletSet>)storageClient.getCachedValue("quizlet_sets");
-                    if (cachedValue != null) {
-                        setResult(cachedValue);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
+        BaseServiceTask<List<QuizletSet>> task = BaseServiceTask.fromMaybe(cache.<List<QuizletSet>>getCachedValue("quizlet_sets"));
         return service.runCommand(task)
-            .flatMap(new Function<ServiceTask<List<QuizletSet>>, SingleSource<? extends List<QuizletSet>>>() {
+            .flatMap(new Function<BaseServiceTask<List<QuizletSet>>, SingleSource<? extends List<QuizletSet>>>() {
                 @Override
-                public SingleSource<? extends List<QuizletSet>> apply(ServiceTask<List<QuizletSet>> serviceTask) throws Exception {
+                public SingleSource<? extends List<QuizletSet>> apply(BaseServiceTask<List<QuizletSet>> serviceTask) throws Exception {
                     return RxTools.justOrError(serviceTask.getResponse());
                 }
             }).doOnSuccess(new Consumer<List<QuizletSet>>() {

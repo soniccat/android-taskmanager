@@ -1,12 +1,14 @@
 package com.example.alexeyglushkov.taskmanager.task;
 
-import android.os.Looper;
 import android.util.Log;
 
+import com.example.alexeyglushkov.taskmanager.task.rx.CompletableTask;
+import com.example.alexeyglushkov.taskmanager.task.rx.MaybeTask;
+import com.example.alexeyglushkov.taskmanager.task.rx.SingleTask;
 import com.example.alexeyglushkov.tools.HandlerTools;
 
-import org.junit.Assert;
-
+import io.reactivex.Completable;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 
 /**
@@ -42,14 +44,17 @@ public class Tasks {
         return st == Task.Status.Finished || st == Task.Status.Cancelled;
     }
 
-    public static <T> Task fromSingle(Single<T> single) {
-        return new TaskImpl() {
-            @Override
-            public void startTask(Callback callback) {
-                super.startTask(callback);
-            }
-        };
+    public static <T> Task fromSingle(final Single<T> single) {
+        return new SingleTask<>(single);
     }
+
+    public static <T> Task fromMaybe(final Maybe<T> maybe) {
+        return new MaybeTask<>(maybe);
+    }
+
+    public static Task fromCompletable(final Completable completable) {
+        return new CompletableTask(completable);
+    };
 
     // TODO: think about a better name
     // An implementer should store task and filter setTaskCompleted call with old task
