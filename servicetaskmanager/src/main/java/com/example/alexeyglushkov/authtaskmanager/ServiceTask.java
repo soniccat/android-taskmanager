@@ -8,11 +8,11 @@ import com.example.alexeyglushkov.taskmanager.task.TaskImpl;
 /**
  * Created by alexeyglushkov on 17.07.16.
  */
-public abstract class ServiceTask<T> implements IServiceTask<T> {
+public abstract class ServiceTask<T> extends BaseServiceTask<T> {
     private Task task;
 
     public ServiceTask() {
-        this.task = new TaskImpl() {
+        setTask(new TaskImpl() {
             @Override
             public void startTask(Callback callback) {
                 super.startTask(callback);
@@ -21,7 +21,7 @@ public abstract class ServiceTask<T> implements IServiceTask<T> {
 
                 getPrivate().handleTaskCompletion(callback);
             }
-        };
+        });
     }
 
     public abstract void onStart();
@@ -47,25 +47,5 @@ public abstract class ServiceTask<T> implements IServiceTask<T> {
     @Override
     public int getResponseCode() {
         return 0;
-    }
-
-    @Override
-    public Error getCommandError() {
-        return task.getTaskError();
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return task.getTaskStatus() == Task.Status.Cancelled;
-    }
-
-    @Override
-    public Task getTask() {
-        return task;
-    }
-
-    @Override
-    public void clear() {
-        task.getPrivate().clear();
     }
 }

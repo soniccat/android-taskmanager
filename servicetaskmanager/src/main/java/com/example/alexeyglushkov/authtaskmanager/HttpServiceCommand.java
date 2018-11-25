@@ -15,8 +15,7 @@ import java.net.URL;
 /**
  * Created by alexeyglushkov on 04.11.15.
  */
-public class HttpServiceCommand<T> implements IServiceTask<T> {
-    private TransportTask task;
+public class HttpServiceCommand<T> extends BaseServiceTask<T> {
     private HttpUrlConnectionBuilder connectionBuilder;
 
     public HttpServiceCommand(HttpUrlConnectionBuilder builder, ByteArrayHandler<T> handler) {
@@ -24,13 +23,6 @@ public class HttpServiceCommand<T> implements IServiceTask<T> {
         task = new TransportTask();
         setConnectionBuilder(builder);
         task.setTransport(new Transport<T>(connectionBuilder, handler));
-    }
-
-    //// Interface methods
-
-    @Override
-    public void clear() {
-        task.clear();
     }
 
     //// Setters / Getters
@@ -55,32 +47,10 @@ public class HttpServiceCommand<T> implements IServiceTask<T> {
         return connectionBuilder;
     }
 
-    //TODO: consider to create a servicetaskimpl (subclass of TaskImpl) to remove duplication
-    @Override
-    public T getResponse() {
-        Object result = task.getTaskResult();
-        return result != null ? (T)result : null;
-    }
-
-    @Override
-    public Error getCommandError() {
-        return task.getTaskError();
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return task.getTaskStatus() == Task.Status.Cancelled;
-    }
-
     @Override
     public int getResponseCode() {
         Transport transport = (Transport) task.getTransport();
         return transport.getResponseCode();
-    }
-
-    @Override
-    public Task getTask() {
-        return task;
     }
 
     //// Classes
