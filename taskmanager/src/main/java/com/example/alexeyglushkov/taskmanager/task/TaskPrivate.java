@@ -38,6 +38,7 @@ public interface TaskPrivate extends Task {
     // Set error
     //
     // Caller: Task
+    // TODO: use throwable
     void setTaskError(Error error);
 
     // TODO: need to call

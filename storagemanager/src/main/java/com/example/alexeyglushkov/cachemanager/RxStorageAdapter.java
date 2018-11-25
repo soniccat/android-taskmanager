@@ -14,10 +14,10 @@ import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
 
-public class AsyncStorageAdapter implements AsyncStorage {
+public class RxStorageAdapter implements RxStorage {
     private @NonNull Storage storage;
 
-    public AsyncStorageAdapter(Storage storage) {
+    public RxStorageAdapter(@NonNull Storage storage) {
         this.storage = storage;
     }
 

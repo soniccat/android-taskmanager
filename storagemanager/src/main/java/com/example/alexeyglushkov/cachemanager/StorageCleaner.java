@@ -9,5 +9,6 @@ import io.reactivex.Completable;
  */
 public interface StorageCleaner {
     void setProgressInfo(ProgressUpdater info);
-    Completable clean(Storage provider);
+    Completable clean(Storage storage);
+    Completable clean(RxStorage storage);
 }

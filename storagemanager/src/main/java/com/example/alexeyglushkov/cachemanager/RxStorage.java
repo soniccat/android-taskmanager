@@ -8,7 +8,7 @@ import io.reactivex.Completable;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
 
-public interface AsyncStorage {
+public interface RxStorage {
     Completable put(@NonNull String key, @NonNull Object value, @Nullable StorageMetadata metadata);
 
     Maybe<Object> getValue(@NonNull String key);

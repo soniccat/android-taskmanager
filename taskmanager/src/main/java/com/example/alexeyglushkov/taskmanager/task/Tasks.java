@@ -7,6 +7,8 @@ import com.example.alexeyglushkov.tools.HandlerTools;
 
 import org.junit.Assert;
 
+import io.reactivex.Single;
+
 /**
  * Created by alexeyglushkov on 28.12.14.
  */
@@ -38,6 +40,15 @@ public class Tasks {
     public static boolean isTaskCompleted(Task task) {
         Task.Status st = task.getTaskStatus();
         return st == Task.Status.Finished || st == Task.Status.Cancelled;
+    }
+
+    public static <T> Task fromSingle(Single<T> single) {
+        return new TaskImpl() {
+            @Override
+            public void startTask(Callback callback) {
+                super.startTask(callback);
+            }
+        };
     }
 
     // TODO: think about a better name
