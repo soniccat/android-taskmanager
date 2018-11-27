@@ -10,6 +10,7 @@ import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProvider;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.service.Service;
 
+import androidx.annotation.NonNull;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -51,6 +52,15 @@ public class SimpleService implements Service {
         this.commandRunner = runner;
     }
 
+    public <T> Single<T> runCommandForResponse(final ServiceCommand<T> command, boolean canSignIn) {
+        return runCommand(command, canSignIn).flatMap(new Function<ServiceCommand<T>, SingleSource<? extends T>>() {
+            @Override
+            public SingleSource<? extends T> apply(@NonNull ServiceCommand<T> cmd) throws Exception {
+                return RxTools.justOrError(cmd.getResponse());
+            }
+        });
+    }
+
     @Override
     public <T extends ServiceCommand> Single<T> runCommand(final T command, final boolean canSignIn) {
         if (!account.isAuthorized()) {
@@ -66,6 +76,15 @@ public class SimpleService implements Service {
             account.signCommand(command);
             return runCommand(command);
         }
+    }
+
+    public <T> Single<T> runCommandForResponse(final ServiceCommand<T> command) {
+        return runCommand(command).flatMap(new Function<ServiceCommand<T>, SingleSource<? extends T>>() {
+            @Override
+            public SingleSource<? extends T> apply(@NonNull ServiceCommand<T> cmd) throws Exception {
+                return RxTools.justOrError(cmd.getResponse());
+            }
+        });
     }
 
     public <T extends ServiceCommand> Single<T> runCommand(final T command) {

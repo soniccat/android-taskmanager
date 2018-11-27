@@ -31,7 +31,7 @@ public class ServiceTaskRunner implements ServiceCommandRunner {
         return Single.create(new SingleOnSubscribe<T>() {
             @Override
             public void subscribe(final SingleEmitter<T> emitter) throws Exception {
-                final IServiceTask serviceTask = (IServiceTask)command;
+                final ServiceTask serviceTask = (ServiceTask)command;
                 emitter.setDisposable(Disposables.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
@@ -58,7 +58,7 @@ public class ServiceTaskRunner implements ServiceCommandRunner {
     }
 
     public <T extends ServiceCommand<?>> void run(final T command, final Callback callback) {
-        final IServiceTask serviceTask = (IServiceTask)command;
+        final ServiceTask serviceTask = (ServiceTask)command;
         Task task = serviceTask.getTask();
         task.setTaskCallback(new Task.Callback() {
             @Override
@@ -72,7 +72,7 @@ public class ServiceTaskRunner implements ServiceCommandRunner {
 
     @Override
     public <T extends ServiceCommand<?>> void cancel(T command) {
-        IServiceTask serviceTask = (IServiceTask)command;
+        ServiceTask serviceTask = (ServiceTask)command;
         taskManager.cancel(serviceTask.getTask(), null);
     }
 }

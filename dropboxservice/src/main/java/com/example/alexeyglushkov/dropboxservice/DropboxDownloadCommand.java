@@ -1,13 +1,13 @@
 package com.example.alexeyglushkov.dropboxservice;
 
 import com.dropbox.client2.DropboxAPI;
-import com.example.alexeyglushkov.authtaskmanager.ServiceTask;
+import com.example.alexeyglushkov.authtaskmanager.ServiceTaskImp;
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
 
 /**
  * Created by alexeyglushkov on 17.07.16.
  */
-public class DropboxDownloadCommand extends ServiceTask {
+public class DropboxDownloadCommand extends ServiceTaskImp {
     private String srcPath;
     private String destPath;
 

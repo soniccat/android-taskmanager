@@ -20,8 +20,9 @@ public class HttpServiceCommand<T> extends BaseServiceTask<T> {
 
     public HttpServiceCommand(HttpUrlConnectionBuilder builder, ByteArrayHandler<T> handler) {
         super();
+        this.connectionBuilder = builder;
         TransportTask task = new TransportTask();
-        setConnectionBuilder(builder);
+        setTaskConnectionBuilder(task, builder);
         task.setTransport(new Transport<T>(connectionBuilder, handler));
         setTask(task);
     }
@@ -30,8 +31,7 @@ public class HttpServiceCommand<T> extends BaseServiceTask<T> {
 
     // Setters
 
-    private void setConnectionBuilder(HttpUrlConnectionBuilder connectionBuilder) {
-        this.connectionBuilder = connectionBuilder;
+    private void setTaskConnectionBuilder(Task task, HttpUrlConnectionBuilder connectionBuilder) {
         task.setTaskId(connectionBuilder.getStringUrl());
         task.setLoadPolicy(Task.LoadPolicy.CancelAdded);
     }

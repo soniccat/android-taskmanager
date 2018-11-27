@@ -17,8 +17,11 @@ public interface Service {
     void setServiceCommandProvider(ServiceCommandProvider provider);
     void setServiceCommandRunner(ServiceCommandRunner runner);
 
-    <T extends ServiceCommand> Single<T> runCommand(T command);
+    <T> Single<T> runCommandForResponse(final ServiceCommand<T> command, boolean canSignIn);
     <T extends ServiceCommand> Single<T> runCommand(final T command, final boolean canSignIn);
+
+    <T> Single<T> runCommandForResponse(final ServiceCommand<T> command);
+    <T extends ServiceCommand> Single<T> runCommand(T command);
 
     void cancel(ServiceCommand cmd);
 }

@@ -1,24 +1,24 @@
 package com.example.alexeyglushkov.quizletservice;
 
+import android.os.Looper;
+
 import com.example.alexeyglushkov.authtaskmanager.BaseServiceTask;
-import com.example.alexeyglushkov.authtaskmanager.ServiceTask;
 import com.example.alexeyglushkov.cachemanager.Storage;
-import com.example.alexeyglushkov.cachemanager.clients.Cache;
 import com.example.alexeyglushkov.cachemanager.clients.RxCache;
 import com.example.alexeyglushkov.cachemanager.clients.RxCacheAdapter;
 import com.example.alexeyglushkov.cachemanager.clients.SimpleCache;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
-import com.example.alexeyglushkov.taskmanager.task.Tasks;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import androidx.annotation.NonNull;
-import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
@@ -44,20 +44,26 @@ public class QuizletRepository {
         setState(Resource.State.Loading);
 
         return service.loadSets(progressListener)
+                .flatMap(new Function<List<QuizletSet>, SingleSource<? extends List<QuizletSet>>>() {
+                    @Override
+                    public SingleSource<? extends List<QuizletSet>> apply(final List<QuizletSet> sets) {
+                        BaseServiceTask<List<QuizletSet>> task = BaseServiceTask.fromSingle(cache.putValue("quizlet_sets", sets).toSingleDefault(sets));
+                        return service.runCommandForResponse(task);
+                    }
+                })
                 .doOnSuccess(new Consumer<List<QuizletSet>>() {
                     @Override
-                    public void accept(List<QuizletSet> sets) throws Exception {
-                        cache.putValue("quizlet_sets", sets);
+                    public void accept(List<QuizletSet> sets) {
                         setState(Resource.State.Loaded, sets);
                     }
                 }).doOnError(new Consumer<Throwable>() {
                     @Override
-                    public void accept(Throwable throwable) throws Exception {
+                    public void accept(Throwable throwable) {
                         setError(previousState, throwable);
                     }
                 }).doOnDispose(new Action() {
                     @Override
-                    public void run() throws Exception {
+                    public void run() {
                         setState(previousState);
                     }
                 });
@@ -68,20 +74,15 @@ public class QuizletRepository {
         setState(Resource.State.Loading);
 
         BaseServiceTask<List<QuizletSet>> task = BaseServiceTask.fromMaybe(cache.<List<QuizletSet>>getCachedValue("quizlet_sets"));
-        return service.runCommand(task)
-            .flatMap(new Function<BaseServiceTask<List<QuizletSet>>, SingleSource<? extends List<QuizletSet>>>() {
+        return service.runCommandForResponse(task)
+            .doOnSuccess(new Consumer<List<QuizletSet>>() {
                 @Override
-                public SingleSource<? extends List<QuizletSet>> apply(BaseServiceTask<List<QuizletSet>> serviceTask) throws Exception {
-                    return RxTools.justOrError(serviceTask.getResponse());
-                }
-            }).doOnSuccess(new Consumer<List<QuizletSet>>() {
-                @Override
-                public void accept(List<QuizletSet> quizletSets) throws Exception {
+                public void accept(List<QuizletSet> quizletSets) {
                     setState(Resource.State.Restored, quizletSets);
                 }
             }).onErrorResumeNext(new Function<Throwable, SingleSource<? extends List<QuizletSet>>>() {
                 @Override
-                public SingleSource<? extends List<QuizletSet>> apply(Throwable throwable) throws Exception {
+                public SingleSource<? extends List<QuizletSet>> apply(Throwable throwable) {
                     setState(previousState);
                     if (service.getAccount().isAuthorized()) {
                         return loadSets(progressListener);

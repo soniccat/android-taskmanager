@@ -8,7 +8,7 @@ import com.dropbox.client2.RESTUtility;
 import com.dropbox.client2.exception.DropboxException;
 import com.dropbox.client2.exception.DropboxServerException;
 import com.example.alexeyglushkov.authtaskmanager.IServiceTask;
-import com.example.alexeyglushkov.authtaskmanager.ServiceTask;
+import com.example.alexeyglushkov.authtaskmanager.ServiceTaskImp;
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
 
 import org.junit.Assert;
@@ -20,7 +20,7 @@ import java.util.concurrent.Semaphore;
 /**
  * Created by alexeyglushkov on 04.09.16.
  */
-public class DropboxSyncCommand extends ServiceTask implements IServiceTask {
+public class DropboxSyncCommand extends ServiceTaskImp implements IServiceTask {
     private @NonNull String localPath;
     private @NonNull String dropboPath;
     private long lastSyncDate;

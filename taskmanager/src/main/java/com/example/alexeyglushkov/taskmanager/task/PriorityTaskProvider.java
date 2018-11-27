@@ -31,6 +31,7 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool {
     private int priority;
 
     // Task type -> priority queue
+    // TODO: try to use PriorityBlockingQueue
     private SparseArray<SortedList<Task>> taskQueues;
 
     public PriorityTaskProvider(Handler handler, String id) {

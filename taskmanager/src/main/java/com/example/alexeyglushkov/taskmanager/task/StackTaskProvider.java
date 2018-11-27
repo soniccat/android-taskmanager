@@ -11,7 +11,7 @@ public class StackTaskProvider extends SimpleTaskPool implements TaskProvider, T
     private String providerId;
     private int priority;
 
-    private boolean areTasksDependent; // should the top task block the next tasks until it finishes
+    private boolean areTasksDependent; //if enabled the top task blocks the next task until the former finishes
     private boolean isBlocked;
 
     public StackTaskProvider(boolean areTasksDependent, Handler handler, String id) {

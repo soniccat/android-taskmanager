@@ -11,7 +11,7 @@ import io.reactivex.Single;
 
 import androidx.annotation.Nullable;
 
-public class BaseServiceTask<T> implements IServiceTask<T> {
+public class BaseServiceTask<T> implements ServiceTask<T> {
     protected Task task;
 
     //// Initialization
@@ -64,7 +64,7 @@ public class BaseServiceTask<T> implements IServiceTask<T> {
     }
 
     @Override
-    public Error getCommandError() {
+    public @Nullable Error getCommandError() {
         return task.getTaskError();
     }
 
