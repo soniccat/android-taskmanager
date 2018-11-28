@@ -2,6 +2,7 @@ package com.example.alexeyglushkov.wordteacher.listmodule.presenter;
 
 import android.os.Bundle;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,6 +33,8 @@ public abstract class BaseListPresenter<T>
         PagerModuleItemWithTitle {
     protected StorableListProviderFactory<T> providerFactory;
     protected StorableListProvider<T> provider = new NullStorableListProvider<>();
+
+    protected LiveData<T> liveItems;
 
     protected CompareStrategyFactory<T> compareStrategyFactory = new NullCompareStrategyFactory<>();
     protected CompareStrategy<T> compareStrategy;

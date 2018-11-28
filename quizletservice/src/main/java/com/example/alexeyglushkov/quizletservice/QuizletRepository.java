@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -103,7 +104,7 @@ public class QuizletRepository {
     // Getters
 
     @NonNull
-    public NonNullMutableLiveData<Resource<List<QuizletSet>>> getLiveSets() {
+    public LiveData<Resource<List<QuizletSet>>> getLiveSets() {
         return sets;
     }
 
