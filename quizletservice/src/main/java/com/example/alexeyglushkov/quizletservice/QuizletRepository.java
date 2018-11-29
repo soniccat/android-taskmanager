@@ -25,7 +25,8 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import tools.RxTools;
 
-public class QuizletRepository {
+// TODO: base class for repository with service and cache
+public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletSet>> {
     private @NonNull QuizletService service;
     private @NonNull RxCache cache;
 
@@ -104,7 +105,7 @@ public class QuizletRepository {
     // Getters
 
     @NonNull
-    public LiveData<Resource<List<QuizletSet>>> getLiveSets() {
+    public LiveData<Resource<List<QuizletSet>>> getLiveData() {
         return sets;
     }
 

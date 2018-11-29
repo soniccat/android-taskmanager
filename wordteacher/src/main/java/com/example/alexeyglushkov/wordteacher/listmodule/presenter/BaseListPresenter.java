@@ -3,16 +3,23 @@ package com.example.alexeyglushkov.wordteacher.listmodule.presenter;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.example.alexeyglushkov.quizletservice.Resource;
+import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategy;
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategyFactory;
+import com.example.alexeyglushkov.wordteacher.listmodule.EmptyStorableListLiveDataProvider;
+import com.example.alexeyglushkov.wordteacher.listmodule.ListLiveDataProvider;
 import com.example.alexeyglushkov.wordteacher.listmodule.NullCompareStrategyFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.NullStorableListProvider;
+import com.example.alexeyglushkov.wordteacher.listmodule.StorableListLiveDataProvider;
+import com.example.alexeyglushkov.wordteacher.listmodule.StorableListLiveDataProviderFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProvider;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProviderFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.view.ListViewInterface;
@@ -34,7 +41,9 @@ public abstract class BaseListPresenter<T>
     protected StorableListProviderFactory<T> providerFactory;
     protected StorableListProvider<T> provider = new NullStorableListProvider<>();
 
-    protected LiveData<T> liveItems;
+    protected StorableListLiveDataProviderFactory<T> liveDataProviderFactory;
+    protected StorableListLiveDataProvider<T> liveDataProvider = new EmptyStorableListLiveDataProvider<>();
+    protected LiveData<List<T>> liveItems;
 
     protected CompareStrategyFactory<T> compareStrategyFactory = new NullCompareStrategyFactory<>();
     protected CompareStrategy<T> compareStrategy;
@@ -48,6 +57,7 @@ public abstract class BaseListPresenter<T>
 
     public void initialize() {
         providerFactory = createProviderFactory();
+        liveDataProviderFactory = createLiveDataProviderFactory();
         compareStrategyFactory = createCompareStrategyFactory();
     }
 
@@ -66,11 +76,20 @@ public abstract class BaseListPresenter<T>
 
     protected abstract StorableListProviderFactory<T> createProviderFactory();
 
+    protected StorableListLiveDataProviderFactory<T> createLiveDataProviderFactory() {
+        return null;
+    }
+
     //// Events
 
     @Override
-    public void onCreated(Bundle savedInstanceState, Bundle extras) {
-        initStrategyIfNeeded(savedInstanceState);
+    public void onCreated(Bundle state, Bundle extras) {
+        if (state != null || liveDataProvider instanceof EmptyStorableListLiveDataProvider) {
+            this.liveDataProvider = liveDataProviderFactory.restore(state);
+            this.liveDataProvider.getListLiveData().observeForever(this);
+        }
+
+        initStrategyIfNeeded(state);
     }
 
     @Override
@@ -99,8 +118,21 @@ public abstract class BaseListPresenter<T>
         providerFactory = null;
         provider = null;
 
+        if (liveDataProvider != null) {
+            liveDataProvider.getListLiveData().removeObserver(this);
+            liveDataProvider = null;
+        }
+
         compareStrategyFactory = null;
         compareStrategy = null;
+    }
+
+    // Observer<T>
+
+    @Override
+    public void onChanged(List<T> listResource) {
+        // TODO: if (view.isActive()) {
+        view.reload(liveItems.getValue());
     }
 
     //// Actions
@@ -118,6 +150,7 @@ public abstract class BaseListPresenter<T>
 
     public void store(Bundle bundle) {
         provider.store(bundle);
+        liveDataProvider.store(bundle);
         storeCompareStrategyIfNeeded(bundle);
     }
 

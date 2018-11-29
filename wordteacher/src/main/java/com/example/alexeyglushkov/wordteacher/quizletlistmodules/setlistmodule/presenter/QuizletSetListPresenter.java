@@ -10,7 +10,9 @@ import com.example.alexeyglushkov.quizletservice.Resource;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategyFactory;
+import com.example.alexeyglushkov.wordteacher.listmodule.EmptyStorableListLiveDataProvider;
 import com.example.alexeyglushkov.wordteacher.listmodule.NullStorableListProvider;
+import com.example.alexeyglushkov.wordteacher.listmodule.StorableListLiveDataProviderFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.presenter.SimpleListPresenter;
 import com.example.alexeyglushkov.wordteacher.listmodule.view.ListViewInterface;
 import com.example.alexeyglushkov.wordteacher.main.MainApplication;
@@ -24,9 +26,8 @@ import java.util.List;
  * Created by alexeyglushkov on 30.10.16.
  */
 
-public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet> implements
-        Sortable,
-        Observer<Resource<List<QuizletSet>>> {
+public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet>
+        implements Observer<Resource<List<QuizletSet>>>, Sortable {
 
     public static String DEFAULT_TITLE = "Sets";
 
@@ -37,17 +38,10 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet> imp
         super.onViewStateRestored(view, savedInstanceState);
 
         this.savedInstanceState = savedInstanceState;
-        getQuizletRepository().getLiveSets().observeForever(this);
+        getQuizletRepository().getLiveData().observeForever((Observer<Resource<List<QuizletSet>>>)this);
 
         if (savedInstanceState != null) {
-            onServiceStateChanged(getQuizletRepository().getLiveSets().getValue());
-        }
-    }
-
-    private void restoreIfNeeded() {
-        if (this.savedInstanceState != null || provider instanceof NullStorableListProvider) {
-            provider = providerFactory.restore(this.savedInstanceState);
-            this.savedInstanceState = null;
+            onServiceStateChanged(getQuizletRepository().getLiveData().getValue());
         }
     }
 
@@ -56,14 +50,13 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet> imp
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        getQuizletRepository().getLiveSets().removeObserver(this);
+        getQuizletRepository().getLiveData().removeObserver(this);
     }
 
     //// Actions
 
     private void handleLoadedSets() {
         view.hideLoading();
-        restoreIfNeeded();
         reload();
     }
 
@@ -99,6 +92,11 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet> imp
     @NonNull
     protected QuizletSetListProviderFactory createProviderFactory() {
         return new QuizletSetListProviderFactory(getQuizletRepository());
+    }
+
+    @Override
+    protected StorableListLiveDataProviderFactory<QuizletSet> createLiveDataProviderFactory() {
+        return new QuizletSetListLiveDataProviderFactory(getQuizletRepository());
     }
 
     public CompareStrategyFactory<QuizletSet> createCompareStrategyFactory() {

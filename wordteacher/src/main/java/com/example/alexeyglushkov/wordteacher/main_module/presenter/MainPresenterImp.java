@@ -72,7 +72,7 @@ public class MainPresenterImp implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         getCourseHolder().addListener(this);
-        getQuizletRepository().getLiveSets().observeForever(this);
+        getQuizletRepository().getLiveData().observeForever(this);
 
         router = createRouter();
         pagerModule = createPagerModule(savedInstanceState);
@@ -84,7 +84,7 @@ public class MainPresenterImp implements
     @Override
     public void onDestroy() {
         getCourseHolder().removeListener(this);
-        getQuizletRepository().getLiveSets().removeObserver(this);
+        getQuizletRepository().getLiveData().removeObserver(this);
     }
 
     @Override
