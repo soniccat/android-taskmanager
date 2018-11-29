@@ -27,7 +27,7 @@ import java.util.List;
  */
 
 public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet>
-        implements Observer<Resource<List<QuizletSet>>>, Sortable {
+        implements Sortable {
 
     public static String DEFAULT_TITLE = "Sets";
 
@@ -38,11 +38,11 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet>
         super.onViewStateRestored(view, savedInstanceState);
 
         this.savedInstanceState = savedInstanceState;
-        getQuizletRepository().getLiveData().observeForever((Observer<Resource<List<QuizletSet>>>)this);
+        //getQuizletRepository().getLiveData().observeForever((Observer<Resource<List<QuizletSet>>>)this);
 
-        if (savedInstanceState != null) {
-            onServiceStateChanged(getQuizletRepository().getLiveData().getValue());
-        }
+//        if (savedInstanceState != null) {
+//            onServiceStateChanged(getQuizletRepository().getLiveData().getValue());
+//        }
     }
 
     //// Events
@@ -50,14 +50,14 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet>
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        getQuizletRepository().getLiveData().removeObserver(this);
+        //getQuizletRepository().getLiveData().removeObserver(this);
     }
 
     //// Actions
 
     private void handleLoadedSets() {
         view.hideLoading();
-        reload();
+        //reload();
     }
 
     //// Interface methods
@@ -73,6 +73,8 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet>
 
     @Override
     public void onChanged(@NonNull Resource<List<QuizletSet>> listResource) {
+        super.onChanged(listResource);
+        // TODO: check view state
         onServiceStateChanged(listResource);
     }
 

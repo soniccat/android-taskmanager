@@ -11,9 +11,10 @@ public class Resource<T> {
         Loaded
     }
 
-    @NonNull public final State state;
-    @Nullable public final T data;
-    @Nullable public final Throwable error;
+    // TODO: add getters
+    @NonNull public State state;
+    @Nullable public T data;
+    @Nullable public Throwable error;
 
     public Resource() {
         this.state = State.Uninitialized;
@@ -27,15 +28,32 @@ public class Resource<T> {
         this.error = error;
     }
 
-    Resource<T> resource(@NonNull State newState) {
+    // TODO: think about implementing recycle
+    public Resource<T> resource(@NonNull State newState) {
         return new Resource<>(newState, data, null);
     }
 
-    Resource<T> resource(@NonNull State newState, @NonNull Throwable newError) {
+    public Resource<T> resource(@NonNull T newData) {
+        return new Resource<>(state, newData, null);
+    }
+
+    public Resource<T> resource(@NonNull State newState, @NonNull Throwable newError) {
         return new Resource<>(newState, data, newError);
     }
 
-    Resource<T> resource(@NonNull State newState, @NonNull T newData) {
+    public Resource<T> resource(@NonNull State newState, @NonNull T newData) {
         return new Resource<>(newState, newData, null);
+    }
+
+    public Resource<T> update(@NonNull T newData) {
+        data = newData;
+        return this;
+    }
+
+    public Resource<T> update(@NonNull State newState, @NonNull T newData, @NonNull Throwable newError) {
+        state = newState;
+        data = newData;
+        error = newError;
+        return this;
     }
 }

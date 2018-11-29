@@ -2,7 +2,6 @@ package com.example.alexeyglushkov.wordteacher.listmodule.presenter;
 
 import android.os.Bundle;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
 import java.util.ArrayList;
@@ -11,14 +10,12 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.example.alexeyglushkov.quizletservice.Resource;
-import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategy;
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategyFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.EmptyStorableListLiveDataProvider;
-import com.example.alexeyglushkov.wordteacher.listmodule.ListLiveDataProvider;
 import com.example.alexeyglushkov.wordteacher.listmodule.NullCompareStrategyFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.NullStorableListProvider;
-import com.example.alexeyglushkov.wordteacher.listmodule.StorableListLiveDataProvider;
+import com.example.alexeyglushkov.wordteacher.listmodule.StorableResourceListLiveDataProvider;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableListLiveDataProviderFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProvider;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProviderFactory;
@@ -36,14 +33,15 @@ import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.StackModuleIte
 
 public abstract class BaseListPresenter<T>
         implements ListPresenterInterface,
+        Observer<Resource<List<T>>>,
         StackModuleItem,
         PagerModuleItemWithTitle {
     protected StorableListProviderFactory<T> providerFactory;
     protected StorableListProvider<T> provider = new NullStorableListProvider<>();
 
+    protected final EmptyStorableListLiveDataProvider<T> EMPTY_LIST_DATA_PROVIDER = new EmptyStorableListLiveDataProvider<>();
     protected StorableListLiveDataProviderFactory<T> liveDataProviderFactory;
-    protected StorableListLiveDataProvider<T> liveDataProvider = new EmptyStorableListLiveDataProvider<>();
-    protected LiveData<List<T>> liveItems;
+    protected StorableResourceListLiveDataProvider<T> liveDataProvider = EMPTY_LIST_DATA_PROVIDER;
 
     protected CompareStrategyFactory<T> compareStrategyFactory = new NullCompareStrategyFactory<>();
     protected CompareStrategy<T> compareStrategy;
@@ -84,21 +82,26 @@ public abstract class BaseListPresenter<T>
 
     @Override
     public void onCreated(Bundle state, Bundle extras) {
-        if (state != null || liveDataProvider instanceof EmptyStorableListLiveDataProvider) {
-            this.liveDataProvider = liveDataProviderFactory.restore(state);
-            this.liveDataProvider.getListLiveData().observeForever(this);
-        }
-
         initStrategyIfNeeded(state);
+
+        if (state != null || liveDataProvider instanceof EmptyStorableListLiveDataProvider) {
+            if (liveDataProviderFactory != null) { // remove the condition after getting rid of a deprecated provider
+                this.liveDataProvider = liveDataProviderFactory.restore(state);
+            }
+        }
     }
 
     @Override
-    public void onViewCreated(Bundle savedInstanceState) {
+    public void onViewCreated(ListViewInterface view, Bundle state) {
+        setView(view);
+        if (liveDataProviderFactory != null) { // remove the condition after getting rid of a deprecated provider
+            this.liveDataProvider.getListLiveData().observe(this.view, this);
+        }
     }
 
     @Override
     public void onViewStateRestored(ListViewInterface view, @Nullable final Bundle savedInstanceState) {
-        setView(view);
+
     }
 
     @Override
@@ -119,7 +122,7 @@ public abstract class BaseListPresenter<T>
         provider = null;
 
         if (liveDataProvider != null) {
-            liveDataProvider.getListLiveData().removeObserver(this);
+            //liveDataProvider.getListLiveData().removeObserver(this);
             liveDataProvider = null;
         }
 
@@ -130,9 +133,9 @@ public abstract class BaseListPresenter<T>
     // Observer<T>
 
     @Override
-    public void onChanged(List<T> listResource) {
+    public void onChanged(Resource<List<T>> listResource) {
         // TODO: if (view.isActive()) {
-        view.reload(liveItems.getValue());
+        view.reload(listResource.data);
     }
 
     //// Actions

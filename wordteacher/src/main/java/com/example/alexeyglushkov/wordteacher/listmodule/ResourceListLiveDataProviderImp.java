@@ -19,17 +19,19 @@ import androidx.arch.core.util.Function;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
-public class ListLiveDataProviderFromResource<T> implements StorableListLiveDataProvider<T> {
+public class ResourceListLiveDataProviderImp<T> implements StorableResourceListLiveDataProvider<T> {
     private @NonNull ResourceLiveDataProvider<List<T>> resourceLiveDataProvider;
     private @NonNull Filter<T> filter = new EmptyFilter<T>();
-    private @NonNull List<T> filtered = new ArrayList<>();
 
-    public ListLiveDataProviderFromResource(Bundle bundle, Object context) {
-        this.resourceLiveDataProvider = (ResourceLiveDataProvider<List<T>>)context;
-        restore(bundle, context);
+    private @NonNull Resource<List<T>> aResource = new Resource<>();
+    private @NonNull List<T> aList = new ArrayList<>();
+
+    public ResourceListLiveDataProviderImp(Bundle bundle, @NonNull ResourceLiveDataProvider<List<T>> resourceLiveDataProvider) {
+        this.resourceLiveDataProvider = resourceLiveDataProvider;
+        restore(bundle);
     }
 
-    public ListLiveDataProviderFromResource(@NonNull ResourceLiveDataProvider<List<T>> resourceLiveDataProvider) {
+    public ResourceListLiveDataProviderImp(@NonNull ResourceLiveDataProvider<List<T>> resourceLiveDataProvider) {
         this.resourceLiveDataProvider = resourceLiveDataProvider;
     }
 
@@ -43,19 +45,19 @@ public class ListLiveDataProviderFromResource<T> implements StorableListLiveData
     }
 
     @Override
-    public void restore(Bundle bundle, Object context) {
+    public void restore(Bundle bundle) {
         filter = bundle.getParcelable("filter");
     }
 
     @Override
-    public LiveData<List<T>> getListLiveData() {
-        return Transformations.map(resourceLiveDataProvider.getLiveData(), new Function<Resource<List<T>>, List<T>>() {
+    public LiveData<Resource<List<T>>> getListLiveData() {
+        return Transformations.map(resourceLiveDataProvider.getLiveData(), new Function<Resource<List<T>>, Resource<List<T>>>() {
             @Override
-            public List<T> apply(Resource<List<T>> input) {
-                List<T> result;
+            public Resource<List<T>> apply(Resource<List<T>> input) {
+                Resource<List<T>> result;
 
                 if (input.data == null) {
-                    return Collections.emptyList();
+                    return aResource.update(input.state, Collections.<T>emptyList(), input.error);
 
                 } else {
                     result = getFilteredList(input);
@@ -66,19 +68,24 @@ public class ListLiveDataProviderFromResource<T> implements StorableListLiveData
         });
     }
 
-    private List<T> getFilteredList(@NonNull Resource<List<T>> input) {
+    @Override
+    public LiveData<Resource<List<T>>> getLiveData() {
+        return getListLiveData();
+    }
+
+    private Resource<List<T>> getFilteredList(@NonNull Resource<List<T>> input) {
         Assert.assertNotNull(input.data);
 
         List<T> result;
-        filtered.clear();
+        aList.clear();
         for (T v : input.data) {
             if (filter.check(v)) {
-                filtered.add(v);
+                aList.add(v);
             }
          }
 
-        result = filtered;
-        return result;
+        result = aList;
+        return aResource.update(result);
     }
 
     public interface Filter<T> extends Parcelable {

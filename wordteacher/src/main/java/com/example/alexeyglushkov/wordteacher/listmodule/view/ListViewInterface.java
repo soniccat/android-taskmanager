@@ -6,11 +6,13 @@ import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.view.Activi
 import com.example.alexeyglushkov.uimodulesandclasses.pagermodule.PagerModuleItemView;
 import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.StackModuleItemView;
 
+import androidx.lifecycle.LifecycleOwner;
+
 /**
  * Created by alexeyglushkov on 30.10.16.
  */
 
-public interface ListViewInterface<T> extends StackModuleItemView, PagerModuleItemView, ActivityModuleItemView {
+public interface ListViewInterface<T> extends LifecycleOwner, StackModuleItemView, PagerModuleItemView, ActivityModuleItemView {
     void reload(List<T> items);
     void updateRow(int index);
     void deleteRow(int index);

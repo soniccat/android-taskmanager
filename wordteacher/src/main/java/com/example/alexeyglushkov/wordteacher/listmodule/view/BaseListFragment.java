@@ -6,7 +6,6 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
@@ -94,7 +93,7 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
         recyclerView.setLayoutManager(layoutManager);
 
         applyAdapter();
-        presenter.onViewCreated(savedInstanceState);
+        presenter.onViewCreated(this, savedInstanceState);
     }
 
     @Override

@@ -29,8 +29,7 @@ import com.example.alexeyglushkov.wordteacher.tools.Sortable;
 
 public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
         implements Sortable,
-        PagerModuleItemWithTitle,
-        Observer<Resource<List<QuizletSet>>> {
+        PagerModuleItemWithTitle {
     public static String DEFAULT_TITLE = "Cards";
 
     private Bundle savedInstanceState;
@@ -42,13 +41,13 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
         super.onViewStateRestored(view, savedInstanceState);
 
         this.savedInstanceState = savedInstanceState;
-        getQuizletRepository().getLiveData().observeForever(this);
+        //getQuizletRepository().getLiveData().observeForever(this);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        getQuizletRepository().getLiveData().removeObserver(this);
+        //getQuizletRepository().getLiveData().removeObserver(this);
     }
 
     //// Actions
@@ -82,23 +81,23 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
 
     // Observer<Resource<List<QuizletSet>>>
 
-    @Override
-    public void onChanged(@NonNull Resource<List<QuizletSet>> listResource) {
-        if (listResource.error != null) {
-            view.hideLoading();
-
-        } else {
-            boolean hasData = listResource.data != null && listResource.data.size() > 0;
-            boolean isLoading = listResource.state == Resource.State.Loading;
-
-            if (!hasData && isLoading) {
-                view.showLoading();
-
-            } else if (hasData && !isLoading) {
-                handleLoadedSets();
-            }
-        }
-    }
+//    @Override
+//    public void onChanged(@NonNull Resource<List<QuizletSet>> listResource) {
+//        if (listResource.error != null) {
+//            view.hideLoading();
+//
+//        } else {
+//            boolean hasData = listResource.data != null && listResource.data.size() > 0;
+//            boolean isLoading = listResource.state == Resource.State.Loading;
+//
+//            if (!hasData && isLoading) {
+//                view.showLoading();
+//
+//            } else if (hasData && !isLoading) {
+//                handleLoadedSets();
+//            }
+//        }
+//    }
 
     // PagerModuleItemWithTitle
 
