@@ -25,7 +25,7 @@ public class ResourceListLiveDataProviderImp<T> implements StorableResourceListL
     protected @NonNull ResourceLiveDataProvider<List<T>> resourceLiveDataProvider;
     protected @NonNull Filter<T> filter = new EmptyFilter<T>();
     protected @Nullable CompareStrategy<T> compareStrategy;
-    private @NonNull Observer<Resource<List<T>>> resultListObserver;
+    private @Nullable Observer<Resource<List<T>>> resultListObserver;
 
     private @NonNull Resource<List<T>> aResource = new Resource<>();
     private @NonNull List<T> aList = new ArrayList<>();
@@ -59,7 +59,10 @@ public class ResourceListLiveDataProviderImp<T> implements StorableResourceListL
 
     public void setCompareStrategy(@Nullable CompareStrategy<T> compareStrategy) {
         this.compareStrategy = compareStrategy;
-        resultListObserver.onChanged(resourceLiveDataProvider.getLiveData().getValue());
+
+        if (resultListObserver != null) {
+            resultListObserver.onChanged(resourceLiveDataProvider.getLiveData().getValue());
+        }
     }
 
     public void setFilter(@Nullable Filter<T> filter) {

@@ -8,7 +8,6 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategy;
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategyFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableResourceListLiveDataProviderFactory;
-import com.example.alexeyglushkov.wordteacher.listmodule.StrategySortable;
 import com.example.alexeyglushkov.wordteacher.listmodule.presenter.SimpleListPresenter;
 import com.example.alexeyglushkov.wordteacher.main.MainApplication;
 import com.example.alexeyglushkov.wordteacher.main.Preferences;
@@ -37,7 +36,7 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet>
 
     @NonNull
     protected QuizletSetListProviderFactory createProviderFactory() {
-        return new QuizletSetListProviderFactory(getQuizletRepository());
+        return null;
     }
 
     @Override
@@ -45,14 +44,8 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet>
         return new QuizletSetListLiveDataProviderFactory(getQuizletRepository());
     }
 
-    public CompareStrategyFactory<QuizletSet> createCompareStrategyFactory() {
-        return new QuizletSetCompareStrategyFactory();
-    }
-
-    //// Setters
-
-    public void setSortOrder(Preferences.SortOrder sortOrder) {
-        setCompareStrategy(new QuizletSetCompareStrategy(sortOrder));
+    protected SortOrderCompareStrategy<QuizletSet> createSortStrategy(Preferences.SortOrder sortOrder) {
+        return new QuizletSetCompareStrategy(sortOrder);
     }
 
     //// Getters
@@ -65,23 +58,5 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet>
 
     public QuizletRepository getQuizletRepository() {
         return getMainApplication().getQuizletRepository();
-    }
-
-    // Data Getters
-
-    public Preferences.SortOrder getSortOrder() {
-        // TODO: simplify
-        CompareStrategy<QuizletSet> compareStrategy = ((QuizletSetListLiveDataProvider) liveDataProvider).getCompareStrategy();
-        return compareStrategy != null ? ((QuizletSetCompareStrategy)compareStrategy).getSortOrder() : null;
-    }
-
-    // Cast Getters
-
-    private QuizletSetCompareStrategyFactory getCompareStrategyFactory() {
-        return (QuizletSetCompareStrategyFactory)compareStrategyFactory;
-    }
-
-    private SortOrderCompareStrategy getCompareStrategy() {
-        return (SortOrderCompareStrategy)compareStrategy;
     }
 }

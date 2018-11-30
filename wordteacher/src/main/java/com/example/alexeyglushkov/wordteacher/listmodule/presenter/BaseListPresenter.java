@@ -10,11 +10,13 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.example.alexeyglushkov.quizletservice.Resource;
+import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategy;
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategyFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.EmptyStorableListLiveDataProvider;
 import com.example.alexeyglushkov.wordteacher.listmodule.NullCompareStrategyFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.NullStorableListProvider;
+import com.example.alexeyglushkov.wordteacher.listmodule.ResourceListLiveDataProviderImp;
 import com.example.alexeyglushkov.wordteacher.listmodule.StrategySortable;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableResourceListLiveDataProvider;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableResourceListLiveDataProviderFactory;
@@ -27,6 +29,9 @@ import com.example.alexeyglushkov.uimodulesandclasses.pagermodule.PagerModuleIte
 import com.example.alexeyglushkov.uimodulesandclasses.pagermodule.PagerModuleItemWithTitle;
 import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.StackModuleItem;
 import com.example.alexeyglushkov.uimodulesandclasses.stackmodule.StackModuleItemView;
+import com.example.alexeyglushkov.wordteacher.quizletlistmodules.setlistmodule.presenter.QuizletSetCompareStrategy;
+import com.example.alexeyglushkov.wordteacher.quizletlistmodules.setlistmodule.presenter.QuizletSetListLiveDataProvider;
+import com.example.alexeyglushkov.wordteacher.tools.Sortable;
 
 /**
  * Created by alexeyglushkov on 30.10.16.
@@ -45,7 +50,7 @@ public abstract class BaseListPresenter<T>
     protected StorableResourceListLiveDataProvider<T> liveDataProvider = EMPTY_LIST_DATA_PROVIDER;
 
     protected CompareStrategyFactory<T> compareStrategyFactory = new NullCompareStrategyFactory<>();
-    protected CompareStrategy<T> compareStrategy;
+    protected @Nullable CompareStrategy<T> compareStrategy;
 
     protected ListViewInterface<T> view;
 
@@ -60,13 +65,8 @@ public abstract class BaseListPresenter<T>
         compareStrategyFactory = createCompareStrategyFactory();
     }
 
-    private void initStrategyIfNeeded(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            //compareStrategy = compareStrategyFactory.restore(savedInstanceState);
-
-        } else if (compareStrategy == null) {
-            //compareStrategy = compareStrategyFactory.createDefault();
-        }
+    protected CompareStrategy<T> createSortStrategy(Preferences.SortOrder order) {
+        return null;
     }
 
     protected CompareStrategyFactory<T> createCompareStrategyFactory() {
@@ -83,11 +83,13 @@ public abstract class BaseListPresenter<T>
 
     @Override
     public void onCreated(Bundle state, Bundle extras) {
-        initStrategyIfNeeded(state);
-
         if (state != null || liveDataProvider instanceof EmptyStorableListLiveDataProvider) {
             if (liveDataProviderFactory != null) { // remove the condition after getting rid of a deprecated provider
                 this.liveDataProvider = liveDataProviderFactory.restore(state);
+            }
+
+            if (state == null && compareStrategy != null && this.liveDataProvider instanceof StrategySortable) {
+                setCompareStrategy(compareStrategy);
             }
         }
     }
@@ -215,6 +217,8 @@ public abstract class BaseListPresenter<T>
 
     @Override
     public void setSortOrder(Preferences.SortOrder order) {
+        setCompareStrategy(createSortStrategy(order));
+        //view.reload(getItems());
     }
 
     @Override
@@ -228,10 +232,12 @@ public abstract class BaseListPresenter<T>
     //// Setter
 
     public void setCompareStrategy(CompareStrategy<T> compareStrategy) {
-        this.compareStrategy = compareStrategy;
-
         if (liveDataProvider instanceof StrategySortable) {
             ((StrategySortable<T>) liveDataProvider).setCompareStrategy(compareStrategy);
+            this.compareStrategy = null;
+        } else {
+            // store to setup after liveDataProvider initialization
+            this.compareStrategy = compareStrategy;
         }
     }
 
@@ -240,6 +246,20 @@ public abstract class BaseListPresenter<T>
     }
 
     //// Getters
+
+    @Nullable
+    public Preferences.SortOrder getSortOrder() {
+        Preferences.SortOrder order = null;
+        if (liveDataProvider instanceof ResourceListLiveDataProviderImp) {
+            CompareStrategy<T> strategy = ((ResourceListLiveDataProviderImp<T>) liveDataProvider).getCompareStrategy();
+
+            if (strategy instanceof Sortable) {
+                order = ((Sortable) strategy).getSortOrder();
+            }
+        }
+
+        return order;
+    }
 
     protected List<T> getProviderItems() {
         return provider.getList();

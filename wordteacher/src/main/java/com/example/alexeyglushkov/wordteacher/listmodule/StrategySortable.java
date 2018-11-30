@@ -4,4 +4,5 @@ import androidx.annotation.Nullable;
 
 public interface StrategySortable<T> {
     void setCompareStrategy(@Nullable CompareStrategy<T> compareStrategy);
+    CompareStrategy<T> getCompareStrategy();
 }

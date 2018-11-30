@@ -107,21 +107,6 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
         return set != null ? set.getTitle() : DEFAULT_TITLE;
     }
 
-    // Sortable
-
-    @Override
-    public void setSortOrder(Preferences.SortOrder sortOrder) {
-        super.setSortOrder(sortOrder);
-
-        setCompareStrategy(getCompareStrategyFactory().createStrategy(sortOrder));
-        view.reload(getItems());
-    }
-
-    @Override
-    public Preferences.SortOrder getSortOrder() {
-        return getCompareStrategy().getSortOrder();
-    }
-
     //// Setters
 
     // Set Data
@@ -154,15 +139,5 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
 
     private QuizletRepository getQuizletRepository() {
         return getMainApplication().getQuizletRepository();
-    }
-
-    // Cast Getters
-
-    private QuizletTermCompareStrategyFactory getCompareStrategyFactory() {
-        return (QuizletTermCompareStrategyFactory)compareStrategyFactory;
-    }
-
-    private SortOrderCompareStrategy getCompareStrategy() {
-        return (SortOrderCompareStrategy)compareStrategy;
     }
 }

@@ -9,7 +9,7 @@ import com.example.alexeyglushkov.wordteacher.main.Preferences;
 /**
  * Created by alexeyglushkov on 26.08.16.
  */
-public class SortOrderCompareStrategy<T> extends SimpleCompareStrategy<T> {
+public class SortOrderCompareStrategy<T> extends SimpleCompareStrategy<T> implements Sortable {
     public static final Creator<SortOrderCompareStrategy> CREATOR = new Creator<SortOrderCompareStrategy>() {
         @Override
         public SortOrderCompareStrategy createFromParcel(Parcel source) {
