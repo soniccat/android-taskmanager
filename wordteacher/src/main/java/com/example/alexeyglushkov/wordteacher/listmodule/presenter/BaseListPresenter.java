@@ -15,8 +15,9 @@ import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategyFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.EmptyStorableListLiveDataProvider;
 import com.example.alexeyglushkov.wordteacher.listmodule.NullCompareStrategyFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.NullStorableListProvider;
+import com.example.alexeyglushkov.wordteacher.listmodule.StrategySortable;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableResourceListLiveDataProvider;
-import com.example.alexeyglushkov.wordteacher.listmodule.StorableListLiveDataProviderFactory;
+import com.example.alexeyglushkov.wordteacher.listmodule.StorableResourceListLiveDataProviderFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProvider;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProviderFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.view.ListViewInterface;
@@ -40,13 +41,13 @@ public abstract class BaseListPresenter<T>
     protected StorableListProvider<T> provider = new NullStorableListProvider<>();
 
     protected final EmptyStorableListLiveDataProvider<T> EMPTY_LIST_DATA_PROVIDER = new EmptyStorableListLiveDataProvider<>();
-    protected StorableListLiveDataProviderFactory<T> liveDataProviderFactory;
+    protected StorableResourceListLiveDataProviderFactory<T> liveDataProviderFactory;
     protected StorableResourceListLiveDataProvider<T> liveDataProvider = EMPTY_LIST_DATA_PROVIDER;
 
     protected CompareStrategyFactory<T> compareStrategyFactory = new NullCompareStrategyFactory<>();
     protected CompareStrategy<T> compareStrategy;
 
-    protected ListViewInterface view;
+    protected ListViewInterface<T> view;
 
     //// Initialization
     public BaseListPresenter() {
@@ -61,10 +62,10 @@ public abstract class BaseListPresenter<T>
 
     private void initStrategyIfNeeded(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            compareStrategy = compareStrategyFactory.restore(savedInstanceState);
+            //compareStrategy = compareStrategyFactory.restore(savedInstanceState);
 
         } else if (compareStrategy == null) {
-            compareStrategy = compareStrategyFactory.createDefault();
+            //compareStrategy = compareStrategyFactory.createDefault();
         }
     }
 
@@ -74,7 +75,7 @@ public abstract class BaseListPresenter<T>
 
     protected abstract StorableListProviderFactory<T> createProviderFactory();
 
-    protected StorableListLiveDataProviderFactory<T> createLiveDataProviderFactory() {
+    protected StorableResourceListLiveDataProviderFactory<T> createLiveDataProviderFactory() {
         return null;
     }
 
@@ -135,10 +136,24 @@ public abstract class BaseListPresenter<T>
     @Override
     public void onChanged(Resource<List<T>> listResource) {
         // TODO: if (view.isActive()) {
-        view.reload(listResource.data);
+        updateUI(listResource);
     }
 
     //// Actions
+
+    private void updateUI(Resource<List<T>> listResource) {
+        boolean hasData = listResource.data != null && listResource.data.size() > 0;
+        boolean isLoading = listResource.state == Resource.State.Loading;
+
+        if (listResource.error != null) {
+            view.hideLoading();
+        } else if (isLoading) {
+            view.showLoading();
+        } else if (hasData) {
+            view.hideLoading();
+            view.reload(listResource.data);
+        }
+    }
 
     private void sortItems(List<T> inItems, final CompareStrategy<T> compareStrategy) {
         Collections.sort(inItems, new Comparator<T>() {
@@ -158,9 +173,9 @@ public abstract class BaseListPresenter<T>
     }
 
     private void storeCompareStrategyIfNeeded(Bundle outState) {
-        if (compareStrategy != null) {
-            compareStrategy.store(outState);
-        }
+//        if (compareStrategy != null) {
+//            compareStrategy.store(outState);
+//        }
     }
 
     //// Interfaces
@@ -214,7 +229,10 @@ public abstract class BaseListPresenter<T>
 
     public void setCompareStrategy(CompareStrategy<T> compareStrategy) {
         this.compareStrategy = compareStrategy;
-        view.reload(getItems());
+
+        if (liveDataProvider instanceof StrategySortable) {
+            ((StrategySortable<T>) liveDataProvider).setCompareStrategy(compareStrategy);
+        }
     }
 
     public void setView(ListViewInterface view) {

@@ -6,14 +6,14 @@ import com.example.alexeyglushkov.quizletservice.QuizletRepository;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.wordteacher.listmodule.ResourceListLiveDataProviderImp;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableResourceListLiveDataProvider;
-import com.example.alexeyglushkov.wordteacher.listmodule.StorableListLiveDataProviderFactory;
+import com.example.alexeyglushkov.wordteacher.listmodule.StorableResourceListLiveDataProviderFactory;
 
 import org.junit.Assert;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public class QuizletSetListLiveDataProviderFactory implements StorableListLiveDataProviderFactory<QuizletSet> {
+public class QuizletSetListLiveDataProviderFactory implements StorableResourceListLiveDataProviderFactory<QuizletSet> {
     private @NonNull QuizletRepository repository;
     private @Nullable ResourceListLiveDataProviderImp.Filter<QuizletSet> filter;
 

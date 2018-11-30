@@ -1,6 +1,7 @@
 package com.example.alexeyglushkov.wordteacher.tools;
 
 import android.os.Bundle;
+import android.os.Parcel;
 
 import com.example.alexeyglushkov.wordteacher.listmodule.SimpleCompareStrategy;
 import com.example.alexeyglushkov.wordteacher.main.Preferences;
@@ -8,7 +9,19 @@ import com.example.alexeyglushkov.wordteacher.main.Preferences;
 /**
  * Created by alexeyglushkov on 26.08.16.
  */
-public abstract class SortOrderCompareStrategy<T> extends SimpleCompareStrategy<T> {
+public class SortOrderCompareStrategy<T> extends SimpleCompareStrategy<T> {
+    public static final Creator<SortOrderCompareStrategy> CREATOR = new Creator<SortOrderCompareStrategy>() {
+        @Override
+        public SortOrderCompareStrategy createFromParcel(Parcel source) {
+            return new SortOrderCompareStrategy(source);
+        }
+
+        @Override
+        public SortOrderCompareStrategy[] newArray(int size) {
+            return new SortOrderCompareStrategy[size];
+        }
+    };
+
     private final static String SORT_KEY = "SORT_KEY";
 
     private Preferences.SortOrder sortOrder = Preferences.SortOrder.BY_NAME;
@@ -17,15 +30,15 @@ public abstract class SortOrderCompareStrategy<T> extends SimpleCompareStrategy<
         this.sortOrder = sortOrder;
     }
 
-    @Override
-    public void restore(Bundle bundle) {
-        int intOrder = bundle.getInt(SORT_KEY);
-        setSortOrder(Preferences.SortOrder.values()[intOrder]);
+    public SortOrderCompareStrategy(Parcel in) {
+        super(in);
+        this.sortOrder = Preferences.SortOrder.values()[in.readInt()];
     }
 
     @Override
-    public void store(Bundle bundle) {
-        bundle.putInt(SORT_KEY, getSortOrder().ordinal());
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeInt(sortOrder.ordinal());
     }
 
     public Preferences.SortOrder getSortOrder() {

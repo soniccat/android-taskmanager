@@ -5,6 +5,6 @@ import android.os.Bundle;
 /**
  * Created by alexeyglushkov on 20.08.16.
  */
-public interface StorableListLiveDataProviderFactory<T> {
+public interface StorableResourceListLiveDataProviderFactory<T> {
     StorableResourceListLiveDataProvider<T> restore(Bundle bundle);
 }

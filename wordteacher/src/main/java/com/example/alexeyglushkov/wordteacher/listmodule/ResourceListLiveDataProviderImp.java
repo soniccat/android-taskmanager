@@ -11,20 +11,26 @@ import org.junit.Assert;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.arch.core.util.Function;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Transformations;
+import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.Observer;
 
-public class ResourceListLiveDataProviderImp<T> implements StorableResourceListLiveDataProvider<T> {
-    private @NonNull ResourceLiveDataProvider<List<T>> resourceLiveDataProvider;
-    private @NonNull Filter<T> filter = new EmptyFilter<T>();
+public class ResourceListLiveDataProviderImp<T> implements StorableResourceListLiveDataProvider<T>, StrategySortable<T> {
+    protected @NonNull ResourceLiveDataProvider<List<T>> resourceLiveDataProvider;
+    protected @NonNull Filter<T> filter = new EmptyFilter<T>();
+    protected @Nullable CompareStrategy<T> compareStrategy;
+    private @NonNull Observer<Resource<List<T>>> resultListObserver;
 
     private @NonNull Resource<List<T>> aResource = new Resource<>();
     private @NonNull List<T> aList = new ArrayList<>();
+
+    //// Initialization / Restoration
 
     public ResourceListLiveDataProviderImp(Bundle bundle, @NonNull ResourceLiveDataProvider<List<T>> resourceLiveDataProvider) {
         this.resourceLiveDataProvider = resourceLiveDataProvider;
@@ -35,37 +41,62 @@ public class ResourceListLiveDataProviderImp<T> implements StorableResourceListL
         this.resourceLiveDataProvider = resourceLiveDataProvider;
     }
 
-    public void setFilter(@Nullable Filter<T> filter) {
-        this.filter = filter != null ? filter : new EmptyFilter<T>();
-    }
-
     @Override
     public void store(Bundle bundle) {
         bundle.putParcelable("filter", filter);
+        bundle.putParcelable("compareStrategy", compareStrategy);
     }
 
     @Override
     public void restore(Bundle bundle) {
         filter = bundle.getParcelable("filter");
+        compareStrategy = bundle.getParcelable("compareStrategy");
     }
+
+    //// Getters / Setters
+
+    // Setters
+
+    public void setCompareStrategy(@Nullable CompareStrategy<T> compareStrategy) {
+        this.compareStrategy = compareStrategy;
+        resultListObserver.onChanged(resourceLiveDataProvider.getLiveData().getValue());
+    }
+
+    public void setFilter(@Nullable Filter<T> filter) {
+        this.filter = filter != null ? filter : new EmptyFilter<T>();
+    }
+
+    // Getters
 
     @Override
     public LiveData<Resource<List<T>>> getListLiveData() {
-        return Transformations.map(resourceLiveDataProvider.getLiveData(), new Function<Resource<List<T>>, Resource<List<T>>>() {
+        final MediatorLiveData<Resource<List<T>>> result = new MediatorLiveData<>();
+        resultListObserver = new Observer<Resource<List<T>>>() {
             @Override
-            public Resource<List<T>> apply(Resource<List<T>> input) {
-                Resource<List<T>> result;
+            public void onChanged(@Nullable Resource<List<T>> x) {
+                result.setValue(new Function<Resource<List<T>>, Resource<List<T>>>() {
+                    @Override
+                    public Resource<List<T>> apply(Resource<List<T>> input) {
+                        Resource<List<T>> result;
 
-                if (input.data == null) {
-                    return aResource.update(input.state, Collections.<T>emptyList(), input.error);
+                        if (input.data == null) {
+                            return aResource.update(input.state, Collections.<T>emptyList(), input.error);
 
-                } else {
-                    result = getFilteredList(input);
-                }
+                        } else {
+                            result = getFilteredList(input);
 
-                return result;
+                            if (compareStrategy != null) {
+                                result = getSortedList(input);
+                            }
+                        }
+
+                        return result;
+                    }
+                }.apply(x));
             }
-        });
+        };
+        result.addSource(resourceLiveDataProvider.getLiveData(), resultListObserver);
+        return result;
     }
 
     @Override
@@ -88,9 +119,32 @@ public class ResourceListLiveDataProviderImp<T> implements StorableResourceListL
         return aResource.update(result);
     }
 
+    private Resource<List<T>> getSortedList(@NonNull Resource<List<T>> input) {
+        Assert.assertNotNull(input.data);
+        Assert.assertNotNull(this.compareStrategy);
+
+        Collections.sort(input.data, new Comparator<T>() {
+            @Override
+            public int compare(T o1, T o2) {
+                return compareStrategy.compare(o1, o2);
+            }
+        });
+
+        return input;
+    }
+
+    @Nullable
+    public CompareStrategy<T> getCompareStrategy() {
+        return compareStrategy;
+    }
+
+    //// Inner Interfaces
+
     public interface Filter<T> extends Parcelable {
         boolean check(T value);
     }
+
+    //// Inner Classes
 
     public static class EmptyFilter<T> implements Filter<T> {
         public static final Creator<EmptyFilter> CREATOR = new Creator<EmptyFilter>() {

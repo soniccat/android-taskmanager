@@ -86,7 +86,7 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
         super.onViewCreated(view, savedInstanceState);
 
         initializeAdapterIfNeeded();
-        recyclerView = (RecyclerView)view.findViewById(R.id.recyclerView);
+        recyclerView = view.findViewById(R.id.recyclerView);
         loader = view.findViewById(R.id.loader);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -147,7 +147,7 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
     //// Actions
 
     public void reload(List<T> items) {
-        if (getView() != null) {
+        if (getView() != null) { // remove the condition after
             setAdapterItems(items);
         }
     }

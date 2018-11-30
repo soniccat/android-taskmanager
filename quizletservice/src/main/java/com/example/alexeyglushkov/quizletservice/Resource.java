@@ -50,7 +50,7 @@ public class Resource<T> {
         return this;
     }
 
-    public Resource<T> update(@NonNull State newState, @NonNull T newData, @NonNull Throwable newError) {
+    public Resource<T> update(@NonNull State newState, @Nullable T newData, @Nullable Throwable newError) {
         state = newState;
         data = newData;
         error = newError;
