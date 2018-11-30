@@ -137,7 +137,6 @@ public abstract class BaseListPresenter<T>
 
     @Override
     public void onChanged(Resource<List<T>> listResource) {
-        // TODO: if (view.isActive()) {
         updateUI(listResource);
     }
 
@@ -171,13 +170,6 @@ public abstract class BaseListPresenter<T>
     public void store(Bundle bundle) {
         provider.store(bundle);
         liveDataProvider.store(bundle);
-        storeCompareStrategyIfNeeded(bundle);
-    }
-
-    private void storeCompareStrategyIfNeeded(Bundle outState) {
-//        if (compareStrategy != null) {
-//            compareStrategy.store(outState);
-//        }
     }
 
     //// Interfaces
@@ -210,6 +202,7 @@ public abstract class BaseListPresenter<T>
 
     // ListModuleInterface
 
+    // TODO: remove
     @Override
     public void reload() {
         view.reload(getItems());
@@ -218,7 +211,6 @@ public abstract class BaseListPresenter<T>
     @Override
     public void setSortOrder(Preferences.SortOrder order) {
         setCompareStrategy(createSortStrategy(order));
-        //view.reload(getItems());
     }
 
     @Override
@@ -280,11 +272,5 @@ public abstract class BaseListPresenter<T>
 
     public List<T> getItems() {
         return getSortedItems(getProviderItems());
-    }
-
-    // Statuses
-
-    public boolean hasItems() {
-        return getItems().size() > 0;
     }
 }
