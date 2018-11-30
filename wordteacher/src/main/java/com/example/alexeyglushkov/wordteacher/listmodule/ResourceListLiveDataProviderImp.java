@@ -19,13 +19,14 @@ import androidx.annotation.Nullable;
 import androidx.arch.core.util.Function;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.Transformations;
 
 public class ResourceListLiveDataProviderImp<T> implements StorableResourceListLiveDataProvider<T>, StrategySortable<T> {
     protected @NonNull ResourceLiveDataProvider<List<T>> resourceLiveDataProvider;
     protected @NonNull Filter<T> filter = new EmptyFilter<T>();
-    protected @Nullable CompareStrategy<T> compareStrategy;
-    private @Nullable Observer<Resource<List<T>>> resultListObserver;
+    protected @NonNull MutableLiveData<CompareStrategy<T>> compareStrategy = new MutableLiveData<>();
 
     private @NonNull Resource<List<T>> aResource = new Resource<>();
     private @NonNull List<T> aList = new ArrayList<>();
@@ -44,13 +45,13 @@ public class ResourceListLiveDataProviderImp<T> implements StorableResourceListL
     @Override
     public void store(Bundle bundle) {
         bundle.putParcelable("filter", filter);
-        bundle.putParcelable("compareStrategy", compareStrategy);
+        bundle.putParcelable("compareStrategy", compareStrategy.getValue());
     }
 
     @Override
     public void restore(Bundle bundle) {
         filter = bundle.getParcelable("filter");
-        compareStrategy = bundle.getParcelable("compareStrategy");
+        compareStrategy.setValue((CompareStrategy<T>)bundle.getParcelable("compareStrategy"));
     }
 
     //// Getters / Setters
@@ -58,11 +59,7 @@ public class ResourceListLiveDataProviderImp<T> implements StorableResourceListL
     // Setters
 
     public void setCompareStrategy(@Nullable CompareStrategy<T> compareStrategy) {
-        this.compareStrategy = compareStrategy;
-
-        if (resultListObserver != null) {
-            resultListObserver.onChanged(resourceLiveDataProvider.getLiveData().getValue());
-        }
+        this.compareStrategy.setValue(compareStrategy);
     }
 
     public void setFilter(@Nullable Filter<T> filter) {
@@ -74,7 +71,7 @@ public class ResourceListLiveDataProviderImp<T> implements StorableResourceListL
     @Override
     public LiveData<Resource<List<T>>> getListLiveData() {
         final MediatorLiveData<Resource<List<T>>> result = new MediatorLiveData<>();
-        resultListObserver = new Observer<Resource<List<T>>>() {
+        Observer<Resource<List<T>>> resultListObserver = new Observer<Resource<List<T>>>() {
             @Override
             public void onChanged(@Nullable Resource<List<T>> x) {
                 result.setValue(new Function<Resource<List<T>>, Resource<List<T>>>() {
@@ -88,7 +85,7 @@ public class ResourceListLiveDataProviderImp<T> implements StorableResourceListL
                         } else {
                             result = getFilteredList(input);
 
-                            if (compareStrategy != null) {
+                            if (compareStrategy.getValue() != null) {
                                 result = getSortedList(input);
                             }
                         }
@@ -98,7 +95,15 @@ public class ResourceListLiveDataProviderImp<T> implements StorableResourceListL
                 }.apply(x));
             }
         };
+
         result.addSource(resourceLiveDataProvider.getLiveData(), resultListObserver);
+        result.addSource(Transformations.map(compareStrategy, new Function<CompareStrategy<T>, Resource<List<T>>>() {
+            @Override
+            public Resource<List<T>> apply(CompareStrategy<T> input) {
+                return resourceLiveDataProvider.getLiveData().getValue();
+            }
+        }), resultListObserver);
+
         return result;
     }
 
@@ -124,12 +129,12 @@ public class ResourceListLiveDataProviderImp<T> implements StorableResourceListL
 
     private Resource<List<T>> getSortedList(@NonNull Resource<List<T>> input) {
         Assert.assertNotNull(input.data);
-        Assert.assertNotNull(this.compareStrategy);
+        Assert.assertNotNull(this.compareStrategy.getValue());
 
         Collections.sort(input.data, new Comparator<T>() {
             @Override
             public int compare(T o1, T o2) {
-                return compareStrategy.compare(o1, o2);
+                return compareStrategy.getValue().compare(o1, o2);
             }
         });
 
@@ -138,7 +143,7 @@ public class ResourceListLiveDataProviderImp<T> implements StorableResourceListL
 
     @Nullable
     public CompareStrategy<T> getCompareStrategy() {
-        return compareStrategy;
+        return compareStrategy.getValue();
     }
 
     //// Inner Interfaces
