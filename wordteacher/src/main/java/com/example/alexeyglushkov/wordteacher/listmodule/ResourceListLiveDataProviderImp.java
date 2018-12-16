@@ -33,12 +33,18 @@ public class ResourceListLiveDataProviderImp<T> implements StorableResourceListL
 
     //// Initialization / Restoration
 
-    public ResourceListLiveDataProviderImp(Bundle bundle, @NonNull ResourceLiveDataProvider<List<T>> resourceLiveDataProvider) {
+    public ResourceListLiveDataProviderImp(@Nullable Bundle bundle, @NonNull ResourceLiveDataProvider<List<T>> resourceLiveDataProvider) {
         this.resourceLiveDataProvider = resourceLiveDataProvider;
-        restore(bundle);
+        if (bundle != null) {
+            restore(bundle);
+        }
     }
 
     public ResourceListLiveDataProviderImp(@NonNull ResourceLiveDataProvider<List<T>> resourceLiveDataProvider) {
+        this.resourceLiveDataProvider = resourceLiveDataProvider;
+    }
+
+    protected void setResourceLiveDataProvider(@NonNull ResourceLiveDataProvider<List<T>> resourceLiveDataProvider) {
         this.resourceLiveDataProvider = resourceLiveDataProvider;
     }
 
@@ -77,20 +83,7 @@ public class ResourceListLiveDataProviderImp<T> implements StorableResourceListL
                 result.setValue(new Function<Resource<List<T>>, Resource<List<T>>>() {
                     @Override
                     public Resource<List<T>> apply(Resource<List<T>> input) {
-                        Resource<List<T>> result;
-
-                        if (input.data == null) {
-                            return aResource.update(input.state, Collections.<T>emptyList(), input.error);
-
-                        } else {
-                            result = getFilteredList(input);
-
-                            if (compareStrategy.getValue() != null) {
-                                result = getSortedList(input);
-                            }
-                        }
-
-                        return result;
+                        return buildFinalResource(input);
                     }
                 }.apply(x));
             }
@@ -100,9 +93,26 @@ public class ResourceListLiveDataProviderImp<T> implements StorableResourceListL
         result.addSource(Transformations.map(compareStrategy, new Function<CompareStrategy<T>, Resource<List<T>>>() {
             @Override
             public Resource<List<T>> apply(CompareStrategy<T> input) {
-                return resourceLiveDataProvider.getLiveData().getValue();
+                return resourceLiveDataProvider.getLiveData().getValue(); // might be null
             }
         }), resultListObserver);
+
+        return result;
+    }
+
+    private Resource<List<T>> buildFinalResource(Resource<List<T>> input) {
+        Resource<List<T>> result;
+
+        if (input.data == null) {
+            result = aResource.update(input.state, Collections.<T>emptyList(), input.error);
+
+        } else {
+            result = getFilteredList(input);
+
+            if (compareStrategy.getValue() != null) {
+                result = getSortedList(input);
+            }
+        }
 
         return result;
     }
@@ -131,6 +141,7 @@ public class ResourceListLiveDataProviderImp<T> implements StorableResourceListL
         Assert.assertNotNull(input.data);
         Assert.assertNotNull(this.compareStrategy.getValue());
 
+        aResource.update(input.data);
         Collections.sort(input.data, new Comparator<T>() {
             @Override
             public int compare(T o1, T o2) {

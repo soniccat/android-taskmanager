@@ -3,6 +3,8 @@ package com.example.alexeyglushkov.quizletservice;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+
+// TODO: create MutableResource
 public class Resource<T> {
     public enum State {
         Uninitialized,

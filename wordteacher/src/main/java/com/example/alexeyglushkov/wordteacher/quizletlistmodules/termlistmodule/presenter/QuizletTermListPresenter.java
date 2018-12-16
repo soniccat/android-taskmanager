@@ -16,6 +16,7 @@ import java.util.List;
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategy;
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategyFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.NullStorableListProvider;
+import com.example.alexeyglushkov.wordteacher.listmodule.StorableResourceListLiveDataProvider;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableResourceListLiveDataProviderFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.presenter.SimpleListPresenter;
 import com.example.alexeyglushkov.wordteacher.listmodule.view.ListViewInterface;
@@ -75,8 +76,8 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
     }
 
     @Override
-    protected StorableResourceListLiveDataProviderFactory<QuizletTerm> createLiveDataProviderFactory() {
-        return super.createLiveDataProviderFactory();
+    protected StorableResourceListLiveDataProvider<QuizletTerm> createLiveDataProvider(Bundle bundle) {
+        return new QuizletTermListLiveDataProvider(bundle, getQuizletRepository());
     }
 
     @Override

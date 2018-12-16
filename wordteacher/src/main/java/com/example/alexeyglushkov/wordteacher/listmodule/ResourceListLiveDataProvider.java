@@ -8,6 +8,6 @@ import java.util.List;
 
 import androidx.lifecycle.LiveData;
 
-public interface ResourceListLiveDataProvider<T> extends ResourceLiveDataProvider {
+public interface ResourceListLiveDataProvider<T> extends ResourceLiveDataProvider<List<T>> {
     LiveData<Resource<List<T>>> getListLiveData();
 }

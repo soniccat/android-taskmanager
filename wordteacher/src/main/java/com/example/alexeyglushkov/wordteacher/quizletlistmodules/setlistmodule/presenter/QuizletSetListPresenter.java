@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.wordteacher.quizletlistmodules.setlistmodule.presenter;
 
+import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 
 import com.example.alexeyglushkov.quizletservice.QuizletRepository;
@@ -41,8 +43,8 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet>
     }
 
     @Override
-    protected StorableResourceListLiveDataProviderFactory<QuizletSet> createLiveDataProviderFactory() {
-        return new QuizletSetListLiveDataProviderFactory(getQuizletRepository());
+    protected QuizletSetListLiveDataProvider createLiveDataProvider(Bundle bundle) {
+        return new QuizletSetListLiveDataProvider(bundle, getQuizletRepository());
     }
 
     protected SortOrderCompareStrategy<QuizletSet> createSortStrategy(Preferences.SortOrder sortOrder) {

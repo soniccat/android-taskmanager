@@ -43,7 +43,7 @@ public abstract class BaseListPresenter<T>
     protected StorableListProvider<T> provider = new NullStorableListProvider<>();
 
     protected final EmptyStorableListLiveDataProvider<T> EMPTY_LIST_DATA_PROVIDER = new EmptyStorableListLiveDataProvider<>();
-    protected StorableResourceListLiveDataProviderFactory<T> liveDataProviderFactory;
+    //protected StorableResourceListLiveDataProviderFactory<T> liveDataProviderFactory;
     protected StorableResourceListLiveDataProvider<T> liveDataProvider = EMPTY_LIST_DATA_PROVIDER;
 
     //protected CompareStrategyFactory<T> compareStrategyFactory = new NullCompareStrategyFactory<>();
@@ -58,7 +58,7 @@ public abstract class BaseListPresenter<T>
 
     public void initialize() {
         providerFactory = createProviderFactory();
-        liveDataProviderFactory = createLiveDataProviderFactory();
+        //liveDataProviderFactory = createLiveDataProviderFactory();
         //compareStrategyFactory = createCompareStrategyFactory();
     }
 
@@ -72,7 +72,7 @@ public abstract class BaseListPresenter<T>
 
     protected abstract StorableListProviderFactory<T> createProviderFactory();
 
-    protected StorableResourceListLiveDataProviderFactory<T> createLiveDataProviderFactory() {
+    protected StorableResourceListLiveDataProvider<T> createLiveDataProvider(Bundle bundle) {
         return null;
     }
 
@@ -81,8 +81,8 @@ public abstract class BaseListPresenter<T>
     @Override
     public void onCreated(Bundle state, Bundle extras) {
         if (state != null || liveDataProvider instanceof EmptyStorableListLiveDataProvider) {
-            if (liveDataProviderFactory != null) { //TODO: remove the condition after getting rid of a deprecated provider
-                this.liveDataProvider = liveDataProviderFactory.create(state);
+            if (this.liveDataProvider == EMPTY_LIST_DATA_PROVIDER) { //TODO: remove the condition after getting rid of a deprecated provider
+                this.liveDataProvider = createLiveDataProvider(state);
             }
 
             if (state == null && compareStrategy != null && this.liveDataProvider instanceof StrategySortable) {
@@ -94,7 +94,7 @@ public abstract class BaseListPresenter<T>
     @Override
     public void onViewCreated(ListViewInterface view, Bundle state) {
         setView(view);
-        if (liveDataProviderFactory != null) { //TODO: remove the condition after getting rid of a deprecated provider
+        if (this.liveDataProvider != null) { //TODO: remove the condition after getting rid of a deprecated provider
             this.liveDataProvider.getListLiveData().observe(this.view, this);
         }
     }
