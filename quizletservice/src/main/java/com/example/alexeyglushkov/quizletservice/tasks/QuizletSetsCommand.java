@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * Created by alexeyglushkov on 03.04.16.
  */
-public class QuizletSetsCommand extends HttpServiceCommand<QuizletSet[]>
+public class QuizletSetsCommand extends HttpServiceCommand<List<QuizletSet>>
         implements com.example.alexeyglushkov.quizletservice.QuizletSetsCommand {
     public QuizletSetsCommand(String server, String userId) {
         super(createBuilder(server, userId), createHandler());
@@ -34,11 +34,11 @@ public class QuizletSetsCommand extends HttpServiceCommand<QuizletSet[]>
         return builder;
     }
 
-    private static ByteArrayHandler<QuizletSet[]> createHandler() {
-        return new ByteArrayHandler<QuizletSet[]>() {
+    private static ByteArrayHandler<List<QuizletSet>> createHandler() {
+        return new ByteArrayHandler<List<QuizletSet>>() {
             @Override
-            public QuizletSet[] convert(byte[] bytes) {
-                return parseSets(bytes);
+            public List<QuizletSet> convert(byte[] bytes) {
+                return Arrays.asList(parseSets(bytes));
             }
         };
     }

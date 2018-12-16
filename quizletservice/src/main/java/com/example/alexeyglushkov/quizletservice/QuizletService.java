@@ -37,20 +37,16 @@ public class QuizletService extends SimpleService {
 
     public Single<List<QuizletSet>> loadSets(final ProgressListener progressListener) {
         return authorizeIfNeeded()
-        .flatMap(new Function<AuthCredentials, SingleSource<? extends QuizletSetsCommand>>() {
+        .flatMap(new Function<AuthCredentials, SingleSource<List<QuizletSet>>>() {
             @Override
-            public SingleSource<? extends QuizletSetsCommand> apply(AuthCredentials authCredentials) throws Exception {
+            public SingleSource<List<QuizletSet>> apply(AuthCredentials authCredentials) throws Exception {
                 QuizletSetsCommand command = createSetsCommand(Cache.CacheMode.IGNORE_CACHE, progressListener);
                 return runCommand(command, true);
-            }
-        }).flatMap(new Function<QuizletSetsCommand, SingleSource<? extends List<QuizletSet>>>() {
-            @Override
-            public SingleSource<? extends List<QuizletSet>> apply(QuizletSetsCommand quizletSetsCommand) throws Exception {
-                return Single.just(new ArrayList<>(Arrays.asList(quizletSetsCommand.getResponse())));
             }
         });
     }
 
+// OLD restoration approach based on command internal cache
 //    public Single<List<QuizletSet>> restoreSets(final ProgressListener progressListener) {
 //        return RxTools.justOrError(getAccount().getCredentials())
 //            .flatMap(new Function<AuthCredentials, SingleSource<? extends QuizletSetsCommand>>() {

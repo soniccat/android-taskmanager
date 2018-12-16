@@ -1,7 +1,5 @@
 package com.example.alexeyglushkov.quizletservice;
 
-import android.os.Looper;
-
 import com.example.alexeyglushkov.authtaskmanager.BaseServiceTask;
 import com.example.alexeyglushkov.cachemanager.Storage;
 import com.example.alexeyglushkov.cachemanager.clients.RxCache;
@@ -13,17 +11,14 @@ import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
-import tools.RxTools;
 
 // TODO: base class for repository with service and cache
 public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletSet>> {
@@ -50,7 +45,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
                     @Override
                     public SingleSource<? extends List<QuizletSet>> apply(final List<QuizletSet> sets) {
                         BaseServiceTask<List<QuizletSet>> task = BaseServiceTask.fromSingle(cache.putValue("quizlet_sets", sets).toSingleDefault(sets));
-                        return service.runCommandForResponse(task);
+                        return service.runCommand(task);
                     }
                 })
                 .doOnSuccess(new Consumer<List<QuizletSet>>() {
@@ -76,7 +71,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
         setState(Resource.State.Loading);
 
         BaseServiceTask<List<QuizletSet>> task = BaseServiceTask.fromMaybe(cache.<List<QuizletSet>>getCachedValue("quizlet_sets"));
-        return service.runCommandForResponse(task)
+        return service.runCommand(task)
             .doOnSuccess(new Consumer<List<QuizletSet>>() {
                 @Override
                 public void accept(List<QuizletSet> quizletSets) {

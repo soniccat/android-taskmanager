@@ -216,6 +216,7 @@ public class MainActivity extends BaseActivity implements
 
         Snackbar.make(getRootView(), errorString, Snackbar.LENGTH_LONG).show();
         Log.e(ERROR_TAG, error.getMessage());
+        error.printStackTrace();
     }
 
     @Override

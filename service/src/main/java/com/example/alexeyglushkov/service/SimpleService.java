@@ -52,17 +52,16 @@ public class SimpleService implements Service {
         this.commandRunner = runner;
     }
 
-    public <T> Single<T> runCommandForResponse(final ServiceCommand<T> command, boolean canSignIn) {
-        return runCommand(command, canSignIn).flatMap(new Function<ServiceCommand<T>, SingleSource<? extends T>>() {
+    public <T> Single<T> runCommand(final ServiceCommand<T> command, boolean canSignIn) {
+        return runCommandInternal(command, canSignIn).flatMap(new Function<ServiceCommand<T>, SingleSource<? extends T>>() {
             @Override
-            public SingleSource<? extends T> apply(@NonNull ServiceCommand<T> cmd) throws Exception {
+            public SingleSource<? extends T> apply(@NonNull ServiceCommand<T> cmd) {
                 return RxTools.justOrError(cmd.getResponse());
             }
         });
     }
 
-    @Override
-    public <T extends ServiceCommand> Single<T> runCommand(final T command, final boolean canSignIn) {
+    private  <T extends ServiceCommand> Single<T> runCommandInternal(final T command, final boolean canSignIn) {
         if (!account.isAuthorized()) {
             if (canSignIn) {
                 return authorizeAndRun(command);
@@ -74,12 +73,12 @@ public class SimpleService implements Service {
 
         } else {
             account.signCommand(command);
-            return runCommand(command);
+            return runCommandInternal(command);
         }
     }
 
-    public <T> Single<T> runCommandForResponse(final ServiceCommand<T> command) {
-        return runCommand(command).flatMap(new Function<ServiceCommand<T>, SingleSource<? extends T>>() {
+    public <T> Single<T> runCommand(final ServiceCommand<T> command) {
+        return runCommandInternal(command).flatMap(new Function<ServiceCommand<T>, SingleSource<? extends T>>() {
             @Override
             public SingleSource<? extends T> apply(@NonNull ServiceCommand<T> cmd) throws Exception {
                 return RxTools.justOrError(cmd.getResponse());
@@ -87,7 +86,7 @@ public class SimpleService implements Service {
         });
     }
 
-    public <T extends ServiceCommand> Single<T> runCommand(final T command) {
+    private <T extends ServiceCommand> Single<T> runCommandInternal(final T command) {
         return commandRunner.run(command)
                 .onErrorResumeNext(new Function<Throwable, SingleSource<T>>() {
                     @Override
@@ -103,10 +102,10 @@ public class SimpleService implements Service {
     }
 
     public <T extends ServiceCommand> Single<T> authorizeAndRun(final T command) {
-        return authorize().flatMap(new Function<AuthCredentials, SingleSource<T>>() {
+        return authorize().flatMap(new Function<AuthCredentials, Single<T>>() {
             @Override
-            public SingleSource<T> apply(AuthCredentials authCredentials) throws Exception {
-                return runCommand(command, false);
+            public Single<T> apply(AuthCredentials authCredentials) {
+                return runCommandInternal(command, false);
             }
         });
     }
