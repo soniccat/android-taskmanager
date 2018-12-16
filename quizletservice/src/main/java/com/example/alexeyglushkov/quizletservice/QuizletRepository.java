@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.quizletservice;
 
+import android.util.SparseArray;
+
 import com.example.alexeyglushkov.authtaskmanager.BaseServiceTask;
 import com.example.alexeyglushkov.cachemanager.Storage;
 import com.example.alexeyglushkov.cachemanager.clients.RxCache;
@@ -8,22 +10,32 @@ import com.example.alexeyglushkov.cachemanager.clients.SimpleCache;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
+import com.example.alexeyglushkov.taskmanager.task.WeakRefList;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.Functions;
 
 // TODO: base class for repository with service and cache
 public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletSet>> {
     private @NonNull QuizletService service;
     private @NonNull RxCache cache;
+
+    private final static int LOAD_SETS_COMMAND_ID = 0;
+    private final static int LOAD_TERMS_COMMAND_PREFIX = 1;
+    private RepositoryCommandHolder commandHolder = new RepositoryCommandHolder();
 
     @NonNull
     private NonNullMutableLiveData<Resource<List<QuizletSet>>> sets
@@ -32,11 +44,17 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
     public QuizletRepository(@NonNull QuizletService service, @NonNull Storage storage) {
         this.service = service;
         cache = new RxCacheAdapter(new SimpleCache(storage, 0));
+        commandHolder.put(new BaseRepositoryCommand(LOAD_SETS_COMMAND_ID, sets));
     }
 
     //// Actions
 
-    public Single<List<QuizletSet>> loadSets(final ProgressListener progressListener) {
+    public RepositoryCommand loadSets(final ProgressListener progressListener) {
+        Disposable disposable = loadSetsInternal(progressListener).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
+        return commandHolder.put(new DisposableRepositoryCommand(LOAD_SETS_COMMAND_ID, disposable, sets));
+    }
+
+    private Single<List<QuizletSet>> loadSetsInternal(final ProgressListener progressListener) {
         final Resource.State previousState = sets.getValue().state;
         setState(Resource.State.Loading);
 
@@ -66,7 +84,12 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
                 });
     }
 
-    public Single<List<QuizletSet>> restoreOrLoad(final ProgressListener progressListener) {
+    public RepositoryCommand restoreOrLoad(final ProgressListener progressListener) {
+        Disposable disposable = restoreOrLoadInternal(progressListener).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
+        return commandHolder.put(new DisposableRepositoryCommand(LOAD_SETS_COMMAND_ID, disposable, sets));
+    }
+
+    private Single<List<QuizletSet>> restoreOrLoadInternal(final ProgressListener progressListener) {
         final Resource.State previousState = sets.getValue().state;
         setState(Resource.State.Loading);
 
@@ -82,7 +105,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
                 public SingleSource<? extends List<QuizletSet>> apply(Throwable throwable) {
                     setState(previousState);
                     if (service.getAccount().isAuthorized()) {
-                        return loadSets(progressListener);
+                        return loadSetsInternal(progressListener);
                     }
 
                     return Single.error(throwable);
@@ -95,13 +118,22 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
             });
     }
 
+    public RepositoryCommand loadTerms(int setId) {
+
+    }
+
     //// Setters / Getters
 
     // Getters
 
     @NonNull
     public LiveData<Resource<List<QuizletSet>>> getLiveData() {
-        return sets;
+        return commandHolder.getLiveData(LOAD_SETS_COMMAND_ID);
+    }
+
+    @Nullable
+    public LiveData<Resource<List<QuizletTerm>>> getTermListLiveData(int setId) {
+        return commandHolder.getLiveData(LOAD_TERMS_COMMAND_PREFIX + setId);
     }
 
     public List<QuizletSet> getSets() {
@@ -164,5 +196,87 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
 
     private void setError(Resource.State newState, Throwable newError) {
         sets.setValue(sets.getValue().resource(newState, newError));
+    }
+
+    // Inner Classes
+
+    interface RepositoryCommand<T> {
+        int getCommandId();
+        void cancel();
+        @Nullable T getLiveData();
+    }
+
+    public static class BaseRepositoryCommand<T> implements RepositoryCommand<T> {
+        private int id;
+        private WeakReference<T> liveDataRef;
+
+        public BaseRepositoryCommand(int id, T liveData) {
+            this.id = id;
+            this.liveDataRef = new WeakReference<>(liveData);
+        }
+
+        @Override
+        public int getCommandId() {
+            return id;
+        }
+
+        @Override
+        public void cancel() {
+        }
+
+        @Override
+        @Nullable
+        public T getLiveData() {
+            return liveDataRef.get();
+        }
+    }
+
+    public static class DisposableRepositoryCommand<T> extends BaseRepositoryCommand<T> {
+        private @NonNull Disposable disposable;
+
+        public DisposableRepositoryCommand(int id, @NonNull Disposable disposable, T liveData) {
+            super(id, liveData);
+            this.disposable = disposable;
+        }
+
+        @Override
+        public void cancel() {
+            disposable.dispose();
+        }
+    }
+
+    public static class RepositoryCommandHolder {
+        private SparseArray<RepositoryCommand> map = new SparseArray<>();
+
+        public RepositoryCommand put(@NonNull RepositoryCommand cmd) {
+            int cmdId = cmd.getCommandId();
+
+            RepositoryCommand oldCmd = get(cmdId);
+            if (oldCmd != null) {
+                cancel(cmdId);
+            }
+
+            map.put(cmdId, cmd);
+            return cmd;
+        }
+
+        @Nullable
+        public <T> RepositoryCommand<T> get(int id) {
+            return map.get(id);
+        }
+
+        @Nullable
+        public <T> T getLiveData(int id) {
+            RepositoryCommand<T> cmd = get(id);
+            return cmd != null ? cmd.getLiveData() : null;
+        }
+
+        public void cancel(int id) {
+            RepositoryCommand cmd = get(id);
+            if (cmd != null) {
+                cmd.cancel();
+                map.remove(id);
+            }
+        }
     }
 }

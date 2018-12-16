@@ -125,7 +125,8 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
     // Set Data
 
     public void setTermSet(QuizletSet set) {
-        provider = providerFactory.createFromObject(set);
+
+        //provider = providerFactory.createFromObject(set);
     }
 
     public void setTerms(List<QuizletTerm> terms) {
