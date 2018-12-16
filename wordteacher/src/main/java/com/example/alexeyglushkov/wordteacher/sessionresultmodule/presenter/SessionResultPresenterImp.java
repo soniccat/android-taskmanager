@@ -43,10 +43,10 @@ public class SessionResultPresenterImp extends BaseListPresenter<SessionResultAd
         return new SessionResultListProviderFactory();
     }
 
-    @Override
-    protected CompareStrategyFactory<SessionResultAdapterView> createCompareStrategyFactory() {
-        return new SessionResultCompareStrategyFactory();
-    }
+//    @Override
+//    protected CompareStrategyFactory<SessionResultAdapterView> createCompareStrategyFactory() {
+//        return new SessionResultCompareStrategyFactory();
+//    }
 
 
     // ActivityModuleItem

@@ -95,16 +95,16 @@ public class CardListPresenter extends SimpleListPresenter<Card> implements Sort
 
     // Sortable
 
-    @Override
-    public void setSortOrder(Preferences.SortOrder sortOrder) {
-        setCompareStrategy(getCompareStrategyFactory().createStrategy(sortOrder));
-        reload();
-    }
+//    @Override
+//    public void setSortOrder(Preferences.SortOrder sortOrder) {
+//        setCompareStrategy(getCompareStrategyFactory().createStrategy(sortOrder));
+//        reload();
+//    }
 
-    @Override
-    public Preferences.SortOrder getSortOrder() {
-        return getCompareStrategy().getSortOrder();
-    }
+//    @Override
+//    public Preferences.SortOrder getSortOrder() {
+//        return getCompareStrategy().getSortOrder();
+//    }
 
     // CourseHolder.CourseHolderListener
 
@@ -188,9 +188,9 @@ public class CardListPresenter extends SimpleListPresenter<Card> implements Sort
 
     // Cast Getters
 
-    private CardCompareStrategyFactory getCompareStrategyFactory() {
-        return (CardCompareStrategyFactory)compareStrategyFactory;
-    }
+//    private CardCompareStrategyFactory getCompareStrategyFactory() {
+//        return (CardCompareStrategyFactory)compareStrategyFactory;
+//    }
 
     private SortOrderCompareStrategy getCompareStrategy() {
         return (SortOrderCompareStrategy)compareStrategy;

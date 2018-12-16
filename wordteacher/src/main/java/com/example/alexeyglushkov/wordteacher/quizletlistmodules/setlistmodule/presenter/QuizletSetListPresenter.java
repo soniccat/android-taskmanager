@@ -7,6 +7,7 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategy;
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategyFactory;
+import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProviderFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableResourceListLiveDataProviderFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.presenter.SimpleListPresenter;
 import com.example.alexeyglushkov.wordteacher.main.MainApplication;
@@ -35,7 +36,7 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet>
     //// Creation Method
 
     @NonNull
-    protected QuizletSetListProviderFactory createProviderFactory() {
+    protected StorableListProviderFactory<QuizletSet> createProviderFactory() {
         return null;
     }
 

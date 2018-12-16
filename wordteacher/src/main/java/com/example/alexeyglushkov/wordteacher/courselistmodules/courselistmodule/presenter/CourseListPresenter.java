@@ -116,10 +116,10 @@ public class CourseListPresenter extends SimpleListPresenter<Course> implements 
         return new CourseListProviderFactory(getCourseHolder());
     }
 
-    @Override
-    public CompareStrategyFactory<Course> createCompareStrategyFactory() {
-        return new CourseCompareStrategyFactory();
-    }
+//    @Override
+//    public CompareStrategyFactory<Course> createCompareStrategyFactory() {
+//        return new CourseCompareStrategyFactory();
+//    }
 
     private Handler createRefreshHandler() {
         return new Handler(Looper.myLooper(), new Handler.Callback() {
@@ -139,15 +139,15 @@ public class CourseListPresenter extends SimpleListPresenter<Course> implements 
 
     // Sortable
 
-    @Override
-    public Preferences.SortOrder getSortOrder() {
-        return getCompareStrategy().getSortOrder();
-    }
+//    @Override
+//    public Preferences.SortOrder getSortOrder() {
+//        return getCompareStrategy().getSortOrder();
+//    }
 
-    public void setSortOrder(Preferences.SortOrder sortOrder) {
-        setCompareStrategy(getCompareStrategyFactory().createStrategy(sortOrder));
-        reload();
-    }
+//    public void setSortOrder(Preferences.SortOrder sortOrder) {
+//        setCompareStrategy(getCompareStrategyFactory().createStrategy(sortOrder));
+//        reload();
+//    }
 
     // CourseHolder.CourseHolderListener
 
@@ -203,9 +203,9 @@ public class CourseListPresenter extends SimpleListPresenter<Course> implements 
 
     // Cast Getters
 
-    private CourseCompareStrategyFactory getCompareStrategyFactory() {
-        return (CourseCompareStrategyFactory)compareStrategyFactory;
-    }
+//    private CourseCompareStrategyFactory getCompareStrategyFactory() {
+//        return (CourseCompareStrategyFactory)compareStrategyFactory;
+//    }
 
     private SortOrderCompareStrategy getCompareStrategy() {
         return (SortOrderCompareStrategy)compareStrategy;

@@ -13,8 +13,10 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 
 import java.util.List;
 
+import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategy;
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategyFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.NullStorableListProvider;
+import com.example.alexeyglushkov.wordteacher.listmodule.StorableResourceListLiveDataProviderFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.presenter.SimpleListPresenter;
 import com.example.alexeyglushkov.wordteacher.listmodule.view.ListViewInterface;
 import com.example.alexeyglushkov.wordteacher.main.MainApplication;
@@ -32,7 +34,7 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
         PagerModuleItemWithTitle {
     public static String DEFAULT_TITLE = "Cards";
 
-    private Bundle savedInstanceState;
+    //private Bundle savedInstanceState;
 
     //// Events
 
@@ -40,7 +42,7 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
     public void onViewStateRestored(ListViewInterface view, @Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(view, savedInstanceState);
 
-        this.savedInstanceState = savedInstanceState;
+        //this.savedInstanceState = savedInstanceState;
         //getQuizletRepository().getLiveData().observeForever(this);
     }
 
@@ -52,30 +54,40 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
 
     //// Actions
 
-    private void handleLoadedSets() {
-        view.hideLoading();
-        restoreIfNeeded();
-        view.reload(getItems());
-    }
-
-    private void restoreIfNeeded() {
-        if (this.savedInstanceState != null || provider instanceof NullStorableListProvider) {
-            provider = providerFactory.restore(this.savedInstanceState);
-            this.savedInstanceState = null;
-        }
-    }
+//    private void handleLoadedSets() {
+//        view.hideLoading();
+//        restoreIfNeeded();
+//        view.reload(getItems());
+//    }
+//
+//    private void restoreIfNeeded() {
+//        if (this.savedInstanceState != null || provider instanceof NullStorableListProvider) {
+//            provider = providerFactory.restore(this.savedInstanceState);
+//            this.savedInstanceState = null;
+//        }
+//    }
 
     //// Overrides
 
     @NonNull
     protected QuizletTermListProviderFactory createProviderFactory() {
-        return new QuizletTermListProviderFactory(getQuizletRepository());
+        return null;//new QuizletTermListProviderFactory(getQuizletRepository());
     }
 
     @Override
-    public CompareStrategyFactory<QuizletTerm> createCompareStrategyFactory() {
-        return new QuizletTermCompareStrategyFactory();
+    protected StorableResourceListLiveDataProviderFactory<QuizletTerm> createLiveDataProviderFactory() {
+        return super.createLiveDataProviderFactory();
     }
+
+    @Override
+    protected CompareStrategy<QuizletTerm> createSortStrategy(Preferences.SortOrder order) {
+        return new QuizletTermCompareStrategy(order);
+    }
+
+    //    @Override
+//    public CompareStrategyFactory<QuizletTerm> createCompareStrategyFactory() {
+//        return new QuizletTermCompareStrategyFactory();
+//    }
 
     //// Interface
 

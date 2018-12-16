@@ -13,6 +13,7 @@ import org.junit.Assert;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+// TODO: probably we can remove it (prelace with restorable provider)
 public class QuizletSetListLiveDataProviderFactory implements StorableResourceListLiveDataProviderFactory<QuizletSet> {
     private @NonNull QuizletRepository repository;
     private @Nullable ResourceListLiveDataProviderImp.Filter<QuizletSet> filter;
@@ -23,7 +24,7 @@ public class QuizletSetListLiveDataProviderFactory implements StorableResourceLi
     }
 
     @Override
-    public StorableResourceListLiveDataProvider<QuizletSet> restore(Bundle bundle) {
+    public StorableResourceListLiveDataProvider<QuizletSet> create(Bundle bundle) {
         if (bundle != null) {
             return new QuizletSetListLiveDataProvider(bundle, repository);
 
