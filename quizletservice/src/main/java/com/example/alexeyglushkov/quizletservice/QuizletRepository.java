@@ -1,7 +1,5 @@
 package com.example.alexeyglushkov.quizletservice;
 
-import android.util.SparseArray;
-
 import com.example.alexeyglushkov.authtaskmanager.BaseServiceTask;
 import com.example.alexeyglushkov.cachemanager.Storage;
 import com.example.alexeyglushkov.cachemanager.clients.RxCache;
@@ -10,12 +8,11 @@ import com.example.alexeyglushkov.cachemanager.clients.SimpleCache;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
-import com.example.alexeyglushkov.taskmanager.task.WeakRefList;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.WeakHashMap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,25 +36,31 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
     private final static int LOAD_TERMS_COMMAND_PREFIX = 1;
     private RepositoryCommandHolder commandHolder = new RepositoryCommandHolder();
 
-    @NonNull
-    private NonNullMutableLiveData<Resource<List<QuizletSet>>> sets
-            = new NonNullMutableLiveData<>(new Resource<List<QuizletSet>>());
-
     public QuizletRepository(@NonNull QuizletService service, @NonNull Storage storage) {
         this.service = service;
         cache = new RxCacheAdapter(new SimpleCache(storage, 0));
-        commandHolder.put(new BaseRepositoryCommand(LOAD_SETS_COMMAND_ID, sets));
+        //commandHolder.put(new BaseRepositoryCommand(LOAD_SETS_COMMAND_ID, sets));
     }
 
     //// Actions
 
     public RepositoryCommand loadSets(final ProgressListener progressListener) {
         Disposable disposable = loadSetsInternal(progressListener).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
-        return commandHolder.put(new DisposableRepositoryCommand(LOAD_SETS_COMMAND_ID, disposable, sets));
+        return commandHolder.putCommand(new DisposableRepositoryCommand(LOAD_SETS_COMMAND_ID, disposable, getSetsLiveData()));
+    }
+
+    @NonNull
+    private NonNullMutableLiveData<Resource<List<QuizletSet>>> getSetsLiveData() {
+        NonNullMutableLiveData<Resource<List<QuizletSet>>> liveData = commandHolder.getLiveData(LOAD_SETS_COMMAND_ID);
+        if (liveData == null) {
+            liveData = new NonNullMutableLiveData<>(new Resource<List<QuizletSet>>());
+            commandHolder.putLiveData(liveData);
+        }
+        return liveData;
     }
 
     private Single<List<QuizletSet>> loadSetsInternal(final ProgressListener progressListener) {
-        final Resource.State previousState = sets.getValue().state;
+        final Resource.State previousState = getSetsLiveData().getValue().state;
         setState(Resource.State.Loading);
 
         return service.loadSets(progressListener)
@@ -88,11 +91,11 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
 
     public RepositoryCommand restoreOrLoad(final ProgressListener progressListener) {
         Disposable disposable = restoreOrLoadInternal(progressListener).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
-        return commandHolder.put(new DisposableRepositoryCommand(LOAD_SETS_COMMAND_ID, disposable, sets));
+        return commandHolder.putCommand(new DisposableRepositoryCommand(LOAD_SETS_COMMAND_ID, disposable, getSetsLiveData()));
     }
 
     private Single<List<QuizletSet>> restoreOrLoadInternal(final ProgressListener progressListener) {
-        final Resource.State previousState = sets.getValue().state;
+        final Resource.State previousState = getSetsLiveData().getValue().state;
         setState(Resource.State.Loading);
 
         BaseServiceTask<List<QuizletSet>> task = BaseServiceTask.fromMaybe(cache.<List<QuizletSet>>getCachedValue("quizlet_sets"));
@@ -122,7 +125,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
 
     public RepositoryCommand loadTerms(int setId, final ProgressListener progressListener) {
         Disposable disposable = loadSetsInternal(progressListener).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
-        return commandHolder.put(new DisposableRepositoryCommand(LOAD_TERMS_COMMAND_PREFIX + setId, disposable, new Adapter(setId).getLiveData()));
+        return commandHolder.putCommand(new DisposableRepositoryCommand(LOAD_TERMS_COMMAND_PREFIX + setId, disposable, new Adapter(setId).getLiveData()));
     }
 
     //// Setters / Getters
@@ -131,7 +134,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
 
     @NonNull
     public LiveData<Resource<List<QuizletSet>>> getLiveData() {
-        return (LiveData<Resource<List<QuizletSet>>>)commandHolder.getLiveData(LOAD_SETS_COMMAND_ID);
+        return getSetsLiveData();
     }
 
     @NonNull
@@ -139,8 +142,17 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
         return (LiveData<Resource<List<QuizletTerm>>>)commandHolder.getLiveData(LOAD_TERMS_COMMAND_PREFIX + setId);
     }
 
+//    private <T> NonNullMutableLiveData<T> ensureLiveData(int id, T value) {
+//        NonNullMutableLiveData<T> liveData = (NonNullMutableLiveData<T>)commandHolder.getLiveData(id);
+//        if (liveData == null) {
+//            liveData = new NonNullMutableLiveData<>(value);
+//            commandHolder.putLiveData(liveData);
+//        }
+//        return liveData;
+//    }
+
     public List<QuizletSet> getSets() {
-        return sets.getValue().data;
+        return getSetsLiveData().getValue().data;
     }
 
     public List<QuizletTerm> getTerms() {
@@ -174,7 +186,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
     public QuizletSet getSet(long id) {
         QuizletSet result = null;
 
-        List<QuizletSet> setList = sets.getValue().data;
+        List<QuizletSet> setList = getSetsLiveData().getValue().data;
         if (setList != null) {
             for (QuizletSet set : setList) {
                 if (set.getId() == id) {
@@ -190,15 +202,15 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
     // Setters
 
     private void setState(Resource.State newState) {
-        sets.setValue(sets.getValue().resource(newState));
+        getSetsLiveData().setValue(getSetsLiveData().getValue().resource(newState));
     }
 
     private void setState(Resource.State newState, List<QuizletSet> newSets) {
-        sets.setValue(sets.getValue().resource(newState, newSets));
+        getSetsLiveData().setValue(getSetsLiveData().getValue().resource(newState, newSets));
     }
 
     private void setError(Resource.State newState, Throwable newError) {
-        sets.setValue(sets.getValue().resource(newState, newError));
+        getSetsLiveData().setValue(getSetsLiveData().getValue().resource(newState, newError));
     }
 
     // Inner Classes
@@ -295,36 +307,46 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
     }
 
     public static class RepositoryCommandHolder {
-        private SparseArray<RepositoryCommand> map = new SparseArray<>();
+        private WeakHashMap<LiveData<?>, RepositoryCommand<?>> map = new WeakHashMap<>();
+        //private SparseArray<RepositoryCommand> map = new SparseArray<>();
 
-        public RepositoryCommand put(@NonNull RepositoryCommand<?> cmd) {
-            int cmdId = cmd.getCommandId();
-
-            RepositoryCommand oldCmd = get(cmdId);
-            if (oldCmd != null) {
-                cancel(cmdId);
-            }
-
-            map.put(cmdId, cmd);
+        public RepositoryCommand putCommand(@NonNull RepositoryCommand<?> cmd) {
+            map.put(cmd.getLiveData(), cmd);
             return cmd;
         }
 
         @Nullable
-        public RepositoryCommand<?> get(int id) {
-            return map.get(id);
+        public RepositoryCommand<?> getCommand(LiveData<?> liveData) {
+            return map.get(liveData);
         }
 
-        @NonNull
-        public LiveData<?> getLiveData(int id) {
-            RepositoryCommand<?> cmd = get(id);
-            return cmd != null ? cmd.getLiveData() : null;
+        @Nullable
+        public RepositoryCommand<?> getCommand(int id) {
+            RepositoryCommand<?> cmd = null;
+            for (RepositoryCommand<?> c : map.values()) {
+                if (c.getCommandId() == id) {
+                    cmd = c;
+                }
+            }
+
+            return cmd;
         }
 
-        public void cancel(int id) {
-            RepositoryCommand cmd = get(id);
+        @Nullable
+        public <T> NonNullMutableLiveData<T> getLiveData(int id) {
+            RepositoryCommand<?> cmd = getCommand(id);
+            return cmd != null ? (NonNullMutableLiveData<T>)cmd.getLiveData() : null;
+        }
+
+        public void putLiveData(LiveData<?> liveData) {
+            map.put(liveData, null);
+        }
+
+        public void cancel(LiveData<?> liveData) {
+            RepositoryCommand cmd = getCommand(liveData);
             if (cmd != null) {
                 cmd.cancel();
-                map.remove(id);
+                map.remove(liveData);
             }
         }
     }
