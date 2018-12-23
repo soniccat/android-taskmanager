@@ -47,7 +47,7 @@ public abstract class BaseListPresenter<T>
     protected StorableResourceListLiveDataProvider<T> liveDataProvider = EMPTY_LIST_DATA_PROVIDER;
 
     //protected CompareStrategyFactory<T> compareStrategyFactory = new NullCompareStrategyFactory<>();
-    protected @Nullable CompareStrategy<T> compareStrategy;
+    protected @Nullable CompareStrategy<T> compareStrategy; // TODO: remove it somehow
 
     protected ListViewInterface<T> view;
 

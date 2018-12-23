@@ -130,7 +130,7 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
     }
 
     public void setTerms(List<QuizletTerm> terms) {
-        provider = providerFactory.createFromList(terms);
+        //provider = providerFactory.createFromList(terms);
     }
 
     //// Getters

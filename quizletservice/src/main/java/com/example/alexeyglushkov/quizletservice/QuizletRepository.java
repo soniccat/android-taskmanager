@@ -20,6 +20,8 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.Observer;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
 import io.reactivex.disposables.Disposable;
@@ -118,8 +120,9 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
             });
     }
 
-    public RepositoryCommand loadTerms(int setId) {
-
+    public RepositoryCommand loadTerms(int setId, final ProgressListener progressListener) {
+        Disposable disposable = loadSetsInternal(progressListener).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
+        return commandHolder.put(new DisposableRepositoryCommand(LOAD_TERMS_COMMAND_PREFIX + setId, disposable, new Adapter(setId).getLiveData()));
     }
 
     //// Setters / Getters
@@ -128,12 +131,12 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
 
     @NonNull
     public LiveData<Resource<List<QuizletSet>>> getLiveData() {
-        return commandHolder.getLiveData(LOAD_SETS_COMMAND_ID);
+        return (LiveData<Resource<List<QuizletSet>>>)commandHolder.getLiveData(LOAD_SETS_COMMAND_ID);
     }
 
-    @Nullable
+    @NonNull
     public LiveData<Resource<List<QuizletTerm>>> getTermListLiveData(int setId) {
-        return commandHolder.getLiveData(LOAD_TERMS_COMMAND_PREFIX + setId);
+        return (LiveData<Resource<List<QuizletTerm>>>)commandHolder.getLiveData(LOAD_TERMS_COMMAND_PREFIX + setId);
     }
 
     public List<QuizletSet> getSets() {
@@ -200,17 +203,63 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
 
     // Inner Classes
 
+    // QuizletSet liveData to QuizletTerm liveData
+    private class Adapter {
+        private static final long NO_ID = -1;
+
+        private Resource<List<QuizletTerm>> aResource = new Resource<>();
+        private long setId = NO_ID;
+
+        public Adapter() {
+        }
+
+        public Adapter(long setId) {
+            this.setId = setId;
+        }
+
+        public LiveData<Resource<List<QuizletTerm>>> getLiveData() {
+            final MediatorLiveData<Resource<List<QuizletTerm>>> mediatorLiveData = new MediatorLiveData<>();
+            mediatorLiveData.setValue(aResource);
+
+            mediatorLiveData.addSource(QuizletRepository.this.getLiveData(), new Observer<Resource<List<QuizletSet>>>() {
+                @Override
+                public void onChanged(Resource<List<QuizletSet>> listResource) {
+                    mediatorLiveData.setValue(buildFinalResource(listResource));
+                }
+            });
+
+            return mediatorLiveData;
+        }
+
+        private Resource<List<QuizletTerm>> buildFinalResource(Resource<List<QuizletSet>> listResource) {
+            ArrayList<QuizletTerm> terms = new ArrayList<>();
+            if (listResource.data != null) {
+                for (QuizletSet set : listResource.data) {
+                    for (QuizletTerm term : set.getTerms()) {
+                        long setId = term.getSetId();
+                        if (setId == NO_ID || setId == this.setId) {
+                            terms.add(term);
+                        }
+                    }
+                }
+            }
+
+            aResource.update(terms);
+            return aResource;
+        }
+    }
+
     interface RepositoryCommand<T> {
         int getCommandId();
         void cancel();
-        @Nullable T getLiveData();
+        @Nullable LiveData<T> getLiveData();
     }
 
     public static class BaseRepositoryCommand<T> implements RepositoryCommand<T> {
         private int id;
-        private WeakReference<T> liveDataRef;
+        private WeakReference<LiveData<T>> liveDataRef;
 
-        public BaseRepositoryCommand(int id, T liveData) {
+        public BaseRepositoryCommand(int id, LiveData<T> liveData) {
             this.id = id;
             this.liveDataRef = new WeakReference<>(liveData);
         }
@@ -226,7 +275,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
 
         @Override
         @Nullable
-        public T getLiveData() {
+        public LiveData<T> getLiveData() {
             return liveDataRef.get();
         }
     }
@@ -234,7 +283,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
     public static class DisposableRepositoryCommand<T> extends BaseRepositoryCommand<T> {
         private @NonNull Disposable disposable;
 
-        public DisposableRepositoryCommand(int id, @NonNull Disposable disposable, T liveData) {
+        public DisposableRepositoryCommand(int id, @NonNull Disposable disposable, LiveData<T> liveData) {
             super(id, liveData);
             this.disposable = disposable;
         }
@@ -248,7 +297,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
     public static class RepositoryCommandHolder {
         private SparseArray<RepositoryCommand> map = new SparseArray<>();
 
-        public RepositoryCommand put(@NonNull RepositoryCommand cmd) {
+        public RepositoryCommand put(@NonNull RepositoryCommand<?> cmd) {
             int cmdId = cmd.getCommandId();
 
             RepositoryCommand oldCmd = get(cmdId);
@@ -261,13 +310,13 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
         }
 
         @Nullable
-        public <T> RepositoryCommand<T> get(int id) {
+        public RepositoryCommand<?> get(int id) {
             return map.get(id);
         }
 
-        @Nullable
-        public <T> T getLiveData(int id) {
-            RepositoryCommand<T> cmd = get(id);
+        @NonNull
+        public LiveData<?> getLiveData(int id) {
+            RepositoryCommand<?> cmd = get(id);
             return cmd != null ? cmd.getLiveData() : null;
         }
 
