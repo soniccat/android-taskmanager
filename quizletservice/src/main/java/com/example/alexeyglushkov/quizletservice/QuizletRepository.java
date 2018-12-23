@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
@@ -39,7 +40,6 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
     public QuizletRepository(@NonNull QuizletService service, @NonNull Storage storage) {
         this.service = service;
         cache = new RxCacheAdapter(new SimpleCache(storage, 0));
-        //commandHolder.put(new BaseRepositoryCommand(LOAD_SETS_COMMAND_ID, sets));
     }
 
     //// Actions
@@ -47,16 +47,6 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
     public RepositoryCommand loadSets(final ProgressListener progressListener) {
         Disposable disposable = loadSetsInternal(progressListener).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
         return commandHolder.putCommand(new DisposableRepositoryCommand(LOAD_SETS_COMMAND_ID, disposable, getSetsLiveData()));
-    }
-
-    @NonNull
-    private NonNullMutableLiveData<Resource<List<QuizletSet>>> getSetsLiveData() {
-        NonNullMutableLiveData<Resource<List<QuizletSet>>> liveData = commandHolder.getLiveData(LOAD_SETS_COMMAND_ID);
-        if (liveData == null) {
-            liveData = new NonNullMutableLiveData<>(new Resource<List<QuizletSet>>());
-            commandHolder.putLiveData(liveData);
-        }
-        return liveData;
     }
 
     private Single<List<QuizletSet>> loadSetsInternal(final ProgressListener progressListener) {
@@ -138,8 +128,23 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
     }
 
     @NonNull
-    public LiveData<Resource<List<QuizletTerm>>> getTermListLiveData(int setId) {
-        return (LiveData<Resource<List<QuizletTerm>>>)commandHolder.getLiveData(LOAD_TERMS_COMMAND_PREFIX + setId);
+    public MutableLiveData<Resource<List<QuizletTerm>>> getTermListLiveData(int setId) {
+        MutableLiveData<Resource<List<QuizletTerm>>> liveData = commandHolder.getLiveData(LOAD_TERMS_COMMAND_PREFIX + setId);
+        if (liveData == null) {
+            liveData = new Adapter(setId).getLiveData();
+            commandHolder.putLiveData(liveData);
+        }
+        return liveData;
+    }
+
+    @NonNull
+    private MutableLiveData<Resource<List<QuizletSet>>> getSetsLiveData() {
+        NonNullMutableLiveData<Resource<List<QuizletSet>>> liveData = commandHolder.getLiveData(LOAD_SETS_COMMAND_ID);
+        if (liveData == null) {
+            liveData = new NonNullMutableLiveData<>(new Resource<List<QuizletSet>>());
+            commandHolder.putLiveData(liveData);
+        }
+        return liveData;
     }
 
 //    private <T> NonNullMutableLiveData<T> ensureLiveData(int id, T value) {
@@ -229,7 +234,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
             this.setId = setId;
         }
 
-        public LiveData<Resource<List<QuizletTerm>>> getLiveData() {
+        public MutableLiveData<Resource<List<QuizletTerm>>> getLiveData() {
             final MediatorLiveData<Resource<List<QuizletTerm>>> mediatorLiveData = new MediatorLiveData<>();
             mediatorLiveData.setValue(aResource);
 
@@ -311,12 +316,17 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
         //private SparseArray<RepositoryCommand> map = new SparseArray<>();
 
         public RepositoryCommand putCommand(@NonNull RepositoryCommand<?> cmd) {
+            RepositoryCommand<?> oldCmd = getCommand(cmd.getCommandId());
+            if (oldCmd != null) {
+                cancel(oldCmd.getLiveData());
+            }
+
             map.put(cmd.getLiveData(), cmd);
             return cmd;
         }
 
         @Nullable
-        public RepositoryCommand<?> getCommand(LiveData<?> liveData) {
+        public RepositoryCommand<?> getCommand(@Nullable LiveData<?> liveData) {
             return map.get(liveData);
         }
 
@@ -342,7 +352,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
             map.put(liveData, null);
         }
 
-        public void cancel(LiveData<?> liveData) {
+        public void cancel(@Nullable LiveData<?> liveData) {
             RepositoryCommand cmd = getCommand(liveData);
             if (cmd != null) {
                 cmd.cancel();
