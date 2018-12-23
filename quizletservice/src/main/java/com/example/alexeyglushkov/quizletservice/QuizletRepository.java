@@ -138,7 +138,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
     }
 
     @NonNull
-    private MutableLiveData<Resource<List<QuizletSet>>> getSetsLiveData() {
+    private NonNullMutableLiveData<Resource<List<QuizletSet>>> getSetsLiveData() {
         NonNullMutableLiveData<Resource<List<QuizletSet>>> liveData = commandHolder.getLiveData(LOAD_SETS_COMMAND_ID);
         if (liveData == null) {
             liveData = new NonNullMutableLiveData<>(new Resource<List<QuizletSet>>());
@@ -146,15 +146,6 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
         }
         return liveData;
     }
-
-//    private <T> NonNullMutableLiveData<T> ensureLiveData(int id, T value) {
-//        NonNullMutableLiveData<T> liveData = (NonNullMutableLiveData<T>)commandHolder.getLiveData(id);
-//        if (liveData == null) {
-//            liveData = new NonNullMutableLiveData<>(value);
-//            commandHolder.putLiveData(liveData);
-//        }
-//        return liveData;
-//    }
 
     public List<QuizletSet> getSets() {
         return getSetsLiveData().getValue().data;
@@ -343,9 +334,9 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
         }
 
         @Nullable
-        public <T> NonNullMutableLiveData<T> getLiveData(int id) {
+        public <T> T getLiveData(int id) {
             RepositoryCommand<?> cmd = getCommand(id);
-            return cmd != null ? (NonNullMutableLiveData<T>)cmd.getLiveData() : null;
+            return cmd != null ? (T)cmd.getLiveData() : null;
         }
 
         public void putLiveData(LiveData<?> liveData) {
