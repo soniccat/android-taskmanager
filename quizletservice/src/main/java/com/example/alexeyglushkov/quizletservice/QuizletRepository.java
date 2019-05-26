@@ -9,9 +9,9 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.WeakHashMap;
 
 import androidx.annotation.NonNull;
@@ -133,7 +133,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
         MutableLiveData<Resource<List<QuizletTerm>>> liveData = commandHolder.getLiveData(LOAD_TERMS_COMMAND_PREFIX + setId);
         if (liveData == null) {
             liveData = createQuizletTermAdapter(setId).getLiveData();
-            commandHolder.putLiveData(liveData);
+            commandHolder.putLiveData(LOAD_TERMS_COMMAND_PREFIX, liveData);
         }
         return liveData;
     }
@@ -147,7 +147,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
         NonNullMutableLiveData<Resource<List<QuizletSet>>> liveData = commandHolder.getLiveData(LOAD_SETS_COMMAND_ID);
         if (liveData == null) {
             liveData = new NonNullMutableLiveData<>(new Resource<List<QuizletSet>>());
-            commandHolder.putLiveData(liveData);
+            commandHolder.putLiveData(LOAD_SETS_COMMAND_ID, liveData);
         }
         return liveData;
     }
@@ -265,16 +265,16 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
     public interface RepositoryCommand<T> {
         int getCommandId();
         void cancel();
-        @Nullable LiveData<T> getLiveData();
+        @NonNull LiveData<T> getLiveData();
     }
 
     public static class BaseRepositoryCommand<T> implements RepositoryCommand<T> {
         private int id;
-        private WeakReference<LiveData<T>> liveDataRef;
+        @NonNull private LiveData<T> liveData;
 
-        public BaseRepositoryCommand(int id, LiveData<T> liveData) {
+        public BaseRepositoryCommand(int id, @NonNull LiveData<T> liveData) {
             this.id = id;
-            this.liveDataRef = new WeakReference<>(liveData);
+            this.liveData = liveData;
         }
 
         @Override
@@ -287,16 +287,16 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
         }
 
         @Override
-        @Nullable
+        @NonNull
         public LiveData<T> getLiveData() {
-            return liveDataRef.get();
+            return liveData;
         }
     }
 
     public static class DisposableRepositoryCommand<T> extends BaseRepositoryCommand<T> {
         private @NonNull Disposable disposable;
 
-        public DisposableRepositoryCommand(int id, @NonNull Disposable disposable, LiveData<T> liveData) {
+        public DisposableRepositoryCommand(int id, @NonNull Disposable disposable, @NonNull LiveData<T> liveData) {
             super(id, liveData);
             this.disposable = disposable;
         }
@@ -308,8 +308,9 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
     }
 
     public static class RepositoryCommandHolder {
-        private WeakHashMap<LiveData<?>, RepositoryCommand<?>> map = new WeakHashMap<>();
-        //private SparseArray<RepositoryCommand> map = new SparseArray<>();
+        private WeakHashMap<LiveData<?>, Integer> liveDataIdMap = new WeakHashMap<>();
+        private WeakHashMap<LiveData<?>, RepositoryCommand<?>> liveDataCommandMap = new WeakHashMap<>();
+        //private SparseArray<RepositoryCommand> liveDataCommandMap = new SparseArray<>();
 
         @NonNull
         public RepositoryCommand putCommand(@NonNull RepositoryCommand<?> cmd) {
@@ -318,20 +319,21 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
                 cancel(oldCmd.getLiveData());
             }
 
-            map.put(cmd.getLiveData(), cmd);
+            liveDataIdMap.put(cmd.getLiveData(), cmd.getCommandId());
+            liveDataCommandMap.put(cmd.getLiveData(), cmd);
             return cmd;
         }
 
         @Nullable
         public RepositoryCommand<?> getCommand(@Nullable LiveData<?> liveData) {
-            return map.get(liveData);
+            return liveDataCommandMap.get(liveData);
         }
 
         @Nullable
         public RepositoryCommand<?> getCommand(int id) {
             RepositoryCommand<?> cmd = null;
-            for (RepositoryCommand<?> c : map.values()) {
-                if (c.getCommandId() == id) {
+            for (RepositoryCommand<?> c : liveDataCommandMap.values()) {
+                if (c != null && c.getCommandId() == id) {
                     cmd = c;
                 }
             }
@@ -340,20 +342,28 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
         }
 
         @Nullable
-        public <T> T getLiveData(int id) {
-            RepositoryCommand<?> cmd = getCommand(id);
-            return cmd != null ? (T)cmd.getLiveData() : null;
+        public <T extends LiveData<?>> T getLiveData(int id) {
+            T result = null;
+            for (Map.Entry<LiveData<?>, Integer> entry : liveDataIdMap.entrySet()) {
+                if (entry.getValue() == id) {
+                    result = (T)entry.getKey();
+                }
+            }
+
+            return result;
         }
 
-        public void putLiveData(LiveData<?> liveData) {
-            map.put(liveData, null);
+        public void putLiveData(int id, LiveData<?> liveData) {
+            liveDataIdMap.put(liveData, id);
+            liveDataCommandMap.put(liveData, null);
         }
 
         public void cancel(@Nullable LiveData<?> liveData) {
             RepositoryCommand cmd = getCommand(liveData);
             if (cmd != null) {
                 cmd.cancel();
-                map.remove(liveData);
+                liveDataIdMap.remove(liveData);
+                liveDataCommandMap.remove(liveData);
             }
         }
     }
