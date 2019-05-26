@@ -40,6 +40,8 @@ import java.util.List;
 import com.example.alexeyglushkov.wordteacher.authorization.AuthActivityProxy;
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder;
 
+import javax.inject.Inject;
+
 public class MainApplication extends Application {
     private static final String TAG = "MainApplication";
 
@@ -51,7 +53,8 @@ public class MainApplication extends Application {
     private @NonNull CourseHolder courseHolder;
     private @NonNull TaskManager taskManager;
 
-    private @NonNull Storage storage;
+    @Inject
+    protected @NonNull Storage storage;
 
     public static @NonNull MainApplication instance;
 
@@ -68,9 +71,9 @@ public class MainApplication extends Application {
 
         authWebClient = new AuthActivityProxy();
         taskManager = new SimpleTaskManager(10);
-
-        File cacheDir = getDir("ServiceCache", MODE_PRIVATE);
-        storage = new DiskStorage(cacheDir);
+        storage = DaggerMainApplicationComponent.builder()
+                .mainApplicationModule(new MainApplicationModule(getApplicationContext()))
+                .build().getStorage();
 
         cleanCache();
         loadAccountStore();
