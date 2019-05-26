@@ -6,6 +6,7 @@ import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
 
 import java.io.File;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -24,7 +25,7 @@ public class MainApplicationModule {
     @Singleton
     DiskStorage getStorage() {
         if (storage == null) {
-            File cacheDir = this.context.getDir("ServiceCache", Context.MODE_PRIVATE);
+            File cacheDir = context.getDir("ServiceCache", Context.MODE_PRIVATE);
             storage = new DiskStorage(cacheDir);
         }
         return storage;

@@ -7,7 +7,7 @@ import javax.inject.Singleton;
 import dagger.Component;
 
 @Singleton
-@Component(modules = MainApplicationModule.class)
+@Component(modules = {MainApplicationModule.class, ContextModule.class})
 public interface MainApplicationComponent {
     DiskStorage getStorage();
 }
