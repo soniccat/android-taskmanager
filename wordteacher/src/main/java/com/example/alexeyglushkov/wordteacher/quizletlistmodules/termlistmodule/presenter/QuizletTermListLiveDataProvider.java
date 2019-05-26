@@ -23,12 +23,12 @@ public class QuizletTermListLiveDataProvider extends ResourceListLiveDataProvide
     public QuizletTermListLiveDataProvider(QuizletRepository repository) {
         super(null);
         this.repository = repository;
-        setResourceLiveDataProvider(new Adapter());
+        setResourceLiveDataProvider(repository.createQuizletTermAdapter(-1));
     }
 
     public QuizletTermListLiveDataProvider(Bundle bundle, QuizletRepository repository) {
         super(bundle, null);
         this.repository = repository;
-        setResourceLiveDataProvider(new Adapter());
+        setResourceLiveDataProvider(repository.createQuizletTermAdapter(-1));
     }
 }

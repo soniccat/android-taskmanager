@@ -44,7 +44,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
 
     //// Actions
 
-    public RepositoryCommand loadSets(final ProgressListener progressListener) {
+    public RepositoryCommand<List<QuizletSet>> loadSets(final ProgressListener progressListener) {
         Disposable disposable = loadSetsInternal(progressListener).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
         return commandHolder.putCommand(new DisposableRepositoryCommand(LOAD_SETS_COMMAND_ID, disposable, getSetsLiveData()));
     }
@@ -79,7 +79,8 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
                 });
     }
 
-    public RepositoryCommand restoreOrLoad(final ProgressListener progressListener) {
+    @NonNull
+    public RepositoryCommand<List<QuizletSet>> restoreOrLoad(final ProgressListener progressListener) {
         Disposable disposable = restoreOrLoadInternal(progressListener).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
         return commandHolder.putCommand(new DisposableRepositoryCommand(LOAD_SETS_COMMAND_ID, disposable, getSetsLiveData()));
     }
@@ -115,7 +116,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
 
     public RepositoryCommand loadTerms(int setId, final ProgressListener progressListener) {
         Disposable disposable = loadSetsInternal(progressListener).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
-        return commandHolder.putCommand(new DisposableRepositoryCommand(LOAD_TERMS_COMMAND_PREFIX + setId, disposable, new Adapter(setId).getLiveData()));
+        return commandHolder.putCommand(new DisposableRepositoryCommand(LOAD_TERMS_COMMAND_PREFIX + setId, disposable, new QuizletTermAdapter(setId).getLiveData()));
     }
 
     //// Setters / Getters
@@ -131,10 +132,14 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
     public MutableLiveData<Resource<List<QuizletTerm>>> getTermListLiveData(int setId) {
         MutableLiveData<Resource<List<QuizletTerm>>> liveData = commandHolder.getLiveData(LOAD_TERMS_COMMAND_PREFIX + setId);
         if (liveData == null) {
-            liveData = new Adapter(setId).getLiveData();
+            liveData = createQuizletTermAdapter(setId).getLiveData();
             commandHolder.putLiveData(liveData);
         }
         return liveData;
+    }
+
+    public QuizletTermAdapter createQuizletTermAdapter(int setId) {
+        return new QuizletTermAdapter(setId);
     }
 
     @NonNull
@@ -212,16 +217,16 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
     // Inner Classes
 
     // QuizletSet liveData to QuizletTerm liveData
-    private class Adapter {
+    private class QuizletTermAdapter implements ResourceLiveDataProvider<List<QuizletTerm>> {
         private static final long NO_ID = -1;
 
         private Resource<List<QuizletTerm>> aResource = new Resource<>();
         private long setId = NO_ID;
 
-        public Adapter() {
+        public QuizletTermAdapter() {
         }
 
-        public Adapter(long setId) {
+        public QuizletTermAdapter(long setId) {
             this.setId = setId;
         }
 
@@ -257,7 +262,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
         }
     }
 
-    interface RepositoryCommand<T> {
+    public interface RepositoryCommand<T> {
         int getCommandId();
         void cancel();
         @Nullable LiveData<T> getLiveData();
@@ -306,6 +311,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
         private WeakHashMap<LiveData<?>, RepositoryCommand<?>> map = new WeakHashMap<>();
         //private SparseArray<RepositoryCommand> map = new SparseArray<>();
 
+        @NonNull
         public RepositoryCommand putCommand(@NonNull RepositoryCommand<?> cmd) {
             RepositoryCommand<?> oldCmd = getCommand(cmd.getCommandId());
             if (oldCmd != null) {

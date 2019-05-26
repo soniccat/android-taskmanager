@@ -1,5 +1,6 @@
 package com.example.alexeyglushkov.wordteacher.main_module.presenter;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import android.content.Intent;
 import android.os.Bundle;
@@ -212,12 +213,16 @@ public class MainPresenterImp implements
             }
         });
 
-        disposable[0] = getQuizletRepository().loadSets(progressListener).doFinally(new Action() {
-            @Override
-            public void run() throws Exception {
-                view.stopProgress();
-            }
-        }).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
+        final LiveData<List<QuizletSet>> liveData = getQuizletRepository().loadSets(progressListener).getLiveData();
+        if (liveData != null) {
+            liveData.observe(this.view, new Observer<List<QuizletSet>>() {
+                @Override
+                public void onChanged(List<QuizletSet> quizletSets) {
+                    view.stopProgress();
+                    liveData.removeObservers(MainPresenterImp.this.view);
+                }
+            });
+        }
     }
 
     private void updateToolbarBackButton() {
