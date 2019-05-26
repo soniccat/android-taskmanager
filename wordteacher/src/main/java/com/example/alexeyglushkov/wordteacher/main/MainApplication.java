@@ -72,8 +72,8 @@ public class MainApplication extends Application {
         authWebClient = new AuthActivityProxy();
         taskManager = new SimpleTaskManager(10);
         storage = DaggerMainApplicationComponent.builder()
-                .mainApplicationModule(new MainApplicationModule(getApplicationContext()))
-                .build().getStorage();
+                .contextModule(new ContextModule(getApplicationContext()))
+                .build().getSubComponent(new MainApplicationModule()).getStorage();
 
         cleanCache();
         loadAccountStore();

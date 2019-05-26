@@ -14,16 +14,11 @@ import dagger.Provides;
 
 @Module
 public class MainApplicationModule {
-    private Context context;
     private DiskStorage storage;
 
-    MainApplicationModule(Context context) {
-        this.context = context;
-    }
-
     @Provides
-    @Singleton
-    DiskStorage getStorage() {
+    @ListScope
+    DiskStorage getStorage(Context context) {
         if (storage == null) {
             File cacheDir = context.getDir("ServiceCache", Context.MODE_PRIVATE);
             storage = new DiskStorage(cacheDir);
