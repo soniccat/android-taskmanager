@@ -53,8 +53,7 @@ public class MainApplication extends Application {
     private @NonNull CourseHolder courseHolder;
     private @NonNull TaskManager taskManager;
 
-    @Inject
-    protected @NonNull Storage storage;
+    @Inject protected @NonNull Storage storage;
 
     public static @NonNull MainApplication instance;
 
@@ -71,9 +70,9 @@ public class MainApplication extends Application {
 
         authWebClient = new AuthActivityProxy();
         taskManager = new SimpleTaskManager(10);
-        storage = DaggerMainApplicationComponent.builder()
+        DaggerMainApplicationComponent.builder()
                 .contextModule(new ContextModule(getApplicationContext()))
-                .build().getSubComponent(new MainApplicationModule()).getStorage();
+                .build().getSubComponent(new MainApplicationModule()).inject(this);
 
         cleanCache();
         loadAccountStore();

@@ -1,6 +1,6 @@
 package com.example.alexeyglushkov.wordteacher.main;
 
-import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
+import com.example.alexeyglushkov.cachemanager.Storage;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -13,5 +13,6 @@ import dagger.Subcomponent;
 @ListScope
 @Subcomponent(modules = MainApplicationModule.class)
 public interface SubMainComponent {
-    DiskStorage getStorage();
+    Storage getStorage();
+    void inject(MainApplication app);
 }
