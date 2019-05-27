@@ -1,6 +1,7 @@
 package com.example.alexeyglushkov.wordteacher.main;
 
 import com.example.alexeyglushkov.cachemanager.Storage;
+import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -14,5 +15,6 @@ import dagger.Subcomponent;
 @Subcomponent(modules = MainApplicationModule.class)
 public interface SubMainComponent {
     Storage getStorage();
+    TaskManager getTaskManager();
     void inject(MainApplication app);
 }

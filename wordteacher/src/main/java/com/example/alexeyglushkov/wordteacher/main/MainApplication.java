@@ -41,6 +41,7 @@ import com.example.alexeyglushkov.wordteacher.authorization.AuthActivityProxy;
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 public class MainApplication extends Application {
     private static final String TAG = "MainApplication";
@@ -51,13 +52,19 @@ public class MainApplication extends Application {
     private @NonNull QuizletRepository quizletRepository;
     //private @NonNull DropboxService dropboxService;
     private @NonNull CourseHolder courseHolder;
-    private @NonNull TaskManager taskManager;
 
-    @Inject protected @NonNull Storage storage;
+    @Inject @NonNull TaskManager taskManager;
+    @Inject @NonNull Storage storage;
 
     public static @NonNull MainApplication instance;
 
     //// Initialization
+
+    @Singleton
+    @dagger.Component(modules = {ContextModule.class})
+    public interface Component {
+        SubMainComponent getSubComponent(MainApplicationModule module);
+    }
 
     public MainApplication() {
         super();
@@ -69,8 +76,7 @@ public class MainApplication extends Application {
         super.onCreate();
 
         authWebClient = new AuthActivityProxy();
-        taskManager = new SimpleTaskManager(10);
-        DaggerMainApplicationComponent.builder()
+        DaggerMainApplication_Component.builder()
                 .contextModule(new ContextModule(getApplicationContext()))
                 .build().getSubComponent(new MainApplicationModule()).inject(this);
 

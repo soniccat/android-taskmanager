@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.example.alexeyglushkov.cachemanager.Storage;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
+import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManager;
+import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
 import java.io.File;
 
@@ -25,5 +27,11 @@ public class MainApplicationModule {
             storage = new DiskStorage(cacheDir);
         }
         return storage;
+    }
+
+    @Provides
+    @ListScope
+    TaskManager getTaskManager() {
+        return new SimpleTaskManager(10);
     }
 }
