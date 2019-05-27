@@ -64,9 +64,9 @@ public class MainApplicationModule {
 
     @Provides
     @MainScope
-    QuizletService quizletService(Storage storage, TaskManager taskManager) {
+    QuizletService quizletService(Storage storage, AccountStore accountStore, TaskManager taskManager, OAuthWebClient authWebClient) {
         try {
-            Account quizletAccount = Networks.getAccount(Networks.Network.Quizlet);
+            Account quizletAccount = Networks.getAccount(Networks.Network.Quizlet, accountStore, taskManager, authWebClient);
             QuizletServiceTaskProvider quizletCommandProvider = new QuizletServiceTaskProvider(storage);
 
             String id = Integer.toString(quizletAccount.getServiceType());

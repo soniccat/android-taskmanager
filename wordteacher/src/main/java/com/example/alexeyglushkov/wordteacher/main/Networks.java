@@ -39,38 +39,26 @@ public class Networks {
         }
     }
 
-    public static OAuthWebClient getAuthWebClient() {
-        return MainApplication.instance.getAuthWebClient();
-    }
+    public static Account getAccount(Network network, AccountStore accountStore, TaskManager taskManager, OAuthWebClient authWebClient) throws Exception {
+        Assert.assertNotNull("accountStore must exists", accountStore);
 
-    public static TaskManager getTaskManager() {
-        return MainApplication.instance.getTaskManager();
-    }
-
-    public static AccountStore getAccountStore() {
-        return MainApplication.instance.getAccountStore();
-    }
-
-    public static Account getAccount(Network network) throws Exception {
-        Assert.assertNotNull("accountStore must exists", getAccountStore());
-
-        List<Account> accounts = getAccountStore().getAccounts(network.ordinal());
+        List<Account> accounts = accountStore.getAccounts(network.ordinal());
         Account account = null;
         if (accounts.size() > 0) {
             account = accounts.get(0);
         } else {
-            account = createAccount(network);
+            account = createAccount(network, accountStore, taskManager, authWebClient);
         }
 
         return account;
     }
 
-    public static void restoreAuthorizer(Account acc) {
+    public static void restoreAuthorizer(Account acc, TaskManager taskManager, OAuthWebClient authWebClient) {
         if (acc.getServiceType() == Networks.Network.Foursquare.ordinal()) {
-            acc.setAuthorizer(Networks.getFoursquareAuthorizer());
+            acc.setAuthorizer(Networks.getFoursquareAuthorizer(taskManager, authWebClient));
 
         } else if (acc.getServiceType() == Network.Quizlet.ordinal()) {
-            acc.setAuthorizer(Networks.getQuizletAuthorizer());
+            acc.setAuthorizer(Networks.getQuizletAuthorizer(taskManager, authWebClient));
         }
 
 //        } else if (acc.getServiceType() == Network.Dropbox.ordinal()) {
@@ -79,12 +67,12 @@ public class Networks {
     }
 
     @NonNull
-    public static Account createAccount(Network network) throws Exception {
+    public static Account createAccount(Network network, AccountStore accountStore, TaskManager taskManager, OAuthWebClient authWebClient) throws Exception {
         if (network == Network.Foursquare) {
-            return createFoursquareAccount();
+            return createFoursquareAccount(accountStore, taskManager, authWebClient);
 
         } else if (network == Network.Quizlet) {
-            return createQuizletAccount();
+            return createQuizletAccount(accountStore, taskManager, authWebClient);
         }
 //        } else if (network == Network.Dropbox) {
 //            return createDropboxAccount();
@@ -94,17 +82,17 @@ public class Networks {
         return null;
     }
 
-    public static Account createFoursquareAccount() {
-        Authorizer authorizer = getFoursquareAuthorizer();
+    public static Account createFoursquareAccount(AccountStore accountStore, TaskManager taskManager, OAuthWebClient authWebClient) {
+        Authorizer authorizer = getFoursquareAuthorizer(taskManager, authWebClient);
         Account account = new SimpleAccount(Network.Foursquare.ordinal());
         account.setAuthorizer(authorizer);
-        account.setAuthCredentialStore(getAccountStore());
+        account.setAuthCredentialStore(accountStore);
 
         return account;
     }
 
     @NonNull
-    public static Authorizer getFoursquareAuthorizer() {
+    public static Authorizer getFoursquareAuthorizer(TaskManager taskManager, OAuthWebClient authWebClient) {
         String apiKey = "FEGFXJUFANVVDHVSNUAMUKTTXCP1AJQD53E33XKJ44YP1S4I";
         String apiSecret = "AYWKUL5SWPNC0CTQ202QXRUG2NLZYXMRA34ZSDW4AUYBG2RC";
 
@@ -114,23 +102,23 @@ public class Networks {
                 .callback(CALLBACK_URL)
                 .build(new Foursquare2Api());
         authorizer.setServiceCommandProvider(new ServiceTaskProvider());
-        authorizer.setServiceCommandRunner(new ServiceTaskRunner(getTaskManager(), "authorizerId"));
-        authorizer.setWebClient(getAuthWebClient());
+        authorizer.setServiceCommandRunner(new ServiceTaskRunner(taskManager, "authorizerId"));
+        authorizer.setWebClient(authWebClient);
 
         return authorizer;
     }
 
-    public static Account createQuizletAccount() {
-        Authorizer authorizer = getQuizletAuthorizer();
+    public static Account createQuizletAccount(AccountStore accountStore, TaskManager taskManager, OAuthWebClient authWebClient) {
+        Authorizer authorizer = getQuizletAuthorizer(taskManager, authWebClient);
         Account account = new SimpleAccount(Network.Quizlet.ordinal());
         account.setAuthorizer(authorizer);
-        account.setAuthCredentialStore(getAccountStore());
+        account.setAuthCredentialStore(accountStore);
 
         return account;
     }
 
     @NonNull
-    public static Authorizer getQuizletAuthorizer() {
+    public static Authorizer getQuizletAuthorizer(TaskManager taskManager, OAuthWebClient authWebClient) {
         String apiKey = "9zpZ2myVfS";
         String apiSecret = "bPHS9xz2sCXWwq5ddcWswG";
 
@@ -140,8 +128,8 @@ public class Networks {
                 .callback(CALLBACK_URL)
                 .build(new QuizletApi2());
         authorizer.setServiceCommandProvider(new ServiceTaskProvider());
-        authorizer.setServiceCommandRunner(new ServiceTaskRunner(getTaskManager(), "authorizerId"));
-        authorizer.setWebClient(getAuthWebClient());
+        authorizer.setServiceCommandRunner(new ServiceTaskRunner(taskManager, "authorizerId"));
+        authorizer.setWebClient(authWebClient);
 
         return authorizer;
     }

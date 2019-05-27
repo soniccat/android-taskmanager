@@ -119,7 +119,7 @@ public class MainApplication extends Application {
     private void restoreAccounts(AccountCacheStore store) {
         for (Account acc : store.getAccounts()) {
             acc.setAuthCredentialStore(store);
-            Networks.restoreAuthorizer(acc);
+            Networks.restoreAuthorizer(acc, taskManager, authWebClient);
         }
     }
 
