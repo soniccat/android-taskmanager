@@ -2,6 +2,7 @@ package com.example.alexeyglushkov.wordteacher.main;
 
 import android.content.Context;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -15,9 +16,13 @@ public class ContextModule {
         this.context = context;
     }
 
-    @Provides
-    @Singleton
-    Context getContext() {
+    @Provides @Named("context")
+    Context context() {
         return context;
+    }
+
+    @Provides @Named("appContext")
+    Context applicationContext() {
+        return context.getApplicationContext();
     }
 }

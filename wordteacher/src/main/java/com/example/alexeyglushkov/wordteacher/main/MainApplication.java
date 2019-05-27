@@ -40,8 +40,8 @@ import javax.inject.Singleton;
 public class MainApplication extends Application {
     private static final String TAG = "MainApplication";
 
-    private @NonNull AccountStore accountStore;
-    private @NonNull OAuthWebClient authWebClient;
+    @Inject @NonNull AccountStore accountStore;
+    @Inject @NonNull OAuthWebClient authWebClient;
 
     private @NonNull QuizletRepository quizletRepository;
     //private @NonNull DropboxService dropboxService;
@@ -54,15 +54,9 @@ public class MainApplication extends Application {
 
     //// Initialization
 
-    @Singleton
-    @dagger.Component(modules = {ContextModule.class})
-    public interface Component {
-        SubMainComponent getSubComponent(MainApplicationModule module);
-    }
-
     @MainScope
-    @Subcomponent(modules = MainApplicationModule.class)
-    public interface SubMainComponent {
+    @dagger.Component(modules = MainApplicationModule.class)
+    public interface MainComponent {
         Storage getStorage();
         TaskManager getTaskManager();
         void inject(MainApplication app);
@@ -77,10 +71,9 @@ public class MainApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        authWebClient = new AuthActivityProxy();
-        DaggerMainApplication_Component.builder()
+        DaggerMainApplication_MainComponent.builder()
                 .contextModule(new ContextModule(getApplicationContext()))
-                .build().getSubComponent(new MainApplicationModule()).inject(this);
+                .build().inject(this);
 
         cleanCache();
         loadAccountStore();
@@ -109,9 +102,6 @@ public class MainApplication extends Application {
     //// Actions
 
     public void loadAccountStore() {
-        // IDEA: make it async, but have to handle nil quizletService
-        File authDir = getDir("AuthFolder", Context.MODE_PRIVATE);
-        this.accountStore = new AccountCacheStore(authDir);
         try {
             this.accountStore.load();
         } catch (Exception e) {
