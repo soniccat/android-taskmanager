@@ -51,6 +51,7 @@ public class MainApplication extends Application {
     @Inject @NonNull Storage storage;
 
     public static @NonNull MainApplication instance;
+    private @NonNull MainComponent component;
 
     //// Initialization
 
@@ -59,6 +60,7 @@ public class MainApplication extends Application {
     public interface MainComponent {
         Storage getStorage();
         TaskManager getTaskManager();
+        QuizletRepository getQuizletRepozitory();
         void inject(MainApplication app);
     }
 
@@ -71,9 +73,10 @@ public class MainApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        DaggerMainApplication_MainComponent.builder()
+        component = DaggerMainApplication_MainComponent.builder()
                 .contextModule(new ContextModule(getApplicationContext()))
-                .build().inject(this);
+                .build();
+        component.inject(this);
 
         cleanCache();
         loadAccountStore();
@@ -86,7 +89,8 @@ public class MainApplication extends Application {
 
     private void onAccountStoreLoaded() {
         try {
-            createQuizletService();
+            quizletRepository = component.getQuizletRepozitory();
+            quizletRepository.restoreOrLoad(null);
             //createDropboxService();
 
         } catch (Exception ex) {
@@ -154,19 +158,6 @@ public class MainApplication extends Application {
     private void createCourseHolder() {
         File authDir = getDir("CourseHolder", Context.MODE_PRIVATE);
         this.courseHolder = new CourseHolder(authDir);
-    }
-
-    private void createQuizletService() throws Exception {
-        Account quizletAccount = Networks.getAccount(Networks.Network.Quizlet);
-        QuizletServiceTaskProvider quizletCommandProvider = new QuizletServiceTaskProvider(getStorage());
-
-        String id = Integer.toString(quizletAccount.getServiceType());
-        ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
-
-        QuizletService quizletService = new QuizletService(quizletAccount, quizletCommandProvider, serviceCommandRunner);
-        this.quizletRepository = new QuizletRepository(quizletService, getStorage());
-        //this.quizletRepository.restoreOrLoad(null).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
-        this.quizletRepository.restoreOrLoad(null);
     }
 
 //    private void createDropboxService() throws Exception {
