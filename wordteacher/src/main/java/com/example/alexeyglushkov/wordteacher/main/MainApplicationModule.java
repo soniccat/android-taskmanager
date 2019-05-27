@@ -9,9 +9,6 @@ import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
 import java.io.File;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
 
@@ -20,7 +17,7 @@ public class MainApplicationModule {
     private Storage storage;
 
     @Provides
-    @ListScope
+    @MainScope
     Storage getStorage(Context context) {
         if (storage == null) {
             File cacheDir = context.getDir("ServiceCache", Context.MODE_PRIVATE);
@@ -30,7 +27,7 @@ public class MainApplicationModule {
     }
 
     @Provides
-    @ListScope
+    @MainScope
     TaskManager getTaskManager() {
         return new SimpleTaskManager(10);
     }

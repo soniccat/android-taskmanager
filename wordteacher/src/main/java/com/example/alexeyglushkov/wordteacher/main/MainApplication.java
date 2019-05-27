@@ -6,10 +6,8 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 
-import io.reactivex.functions.Action;
+import dagger.Subcomponent;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.schedulers.Schedulers;
 
@@ -23,19 +21,15 @@ import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
 import com.example.alexeyglushkov.cachemanager.StorageCleaner;
 import com.example.alexeyglushkov.cachemanager.Storage;
 import com.example.alexeyglushkov.cachemanager.SimpleStorageCleaner;
-import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
 import com.example.alexeyglushkov.quizletservice.QuizletRepository;
-import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.tools.ContextProvider;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.tasks.QuizletServiceTaskProvider;
-import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManager;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
 import org.junit.Assert;
 
 import java.io.File;
-import java.util.List;
 
 import com.example.alexeyglushkov.wordteacher.authorization.AuthActivityProxy;
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder;
@@ -64,6 +58,14 @@ public class MainApplication extends Application {
     @dagger.Component(modules = {ContextModule.class})
     public interface Component {
         SubMainComponent getSubComponent(MainApplicationModule module);
+    }
+
+    @MainScope
+    @Subcomponent(modules = MainApplicationModule.class)
+    public interface SubMainComponent {
+        Storage getStorage();
+        TaskManager getTaskManager();
+        void inject(MainApplication app);
     }
 
     public MainApplication() {
