@@ -93,25 +93,6 @@ public class MainApplicationModule {
     @Provides
     @MainScope
     @NonNull
-    public @Named("quizlet") Authorizer quizletAuthorizer(TaskManager taskManager, OAuthWebClient authWebClient) {
-        String apiKey = "9zpZ2myVfS";
-        String apiSecret = "bPHS9xz2sCXWwq5ddcWswG";
-
-        OAuth20Authorizer authorizer = (OAuth20Authorizer)new OAuthAuthorizerBuilder()
-                .apiKey(apiKey)
-                .apiSecret(apiSecret)
-                .callback(Networks.CALLBACK_URL)
-                .build(new QuizletApi2());
-        authorizer.setServiceCommandProvider(new ServiceTaskProvider());
-        authorizer.setServiceCommandRunner(new ServiceTaskRunner(taskManager, "authorizerId"));
-        authorizer.setWebClient(authWebClient);
-
-        return authorizer;
-    }
-
-    @Provides
-    @MainScope
-    @NonNull
     public @Named("quizlet") Account quizletAccount(AccountStore accountStore, @Named("quizlet") Authorizer authorizer) {
         Account account = new SimpleAccount(Networks.Network.Quizlet.ordinal());
         account.setAuthorizer(authorizer);
@@ -123,17 +104,19 @@ public class MainApplicationModule {
     @Provides
     @MainScope
     @NonNull
-    public @Named("foursquare") Authorizer foursquareAuthorizer(TaskManager taskManager, OAuthWebClient authWebClient) {
-        String apiKey = "FEGFXJUFANVVDHVSNUAMUKTTXCP1AJQD53E33XKJ44YP1S4I";
-        String apiSecret = "AYWKUL5SWPNC0CTQ202QXRUG2NLZYXMRA34ZSDW4AUYBG2RC";
+    public @Named("quizlet") Authorizer quizletAuthorizer(@Named("auth") ServiceTaskProvider taskProvider,
+                                                          @Named("auth") ServiceTaskRunner taskRunner,
+                                                          OAuthWebClient authWebClient) {
+        String apiKey = "9zpZ2myVfS";
+        String apiSecret = "bPHS9xz2sCXWwq5ddcWswG";
 
         OAuth20Authorizer authorizer = (OAuth20Authorizer)new OAuthAuthorizerBuilder()
                 .apiKey(apiKey)
                 .apiSecret(apiSecret)
                 .callback(Networks.CALLBACK_URL)
-                .build(new Foursquare2Api());
-        authorizer.setServiceCommandProvider(new ServiceTaskProvider());
-        authorizer.setServiceCommandRunner(new ServiceTaskRunner(taskManager, "authorizerId"));
+                .build(new QuizletApi2());
+        authorizer.setServiceCommandProvider(taskProvider);
+        authorizer.setServiceCommandRunner(taskRunner);
         authorizer.setWebClient(authWebClient);
 
         return authorizer;
@@ -148,5 +131,40 @@ public class MainApplicationModule {
         account.setAuthCredentialStore(accountStore);
 
         return account;
+    }
+
+    @Provides
+    @MainScope
+    @NonNull
+    public @Named("foursquare") Authorizer foursquareAuthorizer(@Named("auth") ServiceTaskProvider taskProvider,
+                                                                @Named("auth") ServiceTaskRunner taskRunner,
+                                                                OAuthWebClient authWebClient) {
+        String apiKey = "FEGFXJUFANVVDHVSNUAMUKTTXCP1AJQD53E33XKJ44YP1S4I";
+        String apiSecret = "AYWKUL5SWPNC0CTQ202QXRUG2NLZYXMRA34ZSDW4AUYBG2RC";
+
+        OAuth20Authorizer authorizer = (OAuth20Authorizer)new OAuthAuthorizerBuilder()
+                .apiKey(apiKey)
+                .apiSecret(apiSecret)
+                .callback(Networks.CALLBACK_URL)
+                .build(new Foursquare2Api());
+        authorizer.setServiceCommandProvider(taskProvider);
+        authorizer.setServiceCommandRunner(taskRunner);
+        authorizer.setWebClient(authWebClient);
+
+        return authorizer;
+    }
+
+    @Provides
+    @MainScope
+    @NonNull
+    public @Named("auth") ServiceTaskProvider authServiceTaskProvider() {
+        return new ServiceTaskProvider();
+    }
+
+    @Provides
+    @MainScope
+    @NonNull
+    public @Named("auth") ServiceTaskRunner authServiceTaskRunner(TaskManager taskManager) {
+        return new ServiceTaskRunner(taskManager, "authorizerId");
     }
 }
