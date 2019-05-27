@@ -15,6 +15,7 @@ import io.reactivex.schedulers.Schedulers;
 import com.example.alexeyglushkov.authcachemanager.AccountCacheStore;
 import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
+import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
@@ -35,6 +36,7 @@ import com.example.alexeyglushkov.wordteacher.authorization.AuthActivityProxy;
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 public class MainApplication extends Application {
@@ -61,6 +63,10 @@ public class MainApplication extends Application {
         Storage getStorage();
         TaskManager getTaskManager();
         QuizletRepository getQuizletRepozitory();
+        @Named("quizlet") Authorizer getQuizletAuthorizer();
+        @Named("quizlet") Account getQuizletAccount();
+        @Named("foursquare") Authorizer getFoursquareAuthorizer();
+        @Named("foursquare") Account getFoursquareAccount();
         void inject(MainApplication app);
     }
 
@@ -119,7 +125,7 @@ public class MainApplication extends Application {
     private void restoreAccounts(AccountCacheStore store) {
         for (Account acc : store.getAccounts()) {
             acc.setAuthCredentialStore(store);
-            Networks.restoreAuthorizer(acc, taskManager, authWebClient);
+            Networks.restoreAuthorizer(acc);
         }
     }
 
@@ -216,7 +222,12 @@ public class MainApplication extends Application {
         return quizletRepository;
     }
 
-//    public @NonNull DropboxService getDropboxService() {
+    @NonNull
+    public MainComponent getComponent() {
+        return component;
+    }
+
+    //    public @NonNull DropboxService getDropboxService() {
 //        return dropboxService;
 //    }
 
