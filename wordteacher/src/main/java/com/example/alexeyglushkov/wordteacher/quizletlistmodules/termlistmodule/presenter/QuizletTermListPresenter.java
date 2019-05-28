@@ -41,21 +41,6 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
     public static String DEFAULT_TITLE = "Cards";
     @Nullable private QuizletSet set;
 
-    //// Actions
-
-//    private void handleLoadedSets() {
-//        view.hideLoading();
-//        restoreIfNeeded();
-//        view.reload(getItems());
-//    }
-//
-//    private void restoreIfNeeded() {
-//        if (this.savedInstanceState != null || provider instanceof NullStorableListProvider) {
-//            provider = providerFactory.restore(this.savedInstanceState);
-//            this.savedInstanceState = null;
-//        }
-//    }
-
     //// Overrides
 
     @NonNull
@@ -74,32 +59,8 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
         return new QuizletTermCompareStrategy(order);
     }
 
-    //    @Override
-//    public CompareStrategyFactory<QuizletTerm> createCompareStrategyFactory() {
-//        return new QuizletTermCompareStrategyFactory();
-//    }
 
     //// Interface
-
-    // Observer<Resource<List<QuizletSet>>>
-
-//    @Override
-//    public void onChanged(@NonNull Resource<List<QuizletSet>> listResource) {
-//        if (listResource.error != null) {
-//            view.hideLoading();
-//
-//        } else {
-//            boolean hasData = listResource.data != null && listResource.data.size() > 0;
-//            boolean isLoading = listResource.state == Resource.State.Loading;
-//
-//            if (!hasData && isLoading) {
-//                view.showLoading();
-//
-//            } else if (hasData && !isLoading) {
-//                handleLoadedSets();
-//            }
-//        }
-//    }
 
     // PagerModuleItemWithTitle
 
@@ -122,7 +83,6 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
     }
 
     public void setTerms(List<QuizletTerm> terms) {
-        //provider = providerFactory.createFromList(terms);
     }
 
     //// Getters
