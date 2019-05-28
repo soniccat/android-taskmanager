@@ -159,24 +159,6 @@ class MainApplication : Application() {
         lateinit var instance: MainApplication
             private set
 
-        //    private void createDropboxService() throws Exception {
-        //        DropboxAccount dropboxAccount = (DropboxAccount)Networks.getAccount(Networks.Network.Dropbox);
-        //        DropboxCommandProvider commandProvider = new DropboxServiceTaskProvider();
-        //
-        //        String id = Integer.toString(dropboxAccount.getServiceType());
-        //        ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);
-        //
-        //        Storage storage = new PreferenceStorage("DropboxServicePref", getContextProvider());
-        //
-        //        dropboxService = new DropboxService(dropboxAccount, commandProvider, serviceCommandRunner, storage);
-        //        dropboxService.setCallback(new DropboxService.Callback() {
-        //            @Override
-        //            public void merge(@NonNull File localFile, @NonNull DropboxAPI.Entry dropboxEntry, DropboxCommandProvider.MergeCompletion completion) {
-        //                MainApplication.this.merge(localFile, dropboxEntry, completion);
-        //            }
-        //        });
-        //    }
-
         //// Getters
 
         val contextProvider: ContextProvider

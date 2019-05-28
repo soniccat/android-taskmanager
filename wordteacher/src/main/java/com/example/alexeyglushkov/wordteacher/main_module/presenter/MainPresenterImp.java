@@ -176,16 +176,16 @@ public class MainPresenterImp implements
 
     private void onSortOrderChanged(Preferences.SortOrder sortOrder, Sortable module) {
         if (module instanceof QuizletTermListPresenter) {
-            Preferences.setQuizletTermSortOrder(sortOrder);
+            Preferences.INSTANCE.setQuizletTermSortOrder(sortOrder);
 
         } else if (module instanceof QuizletSetListPresenter) {
-            Preferences.setQuizletSetSortOrder(sortOrder);
+            Preferences.INSTANCE.setQuizletSetSortOrder(sortOrder);
 
         } else if (module instanceof CourseListPresenter) {
-            Preferences.setCourseListSortOrder(sortOrder);
+            Preferences.INSTANCE.setCourseListSortOrder(sortOrder);
 
         } else if (module instanceof CardListPresenter) {
-            Preferences.setCardListSortOrder(sortOrder);
+            Preferences.INSTANCE.setCardListSortOrder(sortOrder);
         }
 
         view.invalidateToolbar();

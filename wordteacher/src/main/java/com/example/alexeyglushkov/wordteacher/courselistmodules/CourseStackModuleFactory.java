@@ -30,7 +30,7 @@ public class CourseStackModuleFactory implements StackModuleFactory {
         listPresenter.setView(fragment);
         fragment.setPresenter(listPresenter);
 
-        listPresenter.setSortOrder(Preferences.getCourseListSortOrder());
+        listPresenter.setSortOrder(Preferences.INSTANCE.getCourseListSortOrder());
         return listPresenter;
     }
 
@@ -48,7 +48,7 @@ public class CourseStackModuleFactory implements StackModuleFactory {
         fragment.setPresenter(listPresenter);
         listPresenter.setParentCourse((Course) object);
 
-        listPresenter.setSortOrder(Preferences.getCardListSortOrder());
+        listPresenter.setSortOrder(Preferences.INSTANCE.getCardListSortOrder());
         return listPresenter;
     }
 

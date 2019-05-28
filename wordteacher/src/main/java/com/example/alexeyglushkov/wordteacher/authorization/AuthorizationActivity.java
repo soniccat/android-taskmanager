@@ -40,7 +40,7 @@ public class AuthorizationActivity extends AppCompatActivity implements OAuthWeb
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url.startsWith(Networks.CALLBACK_URL)) {
+                if (url.startsWith(Networks.INSTANCE.getCALLBACK_URL())) {
                     AuthActivityProxy.finish(url, null);
                     isHandled = true;
                     finish();

@@ -115,7 +115,7 @@ public class MainPagerFactory implements PagerModuleFactory {
         listPresenter.setView(view);
         view.setPresenter(listPresenter);
 
-        listPresenter.setSortOrder(Preferences.getQuizletTermSortOrder());
+        listPresenter.setSortOrder(Preferences.INSTANCE.getQuizletTermSortOrder());
         return listPresenter;
     }
 

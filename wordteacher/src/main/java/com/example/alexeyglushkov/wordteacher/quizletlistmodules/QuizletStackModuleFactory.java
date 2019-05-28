@@ -31,7 +31,7 @@ public class QuizletStackModuleFactory implements StackModuleFactory {
         listPresenter.setView(view);
         view.setPresenter(listPresenter);
 
-        listPresenter.setSortOrder(Preferences.getQuizletSetSortOrder());
+        listPresenter.setSortOrder(Preferences.INSTANCE.getQuizletSetSortOrder());
         return listPresenter;
     }
 
@@ -55,7 +55,7 @@ public class QuizletStackModuleFactory implements StackModuleFactory {
         fragment.setPresenter(listPresenter);
         listPresenter.setTermSet((QuizletSet) object);
 
-        listPresenter.setSortOrder(Preferences.getQuizletTermSortOrder());
+        listPresenter.setSortOrder(Preferences.INSTANCE.getQuizletTermSortOrder());
         return listPresenter;
     }
 
