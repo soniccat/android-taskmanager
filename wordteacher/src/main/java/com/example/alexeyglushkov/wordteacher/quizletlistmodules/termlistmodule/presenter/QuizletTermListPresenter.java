@@ -3,6 +3,8 @@ package com.example.alexeyglushkov.wordteacher.quizletlistmodules.termlistmodule
 import androidx.lifecycle.Observer;
 
 import android.os.Bundle;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -16,6 +18,7 @@ import java.util.List;
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategy;
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategyFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.NullStorableListProvider;
+import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProviderFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableResourceListLiveDataProvider;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableResourceListLiveDataProviderFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.presenter.SimpleListPresenter;
@@ -33,25 +36,10 @@ import com.example.alexeyglushkov.wordteacher.tools.Sortable;
 public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
         implements Sortable,
         PagerModuleItemWithTitle {
+    private final static String TAG = "QuizletTerm..Presenter";
+
     public static String DEFAULT_TITLE = "Cards";
-
-    //private Bundle savedInstanceState;
-
-    //// Events
-
-    @Override
-    public void onViewStateRestored(ListViewInterface view, @Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(view, savedInstanceState);
-
-        //this.savedInstanceState = savedInstanceState;
-        //getQuizletRepository().getLiveData().observeForever(this);
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        //getQuizletRepository().getLiveData().removeObserver(this);
-    }
+    @Nullable private QuizletSet set;
 
     //// Actions
 
@@ -71,13 +59,14 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
     //// Overrides
 
     @NonNull
-    protected QuizletTermListProviderFactory createProviderFactory() {
-        return null;//new QuizletTermListProviderFactory(getQuizletRepository());
+    protected StorableListProviderFactory<QuizletTerm> createProviderFactory() {
+        return null;
     }
 
     @Override
     protected StorableResourceListLiveDataProvider<QuizletTerm> createLiveDataProvider(Bundle bundle) {
-        return new QuizletTermListLiveDataProvider(bundle, getQuizletRepository());
+        long setId = this.set != null ? this.set.getId() : -1;
+        return new QuizletTermListLiveDataProvider(bundle, getQuizletRepository(), setId);
     }
 
     @Override
@@ -125,8 +114,11 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
     // Set Data
 
     public void setTermSet(QuizletSet set) {
-
-        //provider = providerFactory.createFromObject(set);
+        this.set = set;
+        if (liveDataProvider != EMPTY_LIST_DATA_PROVIDER) {
+            Log.e(TAG, "setTermSet is called when liveDataProvider is not EMPTY_LIST_DATA_PROVIDER");
+            liveDataProvider = createLiveDataProvider(null);
+        }
     }
 
     public void setTerms(List<QuizletTerm> terms) {
@@ -135,14 +127,8 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
 
     //// Getters
 
-    private QuizletSet getParentSet() {
-        QuizletSet parentSet = null;
-        if (provider instanceof QuizletSetTermListProvider) {
-            QuizletSetTermListProvider setProvider = (QuizletSetTermListProvider)provider;
-            parentSet = setProvider.getSet();
-        }
-
-        return parentSet;
+    @Nullable private QuizletSet getParentSet() {
+        return set;
     }
 
     // Get App Data

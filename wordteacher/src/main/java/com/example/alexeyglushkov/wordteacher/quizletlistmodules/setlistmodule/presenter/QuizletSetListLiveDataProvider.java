@@ -14,13 +14,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
 public class QuizletSetListLiveDataProvider extends ResourceListLiveDataProviderImp<QuizletSet> {
-    private QuizletRepository repository;
-
-    public QuizletSetListLiveDataProvider(QuizletRepository repository) {
-        super(repository);
-        this.repository = repository;
-    }
-
     public QuizletSetListLiveDataProvider(Bundle bundle, QuizletRepository repository) {
         super(bundle, repository);
     }

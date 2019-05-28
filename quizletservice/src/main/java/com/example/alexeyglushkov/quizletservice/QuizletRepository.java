@@ -138,7 +138,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
         return liveData;
     }
 
-    public QuizletTermAdapter createQuizletTermAdapter(int setId) {
+    public QuizletTermAdapter createQuizletTermAdapter(long setId) {
         return new QuizletTermAdapter(setId);
     }
 
@@ -250,7 +250,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
                 for (QuizletSet set : listResource.data) {
                     for (QuizletTerm term : set.getTerms()) {
                         long setId = term.getSetId();
-                        if (setId == NO_ID || setId == this.setId) {
+                        if (this.setId == NO_ID || setId == this.setId) {
                             terms.add(term);
                         }
                     }

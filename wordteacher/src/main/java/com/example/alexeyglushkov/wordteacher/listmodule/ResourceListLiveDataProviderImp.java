@@ -89,14 +89,7 @@ public class ResourceListLiveDataProviderImp<T> implements StorableResourceListL
             }
         };
 
-        result.addSource(resourceLiveDataProvider.getLiveData(), resultListObserver);
-        result.addSource(Transformations.map(compareStrategy, new Function<CompareStrategy<T>, Resource<List<T>>>() {
-            @Override
-            public Resource<List<T>> apply(CompareStrategy<T> input) {
-                return resourceLiveDataProvider.getLiveData().getValue(); // might be null
-            }
-        }), resultListObserver);
-
+        setupListMediator(result, resultListObserver);
         return result;
     }
 
@@ -107,13 +100,29 @@ public class ResourceListLiveDataProviderImp<T> implements StorableResourceListL
             result = aResource.update(input.state, Collections.<T>emptyList(), input.error);
 
         } else {
-            result = getFilteredList(input);
-
-            if (compareStrategy.getValue() != null) {
-                result = getSortedList(input);
-            }
+            result = prepareFinalResource(input);
         }
 
+        return result;
+    }
+
+    protected void setupListMediator(MediatorLiveData<Resource<List<T>>> result, Observer<Resource<List<T>>> resultListObserver) {
+        result.addSource(resourceLiveDataProvider.getLiveData(), resultListObserver);
+        result.addSource(Transformations.map(compareStrategy, new Function<CompareStrategy<T>, Resource<List<T>>>() {
+            @Override
+            public Resource<List<T>> apply(CompareStrategy<T> input) {
+                return resourceLiveDataProvider.getLiveData().getValue(); // might be null
+            }
+        }), resultListObserver);
+    }
+
+    protected Resource<List<T>> prepareFinalResource(Resource<List<T>> input) {
+        Resource<List<T>> result;
+        result = getFilteredList(input);
+
+        if (compareStrategy.getValue() != null) {
+            result = getSortedList(input);
+        }
         return result;
     }
 
