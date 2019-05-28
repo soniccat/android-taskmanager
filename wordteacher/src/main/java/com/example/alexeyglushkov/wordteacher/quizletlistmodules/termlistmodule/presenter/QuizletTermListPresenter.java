@@ -148,7 +148,7 @@ public class QuizletTermListPresenter extends SimpleListPresenter<QuizletTerm>
     // Get App Data
 
     private MainApplication getMainApplication() {
-        return MainApplication.instance;
+        return MainApplication.Companion.getInstance();
     }
 
     private QuizletRepository getQuizletRepository() {

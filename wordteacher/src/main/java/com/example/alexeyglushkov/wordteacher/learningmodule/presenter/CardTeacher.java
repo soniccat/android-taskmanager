@@ -189,7 +189,7 @@ public class CardTeacher {
     // Cast Getters
 
     private MainApplication getMainApplication() {
-        return MainApplication.instance;
+        return MainApplication.Companion.getInstance();
     }
 
     public CourseHolder getCourseHolder() {

@@ -56,7 +56,7 @@ public class QuizletSetListPresenter extends SimpleListPresenter<QuizletSet>
     // App Getters
 
     private MainApplication getMainApplication() {
-        return MainApplication.instance;
+        return MainApplication.Companion.getInstance();
     }
 
     public QuizletRepository getQuizletRepository() {

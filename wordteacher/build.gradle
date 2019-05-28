@@ -1,4 +1,7 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion project.ext.compileSdkVersion
@@ -26,6 +29,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     implementation 'androidx.appcompat:appcompat:' + project.ext.appCompatVersion
     implementation "com.google.android.material:material:" + project.ext.materialVersion
     implementation 'androidx.recyclerview:recyclerview:' + project.ext.appRecyclerViewVersion
@@ -48,5 +52,6 @@ dependencies {
     implementation project(path: ':tools')
 
     implementation 'com.google.dagger:dagger:2.17'
+    kapt 'com.google.dagger:dagger-compiler:2.17'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.17'
 }

@@ -160,7 +160,7 @@ public class CardListPresenter extends SimpleListPresenter<Card> implements Sort
     // App Getters
 
     private MainApplication getMainApplication() {
-        return MainApplication.instance;
+        return MainApplication.Companion.getInstance();
     }
 
     public CourseHolder getCourseHolder() {

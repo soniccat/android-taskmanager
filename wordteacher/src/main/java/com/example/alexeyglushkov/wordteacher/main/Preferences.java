@@ -89,7 +89,7 @@ public class Preferences {
     }
 
     private static Context getContext() {
-        return MainApplication.instance.getApplicationContext();
+        return MainApplication.Companion.getInstance().getApplicationContext();
     }
 
     private static String getName() {

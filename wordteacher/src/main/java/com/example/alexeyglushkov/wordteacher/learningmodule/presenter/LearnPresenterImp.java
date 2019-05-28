@@ -386,7 +386,7 @@ public class LearnPresenterImp implements LearnPresenter, ActivityModuleItem, Co
     // Cast Getters
 
     private MainApplication getMainApplication() {
-        return MainApplication.instance;
+        return MainApplication.Companion.getInstance();
     }
 
     public CourseHolder getCourseHolder() {

@@ -54,7 +54,7 @@ public class Networks {
     }
 
     public static void restoreAuthorizer(Account acc) {
-        MainApplication.MainComponent component = MainApplication.instance.getComponent();
+        MainApplication.MainComponent component = MainApplication.Companion.getInstance().getComponent();
         if (acc.getServiceType() == Networks.Network.Foursquare.ordinal()) {
             acc.setAuthorizer(component.getFoursquareAuthorizer());
 
@@ -70,10 +70,10 @@ public class Networks {
     @NonNull
     public static Account createAccount(Network network) {
         if (network == Network.Foursquare) {
-            return MainApplication.instance.getComponent().getFoursquareAccount();
+            return MainApplication.Companion.getInstance().getComponent().getFoursquareAccount();
 
         } else if (network == Network.Quizlet) {
-            return MainApplication.instance.getComponent().getQuizletAccount();
+            return MainApplication.Companion.getInstance().getComponent().getQuizletAccount();
         }
 //        } else if (network == Network.Dropbox) {
 //            return createDropboxAccount();
