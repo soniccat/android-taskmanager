@@ -33,8 +33,8 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
     private @NonNull QuizletService service;
     private @NonNull RxCache cache;
 
-    private final static int LOAD_SETS_COMMAND_ID = 0;
-    private final static int LOAD_TERMS_COMMAND_PREFIX = 1;
+    private final static long LOAD_SETS_COMMAND_ID = 0;
+    private final static long LOAD_TERMS_COMMAND_PREFIX = 2; // it's 2 to support -1 set id
     private RepositoryCommandHolder commandHolder = new RepositoryCommandHolder();
 
     public QuizletRepository(@NonNull QuizletService service, @NonNull Storage storage) {
@@ -114,11 +114,6 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
             });
     }
 
-    public RepositoryCommand loadTerms(int setId, final ProgressListener progressListener) {
-        Disposable disposable = loadSetsInternal(progressListener).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
-        return commandHolder.putCommand(new DisposableRepositoryCommand(LOAD_TERMS_COMMAND_PREFIX + setId, disposable, new QuizletTermAdapter(setId).getLiveData()));
-    }
-
     //// Setters / Getters
 
     // Getters
@@ -129,17 +124,14 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
     }
 
     @NonNull
-    public MutableLiveData<Resource<List<QuizletTerm>>> getTermListLiveData(int setId) {
-        MutableLiveData<Resource<List<QuizletTerm>>> liveData = commandHolder.getLiveData(LOAD_TERMS_COMMAND_PREFIX + setId);
+    public MutableLiveData<Resource<List<QuizletTerm>>> getTermListLiveData(long setId) {
+        long liveDataId = LOAD_TERMS_COMMAND_PREFIX + setId;
+        MutableLiveData<Resource<List<QuizletTerm>>> liveData = commandHolder.getLiveData(liveDataId);
         if (liveData == null) {
-            liveData = createQuizletTermAdapter(setId).getLiveData();
-            commandHolder.putLiveData(LOAD_TERMS_COMMAND_PREFIX, liveData);
+            liveData = new QuizletTermAdapter(setId).getLiveData();
+            commandHolder.putLiveData(liveDataId, liveData);
         }
         return liveData;
-    }
-
-    public QuizletTermAdapter createQuizletTermAdapter(long setId) {
-        return new QuizletTermAdapter(setId);
     }
 
     @NonNull
@@ -152,53 +144,53 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
         return liveData;
     }
 
-    public List<QuizletSet> getSets() {
-        return getSetsLiveData().getValue().data;
-    }
-
-    public List<QuizletTerm> getTerms() {
-        List<QuizletTerm> terms = new ArrayList<>();
-        for (QuizletSet set : getSets()) {
-            terms.addAll(set.getTerms());
-        }
-
-        return terms;
-    }
-
-    // TODO: optimize
-    public QuizletTerm getTerm(long termId) {
-        QuizletTerm resultTerm = null;
-        for (QuizletSet set : getSets()) {
-            for (QuizletTerm term : set.getTerms()) {
-                if (term.getId() == termId) {
-                    resultTerm = term;
-                    break;
-                }
-            }
-
-            if (resultTerm != null) {
-                break;
-            }
-        }
-
-        return resultTerm;
-    }
-
-    public QuizletSet getSet(long id) {
-        QuizletSet result = null;
-
-        List<QuizletSet> setList = getSetsLiveData().getValue().data;
-        if (setList != null) {
-            for (QuizletSet set : setList) {
-                if (set.getId() == id) {
-                    result = set;
-                    break;
-                }
-            }
-        }
-
-        return result;
-    }
+//    public List<QuizletSet> getSets() {
+//        return getSetsLiveData().getValue().data;
+//    }
+//
+//    public List<QuizletTerm> getTerms() {
+//        List<QuizletTerm> terms = new ArrayList<>();
+//        for (QuizletSet set : getSets()) {
+//            terms.addAll(set.getTerms());
+//        }
+//
+//        return terms;
+//    }
+//
+//    // TODO: optimize
+//    public QuizletTerm getTerm(long termId) {
+//        QuizletTerm resultTerm = null;
+//        for (QuizletSet set : getSets()) {
+//            for (QuizletTerm term : set.getTerms()) {
+//                if (term.getId() == termId) {
+//                    resultTerm = term;
+//                    break;
+//                }
+//            }
+//
+//            if (resultTerm != null) {
+//                break;
+//            }
+//        }
+//
+//        return resultTerm;
+//    }
+//
+//    public QuizletSet getSet(long id) {
+//        QuizletSet result = null;
+//
+//        List<QuizletSet> setList = getSetsLiveData().getValue().data;
+//        if (setList != null) {
+//            for (QuizletSet set : setList) {
+//                if (set.getId() == id) {
+//                    result = set;
+//                    break;
+//                }
+//            }
+//        }
+//
+//        return result;
+//    }
 
     // Setters
 
@@ -221,10 +213,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
         private static final long NO_ID = -1;
 
         private Resource<List<QuizletTerm>> aResource = new Resource<>();
-        private long setId = NO_ID;
-
-        public QuizletTermAdapter() {
-        }
+        private long setId;
 
         public QuizletTermAdapter(long setId) {
             this.setId = setId;
@@ -263,22 +252,22 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
     }
 
     public interface RepositoryCommand<T> {
-        int getCommandId();
+        long getCommandId();
         void cancel();
         @NonNull LiveData<T> getLiveData();
     }
 
     public static class BaseRepositoryCommand<T> implements RepositoryCommand<T> {
-        private int id;
+        private long id;
         @NonNull private LiveData<T> liveData;
 
-        public BaseRepositoryCommand(int id, @NonNull LiveData<T> liveData) {
+        public BaseRepositoryCommand(long id, @NonNull LiveData<T> liveData) {
             this.id = id;
             this.liveData = liveData;
         }
 
         @Override
-        public int getCommandId() {
+        public long getCommandId() {
             return id;
         }
 
@@ -296,7 +285,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
     public static class DisposableRepositoryCommand<T> extends BaseRepositoryCommand<T> {
         private @NonNull Disposable disposable;
 
-        public DisposableRepositoryCommand(int id, @NonNull Disposable disposable, @NonNull LiveData<T> liveData) {
+        public DisposableRepositoryCommand(long id, @NonNull Disposable disposable, @NonNull LiveData<T> liveData) {
             super(id, liveData);
             this.disposable = disposable;
         }
@@ -308,9 +297,8 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
     }
 
     public static class RepositoryCommandHolder {
-        private WeakHashMap<LiveData<?>, Integer> liveDataIdMap = new WeakHashMap<>();
+        private WeakHashMap<LiveData<?>, Long> liveDataIdMap = new WeakHashMap<>();
         private WeakHashMap<LiveData<?>, RepositoryCommand<?>> liveDataCommandMap = new WeakHashMap<>();
-        //private SparseArray<RepositoryCommand> liveDataCommandMap = new SparseArray<>();
 
         @NonNull
         public RepositoryCommand putCommand(@NonNull RepositoryCommand<?> cmd) {
@@ -330,7 +318,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
         }
 
         @Nullable
-        public RepositoryCommand<?> getCommand(int id) {
+        public RepositoryCommand<?> getCommand(long id) {
             RepositoryCommand<?> cmd = null;
             for (RepositoryCommand<?> c : liveDataCommandMap.values()) {
                 if (c != null && c.getCommandId() == id) {
@@ -342,18 +330,19 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
         }
 
         @Nullable
-        public <T extends LiveData<?>> T getLiveData(int id) {
+        public <T extends LiveData<?>> T getLiveData(long id) {
             T result = null;
-            for (Map.Entry<LiveData<?>, Integer> entry : liveDataIdMap.entrySet()) {
+            for (Map.Entry<LiveData<?>, Long> entry : liveDataIdMap.entrySet()) {
                 if (entry.getValue() == id) {
                     result = (T)entry.getKey();
+                    break;
                 }
             }
 
             return result;
         }
 
-        public void putLiveData(int id, LiveData<?> liveData) {
+        public void putLiveData(long id, LiveData<?> liveData) {
             liveDataIdMap.put(liveData, id);
             liveDataCommandMap.put(liveData, null);
         }

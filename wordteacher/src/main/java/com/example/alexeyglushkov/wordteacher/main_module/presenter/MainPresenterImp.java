@@ -214,15 +214,13 @@ public class MainPresenterImp implements
         });
 
         final LiveData<List<QuizletSet>> liveData = getQuizletRepository().loadSets(progressListener).getLiveData();
-        if (liveData != null) {
-            liveData.observe(this.view, new Observer<List<QuizletSet>>() {
-                @Override
-                public void onChanged(List<QuizletSet> quizletSets) {
-                    view.stopProgress();
-                    liveData.removeObservers(MainPresenterImp.this.view);
-                }
-            });
-        }
+        liveData.observe(this.view, new Observer<List<QuizletSet>>() {
+            @Override
+            public void onChanged(List<QuizletSet> quizletSets) {
+                view.stopProgress();
+                liveData.removeObservers(MainPresenterImp.this.view);
+            }
+        });
     }
 
     private void updateToolbarBackButton() {
