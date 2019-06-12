@@ -8,7 +8,6 @@ import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProvider;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
-import com.example.alexeyglushkov.authorization.service.Service;
 
 import androidx.annotation.NonNull;
 import io.reactivex.Single;

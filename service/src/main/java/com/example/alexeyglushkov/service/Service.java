@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.authorization.service;
+package com.example.alexeyglushkov.service;
 
 import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.AuthCredentials;
