@@ -137,7 +137,7 @@ public class MainApplication extends Application {
 
     private void createQuizletService() {
         Account quizletAccount = Networks.getAccount(Networks.Network.Quizlet.ordinal());
-        QuizletServiceTaskProvider quizletCommandProvider = new QuizletServiceTaskProvider(getStorage());
+        QuizletServiceTaskProvider quizletCommandProvider = new QuizletServiceTaskProvider();
 
         String id = Integer.toString(quizletAccount.getServiceType());
         ServiceCommandRunner serviceCommandRunner = new ServiceTaskRunner(getTaskManager(), id);

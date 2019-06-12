@@ -40,7 +40,7 @@ public class QuizletService extends SimpleService {
         .flatMap(new Function<AuthCredentials, SingleSource<List<QuizletSet>>>() {
             @Override
             public SingleSource<List<QuizletSet>> apply(AuthCredentials authCredentials) throws Exception {
-                QuizletSetsCommand command = createSetsCommand(Cache.CacheMode.IGNORE_CACHE, progressListener);
+                QuizletSetsCommand command = createSetsCommand(progressListener);
                 return runCommand(command, true);
             }
         });
@@ -64,8 +64,8 @@ public class QuizletService extends SimpleService {
 //    }
 
     @NonNull
-    private QuizletSetsCommand createSetsCommand(final Cache.CacheMode cacheMode, final ProgressListener progressListener) {
-        final QuizletSetsCommand command = getQuizletCommandProvider().getLoadSetsCommand(SERVER, getOAuthCredentials().getUserId(), cacheMode, progressListener);
+    private QuizletSetsCommand createSetsCommand(final ProgressListener progressListener) {
+        final QuizletSetsCommand command = getQuizletCommandProvider().getLoadSetsCommand(SERVER, getOAuthCredentials().getUserId(), progressListener);
         return command;
     }
 

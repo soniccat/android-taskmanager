@@ -34,4 +34,5 @@ dependencies {
     implementation project(path: ':tools')
     implementation 'io.reactivex.rxjava2:rxandroid:' + project.ext.rxAndroidVersion
     implementation 'io.reactivex.rxjava2:rxjava:' + project.ext.rxJavaVersion
+    compile project(path: ':repository')
 }

@@ -62,10 +62,10 @@ class MainApplicationModule {
 
     @Provides
     @MainScope
-    internal fun quizletService(storage: Storage, accountStore: AccountStore, taskManager: TaskManager): QuizletService {
+    internal fun quizletService(accountStore: AccountStore, taskManager: TaskManager): QuizletService {
         try {
             val quizletAccount = Networks.getAccount(Networks.Network.Quizlet, accountStore)
-            val quizletCommandProvider = QuizletServiceTaskProvider(storage)
+            val quizletCommandProvider = QuizletServiceTaskProvider()
 
             val id = Integer.toString(quizletAccount.serviceType)
             val serviceCommandRunner = ServiceTaskRunner(taskManager, id)
