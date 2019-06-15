@@ -1,4 +1,4 @@
-package com.sample.repository;
+package com.aglushkov.taskmanager_http;
 
 import android.content.Context;
 
@@ -22,6 +22,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.sample.repository.test", appContext.getPackageName());
+        assertEquals("com.sample.taskmanager_http.test", appContext.getPackageName());
     }
 }

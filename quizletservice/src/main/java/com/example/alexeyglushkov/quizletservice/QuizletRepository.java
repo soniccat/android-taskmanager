@@ -8,9 +8,9 @@ import com.example.alexeyglushkov.cachemanager.clients.SimpleCache;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
-import com.sample.repository.DisposableRepositoryCommand;
-import com.sample.repository.RepositoryCommand;
-import com.sample.repository.RepositoryCommandHolder;
+import com.aglushkov.repository.DisposableRepositoryCommand;
+import com.aglushkov.repository.RepositoryCommand;
+import com.aglushkov.repository.RepositoryCommandHolder;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.sample.repository;
+package com.aglushkov.repository;
 
 import org.junit.Test;
 
