@@ -38,7 +38,7 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxandroid:' + project.ext.rxAndroidVersion
     implementation 'io.reactivex.rxjava2:rxjava:' + project.ext.rxJavaVersion
     annotationProcessor 'android.arch.lifecycle:compiler:' + rootProject.archLifecycleVersion
-    implementation project(path: ':quizletservice')
+    implementation project(path: ':quizlet_repository')
     implementation project(path: ':authcachemanager')
     //implementation project(path: ':dropboxservice')
     implementation project(path: ':ui')

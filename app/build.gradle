@@ -93,7 +93,7 @@ dependencies {
     implementation project(':servicetaskmanager')
     implementation project(':authcachemanager')
     implementation project(':service')
-    implementation project(':quizletservice')
+    implementation project(':quizlet_repository')
 }
 
 task generateClass() {

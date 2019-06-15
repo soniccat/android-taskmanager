@@ -8,7 +8,7 @@
       <module fileurl="file://$PROJECT_DIR$/authorization/authorization.iml" filepath="$PROJECT_DIR$/authorization/authorization.iml" />
       <module fileurl="file://$PROJECT_DIR$/dropboxservice/dropboxservice.iml" filepath="$PROJECT_DIR$/dropboxservice/dropboxservice.iml" />
       <module fileurl="file://$PROJECT_DIR$/jacksonlib/jacksonlib.iml" filepath="$PROJECT_DIR$/jacksonlib/jacksonlib.iml" />
-      <module fileurl="file://$PROJECT_DIR$/quizletservice/quizletservice.iml" filepath="$PROJECT_DIR$/quizletservice/quizletservice.iml" />
+      <module fileurl="file://$PROJECT_DIR$/quizlet_repository/quizlet_repository.iml" filepath="$PROJECT_DIR$/quizlet_repository/quizlet_repository.iml" />
       <module fileurl="file://$PROJECT_DIR$/repository/repository.iml" filepath="$PROJECT_DIR$/repository/repository.iml" />
       <module fileurl="file://$PROJECT_DIR$/scribeauthorization/scribeauthorization.iml" filepath="$PROJECT_DIR$/scribeauthorization/scribeauthorization.iml" />
       <module fileurl="file://$PROJECT_DIR$/service/service.iml" filepath="$PROJECT_DIR$/service/service.iml" />
