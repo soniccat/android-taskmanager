@@ -3,86 +3,107 @@ package com.example.alexeyglushkov.wordteacher.model;
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
 
+import com.aglushkov.repository.RepositoryCommandHolder;
+import com.aglushkov.repository.command.DisposableRepositoryCommand;
+import com.aglushkov.repository.command.RepositoryCommand;
+import com.aglushkov.repository.livedata.NonNullMutableLiveData;
+import com.aglushkov.repository.livedata.Resource;
 import com.example.alexeyglushkov.cachemanager.StorageEntry;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorageEntry;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
+import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 import com.example.alexeyglushkov.taskmanager.task.Task;
-import com.example.alexeyglushkov.taskmanager.task.WeakRefList;
+import com.example.alexeyglushkov.taskmanager.task.TaskPool;
+import com.example.alexeyglushkov.taskmanager.task.Tasks;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import io.reactivex.Single;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.internal.functions.Functions;
+
 /**
  * Created by alexeyglushkov on 07.05.16.
  */
 public class CourseHolder {
-    public enum State {
-        Unitialized,
-        Loaded
-    }
+    // TODO: user async storage
+    private @NonNull DiskStorage diskProvider;
 
-    private @NonNull
-    DiskStorage diskProvider;
-    private @NonNull ArrayList<Course> courses = new ArrayList<>();
-    private @NonNull WeakRefList<CourseHolderListener> listeners = new WeakRefList<>();
+    private final static long LOAD_COURSES_COMMAND_ID = 0;
+    private RepositoryCommandHolder commandHolder = new RepositoryCommandHolder();
 
-    private State state = State.Unitialized;
+    private TaskPool taskPool;
 
     //// Initialization
 
-    public CourseHolder(File directory) {
+    public CourseHolder(File directory, TaskPool taskPool) {
+        this.taskPool = taskPool;
+
         diskProvider = new DiskStorage(directory);
         diskProvider.setDefaultCodec(new CourseCodec());
     }
 
-    //// Events
-
-    private void onLoaded() {
-        for (WeakReference<CourseHolderListener> listener : listeners) {
-            listener.get().onLoaded(this);
-        }
-    }
-
-    private void onCoursesAdded(List<Course> courses) {
-        for (WeakReference<CourseHolderListener> listener : listeners) {
-            listener.get().onCoursesAdded(this, courses);
-        }
-    }
-
-    private void onCoursesDeleted(List<Course> courses) {
-        for (WeakReference<CourseHolderListener> listener : listeners) {
-            listener.get().onCoursesRemoved(this, courses);
-        }
-    }
-
-    private void onCourseUpdated(@NonNull Course course, @NonNull UpdateBatch batch) {
-        for (WeakReference<CourseHolderListener> listener : listeners) {
-            listener.get().onCourseUpdated(this, course, batch);
-        }
-    }
-
     //// Actions
 
-    // Listeners
-
-    public void addListener(CourseHolderListener listener) {
-        if (!listeners.contains(listener)) {
-            listeners.add(new WeakReference<>(listener));
-        }
+    public RepositoryCommand<Resource<List<Course>>> loadCourses(final ProgressListener progressListener) {
+        Disposable disposable = loadCoursesAsync(progressListener).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
+        return commandHolder.putCommand(new DisposableRepositoryCommand<>(LOAD_COURSES_COMMAND_ID, disposable, getCoursesLiveData()));
     }
 
-    public void removeListener(CourseHolderListener listener) {
-        listeners.remove(listener);
+    private Single<List<Course>> loadCoursesAsync(ProgressListener progressListener) {
+        Task task = createLoadCoursesTask(progressListener);
+        Single<List<Course>> single = Tasks.toSingle(task, this.taskPool);
+
+        final NonNullMutableLiveData<Resource<List<Course>>> coursesLiveData = getCoursesLiveData();
+        final Resource.State previousState = getCoursesLiveData().getValue().state;
+        coursesLiveData.setValue(coursesLiveData.getValue().resource(Resource.State.Loading));
+
+        return single.doOnSuccess(new Consumer<List<Course>>() {
+            @Override
+            public void accept(List<Course> courses) throws Exception {
+                coursesLiveData.setValue(coursesLiveData.getValue().resource(Resource.State.Loaded, courses));
+            }
+        }).doOnError(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable throwable) throws Exception {
+                coursesLiveData.setValue(coursesLiveData.getValue().resource(previousState, throwable));
+            }
+        }).doOnDispose(new Action() {
+            @Override
+            public void run() throws Exception {
+                coursesLiveData.setValue(coursesLiveData.getValue().resource(previousState));
+            }
+        });
     }
 
-    //
+    private Task createLoadCoursesTask(final ProgressListener progressListener) {
+        return new SimpleTask() {
+            @Override
+            public void startTask(Callback callback) {
+                super.startTask(callback);
 
-    public ArrayList<Course> loadCourses() throws Exception {
+                ArrayList<Course> courses = null;
+                try {
+                    courses = loadCoursesSync(progressListener);
+                    getPrivate().setTaskResult(courses);
+
+                } catch (Exception e) {
+                    getPrivate().setTaskError(new Error(e));
+                }
+
+                getPrivate().handleTaskCompletion(callback);
+            }
+        };
+    }
+
+    public ArrayList<Course> loadCoursesSync(final ProgressListener progressListener) throws Exception {
         ArrayList<Course> courses = new ArrayList<>();
 
         List<StorageEntry> entries = diskProvider.getEntries();
@@ -97,37 +118,39 @@ public class CourseHolder {
 
     public void addCourse(Course course) throws Exception {
         storeCourse(course);
-        courses.add(course);
-        onCoursesAdded(Collections.singletonList(course));
+        // TODO: update live data
+        //courses.add(course);
+        //onCoursesAdded(Collections.singletonList(course));
     }
 
     public void addNewCards(Course course, List<Card> cards) throws Exception {
-        ArrayList<Card> cardsCopy = new ArrayList<>(course.getCards());
-        UpdateBatch updateBatch = new UpdateBatch();
-
-        ArrayList<Pair<Card, Card>> updatedCards = getUpdatedCards(course, cards);
-        for (Pair<Card, Card> pair : updatedCards) {
-            Card courseCard = pair.first;
-            Card newCard = pair.second;
-            boolean isChanged = updateCard(courseCard, newCard);
-            if (isChanged) {
-                updateBatch.updatedCards.add(courseCard);
-            }
-        }
-
-        ArrayList<Card> newCards = getNewCards(course, cards);
-        course.addCards(newCards);
-
-        updateBatch.addedCards.addAll(newCards);
-
-        try {
-            storeCourse(course);
-            onCourseUpdated(course, updateBatch);
-
-        } catch (Exception e) {
-            course.setCards(cardsCopy);
-            throw e;
-        }
+        // TODO: update live data
+//        ArrayList<Card> cardsCopy = new ArrayList<>(course.getCards());
+//        UpdateBatch updateBatch = new UpdateBatch();
+//
+//        ArrayList<Pair<Card, Card>> updatedCards = getUpdatedCards(course, cards);
+//        for (Pair<Card, Card> pair : updatedCards) {
+//            Card courseCard = pair.first;
+//            Card newCard = pair.second;
+//            boolean isChanged = updateCard(courseCard, newCard);
+//            if (isChanged) {
+//                updateBatch.updatedCards.add(courseCard);
+//            }
+//        }
+//
+//        ArrayList<Card> newCards = getNewCards(course, cards);
+//        course.addCards(newCards);
+//
+//        updateBatch.addedCards.addAll(newCards);
+//
+//        try {
+//            storeCourse(course);
+//            onCourseUpdated(course, updateBatch);
+//
+//        } catch (Exception e) {
+//            course.setCards(cardsCopy);
+//            throw e;
+//        }
     }
 
     private boolean updateCard(Card existingCard, Card newCard) {
@@ -149,43 +172,46 @@ public class CourseHolder {
     }
 
     public void removeCourse(UUID courseId) throws Exception {
-        Course course = getCourse(courseId);
-        removeCourse(course);
+        // TODO: update live data
+//        Course course = getCourse(courseId);
+//        removeCourse(course);
     }
 
     public void removeCourse(Course course) throws Exception {
+        // TODO: update live data
         diskProvider.remove(getKey(course));
-        courses.remove(course);
-        onCoursesDeleted(Collections.singletonList(course));
+//        courses.remove(course);
+//        onCoursesDeleted(Collections.singletonList(course));
     }
 
     public void removeCard(Card card) throws Exception {
-        Course course = getCourse(card.getCourseId());
-        if (course != null) {
-            int index = course.getCardIndex(card);
-            if (index != -1) {
-                course.removeCard(card);
-
-                try {
-                    storeCourse(course);
-
-                    UpdateBatch batch = new UpdateBatch();
-                    batch.removedCards.add(card);
-                    onCourseUpdated(course, batch);
-
-                } catch (Exception e) {
-                    // rollback
-                    course.addCard(index, card);
-                    throw e;
-                }
-            }
-        }
+        // TODO: update live data
+//        Course course = getCourse(card.getCourseId());
+//        if (course != null) {
+//            int index = course.getCardIndex(card);
+//            if (index != -1) {
+//                course.removeCard(card);
+//
+//                try {
+//                    storeCourse(course);
+//
+//                    UpdateBatch batch = new UpdateBatch();
+//                    batch.removedCards.add(card);
+//                    onCourseUpdated(course, batch);
+//
+//                } catch (Exception e) {
+//                    // rollback
+//                    course.addCard(index, card);
+//                    throw e;
+//                }
+//            }
+//        }
     }
 
-    public void countRighAnswer(Card card) throws Exception {
-        Course course = getCourse(card.getCourseId());
-        countRighAnswer(course, card);
-    }
+//    public void countRighAnswer(Card card) throws Exception {
+//        Course course = getCourse(card.getCourseId());
+//        countRighAnswer(course, card);
+//    }
 
     public void countRighAnswer(Course course, Card card) throws Exception {
         CardProgress progress = card.getProgress();
@@ -199,8 +225,9 @@ public class CourseHolder {
     }
 
     public void countWrongAnswer(Card card) throws Exception {
-        Course course = getCourse(card.getCourseId());
-        countWrongAnswer(course, card);
+        // TODO: write implementation
+//        Course course = getCourse(card.getCourseId());
+//        countWrongAnswer(course, card);
     }
 
     public void countWrongAnswer(Course course, Card card) throws Exception {
@@ -213,40 +240,14 @@ public class CourseHolder {
 
     //// Getters
 
-    // TODO: use async storage
-    public Task getLoadCourseListTask() {
-        final Task task = new SimpleTask() {
-            @Override
-            public void startTask(Callback callback) {
-                super.startTask(callback);
-
-                ArrayList<Course> courses = null;
-                try {
-                    courses = loadCourses();
-                    getPrivate().setTaskResult(courses);
-
-                } catch (Exception e) {
-                    getPrivate().setTaskError(new Error(e));
-                }
-
-                getPrivate().handleTaskCompletion(callback);
-            }
-        };
-
-        task.setTaskCallback(new Task.Callback() {
-            @Override
-            public void onCompleted(boolean cancelled) {
-                Object res = task.getTaskResult();
-                if (res != null) {
-                    courses = (ArrayList<Course>) res;
-                }
-
-                state = State.Loaded;
-                onLoaded();
-            }
-        });
-
-        return task;
+    @NonNull
+    private NonNullMutableLiveData<Resource<List<Course>>> getCoursesLiveData() {
+        NonNullMutableLiveData<Resource<List<Course>>> liveData = commandHolder.getLiveData(LOAD_COURSES_COMMAND_ID);
+        if (liveData == null) {
+            liveData = new NonNullMutableLiveData<>(new Resource<List<Course>>());
+            commandHolder.putLiveData(LOAD_COURSES_COMMAND_ID, liveData);
+        }
+        return liveData;
     }
 
     @NonNull
@@ -254,10 +255,10 @@ public class CourseHolder {
         return diskProvider.getDirectory();
     }
 
-    @NonNull
-    public ArrayList<Course> getCourses() {
-        return courses;
-    }
+//    @NonNull
+//    public ArrayList<Course> getCourses() {
+//        return courses;
+//    }
 
     private ArrayList<Card> getNewCards(Course course, List<Card> cards) {
         ArrayList<Card> result = new ArrayList<>(cards);
@@ -278,7 +279,7 @@ public class CourseHolder {
         for (Card courseCard : courseCards) {
             int i = getCardIndex(courseCard.getTerm(), cards);
             if (i != -1) {
-                result.add(new Pair<Card, Card>(courseCard, cards.get(i)));
+                result.add(new Pair<>(courseCard, cards.get(i)));
             }
         }
 
@@ -298,17 +299,17 @@ public class CourseHolder {
         return resultIndex;
     }
 
-    public Course getCourse(UUID courseId) {
-        Course course = null;
-        for (Course c : getCourses()) {
-            if (c.getId().equals(courseId)) {
-                course = c;
-                break;
-            }
-        }
-
-        return course;
-    }
+//    public Course getCourse(UUID courseId) {
+//        Course course = null;
+//        for (Course c : getCourses()) {
+//            if (c.getId().equals(courseId)) {
+//                course = c;
+//                break;
+//            }
+//        }
+//
+//        return course;
+//    }
 
     public File getCourseFile(Course course) {
         return diskProvider.getKeyFile(getKey(course));
@@ -319,18 +320,18 @@ public class CourseHolder {
     }
 
     // TODO: optimize
-    public Card getCard(UUID cardId) {
-        Card resultCard = null;
-        for (Course course : getCourses()) {
-            resultCard = getCard(cardId, course.getCards());
-
-            if (resultCard != null) {
-                break;
-            }
-        }
-
-        return resultCard;
-    }
+//    public Card getCard(UUID cardId) {
+//        Card resultCard = null;
+//        for (Course course : getCourses()) {
+//            resultCard = getCard(cardId, course.getCards());
+//
+//            if (resultCard != null) {
+//                break;
+//            }
+//        }
+//
+//        return resultCard;
+//    }
 
     private Card getCard(UUID cardId, List<Card> cards) {
         Card resultCard = null;
@@ -344,22 +345,18 @@ public class CourseHolder {
         return resultCard;
     }
 
-    public State getState() {
-        return state;
-    }
-
     //// Interfaces
-
-    public interface CourseHolderListener {
-        void onLoaded(@NonNull CourseHolder holder);
-        void onCoursesAdded(@NonNull CourseHolder holder, @NonNull List<Course> courses);
-        void onCoursesRemoved(@NonNull CourseHolder holder, @NonNull List<Course> courses);
-        void onCourseUpdated(@NonNull CourseHolder holder, @NonNull Course course, @NonNull UpdateBatch batch);
-    }
-
-    public class UpdateBatch {
-        public @NonNull List<Card> removedCards = new ArrayList<>();
-        public @NonNull List<Card> addedCards = new ArrayList<>();
-        public @NonNull List<Card> updatedCards = new ArrayList<>();
-    }
+//
+//    public interface CourseHolderListener {
+//        void onLoaded(@NonNull CourseHolder holder);
+//        void onCoursesAdded(@NonNull CourseHolder holder, @NonNull List<Course> courses);
+//        void onCoursesRemoved(@NonNull CourseHolder holder, @NonNull List<Course> courses);
+//        void onCourseUpdated(@NonNull CourseHolder holder, @NonNull Course course, @NonNull UpdateBatch batch);
+//    }
+//
+//    public class UpdateBatch {
+//        public @NonNull List<Card> removedCards = new ArrayList<>();
+//        public @NonNull List<Card> addedCards = new ArrayList<>();
+//        public @NonNull List<Card> updatedCards = new ArrayList<>();
+//    }
 }

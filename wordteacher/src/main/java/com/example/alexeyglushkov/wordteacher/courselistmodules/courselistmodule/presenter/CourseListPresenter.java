@@ -24,7 +24,7 @@ import com.example.alexeyglushkov.wordteacher.tools.Sortable;
  * Created by alexeyglushkov on 05.11.16.
  */
 
-public class CourseListPresenter extends SimpleListPresenter<Course> implements Sortable, CourseHolder.CourseHolderListener {
+public class CourseListPresenter extends SimpleListPresenter<Course> implements Sortable {
     public static String DEFAULT_TITLE = "Courses";
 
     private static final int MSG_REFRESH = 0;

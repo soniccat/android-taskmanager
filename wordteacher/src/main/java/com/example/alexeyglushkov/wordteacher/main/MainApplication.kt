@@ -117,7 +117,8 @@ class MainApplication : Application() {
     }
 
     fun loadCourseHolder() {
-        taskManager.addTask(courseHolder.loadCourseListTask)
+        //taskManager.addTask(courseHolder.loadCourseListTask)
+        courseHolder.loadCourses(null)
     }
 
     fun cleanCache() {

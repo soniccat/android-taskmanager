@@ -199,7 +199,7 @@ public abstract class BaseListPresenter<T>
     // TODO: remove
     @Override
     public void reload() {
-        view.reload(getItems());
+        //view.reload(getItems());
     }
 
     @Override
@@ -207,12 +207,13 @@ public abstract class BaseListPresenter<T>
         setCompareStrategy(createSortStrategy(order));
     }
 
+    // TODO: remove
     @Override
     public void delete(Object data) {
-        int index = getItems().indexOf(data);
-        if (index != -1) {
-            view.deleteRow(index);
-        }
+//        int index = getItems().indexOf(data);
+//        if (index != -1) {
+//            view.deleteRow(index);
+//        }
     }
 
     //// Setter
@@ -247,24 +248,24 @@ public abstract class BaseListPresenter<T>
         return order;
     }
 
-    protected List<T> getProviderItems() {
-        return provider.getList();
-    }
+//    protected List<T> getProviderItems() {
+//        return provider.getList();
+//    }
+//
+//    protected List<T> getSortedItems(List<T> inItems) {
+//        List<T> result = null;
+//        if (compareStrategy != null) {
+//            result = new ArrayList<>(inItems);
+//            sortItems(result, compareStrategy);
+//
+//        } else {
+//            result = inItems;
+//        }
+//
+//        return result;
+//    }
 
-    protected List<T> getSortedItems(List<T> inItems) {
-        List<T> result = null;
-        if (compareStrategy != null) {
-            result = new ArrayList<>(inItems);
-            sortItems(result, compareStrategy);
-
-        } else {
-            result = inItems;
-        }
-
-        return result;
-    }
-
-    public List<T> getItems() {
-        return getSortedItems(getProviderItems());
-    }
+//    public List<T> getItems() {
+//        return getSortedItems(getProviderItems());
+//    }
 }
