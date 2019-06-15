@@ -211,10 +211,10 @@ public class MainPresenterImp implements
             }
         });
 
-        final LiveData<List<QuizletSet>> liveData = getQuizletRepository().loadSets(progressListener).getLiveData();
-        liveData.observe(this.view, new Observer<List<QuizletSet>>() {
+        final LiveData<Resource<List<QuizletSet>>> liveData = getQuizletRepository().loadSets(progressListener).getLiveData();
+        liveData.observe(this.view, new Observer<Resource<List<QuizletSet>>>() {
             @Override
-            public void onChanged(List<QuizletSet> quizletSets) {
+            public void onChanged(Resource<List<QuizletSet>> quizletSets) {
                 view.stopProgress();
                 liveData.removeObservers(MainPresenterImp.this.view);
             }

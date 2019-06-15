@@ -14,7 +14,7 @@ public class RepositoryCommandHolder {
     private WeakHashMap<LiveData<?>, RepositoryCommand<?>> liveDataCommandMap = new WeakHashMap<>();
 
     @NonNull
-    public RepositoryCommand putCommand(@NonNull RepositoryCommand<?> cmd) {
+    public <T extends RepositoryCommand<?>> T putCommand(@NonNull T cmd) {
         RepositoryCommand<?> oldCmd = getCommand(cmd.getCommandId());
         if (oldCmd != null) {
             cancel(oldCmd.getLiveData());
@@ -31,11 +31,11 @@ public class RepositoryCommandHolder {
     }
 
     @Nullable
-    public RepositoryCommand<?> getCommand(long id) {
-        RepositoryCommand<?> cmd = null;
-        for (RepositoryCommand<?> c : liveDataCommandMap.values()) {
+    public <T extends RepositoryCommand> T getCommand(long id) {
+        T cmd = null;
+        for (RepositoryCommand c : liveDataCommandMap.values()) {
             if (c != null && c.getCommandId() == id) {
-                cmd = c;
+                cmd = (T)c;
             }
         }
 

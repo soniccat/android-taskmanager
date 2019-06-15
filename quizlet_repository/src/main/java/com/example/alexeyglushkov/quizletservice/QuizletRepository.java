@@ -47,9 +47,9 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
 
     //// Actions
 
-    public RepositoryCommand<List<QuizletSet>> loadSets(final ProgressListener progressListener) {
+    public RepositoryCommand<Resource<List<QuizletSet>>> loadSets(final ProgressListener progressListener) {
         Disposable disposable = loadSetsInternal(progressListener).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
-        return commandHolder.putCommand(new DisposableRepositoryCommand(LOAD_SETS_COMMAND_ID, disposable, getSetsLiveData()));
+        return commandHolder.putCommand(new DisposableRepositoryCommand<>(LOAD_SETS_COMMAND_ID, disposable, getSetsLiveData()));
     }
 
     private Single<List<QuizletSet>> loadSetsInternal(final ProgressListener progressListener) {
@@ -83,9 +83,9 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
     }
 
     @NonNull
-    public RepositoryCommand<List<QuizletSet>> restoreOrLoad(final ProgressListener progressListener) {
+    public RepositoryCommand<Resource<List<QuizletSet>>> restoreOrLoad(final ProgressListener progressListener) {
         Disposable disposable = restoreOrLoadInternal(progressListener).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
-        return commandHolder.putCommand(new DisposableRepositoryCommand(LOAD_SETS_COMMAND_ID, disposable, getSetsLiveData()));
+        return commandHolder.putCommand(new DisposableRepositoryCommand<>(LOAD_SETS_COMMAND_ID, disposable, getSetsLiveData()));
     }
 
     private Single<List<QuizletSet>> restoreOrLoadInternal(final ProgressListener progressListener) {
