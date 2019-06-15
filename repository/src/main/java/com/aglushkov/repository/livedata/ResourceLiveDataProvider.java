@@ -1,6 +1,4 @@
-package com.example.alexeyglushkov.quizletservice;
-
-import com.example.alexeyglushkov.quizletservice.Resource;
+package com.aglushkov.repository.livedata;
 
 import androidx.lifecycle.LiveData;
 

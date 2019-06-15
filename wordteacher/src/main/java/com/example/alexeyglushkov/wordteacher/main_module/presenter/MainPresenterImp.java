@@ -7,8 +7,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.internal.functions.Functions;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +14,7 @@ import android.view.ViewGroup;
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.quizletservice.QuizletRepository;
-import com.example.alexeyglushkov.quizletservice.Resource;
+import com.aglushkov.repository.livedata.Resource;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.tools.CancelError;

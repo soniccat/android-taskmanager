@@ -1,4 +1,4 @@
-package com.aglushkov.repository;
+package com.aglushkov.repository.command;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;

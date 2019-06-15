@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 
+import com.aglushkov.repository.command.RepositoryCommand;
+
 import java.util.Map;
 import java.util.WeakHashMap;
 

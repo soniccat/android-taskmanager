@@ -5,8 +5,8 @@ import android.os.Bundle;
 import androidx.lifecycle.LiveData;
 
 import com.example.alexeyglushkov.quizletservice.QuizletRepository;
-import com.example.alexeyglushkov.quizletservice.Resource;
-import com.example.alexeyglushkov.quizletservice.ResourceLiveDataProvider;
+import com.aglushkov.repository.livedata.Resource;
+import com.aglushkov.repository.livedata.ResourceLiveDataProvider;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.wordteacher.listmodule.ResourceListLiveDataProviderImp;
 

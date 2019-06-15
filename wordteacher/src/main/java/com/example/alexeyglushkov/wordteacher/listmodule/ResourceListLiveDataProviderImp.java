@@ -4,8 +4,8 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.example.alexeyglushkov.quizletservice.Resource;
-import com.example.alexeyglushkov.quizletservice.ResourceLiveDataProvider;
+import com.aglushkov.repository.livedata.Resource;
+import com.aglushkov.repository.livedata.ResourceLiveDataProvider;
 
 import org.junit.Assert;
 

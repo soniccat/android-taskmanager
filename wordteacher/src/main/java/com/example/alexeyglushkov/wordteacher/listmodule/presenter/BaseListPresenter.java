@@ -9,16 +9,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import com.example.alexeyglushkov.quizletservice.Resource;
+import com.aglushkov.repository.livedata.Resource;
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategy;
-import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategyFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.EmptyStorableListLiveDataProvider;
-import com.example.alexeyglushkov.wordteacher.listmodule.NullCompareStrategyFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.NullStorableListProvider;
 import com.example.alexeyglushkov.wordteacher.listmodule.ResourceListLiveDataProviderImp;
 import com.example.alexeyglushkov.wordteacher.listmodule.StrategySortable;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableResourceListLiveDataProvider;
-import com.example.alexeyglushkov.wordteacher.listmodule.StorableResourceListLiveDataProviderFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProvider;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProviderFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.view.ListViewInterface;

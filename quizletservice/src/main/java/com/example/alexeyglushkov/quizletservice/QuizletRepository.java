@@ -1,5 +1,8 @@
 package com.example.alexeyglushkov.quizletservice;
 
+import com.aglushkov.repository.livedata.NonNullMutableLiveData;
+import com.aglushkov.repository.livedata.Resource;
+import com.aglushkov.repository.livedata.ResourceLiveDataProvider;
 import com.example.alexeyglushkov.authtaskmanager.BaseServiceTask;
 import com.example.alexeyglushkov.cachemanager.Storage;
 import com.example.alexeyglushkov.cachemanager.clients.RxCache;
@@ -8,8 +11,8 @@ import com.example.alexeyglushkov.cachemanager.clients.SimpleCache;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
-import com.aglushkov.repository.DisposableRepositoryCommand;
-import com.aglushkov.repository.RepositoryCommand;
+import com.aglushkov.repository.command.DisposableRepositoryCommand;
+import com.aglushkov.repository.command.RepositoryCommand;
 import com.aglushkov.repository.RepositoryCommandHolder;
 
 import java.util.ArrayList;

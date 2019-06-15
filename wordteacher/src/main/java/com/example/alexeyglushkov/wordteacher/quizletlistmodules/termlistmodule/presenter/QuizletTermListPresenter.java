@@ -1,7 +1,5 @@
 package com.example.alexeyglushkov.wordteacher.quizletlistmodules.termlistmodule.presenter;
 
-import androidx.lifecycle.Observer;
-
 import android.os.Bundle;
 import android.util.Log;
 
@@ -9,24 +7,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.alexeyglushkov.quizletservice.QuizletRepository;
-import com.example.alexeyglushkov.quizletservice.Resource;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 
 import java.util.List;
 
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategy;
-import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategyFactory;
-import com.example.alexeyglushkov.wordteacher.listmodule.NullStorableListProvider;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProviderFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableResourceListLiveDataProvider;
-import com.example.alexeyglushkov.wordteacher.listmodule.StorableResourceListLiveDataProviderFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.presenter.SimpleListPresenter;
-import com.example.alexeyglushkov.wordteacher.listmodule.view.ListViewInterface;
 import com.example.alexeyglushkov.wordteacher.main.MainApplication;
 import com.example.alexeyglushkov.wordteacher.main.Preferences;
 import com.example.alexeyglushkov.uimodulesandclasses.pagermodule.PagerModuleItemWithTitle;
-import com.example.alexeyglushkov.wordteacher.tools.SortOrderCompareStrategy;
 import com.example.alexeyglushkov.wordteacher.tools.Sortable;
 
 /**

@@ -1,8 +1,7 @@
 package com.example.alexeyglushkov.wordteacher.listmodule;
 
-import com.example.alexeyglushkov.quizletservice.NonNullLiveData;
-import com.example.alexeyglushkov.quizletservice.Resource;
-import com.example.alexeyglushkov.quizletservice.ResourceLiveDataProvider;
+import com.aglushkov.repository.livedata.Resource;
+import com.aglushkov.repository.livedata.ResourceLiveDataProvider;
 
 import java.util.List;
 

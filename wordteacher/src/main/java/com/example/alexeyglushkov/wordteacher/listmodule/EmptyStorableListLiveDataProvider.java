@@ -2,9 +2,8 @@ package com.example.alexeyglushkov.wordteacher.listmodule;
 
 import android.os.Bundle;
 
-import com.example.alexeyglushkov.quizletservice.Resource;
+import com.aglushkov.repository.livedata.Resource;
 
-import java.util.Collections;
 import java.util.List;
 
 import androidx.lifecycle.LiveData;

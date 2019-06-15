@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.quizletservice;
+package com.aglushkov.repository.livedata;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
