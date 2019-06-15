@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.service;
+package com.aglushkov.taskmanager_http.loader.http;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -7,9 +7,6 @@ import android.util.Log;
 import com.example.alexeyglushkov.cachemanager.clients.Cache;
 import com.example.alexeyglushkov.cachemanager.clients.CacheStatus;
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStreamDataReaders;
-import com.aglushkov.taskmanager_http.loader.http.HTTPConnectionBytesReader;
-import com.aglushkov.taskmanager_http.loader.http.HttpBytesTransport;
-import com.aglushkov.taskmanager_http.loader.http.HttpURLConnectionProvider;
 
 import java.io.ByteArrayInputStream;
 

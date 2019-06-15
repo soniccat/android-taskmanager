@@ -1,7 +1,7 @@
 package com.example.alexeyglushkov.authtaskmanager;
 
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
-import com.example.alexeyglushkov.service.HttpCacheableTransport;
+import com.aglushkov.taskmanager_http.loader.http.HttpCacheableTransport;
 import com.example.alexeyglushkov.cachemanager.clients.Cache;
 import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
 import com.aglushkov.taskmanager_http.loader.http.HTTPConnectionBytesReader;
