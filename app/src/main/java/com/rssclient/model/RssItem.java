@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.xmlpull.v1.XmlSerializer;
 
-import com.example.alexeyglushkov.taskmanager.image.Image;
+import com.aglushkov.taskmanager_http.image.Image;
 
 public class RssItem {
     String title;

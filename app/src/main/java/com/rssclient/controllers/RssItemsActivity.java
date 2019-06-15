@@ -8,9 +8,9 @@ import java.util.List;
 
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
-import com.example.alexeyglushkov.taskmanager.image.Image;
-import com.example.alexeyglushkov.taskmanager.image.ImageLoader;
-import com.example.alexeyglushkov.taskmanager.loader.http.TransportTask;
+import com.aglushkov.taskmanager_http.image.Image;
+import com.aglushkov.taskmanager_http.image.ImageLoader;
+import com.aglushkov.taskmanager_http.loader.http.TransportTask;
 import com.example.alexeyglushkov.taskmanager.task.PriorityTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.RestorableTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManagerSnapshot;

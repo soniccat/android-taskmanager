@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.taskmanager.loader.http;
+package com.aglushkov.taskmanager_http.loader.http;
 
 import java.net.HttpURLConnection;
 import java.net.URL;

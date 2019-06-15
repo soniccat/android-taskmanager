@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.taskmanager.image;
+package com.aglushkov.taskmanager_http.image;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -7,12 +7,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
 //import android.media.Image;
 
-import com.example.alexeyglushkov.taskmanager.loader.http.HttpURLConnectionProvider;
+import com.aglushkov.taskmanager_http.loader.http.HttpURLConnectionProvider;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.Tasks;
 

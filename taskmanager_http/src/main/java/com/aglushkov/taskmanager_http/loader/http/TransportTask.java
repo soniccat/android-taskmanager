@@ -1,9 +1,9 @@
-package com.example.alexeyglushkov.taskmanager.loader.http;
+package com.aglushkov.taskmanager_http.loader.http;
 
 import androidx.annotation.NonNull;
 
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
-import com.example.alexeyglushkov.taskmanager.loader.transport.TaskTransport;
+import com.aglushkov.taskmanager_http.loader.transport.TaskTransport;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 
 public class TransportTask extends SimpleTask implements TaskTransport.Listener {

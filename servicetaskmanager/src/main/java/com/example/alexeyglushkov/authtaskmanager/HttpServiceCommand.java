@@ -4,9 +4,9 @@ import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnection
 import com.example.alexeyglushkov.service.HttpCacheableTransport;
 import com.example.alexeyglushkov.cachemanager.clients.Cache;
 import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
-import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionBytesReader;
-import com.example.alexeyglushkov.taskmanager.loader.http.TransportTask;
-import com.example.alexeyglushkov.taskmanager.loader.http.HttpURLConnectionProvider;
+import com.aglushkov.taskmanager_http.loader.http.HTTPConnectionBytesReader;
+import com.aglushkov.taskmanager_http.loader.http.TransportTask;
+import com.aglushkov.taskmanager_http.loader.http.HttpURLConnectionProvider;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 
 import java.net.HttpURLConnection;

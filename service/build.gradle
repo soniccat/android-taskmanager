@@ -24,6 +24,7 @@ dependencies {
     implementation project(':authorization')
     implementation project(':storagemanager')
     implementation project(':taskmanager')
+    implementation project(':taskmanager_http')
     implementation project(path: ':streamlib')
     implementation project(path: ':tools')
     implementation 'io.reactivex.rxjava2:rxandroid:' + project.ext.rxAndroidVersion

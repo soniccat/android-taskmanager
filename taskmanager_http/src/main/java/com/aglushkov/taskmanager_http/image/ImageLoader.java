@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.taskmanager.image;
+package com.aglushkov.taskmanager_http.image;
 
 import android.graphics.Bitmap;
 import android.os.Handler;
@@ -8,10 +8,10 @@ import androidx.annotation.NonNull;
 import com.example.alexeyglushkov.streamlib.convertors.BytesBitmapConverter;
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.ByteArrayReader;
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStreamDataReader;
-import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionStreamReader;
-import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionStreamReaderAdaptor;
-import com.example.alexeyglushkov.taskmanager.loader.http.TransportTask;
-import com.example.alexeyglushkov.taskmanager.loader.http.HttpTaskTransport;
+import com.aglushkov.taskmanager_http.loader.http.HTTPConnectionStreamReader;
+import com.aglushkov.taskmanager_http.loader.http.HTTPConnectionStreamReaderAdaptor;
+import com.aglushkov.taskmanager_http.loader.http.TransportTask;
+import com.aglushkov.taskmanager_http.loader.http.HttpTaskTransport;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.Tasks;
 import com.example.alexeyglushkov.tools.HandlerTools;

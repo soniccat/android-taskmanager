@@ -2,8 +2,8 @@ package com.rssclient.controllers;
 
 import java.util.ArrayList;
 
-import com.example.alexeyglushkov.taskmanager.image.Image;
-import com.example.alexeyglushkov.taskmanager.image.ImageLoader;
+import com.aglushkov.taskmanager_http.image.Image;
+import com.aglushkov.taskmanager_http.image.ImageLoader;
 import com.rssclient.model.RssFeed;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;

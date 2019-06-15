@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.taskmanager.image;
+package com.aglushkov.taskmanager_http.image;
 
 import android.graphics.Bitmap;
 

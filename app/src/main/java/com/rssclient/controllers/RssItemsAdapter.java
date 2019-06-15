@@ -3,7 +3,7 @@ package com.rssclient.controllers;
 import java.util.ArrayList;
 
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
-import com.example.alexeyglushkov.taskmanager.image.Image;
+import com.aglushkov.taskmanager_http.image.Image;
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
 import com.example.alexeyglushkov.tools.HandlerTools;
 import com.rssclient.model.RssItem;

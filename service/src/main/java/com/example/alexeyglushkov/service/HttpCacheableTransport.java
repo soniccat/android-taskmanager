@@ -7,9 +7,9 @@ import android.util.Log;
 import com.example.alexeyglushkov.cachemanager.clients.Cache;
 import com.example.alexeyglushkov.cachemanager.clients.CacheStatus;
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStreamDataReaders;
-import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionBytesReader;
-import com.example.alexeyglushkov.taskmanager.loader.http.HttpBytesTransport;
-import com.example.alexeyglushkov.taskmanager.loader.http.HttpURLConnectionProvider;
+import com.aglushkov.taskmanager_http.loader.http.HTTPConnectionBytesReader;
+import com.aglushkov.taskmanager_http.loader.http.HttpBytesTransport;
+import com.aglushkov.taskmanager_http.loader.http.HttpURLConnectionProvider;
 
 import java.io.ByteArrayInputStream;
 

@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.taskmanager.loader.transport;
+package com.aglushkov.taskmanager_http.loader.transport;
 
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
 

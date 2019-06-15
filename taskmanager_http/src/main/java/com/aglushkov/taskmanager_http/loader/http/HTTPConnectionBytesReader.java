@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.taskmanager.loader.http;
+package com.aglushkov.taskmanager_http.loader.http;
 
 import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
 

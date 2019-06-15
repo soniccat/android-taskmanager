@@ -15,8 +15,8 @@ import android.os.Parcelable;
 import android.util.Xml;
 
 import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
-import com.example.alexeyglushkov.taskmanager.image.Image;
-import com.example.alexeyglushkov.taskmanager.loader.http.HttpURLConnectionProvider;
+import com.aglushkov.taskmanager_http.image.Image;
+import com.aglushkov.taskmanager_http.loader.http.HttpURLConnectionProvider;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.Tasks;
 

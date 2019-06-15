@@ -16,10 +16,10 @@ import com.example.alexeyglushkov.streamlib.data_readers_and_writers.ObjectReade
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.ObjectWriter;
 import com.example.alexeyglushkov.taskmanager.file.FileKeepTask;
 import com.example.alexeyglushkov.taskmanager.file.FileLoadTask;
-import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionStreamReader;
-import com.example.alexeyglushkov.taskmanager.loader.http.HTTPConnectionStreamReaderAdaptor;
-import com.example.alexeyglushkov.taskmanager.loader.http.TransportTask;
-import com.example.alexeyglushkov.taskmanager.loader.http.HttpTaskTransport;
+import com.aglushkov.taskmanager_http.loader.http.HTTPConnectionStreamReader;
+import com.aglushkov.taskmanager_http.loader.http.HTTPConnectionStreamReaderAdaptor;
+import com.aglushkov.taskmanager_http.loader.http.TransportTask;
+import com.aglushkov.taskmanager_http.loader.http.HttpTaskTransport;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 import com.example.alexeyglushkov.taskmanager.task.Tasks;
