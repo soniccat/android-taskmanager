@@ -88,7 +88,7 @@ dependencies {
     annotationProcessor 'android.arch.lifecycle:compiler:' + rootProject.archLifecycleVersion
     testImplementation 'org.mockito:mockito-core:1.9.5'
     implementation project(':taskmanager')
-    implementation project(':taskmanager_http')
+    implementation project(':taskmanager_httptask')
     implementation project(':authorization')
     implementation project(':servicetaskmanager')
     implementation project(':authcachemanager')
