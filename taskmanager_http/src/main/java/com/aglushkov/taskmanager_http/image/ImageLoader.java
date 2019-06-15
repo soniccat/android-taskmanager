@@ -20,6 +20,7 @@ import org.junit.Assert;
 
 // Because Image doesn't store loaded data we should use ImageLoader to get the data from callback
 
+//TODO: need to simplify this logic and remove static methods...
 public class ImageLoader {
 
     //TODO: write argument descriptions
@@ -52,6 +53,7 @@ public class ImageLoader {
         return transportTask;
     }
 
+    //TODO: remove static and related logic
     @NonNull
     private static TransportTask createTask(Image image, String destinationId, HTTPConnectionStreamReader<Bitmap> reader) {
         HttpTaskTransport<Bitmap> transport = new HttpTaskTransport<>(image, reader);
@@ -70,6 +72,7 @@ public class ImageLoader {
         return transportTask;
     }
 
+    //TODO: remove static and related logic
     @NonNull
     public static Task.Callback getTaskCallback(final TransportTask transportTask, final Image image, final LoadCallback callback) {
         return new Task.Callback() {
