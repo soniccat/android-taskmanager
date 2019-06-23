@@ -39,9 +39,11 @@ public abstract class QuizletPresenterMenuListener<T> extends ListMenuListener<T
     protected void showAddFromSetDialog(final List<QuizletTerm> terms) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         List<String> rows = new ArrayList<>();
-        final ArrayList<Course> courses = getCourseHolder().getCourses();
-        for (Course course : courses) {
-            rows.add(course.getTitle());
+        final List<Course> courses = getCourseHolder().getCoursesLiveData().getValue().data;
+        if (courses != null) {
+            for (Course course : courses) {
+                rows.add(course.getTitle());
+            }
         }
 
         ListAdapter adapter = new ArrayAdapter<>(context, R.layout.row_text_view, rows);

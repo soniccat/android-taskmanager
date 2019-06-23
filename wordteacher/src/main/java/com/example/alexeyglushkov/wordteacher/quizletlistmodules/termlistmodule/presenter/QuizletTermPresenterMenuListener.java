@@ -30,7 +30,8 @@ public class QuizletTermPresenterMenuListener extends QuizletPresenterMenuListen
     @Override
     protected void fillMenu(final QuizletTerm term, PopupMenu popupMenu) {
         popupMenu.getMenu().add(Menu.NONE, R.id.create_set, 0, R.string.menu_create_course);
-        if (getCourseHolder().getCourses().size() > 0) {
+        List<Course> courses = getCourseHolder().getCoursesLiveData().getValue().data;
+        if (courses != null && courses.size() > 0) {
             popupMenu.getMenu().add(Menu.NONE, R.id.add_to_course, 0, R.string.menu_add_to_course);
         }
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -43,10 +44,10 @@ public class QuizletTermPresenterMenuListener extends QuizletPresenterMenuListen
                     ArrayList<QuizletTerm> terms = new ArrayList<>();
                     terms.add(term);
 
-                    List<Course> courses = getCourseHolder().getCourses();
-                    if (courses.size() > 1) {
+                    List<Course> courses = getCourseHolder().getCoursesLiveData().getValue().data;
+                    if (courses != null && courses.size() > 1) {
                         showAddFromSetDialog(terms);
-                    } else {
+                    } else if (courses != null && courses.size() == 1) {
                         addCardsToCourse(courses.get(0), terms);
                     }
                 }

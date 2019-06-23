@@ -10,6 +10,7 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.wordteacher.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.example.alexeyglushkov.wordteacher.model.Card;
 import com.example.alexeyglushkov.wordteacher.model.Course;
@@ -28,7 +29,8 @@ public class QuizletSetPresenterMenuListener extends QuizletPresenterMenuListene
     @Override
     protected void fillMenu(final QuizletSet set, PopupMenu menu) {
         menu.getMenu().add(Menu.NONE, R.id.create_set, 0, R.string.menu_create_course);
-        if (getCourseHolder().getCourses().size() > 0) {
+        List<Course> courses = getCourseHolder().getCoursesLiveData().getValue().data;
+        if (courses != null && courses.size() > 0) {
             menu.getMenu().add(Menu.NONE, R.id.add_to_course, 0, R.string.menu_add_to_course);
         }
 
@@ -39,10 +41,10 @@ public class QuizletSetPresenterMenuListener extends QuizletPresenterMenuListene
                     onCreateCourseFromSet(set);
 
                 } else if (item.getItemId() == R.id.add_to_course) {
-                    ArrayList<Course> courses = getCourseHolder().getCourses();
-                    if (courses.size() > 1) {
+                    List<Course> courses = getCourseHolder().getCoursesLiveData().getValue().data;
+                    if (courses != null && courses.size() > 1) {
                         showAddFromSetDialog(set.getTerms());
-                    } else {
+                    } else if (courses != null && courses.size() == 1) {
                         Course course = courses.get(0);
                         addCardsToCourse(course, set.getTerms());
                     }

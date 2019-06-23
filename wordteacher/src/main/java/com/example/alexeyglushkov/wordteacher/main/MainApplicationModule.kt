@@ -21,8 +21,11 @@ import com.example.alexeyglushkov.quizletservice.QuizletService
 import com.example.alexeyglushkov.quizletservice.auth.QuizletApi2
 import com.example.alexeyglushkov.quizletservice.tasks.QuizletServiceTaskProvider
 import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManager
+import com.example.alexeyglushkov.taskmanager.task.StackTaskProvider
 import com.example.alexeyglushkov.taskmanager.task.TaskManager
 import com.example.alexeyglushkov.wordteacher.authorization.AuthActivityProxy
+import com.example.alexeyglushkov.wordteacher.model.Course
+import com.example.alexeyglushkov.wordteacher.model.CourseHolder
 
 import java.io.File
 
@@ -159,6 +162,16 @@ class MainApplicationModule {
     @Named("auth")
     fun authServiceTaskRunner(taskManager: TaskManager): ServiceTaskRunner {
         return ServiceTaskRunner(taskManager, "authorizerId")
+    }
+
+    @Provides
+    @MainScope
+    fun createCourseHolder(@Named("appContext") context: Context, taskManager: TaskManager): CourseHolder {
+        val taskProvider = StackTaskProvider(true, taskManager.handler, "CourseHolderTaskProvider");
+        taskManager.addTaskProvider(taskProvider)
+
+        val authDir = context.getDir("CourseHolder", Context.MODE_PRIVATE)
+        return CourseHolder(authDir, taskProvider)
     }
 
     //    private void createDropboxService() throws Exception {

@@ -15,11 +15,11 @@ import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskPool;
+import com.example.alexeyglushkov.taskmanager.task.TaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.Tasks;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,12 +39,12 @@ public class CourseHolder {
     private final static long LOAD_COURSES_COMMAND_ID = 0;
     private RepositoryCommandHolder commandHolder = new RepositoryCommandHolder();
 
-    private TaskPool taskPool;
+    private TaskProvider taskProvider;
 
     //// Initialization
 
-    public CourseHolder(File directory, TaskPool taskPool) {
-        this.taskPool = taskPool;
+    public CourseHolder(File directory, TaskProvider taskProvider) {
+        this.taskProvider = taskProvider;
 
         diskProvider = new DiskStorage(directory);
         diskProvider.setDefaultCodec(new CourseCodec());
@@ -59,7 +59,7 @@ public class CourseHolder {
 
     private Single<List<Course>> loadCoursesAsync(ProgressListener progressListener) {
         Task task = createLoadCoursesTask(progressListener);
-        Single<List<Course>> single = Tasks.toSingle(task, this.taskPool);
+        Single<List<Course>> single = Tasks.toSingle(task, this.taskProvider);
 
         final NonNullMutableLiveData<Resource<List<Course>>> coursesLiveData = getCoursesLiveData();
         final Resource.State previousState = getCoursesLiveData().getValue().state;
@@ -208,10 +208,10 @@ public class CourseHolder {
 //        }
     }
 
-//    public void countRighAnswer(Card card) throws Exception {
+    public void countRighAnswer(Card card) throws Exception {
 //        Course course = getCourse(card.getCourseId());
 //        countRighAnswer(course, card);
-//    }
+    }
 
     public void countRighAnswer(Course course, Card card) throws Exception {
         CardProgress progress = card.getProgress();
@@ -241,7 +241,7 @@ public class CourseHolder {
     //// Getters
 
     @NonNull
-    private NonNullMutableLiveData<Resource<List<Course>>> getCoursesLiveData() {
+    public NonNullMutableLiveData<Resource<List<Course>>> getCoursesLiveData() {
         NonNullMutableLiveData<Resource<List<Course>>> liveData = commandHolder.getLiveData(LOAD_COURSES_COMMAND_ID);
         if (liveData == null) {
             liveData = new NonNullMutableLiveData<>(new Resource<List<Course>>());
@@ -299,17 +299,20 @@ public class CourseHolder {
         return resultIndex;
     }
 
-//    public Course getCourse(UUID courseId) {
-//        Course course = null;
-//        for (Course c : getCourses()) {
-//            if (c.getId().equals(courseId)) {
-//                course = c;
-//                break;
-//            }
-//        }
-//
-//        return course;
-//    }
+    public Course getCourse(UUID courseId) {
+        Course course = null;
+        List<Course> courses = getCoursesLiveData().getValue().data;
+        if (courses != null) {
+            for (Course c : courses) {
+                if (c.getId().equals(courseId)) {
+                    course = c;
+                    break;
+                }
+            }
+        }
+
+        return course;
+    }
 
     public File getCourseFile(Course course) {
         return diskProvider.getKeyFile(getKey(course));
@@ -320,18 +323,21 @@ public class CourseHolder {
     }
 
     // TODO: optimize
-//    public Card getCard(UUID cardId) {
-//        Card resultCard = null;
-//        for (Course course : getCourses()) {
-//            resultCard = getCard(cardId, course.getCards());
-//
-//            if (resultCard != null) {
-//                break;
-//            }
-//        }
-//
-//        return resultCard;
-//    }
+    public Card getCard(UUID cardId) {
+        Card resultCard = null;
+        List<Course> courses = getCoursesLiveData().getValue().data;
+        if (courses != null) {
+            for (Course course : courses) {
+                resultCard = getCard(cardId, course.getCards());
+
+                if (resultCard != null) {
+                    break;
+                }
+            }
+        }
+
+        return resultCard;
+    }
 
     private Card getCard(UUID cardId, List<Card> cards) {
         Card resultCard = null;

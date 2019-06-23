@@ -29,7 +29,7 @@ import com.example.alexeyglushkov.wordteacher.model.CourseHolder;
  * Created by alexeyglushkov on 08.01.17.
  */
 
-public class LearnPresenterImp implements LearnPresenter, ActivityModuleItem, CourseHolder.CourseHolderListener {
+public class LearnPresenterImp implements LearnPresenter, ActivityModuleItem {
     public static final int ACTIVITY_RESULT = 10002;
     public static final int ACTIVITY_RESULT_CODE = 1;
 
@@ -63,26 +63,26 @@ public class LearnPresenterImp implements LearnPresenter, ActivityModuleItem, Co
     }
 
     private void registerRestoration(@Nullable final Bundle savedInstanceState) {
-        final CourseHolder holder = getCourseHolder();
-        if (holder.getState() == CourseHolder.State.Unitialized) {
-            this.savedInstanceState = savedInstanceState;
-            getCourseHolder().addListener(this);
-
-        } else {
-            restore(savedInstanceState);
-        }
+//        final CourseHolder holder = getCourseHolder();
+//        if (holder.getState() == CourseHolder.State.Unitialized) {
+//            this.savedInstanceState = savedInstanceState;
+//            getCourseHolder().addListener(this);
+//
+//        } else {
+//            restore(savedInstanceState);
+//        }
     }
 
     private void createTeacher() {
-        String[] courseIdStrings = view.getIntent().getStringArrayExtra(EXTRA_CARD_IDS);
-        List<Card> cards = new ArrayList<>();
-        for (String id : courseIdStrings) {
-            UUID cardId = UUID.fromString(id);
-            Card card = getCourseHolder().getCard(cardId);
-            cards.add(card);
-        }
-
-        teacher = new CardTeacher(cards);
+//        String[] courseIdStrings = view.getIntent().getStringArrayExtra(EXTRA_CARD_IDS);
+//        List<Card> cards = new ArrayList<>();
+//        for (String id : courseIdStrings) {
+//            UUID cardId = UUID.fromString(id);
+//            Card card = getCourseHolder().getCard(cardId);
+//            cards.add(card);
+//        }
+//
+//        teacher = new CardTeacher(cards);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class LearnPresenterImp implements LearnPresenter, ActivityModuleItem, Co
     }
 
     public void onDestroy() {
-        getCourseHolder().removeListener(this);
+//        getCourseHolder().removeListener(this);
     }
 
     public void onCheckPressed() {
@@ -279,32 +279,16 @@ public class LearnPresenterImp implements LearnPresenter, ActivityModuleItem, Co
 
     // CourseHolder.CourseHolderListener
 
-    @Override
-    public void onLoaded(@NonNull CourseHolder holder) {
-        restoreIfNeeded();
-        holder.removeListener(this);
-    }
+//    public void onLoaded(@NonNull CourseHolder holder) {
+//        restoreIfNeeded();
+//        holder.removeListener(this);
+//    }
 
     private void restoreIfNeeded() {
         if (savedInstanceState != null) {
             restore(savedInstanceState);
             savedInstanceState = null;
         }
-    }
-
-    @Override
-    public void onCoursesAdded(@NonNull CourseHolder holder, @NonNull List<Course> courses) {
-        // TODO: handle
-    }
-
-    @Override
-    public void onCoursesRemoved(@NonNull CourseHolder holder, @NonNull List<Course> courses) {
-        // TODO: handle
-    }
-
-    @Override
-    public void onCourseUpdated(@NonNull CourseHolder holder, @NonNull Course course, @NonNull CourseHolder.UpdateBatch batch) {
-        // TODO: handle
     }
 
     // ActivityModuleItem

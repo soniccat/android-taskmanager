@@ -7,6 +7,7 @@ import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.presenter.A
 import com.example.alexeyglushkov.uimodulesandclasses.activitymodule.view.ActivityModuleItemView;
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategyFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProviderFactory;
+import com.example.alexeyglushkov.wordteacher.listmodule.StorableResourceListLiveDataProvider;
 import com.example.alexeyglushkov.wordteacher.listmodule.presenter.BaseListPresenter;
 import com.example.alexeyglushkov.wordteacher.listmodule.view.ListViewInterface;
 import com.example.alexeyglushkov.wordteacher.model.LearnSession;
@@ -25,10 +26,10 @@ public class SessionResultPresenterImp extends BaseListPresenter<SessionResultAd
 
         if (savedInstanceState == null && extras != null) {
             LearnSession session = extras.getParcelable(SessionResultPresenter.EXTERNAL_SESSION);
-            provider = providerFactory.createFromObject(session);
+            //provider = providerFactory.createFromObject(session);
 
         } else {
-            provider = providerFactory.restore(savedInstanceState);
+            //provider = providerFactory.restore(savedInstanceState);
         }
     }
 
@@ -39,11 +40,11 @@ public class SessionResultPresenterImp extends BaseListPresenter<SessionResultAd
     }
 
     @Override
-    protected StorableListProviderFactory<SessionResultAdapterView> createProviderFactory() {
-        return new SessionResultListProviderFactory();
+    protected StorableResourceListLiveDataProvider<SessionResultAdapterView> createLiveDataProvider(Bundle bundle) {
+        return null;
     }
 
-//    @Override
+    //    @Override
 //    protected CompareStrategyFactory<SessionResultAdapterView> createCompareStrategyFactory() {
 //        return new SessionResultCompareStrategyFactory();
 //    }

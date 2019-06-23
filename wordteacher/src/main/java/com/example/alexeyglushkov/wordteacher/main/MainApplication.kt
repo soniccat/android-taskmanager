@@ -30,7 +30,7 @@ class MainApplication : Application() {
 
     lateinit var quizletRepository: QuizletRepository
     //private @NonNull DropboxService dropboxService;
-    lateinit var courseHolder: CourseHolder
+    @Inject lateinit var courseHolder: CourseHolder
 
     @Inject lateinit var taskManager: TaskManager
     @Inject lateinit var storage: Storage
@@ -65,6 +65,8 @@ class MainApplication : Application() {
         @get:Named("foursquare")
         val foursquareAccount: Account
 
+        val courseHolder: CourseHolder
+
         fun inject(app: MainApplication)
     }
 
@@ -82,8 +84,6 @@ class MainApplication : Application() {
 
         cleanCache()
         loadAccountStore()
-
-        createCourseHolder()
         loadCourseHolder()
     }
 
@@ -148,11 +148,6 @@ class MainApplication : Application() {
     //    }
 
     //// Creation Methods
-
-    private fun createCourseHolder() {
-        val authDir = getDir("CourseHolder", Context.MODE_PRIVATE)
-        this.courseHolder = CourseHolder(authDir)
-    }
 
     companion object {
         private val TAG = "MainApplication"

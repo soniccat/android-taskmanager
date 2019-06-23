@@ -6,11 +6,18 @@ import android.os.Looper;
 import android.os.Message;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
+import com.aglushkov.repository.livedata.Resource;
+import com.aglushkov.repository.livedata.ResourceLiveDataProvider;
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategyFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.NullStorableListProvider;
+import com.example.alexeyglushkov.wordteacher.listmodule.ResourceListLiveDataProvider;
+import com.example.alexeyglushkov.wordteacher.listmodule.ResourceListLiveDataProviderImp;
+import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProviderFactory;
+import com.example.alexeyglushkov.wordteacher.listmodule.StorableResourceListLiveDataProvider;
 import com.example.alexeyglushkov.wordteacher.listmodule.presenter.SimpleListPresenter;
 import com.example.alexeyglushkov.wordteacher.listmodule.view.ListViewInterface;
 import com.example.alexeyglushkov.wordteacher.main.MainApplication;
@@ -31,7 +38,6 @@ public class CourseListPresenter extends SimpleListPresenter<Course> implements 
     private static final int REFRESH_INTERVAL = 60 * 1000;
 
     private @NonNull Handler refreshHandler;
-    private @Nullable Bundle savedInstanceState;
 
     //// Creation, initialization, restoration
 
@@ -39,28 +45,6 @@ public class CourseListPresenter extends SimpleListPresenter<Course> implements 
     public void initialize() {
         super.initialize();
         refreshHandler = createRefreshHandler();
-    }
-
-    @Override
-    public void onViewStateRestored(ListViewInterface view, @Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(view, savedInstanceState);
-
-        this.savedInstanceState = savedInstanceState;
-
-        getCourseHolder().addListener(this);
-        if (getCourseHolder().getState() != CourseHolder.State.Unitialized) {
-            handleLoadedCourses();
-            reload();
-        } else {
-            view.showLoading();
-        }
-    }
-
-    private void restoreIfNeeded() {
-        if (this.savedInstanceState != null || provider instanceof NullStorableListProvider) {
-            provider = providerFactory.restore(this.savedInstanceState);
-            this.savedInstanceState = null;
-        }
     }
 
     //// Events
@@ -80,21 +64,10 @@ public class CourseListPresenter extends SimpleListPresenter<Course> implements 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        getCourseHolder().removeListener(this);
         invalidateRefreshSchedule();
     }
 
-    private void onHolderLoaded() {
-        handleLoadedCourses();
-    }
-
     //// Actions
-
-    private void handleLoadedCourses() {
-        view.hideLoading();
-        restoreIfNeeded();
-        reload();
-    }
 
     private void scheduleRefresh() {
         refreshHandler.sendEmptyMessageDelayed(MSG_REFRESH, REFRESH_INTERVAL);
@@ -105,21 +78,21 @@ public class CourseListPresenter extends SimpleListPresenter<Course> implements 
     }
 
     private void refresh() {
-        view.updateRows();
+        //view.updateRows(); ??? // move to quizletsetlistpresenter
         scheduleRefresh();
     }
 
-    //// Creation Methods
-
-    @NonNull
-    protected CourseListProviderFactory createProviderFactory() {
-        return new CourseListProviderFactory(getCourseHolder());
+    @Override
+    protected StorableResourceListLiveDataProvider<Course> createLiveDataProvider(Bundle bundle) {
+        return new ResourceListLiveDataProviderImp<>(bundle, new ResourceLiveDataProvider<List<Course>>() {
+            @Override
+            public LiveData<Resource<List<Course>>> getLiveData() {
+                return getCourseHolder().getCoursesLiveData();
+            }
+        });
     }
 
-//    @Override
-//    public CompareStrategyFactory<Course> createCompareStrategyFactory() {
-//        return new CourseCompareStrategyFactory();
-//    }
+    //// Creation Methods
 
     private Handler createRefreshHandler() {
         return new Handler(Looper.myLooper(), new Handler.Callback() {
@@ -149,44 +122,11 @@ public class CourseListPresenter extends SimpleListPresenter<Course> implements 
 //        reload();
 //    }
 
-    // CourseHolder.CourseHolderListener
-
-    @Override
-    public void onLoaded(@NonNull CourseHolder holder) {
-        onHolderLoaded();
-    }
-
-    @Override
-    public void onCoursesAdded(@NonNull CourseHolder holder, @NonNull List<Course> courses) {
-        reload();
-    }
-
-    @Override
-    public void onCoursesRemoved(@NonNull CourseHolder holder, @NonNull List<Course> courses) {
-        reload();
-    }
-
-    @Override
-    public void onCourseUpdated(@NonNull CourseHolder holder, @NonNull Course course, @NonNull CourseHolder.UpdateBatch batch) {
-        int index = getItems().indexOf(course);
-        if (index != -1) {
-            view.updateRow(index);
-        }
-    }
-
     // PagerModuleItemWithTitle
 
     @Override
     public String getTitle() {
         return DEFAULT_TITLE;
-    }
-
-    //// Setters
-
-    // Data Setters
-
-    public void setCourses(List<Course> courses) {
-        provider = providerFactory.createFromList(courses);
     }
 
     //// Getters
@@ -199,15 +139,5 @@ public class CourseListPresenter extends SimpleListPresenter<Course> implements 
 
     public CourseHolder getCourseHolder() {
         return getMainApplication().getCourseHolder();
-    }
-
-    // Cast Getters
-
-//    private CourseCompareStrategyFactory getCompareStrategyFactory() {
-//        return (CourseCompareStrategyFactory)compareStrategyFactory;
-//    }
-
-    private SortOrderCompareStrategy getCompareStrategy() {
-        return (SortOrderCompareStrategy)compareStrategy;
     }
 }

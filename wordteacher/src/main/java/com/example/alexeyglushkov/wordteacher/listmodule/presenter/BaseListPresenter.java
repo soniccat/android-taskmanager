@@ -12,12 +12,9 @@ import java.util.List;
 import com.aglushkov.repository.livedata.Resource;
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategy;
 import com.example.alexeyglushkov.wordteacher.listmodule.EmptyStorableListLiveDataProvider;
-import com.example.alexeyglushkov.wordteacher.listmodule.NullStorableListProvider;
 import com.example.alexeyglushkov.wordteacher.listmodule.ResourceListLiveDataProviderImp;
 import com.example.alexeyglushkov.wordteacher.listmodule.StrategySortable;
 import com.example.alexeyglushkov.wordteacher.listmodule.StorableResourceListLiveDataProvider;
-import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProvider;
-import com.example.alexeyglushkov.wordteacher.listmodule.StorableListProviderFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.view.ListViewInterface;
 import com.example.alexeyglushkov.wordteacher.main.Preferences;
 
@@ -36,11 +33,7 @@ public abstract class BaseListPresenter<T>
         Observer<Resource<List<T>>>,
         StackModuleItem,
         PagerModuleItemWithTitle {
-    protected StorableListProviderFactory<T> providerFactory;
-    protected StorableListProvider<T> provider = new NullStorableListProvider<>();
-
     protected final EmptyStorableListLiveDataProvider<T> EMPTY_LIST_DATA_PROVIDER = new EmptyStorableListLiveDataProvider<>();
-    //protected StorableResourceListLiveDataProviderFactory<T> liveDataProviderFactory;
     protected StorableResourceListLiveDataProvider<T> liveDataProvider = EMPTY_LIST_DATA_PROVIDER;
 
     //protected CompareStrategyFactory<T> compareStrategyFactory = new NullCompareStrategyFactory<>();
@@ -54,9 +47,6 @@ public abstract class BaseListPresenter<T>
     }
 
     public void initialize() {
-        providerFactory = createProviderFactory();
-        //liveDataProviderFactory = createLiveDataProviderFactory();
-        //compareStrategyFactory = createCompareStrategyFactory();
     }
 
     protected CompareStrategy<T> createSortStrategy(Preferences.SortOrder order) {
@@ -67,8 +57,7 @@ public abstract class BaseListPresenter<T>
 //        return new NullCompareStrategyFactory<>();
 //    }
 
-    protected abstract StorableListProviderFactory<T> createProviderFactory();
-
+    // TODO: make abstract
     protected StorableResourceListLiveDataProvider<T> createLiveDataProvider(Bundle bundle) {
         return null;
     }
@@ -91,9 +80,7 @@ public abstract class BaseListPresenter<T>
     @Override
     public void onViewCreated(ListViewInterface view, Bundle state) {
         setView(view);
-        if (this.liveDataProvider != null) { //TODO: remove the condition after getting rid of a deprecated provider
-            this.liveDataProvider.getListLiveData().observe(this.view, this);
-        }
+        this.liveDataProvider.getListLiveData().observe(this.view, this);
     }
 
     @Override
@@ -115,8 +102,6 @@ public abstract class BaseListPresenter<T>
 
     public void onDestroy() {
         // clear here to support onSaveInstanceState
-        providerFactory = null;
-        provider = null;
 
         if (liveDataProvider != null) {
             //liveDataProvider.getListLiveData().removeObserver(this);
@@ -162,7 +147,6 @@ public abstract class BaseListPresenter<T>
     // Storing
 
     public void store(Bundle bundle) {
-        provider.store(bundle);
         liveDataProvider.store(bundle);
     }
 

@@ -59,9 +59,8 @@ import com.example.alexeyglushkov.wordteacher.tools.Sortable;
 
 public class MainPresenterImp implements
         MainPresenter,
-        PagerModuleListener,
-        CourseHolder.CourseHolderListener,
-        Observer<Resource<List<QuizletSet>>> {
+        PagerModuleListener
+{
     private MainRouter router;
     private PagerModule pagerModule;
     private MainView view;
@@ -70,8 +69,18 @@ public class MainPresenterImp implements
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        getCourseHolder().addListener(this);
-        getQuizletRepository().getLiveData().observeForever(this);
+        getCourseHolder().getCoursesLiveData().observe(view, new Observer<Resource<List<Course>>>() {
+            @Override
+            public void onChanged(Resource<List<Course>> listResource) {
+                onCoursesResourceChanged(listResource);
+            }
+        });
+        getQuizletRepository().getLiveData().observe(view, new Observer<Resource<List<QuizletSet>>>() {
+            @Override
+            public void onChanged(Resource<List<QuizletSet>> listResource) {
+                onQuizletSetsResourceChanged(listResource);
+            }
+        });
 
         router = createRouter();
         pagerModule = createPagerModule(savedInstanceState);
@@ -82,8 +91,6 @@ public class MainPresenterImp implements
 
     @Override
     public void onDestroy() {
-        getCourseHolder().removeListener(this);
-        getQuizletRepository().getLiveData().removeObserver(this);
     }
 
     @Override
@@ -141,6 +148,26 @@ public class MainPresenterImp implements
         } else if (course.getCards().size() > 0){
             showLearning(course.getCards());
         }
+    }
+
+    private void onQuizletSetsResourceChanged(@NonNull Resource<List<QuizletSet>> listResource) {
+        if (listResource.error != null) {
+            Throwable error = listResource.error;
+            boolean isCancelled = error instanceof CancelError;
+            if (error instanceof Authorizer.AuthError) {
+                isCancelled = ((Authorizer.AuthError)error).getReason() == Authorizer.AuthError.Reason.Cancelled;
+            }
+
+            if (!isCancelled) {
+                view.showLoadError(error);
+            }
+
+            view.stopProgress();
+        }
+    }
+
+    private void onCoursesResourceChanged(@NonNull Resource<List<Course>> listResource) {
+        onCourseHolderChanged();
     }
 
     // Buttons press
@@ -281,47 +308,6 @@ public class MainPresenterImp implements
     @Override
     public void onCurrentPageChanged() {
         view.invalidateToolbar();
-    }
-
-    // Observer<Resource<List<QuizletSet>>>
-
-    @Override
-    public void onChanged(@NonNull Resource<List<QuizletSet>> listResource) {
-        if (listResource.error != null) {
-            Throwable error = listResource.error;
-            boolean isCancelled = error instanceof CancelError;
-            if (error instanceof Authorizer.AuthError) {
-                isCancelled = ((Authorizer.AuthError)error).getReason() == Authorizer.AuthError.Reason.Cancelled;
-            }
-
-            if (!isCancelled) {
-                view.showLoadError(error);
-            }
-
-            view.stopProgress();
-        }
-    }
-
-    // CourseHolder.CourseHolderListener
-
-    @Override
-    public void onLoaded(CourseHolder holder) {
-        onCourseHolderChanged();
-    }
-
-    @Override
-    public void onCoursesAdded(@NonNull CourseHolder holder, @NonNull List<Course> courses) {
-        onCourseHolderChanged();
-    }
-
-    @Override
-    public void onCoursesRemoved(@NonNull CourseHolder holder, @NonNull List<Course> courses) {
-        onCourseHolderChanged();
-    }
-
-    @Override
-    public void onCourseUpdated(@NonNull CourseHolder holder, @NonNull Course course, @NonNull CourseHolder.UpdateBatch batch) {
-        onCourseHolderChanged();
     }
 
     //// Creation methods
@@ -558,12 +544,13 @@ public class MainPresenterImp implements
 
     @NonNull
     private List<Card> getReadyCards() {
-        ArrayList<Card> cards = new ArrayList<>();
-        for (Course course : getCourseHolder().getCourses()) {
-            cards.addAll(course.getReadyToLearnCards());
-        }
+//        ArrayList<Card> cards = new ArrayList<>();
+//        for (Course course : getCourseHolder().getCourses()) {
+//            cards.addAll(course.getReadyToLearnCards());
+//        }
 
-        return cards;
+//        return cards;
+        return new ArrayList<>();
     }
 
     public Preferences.SortOrder getCurrentSortOrder() {

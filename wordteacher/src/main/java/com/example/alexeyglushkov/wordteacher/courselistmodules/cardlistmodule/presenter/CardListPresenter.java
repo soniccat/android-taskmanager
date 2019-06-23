@@ -3,12 +3,17 @@ package com.example.alexeyglushkov.wordteacher.courselistmodules.cardlistmodule.
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
 
 
 import java.util.List;
 
+import com.aglushkov.repository.livedata.Resource;
+import com.aglushkov.repository.livedata.ResourceLiveDataProvider;
 import com.example.alexeyglushkov.wordteacher.listmodule.CompareStrategyFactory;
 import com.example.alexeyglushkov.wordteacher.listmodule.NullStorableListProvider;
+import com.example.alexeyglushkov.wordteacher.listmodule.ResourceListLiveDataProviderImp;
+import com.example.alexeyglushkov.wordteacher.listmodule.StorableResourceListLiveDataProvider;
 import com.example.alexeyglushkov.wordteacher.listmodule.presenter.SimpleListPresenter;
 import com.example.alexeyglushkov.wordteacher.listmodule.view.ListViewInterface;
 import com.example.alexeyglushkov.wordteacher.main.MainApplication;
@@ -23,66 +28,28 @@ import com.example.alexeyglushkov.wordteacher.tools.Sortable;
  * Created by alexeyglushkov on 05.11.16.
  */
 
-public class CardListPresenter extends SimpleListPresenter<Card> implements Sortable, CourseHolder.CourseHolderListener {
+public class CardListPresenter extends SimpleListPresenter<Card> implements Sortable {
 
     public static String DEFAULT_TITLE = "Cards";
-    private Bundle savedInstanceState;
-
-    //// Creation, initialization, restoration
 
     @Override
-    public void onViewStateRestored(ListViewInterface view, @Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(view, savedInstanceState);
-
-        this.savedInstanceState = savedInstanceState;
-
-        getCourseHolder().addListener(this);
-        if (getCourseHolder().getState() != CourseHolder.State.Unitialized) {
-            handleLoadedCourses();
-        } else {
-            view.showLoading();
-        }
-    }
-
-    private void restoreIfNeeded() {
-        if (this.savedInstanceState != null || provider instanceof NullStorableListProvider) {
-            provider = providerFactory.restore(this.savedInstanceState);
-            this.savedInstanceState = null;
-        }
-    }
-
-    //// Events
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        getCourseHolder().removeListener(this);
-    }
-
-    private void onHolderLoaded() {
-        handleLoadedCourses();
-    }
-
-    //// Actions
-
-    private void handleLoadedCourses() {
-        view.hideLoading();
-        restoreIfNeeded();
-        reload();
+    protected StorableResourceListLiveDataProvider<Card> createLiveDataProvider(Bundle bundle) {
+        return new ResourceListLiveDataProviderImp<>(bundle, new ResourceLiveDataProvider<List<Card>>() {
+            @Override
+            public LiveData<Resource<List<Card>>> getLiveData() {
+                return null;
+            }
+        }) ;
     }
 
     //// Interface
 
     // BaseListPresenter
 
-    @NonNull
-    protected CardListProviderFactory createProviderFactory() {
-        return new CardListProviderFactory(getCourseHolder());
-    }
-
-    public CompareStrategyFactory<Card> createCompareStrategyFactory() {
-        return new CardCompareStrategyFactory();
-    }
+//    @NonNull
+//    protected CardListProviderFactory createProviderFactory() {
+//        return new CardListProviderFactory(getCourseHolder());
+//    }
 
     // PagerModuleItemWithTitle
 
@@ -106,53 +73,13 @@ public class CardListPresenter extends SimpleListPresenter<Card> implements Sort
 //        return getCompareStrategy().getSortOrder();
 //    }
 
-    // CourseHolder.CourseHolderListener
-
-    @Override
-    public void onLoaded(CourseHolder holder) {
-        onHolderLoaded();
-    }
-
-    @Override
-    public void onCoursesAdded(@NonNull CourseHolder holder, @NonNull List<Course> courses) {
-        Course parentCourse = getParentCourse();
-        if (!isExplicitCardList() && parentCourse == null) {
-            reload();
-        }
-    }
-
-    @Override
-    public void onCoursesRemoved(@NonNull CourseHolder holder, @NonNull List<Course> courses) {
-        Course parentCourse = getParentCourse();
-        if (parentCourse != null) {
-            if (courses.contains(getParentCourse())) {
-                provider = new NullStorableListProvider<>();
-                reload();
-            }
-        } else {
-            reload();
-        }
-    }
-
-    @Override
-    public void onCourseUpdated(@NonNull CourseHolder holder, @NonNull Course course, @NonNull CourseHolder.UpdateBatch batch) {
-        Course parentCourse = getParentCourse();
-        if (parentCourse != null) {
-            if (course.equals(parentCourse)) {
-                reload();
-            }
-        } else {
-            reload();
-        }
-    }
 
     //// Setters
 
     // Data Setters
 
     public void setParentCourse(Course course) {
-        provider = providerFactory.createFromObject(course);
-        reload();
+        // TODO:
     }
 
     //// Getters
@@ -172,19 +99,15 @@ public class CardListPresenter extends SimpleListPresenter<Card> implements Sort
     public @Nullable
     Course getParentCourse() {
         Course result = null;
-        if (provider instanceof CourseCardListProvider) {
-            CourseCardListProvider courseProvider = (CourseCardListProvider)provider;
-            result = courseProvider.getCourse();
-        }
+//        if (provider instanceof CourseCardListProvider) {
+//            CourseCardListProvider courseProvider = (CourseCardListProvider)provider;
+//            result = courseProvider.getCourse();
+//        }
 
         return result;
     }
 
     // State Getters
-
-    private boolean isExplicitCardList() {
-        return provider instanceof CardListProvider;
-    }
 
     // Cast Getters
 
