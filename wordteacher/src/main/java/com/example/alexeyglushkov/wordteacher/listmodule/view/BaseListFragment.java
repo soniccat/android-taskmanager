@@ -148,6 +148,7 @@ public abstract class BaseListFragment<T> extends Fragment implements ListViewIn
 
     public void reload(List<T> items) {
         if (getView() != null) { // remove the condition after
+            // TODO: use ListAdapter for AsyncListDiffer
             setAdapterItems(items);
         }
     }

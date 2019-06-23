@@ -35,8 +35,6 @@ public abstract class BaseListPresenter<T>
         PagerModuleItemWithTitle {
     protected final EmptyStorableListLiveDataProvider<T> EMPTY_LIST_DATA_PROVIDER = new EmptyStorableListLiveDataProvider<>();
     protected StorableResourceListLiveDataProvider<T> liveDataProvider = EMPTY_LIST_DATA_PROVIDER;
-
-    //protected CompareStrategyFactory<T> compareStrategyFactory = new NullCompareStrategyFactory<>();
     protected @Nullable CompareStrategy<T> compareStrategy; // TODO: remove it somehow
 
     protected ListViewInterface<T> view;

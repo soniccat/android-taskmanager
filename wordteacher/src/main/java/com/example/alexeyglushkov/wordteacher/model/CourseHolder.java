@@ -1,6 +1,7 @@
 package com.example.alexeyglushkov.wordteacher.model;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
 import com.aglushkov.repository.RepositoryCommandHolder;
@@ -17,6 +18,8 @@ import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskPool;
 import com.example.alexeyglushkov.taskmanager.task.TaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.Tasks;
+
+import org.junit.Assert;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -51,7 +54,6 @@ public class CourseHolder {
     }
 
     //// Actions
-
     public RepositoryCommand<Resource<List<Course>>> loadCourses(final ProgressListener progressListener) {
         Disposable disposable = loadCoursesAsync(progressListener).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
         return commandHolder.putCommand(new DisposableRepositoryCommand<>(LOAD_COURSES_COMMAND_ID, disposable, getCoursesLiveData()));
@@ -108,8 +110,8 @@ public class CourseHolder {
 
         List<StorageEntry> entries = diskProvider.getEntries();
         for (StorageEntry entry : entries) {
-            DiskStorageEntry diskEntry = (DiskStorageEntry)entry;
-            Course course = (Course)diskEntry.getObject();
+            DiskStorageEntry diskEntry = (DiskStorageEntry) entry;
+            Course course = (Course) diskEntry.getObject();
             courses.add(course);
         }
 
@@ -118,9 +120,21 @@ public class CourseHolder {
 
     public void addCourse(Course course) throws Exception {
         storeCourse(course);
-        // TODO: update live data
-        //courses.add(course);
-        //onCoursesAdded(Collections.singletonList(course));
+
+        NonNullMutableLiveData<Resource<List<Course>>> coursesLiveData = getCoursesLiveData();
+        Resource<List<Course>> resource = coursesLiveData.getValue();
+
+        if (resource.state == Resource.State.Uninitialized) {
+            throw new RuntimeException("addCourse for uninitialized holder");
+        }
+
+        List<Course> data = resource.data;
+        if (data == null) {
+            data = new ArrayList<>();
+        }
+
+        data.add(course);
+        coursesLiveData.setValue(resource.resource(data));
     }
 
     public void addNewCards(Course course, List<Card> cards) throws Exception {
@@ -172,16 +186,30 @@ public class CourseHolder {
     }
 
     public void removeCourse(UUID courseId) throws Exception {
-        // TODO: update live data
-//        Course course = getCourse(courseId);
-//        removeCourse(course);
+        Course course = getCourse(courseId);
+        if (course != null) {
+            removeCourse(course);
+        }
     }
 
-    public void removeCourse(Course course) throws Exception {
-        // TODO: update live data
+    public void removeCourse(@NonNull Course course) throws Exception {
         diskProvider.remove(getKey(course));
-//        courses.remove(course);
-//        onCoursesDeleted(Collections.singletonList(course));
+
+        NonNullMutableLiveData<Resource<List<Course>>> coursesLiveData = getCoursesLiveData();
+        Resource<List<Course>> resource = coursesLiveData.getValue();
+
+        if (resource.state == Resource.State.Uninitialized) {
+            throw new RuntimeException("removeCourse for uninitialized holder");
+        }
+
+        if (resource.data != null) {
+            List<Course> newData = new ArrayList<>(resource.data);
+            int i = newData.indexOf(course);
+            if (i != -1) {
+                newData.remove(i);
+                coursesLiveData.setValue(resource.resource(newData));
+            }
+        }
     }
 
     public void removeCard(Card card) throws Exception {
@@ -289,7 +317,7 @@ public class CourseHolder {
     private int getCardIndex(String title, List<Card> cards) {
         int resultIndex = -1;
         // TODO: looks sad
-        for (int i=0; i<cards.size(); ++i) {
+        for (int i = 0; i < cards.size(); ++i) {
             if (cards.get(i).getTerm().equals(title)) {
                 resultIndex = i;
                 break;
@@ -299,7 +327,7 @@ public class CourseHolder {
         return resultIndex;
     }
 
-    public Course getCourse(UUID courseId) {
+    public @Nullable Course getCourse(UUID courseId) {
         Course course = null;
         List<Course> courses = getCoursesLiveData().getValue().data;
         if (courses != null) {
@@ -350,19 +378,4 @@ public class CourseHolder {
 
         return resultCard;
     }
-
-    //// Interfaces
-//
-//    public interface CourseHolderListener {
-//        void onLoaded(@NonNull CourseHolder holder);
-//        void onCoursesAdded(@NonNull CourseHolder holder, @NonNull List<Course> courses);
-//        void onCoursesRemoved(@NonNull CourseHolder holder, @NonNull List<Course> courses);
-//        void onCourseUpdated(@NonNull CourseHolder holder, @NonNull Course course, @NonNull UpdateBatch batch);
-//    }
-//
-//    public class UpdateBatch {
-//        public @NonNull List<Card> removedCards = new ArrayList<>();
-//        public @NonNull List<Card> addedCards = new ArrayList<>();
-//        public @NonNull List<Card> updatedCards = new ArrayList<>();
-//    }
 }
