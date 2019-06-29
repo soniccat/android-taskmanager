@@ -2,12 +2,8 @@ package com.example.alexeyglushkov.taskmanager.task;
 
 import android.os.Handler;
 import android.os.Looper;
-import androidx.test.annotation.UiThreadTest;
-import androidx.test.rule.UiThreadTestRule;
-import androidx.test.runner.AndroidJUnit4;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -15,15 +11,11 @@ import org.junit.runner.RunWith;
  * Created by alexeyglushkov on 23.08.15.
  */
 
-@RunWith(AndroidJUnit4.class)
 public class SimpleTaskManagerTest {
 
     private TaskPoolTestSet poolTestSet;
     private TaskManagerTestSet taskManagerTestSet;
     private TaskManager taskManager;
-
-    @Rule
-    public UiThreadTestRule rule = new UiThreadTestRule();
 
     @Before
     public void setUp() throws Exception {
@@ -35,184 +27,184 @@ public class SimpleTaskManagerTest {
         taskManagerTestSet.before(taskManager);
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testSetMaxLoadingTasks() {
         taskManagerTestSet.setMaxLoadingTasks();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testGetLoadingTaskCount() {
         taskManagerTestSet.getLoadingTaskCount();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testAddTask() {
         taskManagerTestSet.addTask();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testAddStartedTask() {
         taskManagerTestSet.addStartedTask();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testAddTheSameTaskWithSkipPolicy() {
         taskManagerTestSet.addTheSameTaskWithSkipPolicy();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testAddTheSameTaskWithCancelPolicy() {
         taskManagerTestSet.addTheSameTaskWithCancelPolicy();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testTaskCallbackCalled() {
         taskManagerTestSet.taskCallbackCalled();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testChangedTaskCallbackCalled() {
         taskManagerTestSet.changedTaskCallbackCalled();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testTaskWithCancelledImmediatelyCallbackCalledAfterCancel() {
         taskManagerTestSet.taskWithCancelledImmediatelyCallbackCalledAfterCancel();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testTaskWithCancelledImmediatelyAndChangedCallbackCalled() {
         taskManagerTestSet.taskWithCancelledImmediatelyAndChangedCallbackCalled();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testAddStateListener() {
         taskManagerTestSet.addStateListener();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testRemoveStateListener() {
         taskManagerTestSet.removeStateListener();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testRemoveTask() {
         taskManagerTestSet.removeTask();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testRemoveUnknownTask() {
         taskManagerTestSet.removeUnknownTask();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testCheckTaskRemovingAfterFinishing() {
         taskManagerTestSet.checkTaskRemovingAfterFinishing();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testGetTaskFromProvider() {
         taskManagerTestSet.getTaskFromProvider();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testAddTaskProvider() {
         taskManagerTestSet.addTaskProvider();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testAddTaskProvider2() {
         taskManagerTestSet.addTaskProvider2();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testAddTaskProviderWithTheSameId() {
         taskManagerTestSet.addTaskProviderWithTheSameId();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testRemoveTaskProvider() {
         taskManagerTestSet.removeTaskProvider();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testSetTaskExecutor() {
         taskManagerTestSet.setTaskExecutor();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testStartImmediately() {
         taskManagerTestSet.startImmediately();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testStartImmediatelySkipPolicy() {
         taskManagerTestSet.startImmediatelySkipPolicy();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testStartImmediatelySkipPolicyWithFinish() {
         taskManagerTestSet.startImmediatelySkipPolicyWithFinish();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testStartImmediatelyFinish() {
         taskManagerTestSet.startImmediatelyFinish();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testStartImmediatelyFinishWithChangedCallback() {
         taskManagerTestSet.startImmediatelyFinishWithChangedCallback();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testStartImmediatelyCancelWithChangedCallback() {
         taskManagerTestSet.startImmediatelyCancelWithChangedCallback();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testSetTaskProviderPriority() {
         taskManagerTestSet.setTaskProviderPriority();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testSetGetHandler() {
         taskManagerTestSet.setGetHandler();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testGetTaskCount() {
         taskManagerTestSet.getTaskCount();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testGetTasks() {
         taskManagerTestSet.getTasks();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testSetLimit() {
         taskManagerTestSet.setLimit();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testSetLimitRemove() {
         taskManagerTestSet.setLimitRemove();
     }
 
     // PoolTests
 
-    @Test @UiThreadTest
+    @Test
     public void testGetTask() {
         poolTestSet.getTask();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testGetUnknownTask() {
         poolTestSet.getUnknownTask();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testSetGetUserData() {
         poolTestSet.setGetUserData();
     }

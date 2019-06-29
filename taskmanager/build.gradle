@@ -8,7 +8,6 @@ android {
         targetSdkVersion project.ext.targetSdkVersion
         versionCode project.ext.versionCode
         versionName project.ext.versionName
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -20,13 +19,16 @@ android {
             testCoverageEnabled true
         }
     }
+
+    testOptions {
+        unitTests.includeAndroidResources = true
+        unitTests.returnDefaultValues = true
+    }
 }
 
 dependencies {
     implementation 'androidx.legacy:legacy-support-v4:'  + project.ext.legacySupportVersion
     implementation 'androidx.appcompat:appcompat:' + project.ext.appCompatVersion
-    implementation 'com.google.dexmaker:dexmaker:1.2'
-    implementation 'com.google.dexmaker:dexmaker-mockito:1.2'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':testsupport')
     implementation project(':streamlib')
@@ -34,7 +36,6 @@ dependencies {
     implementation 'junit:junit:' + project.ext.junitVersion
     implementation 'io.reactivex.rxjava2:rxandroid:' + project.ext.rxAndroidVersion
     implementation 'io.reactivex.rxjava2:rxjava:' + project.ext.rxJavaVersion
-    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
-        exclude group: 'androidx.annotation', module: 'annotation'
-    })
+    testImplementation 'androidx.test:core:1.2.0'
+    testImplementation 'org.mockito:mockito-core:1.10.19'
 }

@@ -229,25 +229,4 @@ public abstract class BaseListPresenter<T>
 
         return order;
     }
-
-//    protected List<T> getProviderItems() {
-//        return provider.getList();
-//    }
-//
-//    protected List<T> getSortedItems(List<T> inItems) {
-//        List<T> result = null;
-//        if (compareStrategy != null) {
-//            result = new ArrayList<>(inItems);
-//            sortItems(result, compareStrategy);
-//
-//        } else {
-//            result = inItems;
-//        }
-//
-//        return result;
-//    }
-
-//    public List<T> getItems() {
-//        return getSortedItems(getProviderItems());
-//    }
 }

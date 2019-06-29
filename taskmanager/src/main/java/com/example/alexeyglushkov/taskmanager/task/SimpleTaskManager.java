@@ -4,6 +4,8 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import androidx.annotation.Nullable;
+import androidx.collection.SparseArrayCompat;
+
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -40,8 +42,8 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
     private TaskProvider waitingTasks;
     private SafeList<TaskProvider> taskProviders;
 
-    private SparseArray<Float> limits;
-    private SparseArray<Integer> usedSpace; //type -> task count from loadingTasks
+    private SparseArrayCompat<Float> limits;
+    private SparseArrayCompat<Integer> usedSpace; //type -> task count from loadingTasks
 
     private int maxLoadingTasks;
 
@@ -76,8 +78,8 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         listeners = new WeakRefList<TaskManagerListener>();
         taskProviders = createTaskProvidersTreeSet();
 
-        limits = new SparseArray<Float>();
-        usedSpace = new SparseArray<Integer>();
+        limits = new SparseArrayCompat<>();
+        usedSpace = new SparseArrayCompat<>();
     }
 
     private SafeList<TaskProvider> createTaskProvidersTreeSet() {
@@ -444,14 +446,14 @@ public class SimpleTaskManager implements TaskManager, TaskPool.TaskPoolListener
         });
     }
 
-    public SparseArray<Float> getLimits() {
+    public SparseArrayCompat<Float> getLimits() {
         checkHandlerThread();
 
         return limits.clone();
     }
 
     @Override
-    public SparseArray<Integer> getUsedSpace() {
+    public SparseArrayCompat<Integer> getUsedSpace() {
         return usedSpace.clone();
     }
 

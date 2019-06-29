@@ -2,6 +2,8 @@ package com.example.alexeyglushkov.taskmanager.task;
 
 import android.util.SparseArray;
 
+import androidx.collection.SparseArrayCompat;
+
 /**
  * Created by alexeyglushkov on 23.08.15.
  */
@@ -16,9 +18,9 @@ public interface TaskManagerSnapshot {
     int getLoadingTasksCount();
     int getWaitingTasksCount();
     int getMaxQueueSize();
-    SparseArray<Float> getLoadingLimits();
-    SparseArray<Integer> getUsedLoadingSpace();
-    SparseArray<Integer> getWaitingTaskInfo();
+    SparseArrayCompat<Float> getLoadingLimits();
+    SparseArrayCompat<Integer> getUsedLoadingSpace();
+    SparseArrayCompat<Integer> getWaitingTaskInfo();
 
     interface OnSnapshotChangedListener {
         void onSnapshotChanged(TaskManagerSnapshot snapshot);

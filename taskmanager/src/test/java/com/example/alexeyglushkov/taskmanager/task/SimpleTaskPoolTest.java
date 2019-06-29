@@ -2,96 +2,86 @@ package com.example.alexeyglushkov.taskmanager.task;
 
 import android.os.Handler;
 import android.os.Looper;
-import androidx.test.annotation.UiThreadTest;
-import androidx.test.rule.UiThreadTestRule;
-import androidx.test.runner.AndroidJUnit4;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 /**
  * Created by alexeyglushkov on 08.08.15.
  */
 
-@RunWith(AndroidJUnit4.class)
 public class SimpleTaskPoolTest extends TaskPoolTestSet {
-
-    @Rule
-    public UiThreadTestRule rule = new UiThreadTestRule();
-
     @Before
     public void setUp() throws Exception{
         SimpleTaskPoolTest.this.before(new SimpleTaskPool(new Handler(Looper.myLooper())));
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testSetGetHandler() {
         SimpleTaskPoolTest.this.setGetHandler();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testAddTask() {
         SimpleTaskPoolTest.this.addTask();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testAddStartedTask() {
         SimpleTaskPoolTest.this.addStartedTask();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testRemoveTask() {
         SimpleTaskPoolTest.this.removeTask();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testRemoveUnknownTask() {
         SimpleTaskPoolTest.this.removeUnknownTask();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testGetTask() {
         SimpleTaskPoolTest.this.getTask();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testGetUnknownTask() {
         SimpleTaskPoolTest.this.getUnknownTask();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testGetTaskCount() {
         SimpleTaskPoolTest.this.getTaskCount();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testGetTaskCount2() {
         SimpleTaskPoolTest.this.getTaskCount2();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testSetGetUserData() {
         SimpleTaskPoolTest.this.setGetUserData();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testAddStateListener() {
         SimpleTaskPoolTest.this.addStateListener();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testRemoveStateListener() {
         SimpleTaskPoolTest.this.removeStateListener();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testChangeTaskStatus() {
         SimpleTaskPoolTest.this.changeTaskStatus();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testCheckTaskRemovingAfterFinishing() {
         SimpleTaskPoolTest.this.checkTaskRemovingAfterFinishing();
     }

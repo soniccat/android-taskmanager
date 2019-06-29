@@ -2,6 +2,8 @@ package com.example.alexeyglushkov.taskmanager.task;
 
 import android.util.SparseArray;
 
+import androidx.collection.SparseArrayCompat;
+
 import java.util.ArrayList;
 
 /**
@@ -14,8 +16,8 @@ public interface TaskManager extends TaskPool {
     int getMaxLoadingTasks();
 
     void setLimit(int taskType, float availableQueuePart);
-    SparseArray<Float> getLimits();
-    SparseArray<Integer> getUsedSpace(); //type -> task count from loadingTasks
+    SparseArrayCompat<Float> getLimits();
+    SparseArrayCompat<Integer> getUsedSpace(); //type -> task count from loadingTasks
 
     // Task Running
 

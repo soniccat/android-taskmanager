@@ -4,6 +4,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.SparseArray;
 
+import androidx.collection.SparseArrayCompat;
+
 import com.example.alexeyglushkov.tools.HandlerTools;
 
 import java.lang.ref.WeakReference;
@@ -17,9 +19,9 @@ public class SimpleTaskManagerSnapshot implements TaskManagerSnapshot, TaskManag
     private int loadingTaskCount;
     private int waitingTaskCount;
     private int maxQueueSize;
-    private SparseArray<Float> loadingLimits;
-    private SparseArray<Integer> usedLoadingSpace;
-    private SparseArray<Integer> waitingTaskInfo;
+    private SparseArrayCompat<Float> loadingLimits;
+    private SparseArrayCompat<Integer> usedLoadingSpace;
+    private SparseArrayCompat<Integer> waitingTaskInfo;
 
     private boolean needUpdateSnapshot;
     private WeakRefList<OnSnapshotChangedListener> snapshotChangedListeners;
@@ -48,7 +50,7 @@ public class SimpleTaskManagerSnapshot implements TaskManagerSnapshot, TaskManag
     private void bindOnThread(TaskManager taskManager) {
         loadingTaskCount = taskManager.getLoadingTaskCount();
 
-        waitingTaskInfo = new SparseArray<Integer>();
+        waitingTaskInfo = new SparseArrayCompat<>();
         for (TaskProvider taskProvider : taskManager.getTaskProviders()) {
             waitingTaskCount += taskProvider.getTaskCount();
 
@@ -227,17 +229,17 @@ public class SimpleTaskManagerSnapshot implements TaskManagerSnapshot, TaskManag
     }
 
     @Override
-    public SparseArray<Float> getLoadingLimits() {
+    public SparseArrayCompat<Float> getLoadingLimits() {
         return loadingLimits;
     }
 
     @Override
-    public SparseArray<Integer> getUsedLoadingSpace() {
+    public SparseArrayCompat<Integer> getUsedLoadingSpace() {
         return usedLoadingSpace;
     }
 
     @Override
-    public SparseArray<Integer> getWaitingTaskInfo() {
+    public SparseArrayCompat<Integer> getWaitingTaskInfo() {
         return waitingTaskInfo;
     }
 }

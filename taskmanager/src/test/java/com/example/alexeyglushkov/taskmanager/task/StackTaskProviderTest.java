@@ -2,27 +2,18 @@ package com.example.alexeyglushkov.taskmanager.task;
 
 import android.os.Handler;
 import android.os.Looper;
-import androidx.test.annotation.UiThreadTest;
-import androidx.test.rule.UiThreadTestRule;
-import androidx.test.runner.AndroidJUnit4;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 /**
  * Created by alexeyglushkov on 13.08.16.
  */
 
-@RunWith(AndroidJUnit4.class)
 public class StackTaskProviderTest {
     protected TaskPoolTestSet poolTest;
     protected TaskProviderTestSet providerTest;
     protected TaskProvider taskProvider;
-
-    @Rule
-    public UiThreadTestRule rule = new UiThreadTestRule();
 
     @Before
     public void setUp() throws Exception {
@@ -49,119 +40,119 @@ public class StackTaskProviderTest {
 
     // ProviderTests
 
-    @Test @UiThreadTest
+    @Test
     public void testGetTopTaskWithBlockedTask() {
         providerTest.getTopTaskWithBlockedTask();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testTakeTopTaskWithBlockedTask() {
         providerTest.takeTopTaskWithBlockedTask();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testSetProviderId() {
         providerTest.setProviderId();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testSetPriority() {
         providerTest.setPriority();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testGetTopTaskWithoutFilter() {
         providerTest.getTopTaskWithoutFilter();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testGetTopTaskWithFilter() {
         providerTest.getTopTaskWithFilter();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testTakeTopTaskWithFilter() {
         providerTest.takeTopTaskWithFilter();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testRemoveTaskWithUnknownType() {
         providerTest.removeTaskWithUnknownType();
     }
 
     // PoolTests
 
-    @Test @UiThreadTest
+    @Test
     public void testSetGetHandler() {
         poolTest.setGetHandler();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testAddTask() {
         poolTest.addTask();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testAddTaskAddStatusListener() {
         poolTest.addTaskAddStatusListener();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testAddStartedTask() {
         poolTest.addStartedTask();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testRemoveTask() {
         poolTest.removeTask();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testRemoveUnknownTask() {
         poolTest.removeUnknownTask();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testGetTask() {
         poolTest.getTask();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testGetUnknownTask() {
         poolTest.getUnknownTask();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testGetTaskCount() {
         poolTest.getTaskCount();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testGetTaskCount2() {
         poolTest.getTaskCount2();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testSetGetUserData() {
         poolTest.setGetUserData();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testAddStateListener() {
         poolTest.addStateListener();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testRemoveStateListener() {
         poolTest.removeStateListener();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testChangeTaskStatus() {
         poolTest.changeTaskStatus();
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testCheckTaskRemovingAfterFinishing() {
         poolTest.checkTaskRemovingAfterFinishing();
     }

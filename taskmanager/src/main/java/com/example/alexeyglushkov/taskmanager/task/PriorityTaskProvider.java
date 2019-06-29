@@ -5,6 +5,8 @@ import android.os.Looper;
 import android.util.Log;
 import android.util.SparseArray;
 
+import androidx.collection.SparseArrayCompat;
+
 import com.example.alexeyglushkov.tools.HandlerTools;
 
 import org.junit.Assert;
@@ -32,11 +34,11 @@ public class PriorityTaskProvider implements TaskProvider, TaskPool {
 
     // Task type -> priority queue
     // TODO: try to use PriorityBlockingQueue
-    private SparseArray<SortedList<Task>> taskQueues;
+    private SparseArrayCompat<SortedList<Task>> taskQueues;
 
     public PriorityTaskProvider(Handler handler, String id) {
         providerId = id;
-        taskQueues = new SparseArray<SortedList<Task>>();
+        taskQueues = new SparseArrayCompat<SortedList<Task>>();
         listeners = new ArrayList<TaskPoolListener>();
         setHandler(handler);
     }

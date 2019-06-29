@@ -3,16 +3,11 @@ package com.example.alexeyglushkov.taskmanager.task;
 import android.os.Handler;
 import android.os.Looper;
 import androidx.annotation.NonNull;
-import androidx.test.annotation.UiThreadTest;
-import androidx.test.rule.UiThreadTestRule;
-import androidx.test.runner.AndroidJUnit4;
 
 import junit.framework.Assert;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -21,11 +16,7 @@ import org.mockito.stubbing.Answer;
  * Created by alexeyglushkov on 19.08.17.
  */
 
-@RunWith(AndroidJUnit4.class)
 public class RestorableTaskProviderTest {
-    @Rule
-    public UiThreadTestRule rule = new UiThreadTestRule();
-
     @Before
     public void setUp() throws Exception {
     }
@@ -35,7 +26,7 @@ public class RestorableTaskProviderTest {
         return new RestorableTaskProvider(taskProvider);
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testAddTaskWhenProviderDoesNothing() {
         // When
         TaskProvider taskProvider = Mockito.mock(TaskProvider.class);
@@ -49,7 +40,7 @@ public class RestorableTaskProviderTest {
         Mockito.verify(task, Mockito.never()).addTaskStatusListener(restorableTaskProvider);
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testAddTaskWhenProviderStartsTask() {
         // When
         TaskProvider taskProvider = Mockito.mock(TaskProvider.class);
@@ -72,7 +63,7 @@ public class RestorableTaskProviderTest {
         Mockito.verify(task).addTaskStatusListener(restorableTaskProvider);
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testTakeTopTask() {
         // When
         Task task = Mockito.mock(Task.class);
@@ -94,7 +85,7 @@ public class RestorableTaskProviderTest {
         Assert.assertEquals(takenTask, restorableTaskProvider.activeTasks.get(0));
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testOnTaskStatusChangedWhenRecording() {
         // When
         TaskProvider taskProvider = Mockito.mock(TaskProvider.class);
@@ -117,7 +108,7 @@ public class RestorableTaskProviderTest {
         Assert.assertEquals(task, restorableTaskProvider.getCompletedTasks().get(0));
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testOnTaskStatusChangedWhenNotRecording() {
         // When
         TaskProvider taskProvider = Mockito.mock(TaskProvider.class);
@@ -139,7 +130,7 @@ public class RestorableTaskProviderTest {
         Assert.assertEquals(0, restorableTaskProvider.getCompletedTasks().size());
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testRestoreTaskCompletionWithActiveTasks() {
         // When
         TaskProvider taskProvider = Mockito.mock(TaskProvider.class);
@@ -163,7 +154,7 @@ public class RestorableTaskProviderTest {
         Mockito.verify(callback, Mockito.never()).onCompleted(false);
     }
 
-    @Test @UiThreadTest
+    @Test
     public void testRestoreTaskCompletionWithCompletedTasks() {
         // When
         TaskProvider taskProvider = Mockito.mock(TaskProvider.class);

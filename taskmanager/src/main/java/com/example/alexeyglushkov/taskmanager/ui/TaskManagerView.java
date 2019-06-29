@@ -7,6 +7,8 @@ import android.util.SparseArray;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.collection.SparseArrayCompat;
+
 import com.example.alexeyglushkov.taskmanager.R;
 import com.example.alexeyglushkov.taskmanager.task.TaskManagerSnapshot;
 
@@ -67,7 +69,7 @@ public class TaskManagerView extends LinearLayout {
         str.append("Loading: ");
         str.append(snapshot.getLoadingTasksCount() + " ");
 
-        SparseArray<Integer> loadingTaskInfo = snapshot.getUsedLoadingSpace();
+        SparseArrayCompat<Integer> loadingTaskInfo = snapshot.getUsedLoadingSpace();
         int count;
         for (int type : allTypes) {
             count = loadingTaskInfo.get(type, 0);
@@ -82,7 +84,7 @@ public class TaskManagerView extends LinearLayout {
         str.append("Waiting: ");
         str.append(snapshot.getWaitingTasksCount() + " ");
 
-        SparseArray<Integer> loadingTaskInfo = snapshot.getWaitingTaskInfo();
+        SparseArrayCompat<Integer> loadingTaskInfo = snapshot.getWaitingTaskInfo();
         int count;
         for (int type : allTypes) {
             count = loadingTaskInfo.get(type, 0);
@@ -94,8 +96,8 @@ public class TaskManagerView extends LinearLayout {
 
     void updateBar() {
         int maxQueueSize = snapshot.getMaxQueueSize();
-        SparseArray<Integer> loadingSpace = snapshot.getUsedLoadingSpace();
-        SparseArray<Float> loadingLimits = snapshot.getLoadingLimits();
+        SparseArrayCompat<Integer> loadingSpace = snapshot.getUsedLoadingSpace();
+        SparseArrayCompat<Float> loadingLimits = snapshot.getLoadingLimits();
 
         barView.clearItems();
 
@@ -126,9 +128,9 @@ public class TaskManagerView extends LinearLayout {
     private void updateAllTypesArray() {
         Set<Integer> allTypesSet = new HashSet<Integer>();
 
-        SparseArray<Integer> loadingTaskInfo = snapshot.getUsedLoadingSpace();
-        SparseArray<Float> loadingLimits = snapshot.getLoadingLimits();
-        SparseArray<Integer> waitingTaskInfo = snapshot.getWaitingTaskInfo();
+        SparseArrayCompat<Integer> loadingTaskInfo = snapshot.getUsedLoadingSpace();
+        SparseArrayCompat<Float> loadingLimits = snapshot.getLoadingLimits();
+        SparseArrayCompat<Integer> waitingTaskInfo = snapshot.getWaitingTaskInfo();
 
         //fill types array
         int type;
