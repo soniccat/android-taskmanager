@@ -40,7 +40,7 @@ public class ImageLoader {
             @Override
             public void run() {
                 // to have addTaskStatusListener called on a handler's thread
-                Tasks.bindOnTaskCompletion(transportTask, image);
+                Tasks.INSTANCE.bindOnTaskCompletion(transportTask, image);
             }
         });
 

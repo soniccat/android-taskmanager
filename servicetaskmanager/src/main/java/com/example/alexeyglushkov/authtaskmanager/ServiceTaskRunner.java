@@ -35,7 +35,7 @@ public class ServiceTaskRunner implements ServiceCommandRunner {
                 emitter.setDisposable(Disposables.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
-                        if (!Tasks.isTaskCompleted(serviceTask.getTask())) {
+                        if (!Tasks.INSTANCE.isTaskCompleted(serviceTask.getTask())) {
                             cancel(serviceTask);
                         }
                     }

@@ -20,15 +20,15 @@ public class BaseServiceTask<T> implements ServiceTask<T> {
     }
 
     public static <T> BaseServiceTask<T> fromSingle(Single<T> single) {
-        return new BaseServiceTask<>(Tasks.fromSingle(single));
+        return new BaseServiceTask<>(Tasks.INSTANCE.fromSingle(single));
     }
 
     public static <T> BaseServiceTask<T> fromMaybe(Maybe<T> maybe) {
-        return new BaseServiceTask<>(Tasks.fromMaybe(maybe));
+        return new BaseServiceTask<>(Tasks.INSTANCE.fromMaybe(maybe));
     }
 
     public static BaseServiceTask<Object> fromCompletable(Completable completable) {
-        return new BaseServiceTask<>(Tasks.fromCompletable(completable));
+        return new BaseServiceTask<>(Tasks.INSTANCE.fromCompletable(completable));
     }
 
     protected BaseServiceTask(Task task) {

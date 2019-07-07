@@ -1,9 +1,9 @@
-package com.example.alexeyglushkov.taskmanager.task;
+package com.example.alexeyglushkov.taskmanager.task
 
-import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
-import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater;
+import com.example.alexeyglushkov.streamlib.progress.ProgressInfo
+import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater
 
-import java.util.Date;
+import java.util.Date
 
 /**
  * Created by alexeyglushkov on 21.07.15.
@@ -11,7 +11,16 @@ import java.util.Date;
 
 // Contains methods being used only by TaskManager, TaskPool or a Task
 
-public interface TaskPrivate extends Task {
+interface TaskPrivate : Task {
+    var startCallback: Task.Callback? // get the callback which is passed in startTask
+
+    val needCancelTask: Boolean
+
+    // Get dependencies
+    //
+    // Caller: TaskManager
+    //
+    val dependencies: WeakRefList<Task>
 
     // Marks the task that it should be cancelled
     // it will have Cancelled state if the task is started and successfully cancelled
@@ -20,88 +29,82 @@ public interface TaskPrivate extends Task {
     //
     // Caller: TaskManager
     //
-    void cancelTask(Object info);
-    boolean getNeedCancelTask();
+    fun cancelTask(info: Any?)
 
     // Set current state of the task
     //
     // Caller: Client, TaskManager
     //
-    void setTaskStatus(Status status);
+    //fun setTaskStatus(status: Task.Status)
+    override var taskStatus: Task.Status
 
     // Set Date after changing the state to Started
     //
     // Caller: TaskManager
     //
-    void setTaskStartDate(Date date);
+    fun setTaskStartDate(date: Date)
 
     // Set error
     //
     // Caller: Task
     // TODO: use throwable
-    void setTaskError(Error error);
+    override var taskError: Error?
 
     // TODO: need to call
     // Set Date after changing the state to Started
     //
     // Caller: TaskManager
     //
-    void setTaskFinishDate(Date date);
-
-    // Get dependencies
-    //
-    // Caller: TaskManager
-    //
-    WeakRefList<Task> getDependencies();
+    fun setTaskFinishDate(date: Date)
 
     // Clear all progress and status listeners
     //
     // Caller: TaskManager
     //
-    void clearAllListeners();
+    fun clearAllListeners()
 
     // Create a ProgressUpdater which trigger progress listeners on changes
     // Generally used to pass in a reader object
     //
     // Caller: Task
     //
-    ProgressUpdater createProgressUpdater(float contentSize);
+    fun createProgressUpdater(contentSize: Float): ProgressUpdater
 
     // Notify all progress listeners
     //
     // Caller: Task
     //
-    void triggerProgressListeners(final ProgressInfo progressInfo);
+    fun triggerProgressListeners(progressInfo: ProgressInfo)
 
     // Updates start callback
     //
     // Caller: Task
     //
-    void handleTaskStart(Callback callback);
+    fun handleTaskStart(callback: Task.Callback)
 
     // Call the start callback
     //
     // Caller: Task
     //
     //TODO: just call start callback inside
-    void handleTaskCompletion(Callback callback);
+    fun handleTaskCompletion(callback: Task.Callback)
 
     // To keep the result
     //
     // Caller: Task
     //
-    void setTaskResult(Object result);
+    override var taskResult: Any?
 
     // To reset loaded data and states to load it again
     //
     // Caller:
     //
-    void clear();
+    fun clear()
 
     // Flag shows that the command could be removed from the queue before finishing
     // It make sense to keep it false for a task that can affect performance if it is being cancelled
     //
     // Caller: TaskManager
     //
-    boolean canBeCancelledImmediately();
+    fun canBeCancelledImmediately(): Boolean
 }

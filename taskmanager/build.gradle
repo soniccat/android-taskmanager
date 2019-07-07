@@ -1,4 +1,6 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion project.ext.compileSdkVersion
@@ -27,6 +29,8 @@ android {
 }
 
 dependencies {
+    implementation "androidx.core:core-ktx:1.0.2"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
     implementation 'androidx.legacy:legacy-support-v4:'  + project.ext.legacySupportVersion
     implementation 'androidx.appcompat:appcompat:' + project.ext.appCompatVersion
     implementation fileTree(dir: 'libs', include: ['*.jar'])

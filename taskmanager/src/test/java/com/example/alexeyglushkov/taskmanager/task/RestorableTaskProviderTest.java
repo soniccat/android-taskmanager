@@ -81,8 +81,8 @@ public class RestorableTaskProviderTest {
 
         // Assert
         Assert.assertEquals(task, takenTask);
-        Assert.assertEquals(1, restorableTaskProvider.activeTasks.size());
-        Assert.assertEquals(takenTask, restorableTaskProvider.activeTasks.get(0));
+        Assert.assertEquals(1, restorableTaskProvider.getActiveTasks().size());
+        Assert.assertEquals(takenTask, restorableTaskProvider.getActiveTasks().get(0));
     }
 
     @Test
@@ -97,13 +97,13 @@ public class RestorableTaskProviderTest {
         Task task = Mockito.mock(Task.class);
         Mockito.doReturn(Task.Status.Finished).when(task).getTaskStatus();
 
-        restorableTaskProvider.activeTasks.add(task);
+        restorableTaskProvider.getActiveTasks().add(task);
 
         // Then
         restorableTaskProvider.onTaskStatusChanged(task, Task.Status.Started, Task.Status.Finished);
 
         // Assert
-        Assert.assertEquals(0, restorableTaskProvider.activeTasks.size());
+        Assert.assertEquals(0, restorableTaskProvider.getActiveTasks().size());
         Assert.assertEquals(1, restorableTaskProvider.getCompletedTasks().size());
         Assert.assertEquals(task, restorableTaskProvider.getCompletedTasks().get(0));
     }
@@ -120,13 +120,13 @@ public class RestorableTaskProviderTest {
         Task task = Mockito.mock(Task.class);
         Mockito.doReturn(Task.Status.Finished).when(task).getTaskStatus();
 
-        restorableTaskProvider.activeTasks.add(task);
+        restorableTaskProvider.getActiveTasks().add(task);
 
         // Then
         restorableTaskProvider.onTaskStatusChanged(task, Task.Status.Started, Task.Status.Finished);
 
         // Assert
-        Assert.assertEquals(0, restorableTaskProvider.activeTasks.size());
+        Assert.assertEquals(0, restorableTaskProvider.getActiveTasks().size());
         Assert.assertEquals(0, restorableTaskProvider.getCompletedTasks().size());
     }
 
@@ -142,7 +142,7 @@ public class RestorableTaskProviderTest {
         Mockito.doReturn("TestId").when(task).getTaskId();
         Mockito.doReturn(Task.Status.Started).when(task).getTaskStatus();
 
-        restorableTaskProvider.activeTasks.add(task);
+        restorableTaskProvider.getActiveTasks().add(task);
 
         Task.Callback callback = Mockito.mock(Task.Callback.class);
 
@@ -166,7 +166,7 @@ public class RestorableTaskProviderTest {
         Mockito.doReturn("TestId").when(task).getTaskId();
         Mockito.doReturn(Task.Status.Finished).when(task).getTaskStatus();
 
-        restorableTaskProvider.completedTasks.add(task);
+        restorableTaskProvider.getCompletedTasks().add(task);
 
         Task.Callback callback = Mockito.mock(Task.Callback.class);
 

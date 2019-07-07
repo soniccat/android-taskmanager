@@ -61,7 +61,7 @@ public class CourseHolder {
 
     private Single<List<Course>> loadCoursesAsync(ProgressListener progressListener) {
         Task task = createLoadCoursesTask(progressListener);
-        Single<List<Course>> single = Tasks.toSingle(task, this.taskProvider);
+        Single<List<Course>> single = Tasks.INSTANCE.toSingle(task, this.taskProvider);
 
         final NonNullMutableLiveData<Resource<List<Course>>> coursesLiveData = getCoursesLiveData();
         final Resource.State previousState = getCoursesLiveData().getValue().state;

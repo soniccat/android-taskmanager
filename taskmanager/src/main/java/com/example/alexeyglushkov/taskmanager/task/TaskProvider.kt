@@ -1,6 +1,4 @@
-package com.example.alexeyglushkov.taskmanager.task;
-
-import java.util.List;
+package com.example.alexeyglushkov.taskmanager.task
 
 /**
  * Created by alexeyglushkov on 30.12.14.
@@ -9,19 +7,16 @@ import java.util.List;
 // A provider defines in which order tasks should be executed
 // A provider must remove a task from the pool in the takeTopTask method
 
-public interface TaskProvider extends TaskPool {
-
+interface TaskProvider : TaskPool {
     // TODO: maybe delete it and force to pass in a constructor
-    void setTaskProviderId(String id);
-    String getTaskProviderId();
-
+    var taskProviderId: String
     // TODO: implement it
     // priority is used to determine the order of accessing to the providers int a TaskManager
     // it affects tasks order if the tasks have the same priority
-    void setPriority(int priority);
-    int getPriority();
+    var priority: Int
 
     // TODO: replace to TaskFilter
-    Task getTopTask(List<Integer> typesToFilter);
-    Task takeTopTask(List<Integer> typesToFilter);
+    fun getTopTask(typesToFilter: List<Int>): Task?
+
+    fun takeTopTask(typesToFilter: List<Int>): Task?
 }

@@ -1,9 +1,9 @@
-package com.example.alexeyglushkov.taskmanager.task;
+package com.example.alexeyglushkov.taskmanager.task
 
-import android.telecom.Call;
+import android.telecom.Call
 
-import com.example.alexeyglushkov.streamlib.progress.ProgressInfo;
-import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
+import com.example.alexeyglushkov.streamlib.progress.ProgressInfo
+import com.example.alexeyglushkov.streamlib.progress.ProgressListener
 
 /**
  * Created by alexeyglushkov on 20.09.14.
@@ -19,18 +19,15 @@ import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 //
 // All setters mustn't be called after starting the task
 
-    // TODO: need to add nullable nonnullable annotations
+// TODO: need to add nullable nonnullable annotations
 
-public interface Task extends TaskContainer {
-
+interface Task : TaskContainer {
     // Set the callback to handle the result.
     // TaskManager uses this callback but calls the original
     //
     // Caller: Client, TaskManager
     //
-    void setTaskCallback(Callback callback);
-    Callback getTaskCallback(); // get the current callback
-    Callback getStartCallback(); // get the callback which is passed in startTask
+    var taskCallback: Callback? // get the current callback
 
     //TODO: add custom thread callback support through set/get
 
@@ -38,22 +35,19 @@ public interface Task extends TaskContainer {
     //
     // Caller: Client
     //
-    Object getCancellationInfo();
+    val cancellationInfo: Any?
 
     // Get the current Status
     //
     // Caller: Client, TaskManager, TaskPool
     //
-    Status getTaskStatus();
-
+    val taskStatus: Status
     // Set/Get current type of the task
     // The type is used in TaskManager to be able to set load limits on a particular type
     //
     // Caller: Client, TaskManager (getter only), TaskProvider (getter only)
     //
-    void setTaskType(int type);
-    int getTaskType();
-
+    var taskType: Int
     // Set/Get the task's id. Tasks with the same id means that they download the same data for the same caller.
     // It's useful when you want to bind the task to a specific com.example.alexeyglushkov.wordteacher.model object and provide an additional load policy
     // The right load policy can prevent needless loadings
@@ -61,66 +55,65 @@ public interface Task extends TaskContainer {
     //
     // Caller: Client, TaskManager (getter only), TaskPool (getter only)
     //
-    void setTaskId(String id);
-    String getTaskId();
-
+    var taskId: String?
     // For tasks with the same id TaskManager uses a load policy to handle the situation when they
     // want to load data simultaneously
     //
     // Caller: Client, TaskManager (getter only), TaskPool (getter only)
     //
-    void setLoadPolicy(LoadPolicy loadPolicy);
-    LoadPolicy getLoadPolicy();
+    var loadPolicy: LoadPolicy
 
     // Return the error of the task happened during the execution
     // Basically it should be called from the start callback
     //
     // Caller: Client
     //
-    Error getTaskError();
+    val taskError: Error?
 
     // Get the result object
     //
     // Caller: Client
     //
-    Object getTaskResult();
-
+    val taskResult: Any?
     // Set/Get the priority of the task
     //
     // Caller: Client, TaskProvider (getter only), TaskManager (getter only)
     //
-    void setTaskPriority(int value);
-    int getTaskPriority();
-
+    var taskPriority: Int
     // Set minimal progress change to trigger the ProgressListener
     //
     // Caller: Client
     //
-    void setTaskProgressMinChange(float value);
-    float getTaskProgressMinChange();
+    var taskProgressMinChange: Float
 
     // TODO: now it works wrong
     // Get time passed between Started and Finished/Cancelled states
     //
     // Caller: Client, TaskManager
     //
-    long getTaskDuration();
-
+    fun taskDuration(): Long
     //TODO: finish comments
     // Set/Get additional information to the task
     //
     // Caller: Client
     //
-    void setTaskUserData(Object data);
-    Object getTaskUserData();
+    var taskUserData: Any?
+    fun isBlocked(): Boolean
+
+    // Handy way to access private methods
+    // should be called only in TaskManager, TaskPool
+    //
+    // Caller: TaskManager
+    //
+    //val private: TaskPrivate
 
     // add/remove dependency
     //
     // Caller: Client
     //
-    void addTaskDependency(Task task);
-    void removeTaskDependency(Task task);
-    boolean isBlocked();
+    fun addTaskDependency(task: Task)
+
+    fun removeTaskDependency(task: Task)
 
     // TODO: add auto clear listeners
     // Add/Remove a listener to get status changes
@@ -128,8 +121,9 @@ public interface Task extends TaskContainer {
     //
     // Caller: Client, TaskPool
     //
-    void addTaskStatusListener(StatusListener listener);
-    void removeTaskStatusListener(StatusListener listener);
+    fun addTaskStatusListener(listener: StatusListener)
+
+    fun removeTaskStatusListener(listener: StatusListener)
 
     // TODO: add auto clear listeners
     // Add/Remove a Progress listener
@@ -137,15 +131,9 @@ public interface Task extends TaskContainer {
     //
     // Caller: Client
     //
-    void addTaskProgressListener(ProgressListener listener);
-    void removeTaskProgressListener(ProgressListener listener);
+    fun addTaskProgressListener(listener: ProgressListener)
 
-    // Handy way to access private methods
-    // should be called only in TaskManager, TaskPool
-    //
-    // Caller: TaskManager
-    //
-    TaskPrivate getPrivate();
+    fun removeTaskProgressListener(listener: ProgressListener)
 
     // Start the task
     // It's from private part but must be implemented on this level
@@ -154,9 +142,9 @@ public interface Task extends TaskContainer {
     // Caller: TaskManager
     //
     // TODO: check if we need to call setTaskCallback in all implementations
-    void startTask(Callback callback);
+    fun startTask(callback: Callback)
 
-    enum Status {
+    enum class Status {
         NotStarted, //not started
         Waiting, //in queue, must be set on the caller thread
         Blocked, //is waiting until all dependencies finish
@@ -165,7 +153,7 @@ public interface Task extends TaskContainer {
         Cancelled //has cancelled but still is loading or cancelled while waiting in a queue
     }
 
-    enum LoadPolicy {
+    enum class LoadPolicy {
         SkipIfAdded, // don't load if the state isn't equal to Waiting
         CancelAdded // cancel already added task, in this case you shouldn't do anything with cancelled task
         // TODO: AddDependency add dependency to start after finishing
@@ -175,11 +163,11 @@ public interface Task extends TaskContainer {
     // TODO: maybe call it completion?
     interface Callback {
         //Here I put the cancelled as the argument to emphasise that it must be handled (also it can be got from status)
-        void onCompleted(boolean cancelled);
+        fun onCompleted(cancelled: Boolean)
     }
 
     interface StatusListener {
         // TODO: remove newStatus arg
-        void onTaskStatusChanged(Task task, Status oldStatus, Status newStatus);
+        fun onTaskStatusChanged(task: Task, oldStatus: Status, newStatus: Status)
     }
 }

@@ -42,7 +42,7 @@ public class TransportTask extends SimpleTask implements TaskTransport.Listener 
 
         transport.start();
 
-        if (needCancelTask) {
+        if (getNeedCancelTask()) {
             setIsCancelled();
 
         } else {
