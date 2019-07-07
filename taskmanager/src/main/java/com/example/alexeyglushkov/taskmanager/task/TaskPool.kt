@@ -1,6 +1,7 @@
 package com.example.alexeyglushkov.taskmanager.task
 
 import android.os.Handler
+import androidx.annotation.WorkerThread
 
 /**
  * Created by alexeyglushkov on 30.12.14.
@@ -11,19 +12,19 @@ import android.os.Handler
 
 interface TaskPool : Task.StatusListener {
     var handler: Handler
-    fun getTaskCount(): Int
-    val tasks: List<Task>
+    @WorkerThread fun getTaskCount(): Int
+    @WorkerThread fun getTasks(): List<Task>
     var userData: Any?
 
     fun addTask(task: Task)
     fun removeTask(task: Task)
 
-    fun getTask(taskId: String): Task?
+    @WorkerThread fun getTask(taskId: String): Task?
 
-    fun addListener(listener: TaskPoolListener)
-    fun removeListener(listener: TaskPoolListener)
+    fun addListener(listener: Listener)
+    fun removeListener(listener: Listener)
 
-    interface TaskPoolListener {
+    interface Listener {
         fun onTaskAdded(pool: TaskPool, task: Task)
         fun onTaskRemoved(pool: TaskPool, task: Task)
     }

@@ -16,7 +16,6 @@ import java.util.ArrayList
  */
 
 class RestorableTaskProvider(provider: TaskProvider) : TaskProviderWrapper(provider) {
-
     var isRecording: Boolean = false
         set(recording) {
             field = recording

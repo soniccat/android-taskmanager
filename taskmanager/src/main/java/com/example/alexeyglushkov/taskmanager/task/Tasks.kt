@@ -45,9 +45,9 @@ object Tasks {
 
     fun <T> toSingle(task: Task, taskPool: TaskPool): Single<T> {
         return Single.create { emitter ->
-            val callback = task.startCallback
+            val callback = task.taskCallback
 
-            task.startCallback = object : Task.Callback {
+            task.taskCallback = object : Task.Callback {
                 override fun onCompleted(cancelled: Boolean) {
                     callback?.onCompleted(cancelled)
 
@@ -79,7 +79,8 @@ object Tasks {
 
     fun toCompletable(task: Task, taskPool: TaskPool): Completable {
         return Completable.create { emitter ->
-            val callback = task.startCallback
+            val callback = task.taskCallback
+
             task.taskCallback = object : Task.Callback {
                 override fun onCompleted(cancelled: Boolean) {
                     callback?.onCompleted(cancelled)

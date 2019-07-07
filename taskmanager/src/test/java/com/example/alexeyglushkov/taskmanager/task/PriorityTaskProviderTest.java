@@ -5,9 +5,8 @@ import android.os.Looper;
 import androidx.annotation.NonNull;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+
 import static junit.framework.Assert.assertEquals;
 
 import org.mockito.Mockito;
@@ -48,7 +47,7 @@ public class PriorityTaskProviderTest {
     @Test
     public void testUpdatePriorities() {
         // Arrange
-        TaskProvider.TaskPoolListener listener = Mockito.mock(TaskProvider.TaskPoolListener.class);
+        TaskProvider.Listener listener = Mockito.mock(TaskProvider.Listener.class);
 
         taskProvider.addListener(listener);
         taskProvider.addTask(TestTasks.createTestTaskSpy("a", 1, 1));

@@ -90,7 +90,7 @@ public class TaskProviderTestSet {
 
     public void takeTopTaskWithFilter() {
         // Arrange
-        TaskProvider.TaskPoolListener listener = Mockito.mock(TaskProvider.TaskPoolListener.class);
+        TaskProvider.Listener listener = Mockito.mock(TaskProvider.Listener.class);
 
         taskProvider.addListener(listener);
         taskProvider.addTask(TestTasks.createTestTaskSpy("a", 1));
@@ -136,7 +136,7 @@ public class TaskProviderTestSet {
         // Arrange
         Task task1 = Mockito.mock(Task.class);
         TaskPrivate taskPrivate1 = Mockito.mock(TaskPrivate.class);
-        TaskPool.TaskPoolListener listener = Mockito.mock(TaskPool.TaskPoolListener.class);
+        TaskPool.Listener listener = Mockito.mock(TaskPool.Listener.class);
 
         Mockito.when(task1.getTaskStatus()).thenReturn(Task.Status.NotStarted);
         Mockito.when(task1.getTaskId()).thenReturn("taskId");

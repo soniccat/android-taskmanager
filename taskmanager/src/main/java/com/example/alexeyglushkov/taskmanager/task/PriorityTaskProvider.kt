@@ -3,7 +3,7 @@ package com.example.alexeyglushkov.taskmanager.task
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.util.SparseArray
+import androidx.annotation.WorkerThread
 
 import androidx.collection.SparseArrayCompat
 
@@ -21,54 +21,53 @@ import java.util.Comparator
 // A task source for TaskManager
 
 // TODO: try to extend SimpleTaskPool to remove code duplications
-open class PriorityTaskProvider(handler: Handler, override var taskProviderId: String?) : TaskProvider, TaskPool {
-    override var handler: Handler? = null
+open class PriorityTaskProvider(handler: Handler, override var taskProviderId: String) : TaskProvider, TaskPool {
+    private var _handler: Handler?
+    override var handler: Handler
+        get() = _handler!!
         set(handler) {
-            if (this.handler != null) {
-                checkHandlerThread()
-            }
-
-            field = handler
+            checkHandlerThread()
+            _handler = handler
         }
+
     override var userData: Any? = null
-    private val listeners: MutableList<TaskPool.TaskPoolListener>
+    private val listeners: MutableList<TaskPool.Listener>
     override var priority: Int = 0
 
     // Task type -> priority queue
     // TODO: try to use PriorityBlockingQueue
     private val taskQueues: SparseArrayCompat<SortedList<Task>>
 
-    override val taskCount: Int
-        get() {
-            checkHandlerThread()
+    @WorkerThread
+    override fun getTaskCount(): Int {
+        checkHandlerThread()
 
-            var resultCount = 0
-            for (i in 0 until taskQueues.size()) {
-                val queue = taskQueues.get(taskQueues.keyAt(i))
-                resultCount += queue!!.size
-            }
-
-            return resultCount
+        var resultCount = 0
+        for (i in 0 until taskQueues.size()) {
+            val queue = taskQueues.get(taskQueues.keyAt(i))
+            resultCount += queue!!.size
         }
 
-    override val tasks: List<Task>
-        get() {
-            checkHandlerThread()
+        return resultCount
+    }
 
-            val tasks = ArrayList<Task>()
+    @WorkerThread
+    override fun getTasks(): List<Task> {
+        checkHandlerThread()
 
-            for (i in 0 until taskQueues.size()) {
-                val queue = taskQueues.get(taskQueues.keyAt(i))
-                tasks.addAll(queue!!)
-            }
-
-            return tasks
+        val tasks = ArrayList<Task>()
+        for (i in 0 until taskQueues.size()) {
+            val queue = taskQueues.get(taskQueues.keyAt(i))
+            tasks.addAll(queue!!)
         }
+
+        return tasks
+    }
 
     init {
         taskQueues = SparseArrayCompat()
         listeners = ArrayList()
-        handler = handler
+        _handler = handler
     }
 
     private fun createQueue(): SortedList<Task> {
@@ -83,6 +82,7 @@ open class PriorityTaskProvider(handler: Handler, override var taskProviderId: S
         })
     }
 
+    @WorkerThread
     override fun getTopTask(typesToFilter: List<Int>?): Task? {
         checkHandlerThread()
 
@@ -104,26 +104,32 @@ open class PriorityTaskProvider(handler: Handler, override var taskProviderId: S
         return topTask
     }
 
-    override fun takeTopTask(typesToFilter: List<Int>): Task? {
+    @WorkerThread
+    override fun takeTopTask(typesToFilter: List<Int>?): Task? {
         checkHandlerThread()
 
         val task = getTopTask(typesToFilter)
         if (task != null) {
             val queue = taskQueues.get(task.taskType)
-            val polledTask = getTopTask(queue!!, true)
-            triggerOnTaskRemoved(polledTask)
+            queue?.let {
+                val polledTask = getTopTask(it, true)
+                if (polledTask != null) {
+                    triggerOnTaskRemoved(polledTask)
+                }
+            }
         }
 
         return task
     }
 
+    @WorkerThread
     private fun getTopTask(queue: SortedList<Task>, needPoll: Boolean): Task? {
         var topTask: Task? = null
 
         val iterator = queue.iterator()
         while (iterator.hasNext()) {
             topTask = iterator.next()
-            if (!topTask!!.isBlocked) {
+            if (!topTask.isBlocked()) {
                 if (needPoll) {
                     iterator.remove()
                 }
@@ -135,11 +141,14 @@ open class PriorityTaskProvider(handler: Handler, override var taskProviderId: S
     }
 
     fun updatePriorities(provider: PriorityProvider) {
-        HandlerTools.runOnHandlerThread(this.handler!!) {
+        HandlerTools.runOnHandlerThread(this.handler) {
             for (i in 0 until taskQueues.size()) {
                 val queue = taskQueues.valueAt(i)
-                for (t in taskQueues.get(taskQueues.keyAt(i))!!) {
-                    t.taskPriority = provider.getPriority(t)
+                val tasks = taskQueues.get(taskQueues.keyAt(i))
+                if (tasks != null) {
+                    for (t in tasks) {
+                        t.taskPriority = provider.getPriority(t)
+                    }
                 }
 
                 queue.updateSortedOrder()
@@ -148,6 +157,8 @@ open class PriorityTaskProvider(handler: Handler, override var taskProviderId: S
     }
 
     override fun addTask(task: Task) {
+        if (task !is TaskBase) { assert(false); return }
+
         if (!Tasks.isTaskReadyToStart(task)) {
             Log.e(TAG, "Can't put task " + task.javaClass.toString() + " because it's already started " + task.taskStatus.toString())
             return
@@ -156,11 +167,15 @@ open class PriorityTaskProvider(handler: Handler, override var taskProviderId: S
         // TaskProvider must set Waiting status on the current thread
         task.private.taskStatus = Task.Status.Waiting
 
-        HandlerTools.runOnHandlerThread(this.handler!!) { addTaskOnThread(task) }
+        HandlerTools.runOnHandlerThread(this.handler) {
+            addTaskOnThread(task)
+        }
     }
 
     override fun removeTask(task: Task) {
-        HandlerTools.runOnHandlerThread(this.handler!!) { removeTaskOnThread(task) }
+        HandlerTools.runOnHandlerThread(this.handler) {
+            removeTaskOnThread(task)
+        }
     }
 
     override fun onTaskStatusChanged(task: Task, oldStatus: Task.Status, newStatus: Task.Status) {
@@ -169,6 +184,7 @@ open class PriorityTaskProvider(handler: Handler, override var taskProviderId: S
         }
     }
 
+    @WorkerThread
     private fun addTaskOnThread(task: Task) {
         task.addTaskStatusListener(this@PriorityTaskProvider)
         addTaskToQueue(task)
@@ -178,6 +194,7 @@ open class PriorityTaskProvider(handler: Handler, override var taskProviderId: S
         }
     }
 
+    @WorkerThread
     private fun removeTaskOnThread(task: Task) {
         checkHandlerThread()
 
@@ -186,7 +203,8 @@ open class PriorityTaskProvider(handler: Handler, override var taskProviderId: S
         }
     }
 
-    private fun triggerOnTaskRemoved(task: Task?) {
+    @WorkerThread
+    private fun triggerOnTaskRemoved(task: Task) {
         checkHandlerThread()
 
         for (listener in listeners) {
@@ -194,6 +212,7 @@ open class PriorityTaskProvider(handler: Handler, override var taskProviderId: S
         }
     }
 
+    @WorkerThread
     private fun addTaskToQueue(task: Task) {
         checkHandlerThread()
 
@@ -206,6 +225,7 @@ open class PriorityTaskProvider(handler: Handler, override var taskProviderId: S
         queue.addInSortedOrder(task)
     }
 
+    @WorkerThread
     private fun removeTaskFromQueue(task: Task): Boolean {
         checkHandlerThread()
 
@@ -218,6 +238,7 @@ open class PriorityTaskProvider(handler: Handler, override var taskProviderId: S
         fun getPriority(task: Task): Int
     }
 
+    @WorkerThread
     override fun getTask(taskId: String): Task? {
         checkHandlerThread()
 
@@ -225,31 +246,33 @@ open class PriorityTaskProvider(handler: Handler, override var taskProviderId: S
         var i = 0
         while (i < taskQueues.size() && resultTask == null) {
             val queue = taskQueues.get(taskQueues.keyAt(i))
-            val iterator = queue!!.iterator()
-
-            while (iterator.hasNext()) {
-                val task = iterator.next()
-                if (task.taskId != null && task.taskId == taskId) {
-                    resultTask = task
-                    break
+            queue?.let {
+                val iterator = queue.iterator()
+                while (iterator.hasNext()) {
+                    val task = iterator.next()
+                    if (task.taskId != null && task.taskId == taskId) {
+                        resultTask = task
+                        break
+                    }
                 }
             }
+
             ++i
         }
 
         return resultTask
     }
 
-    override fun addListener(listener: TaskPool.TaskPoolListener) {
+    override fun addListener(listener: TaskPool.Listener) {
         listeners.add(listener)
     }
 
-    override fun removeListener(listener: TaskPool.TaskPoolListener) {
+    override fun removeListener(listener: TaskPool.Listener) {
         listeners.remove(listener)
     }
 
     private fun checkHandlerThread() {
-        Assert.assertEquals(Looper.myLooper(), this.handler!!.looper)
+        Assert.assertEquals(Looper.myLooper(), this.handler.looper)
     }
 
     companion object {

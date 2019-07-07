@@ -38,7 +38,7 @@ public class StackTaskProviderWithDependentTasksTest {
         TestTask testTask1 = new TestTask();
         TestTask testTask2 = new TestTask();
         StackTaskProvider providerMock = Mockito.spy(taskProvider);
-        TaskPool.TaskPoolListener listener = Mockito.mock(TaskPool.TaskPoolListener.class);
+        TaskPool.Listener listener = Mockito.mock(TaskPool.Listener.class);
 
         // Act
         providerMock.addListener(listener);

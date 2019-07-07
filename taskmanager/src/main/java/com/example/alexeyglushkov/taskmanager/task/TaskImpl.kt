@@ -17,7 +17,7 @@ import java.util.Date
 /**
  * Created by alexeyglushkov on 23.07.15.
  */
-abstract class TaskImpl : Task, TaskPrivate {
+abstract class TaskImpl : TaskBase() {
     override var taskCallback: Task.Callback? = null
     override var startCallback: Task.Callback? = null
     override var cancellationInfo: Any? = null
@@ -84,9 +84,6 @@ abstract class TaskImpl : Task, TaskPrivate {
 
         return isBlocked
     }
-
-    val private: TaskPrivate
-        get() = this
 
     override fun cancelTask(info: Any?) {
         needCancelTask = true

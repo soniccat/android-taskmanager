@@ -35,7 +35,7 @@ public class TaskPoolTestSet {
         // Arrange
         Task task = TestTasks.createTaskMock();
         TaskPrivate taskPrivate = task.getPrivate();
-        TaskPool.TaskPoolListener listener = Mockito.mock(TaskPool.TaskPoolListener.class);
+        TaskPool.Listener listener = Mockito.mock(TaskPool.Listener.class);
 
         // Act
         taskPool.addListener(listener);
@@ -64,7 +64,7 @@ public class TaskPoolTestSet {
         // Arrange
         Task task = TestTasks.createTaskMock(null, Task.Status.Started);
         TaskPrivate taskPrivate = task.getPrivate();
-        TaskPool.TaskPoolListener listener = Mockito.mock(TaskPool.TaskPoolListener.class);
+        TaskPool.Listener listener = Mockito.mock(TaskPool.Listener.class);
 
         // Act
         taskPool.addListener(listener);
@@ -82,7 +82,7 @@ public class TaskPoolTestSet {
     public void removeTask() {
         // Arrange
         Task task = TestTasks.createTaskMock("taskId", Task.Status.NotStarted);
-        TaskPool.TaskPoolListener listener = Mockito.mock(TaskPool.TaskPoolListener.class);
+        TaskPool.Listener listener = Mockito.mock(TaskPool.Listener.class);
 
         // Act
         taskPool.addListener(listener);
@@ -100,7 +100,7 @@ public class TaskPoolTestSet {
         // Arrange
         Task task1 = TestTasks.createTaskMock("taskId", Task.Status.NotStarted);
         Task task2 = TestTasks.createTaskMock("taskId", Task.Status.NotStarted);
-        TaskPool.TaskPoolListener listener = Mockito.mock(TaskPool.TaskPoolListener.class);
+        TaskPool.Listener listener = Mockito.mock(TaskPool.Listener.class);
 
         // Act
         taskPool.addListener(listener);
@@ -183,8 +183,8 @@ public class TaskPoolTestSet {
     public void addStateListener() {
         // Arrange
         Task task = TestTasks.createTaskMock("taskId", Task.Status.NotStarted);
-        TaskPool.TaskPoolListener listener1 = Mockito.mock(TaskPool.TaskPoolListener.class);
-        TaskPool.TaskPoolListener listener2 = Mockito.mock(TaskPool.TaskPoolListener.class);
+        TaskPool.Listener listener1 = Mockito.mock(TaskPool.Listener.class);
+        TaskPool.Listener listener2 = Mockito.mock(TaskPool.Listener.class);
 
         // Act
         taskPool.addListener(listener1);
@@ -199,8 +199,8 @@ public class TaskPoolTestSet {
     public void removeStateListener() {
         // Arrange
         Task task = TestTasks.createTaskMock("taskId", Task.Status.NotStarted);
-        TaskPool.TaskPoolListener listener1 = Mockito.mock(TaskPool.TaskPoolListener.class);
-        TaskPool.TaskPoolListener listener2 = Mockito.mock(TaskPool.TaskPoolListener.class);
+        TaskPool.Listener listener1 = Mockito.mock(TaskPool.Listener.class);
+        TaskPool.Listener listener2 = Mockito.mock(TaskPool.Listener.class);
 
         // Act
         taskPool.addListener(listener1);

@@ -9,8 +9,8 @@ import java.util.Comparator
  */
 class SortedList<T>(private val comparator: Comparator<T>) : ArrayList<T>() {
 
-    override fun add(t: T): Boolean {
-        return addInSortedOrder(t)
+    override fun add(element: T): Boolean {
+        return addInSortedOrder(element)
     }
 
     fun addInSortedOrder(elem: T): Boolean {

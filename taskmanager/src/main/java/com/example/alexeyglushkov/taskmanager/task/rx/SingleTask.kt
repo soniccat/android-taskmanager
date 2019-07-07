@@ -1,5 +1,6 @@
 package com.example.alexeyglushkov.taskmanager.task.rx
 
+import com.example.alexeyglushkov.taskmanager.task.Task
 import com.example.alexeyglushkov.taskmanager.task.TaskImpl
 
 import org.junit.Assert

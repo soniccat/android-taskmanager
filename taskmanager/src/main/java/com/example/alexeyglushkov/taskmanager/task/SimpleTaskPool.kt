@@ -3,6 +3,7 @@ package com.example.alexeyglushkov.taskmanager.task
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import androidx.annotation.WorkerThread
 
 import com.example.alexeyglushkov.tools.HandlerTools
 
@@ -13,18 +14,20 @@ import java.util.ArrayList
 /**
  * Created by alexeyglushkov on 30.12.14.
  */
-// TODO: think about abstractTaskPool without tasks list to be able to inherid code in PriorityTaskProvider
+// TODO: think about abstractTaskPool without tasks list to be able to inherit code in PriorityTaskProvider
 open class SimpleTaskPool(handler: Handler) : TaskPool {
 
     //TODO: think about weakref
-    protected var listeners: MutableList<TaskPool.TaskPoolListener>
-    override var handler: Handler? = null
+    protected var listeners: MutableList<TaskPool.Listener>
+    private var _handler: Handler? = null
+    override var handler: Handler
+        get() = _handler!!
         set(handler) {
-            if (this.handler != null) {
+            if (_handler != null) {
                 checkHandlerThread()
             }
 
-            field = handler
+            _handler = handler
         }
 
     //TODO: think about a map
@@ -32,20 +35,22 @@ open class SimpleTaskPool(handler: Handler) : TaskPool {
 
     override var userData: Any? = null
 
-    override val taskCount: Int
-        get() {
-            checkHandlerThread()
+    @WorkerThread
+    override fun getTaskCount(): Int {
+        checkHandlerThread()
 
-            return tasks.size
-        }
+        return tasks.size
+    }
 
     init {
         tasks = ArrayList()
-        listeners = ArrayList<TaskPoolListener>()
-        handler = handler
+        listeners = ArrayList()
+        _handler = handler
     }
 
     override fun addTask(task: Task) {
+        if (task !is TaskBase) { assert(false); return }
+
         if (!Tasks.isTaskReadyToStart(task)) {
             Log.d(TAG, "Can't put task " + task.javaClass.toString() + " because it has been added " + task.taskStatus.toString())
             return
@@ -54,13 +59,15 @@ open class SimpleTaskPool(handler: Handler) : TaskPool {
         // TaskPool must set Waiting status on the current thread
         task.private.taskStatus = Task.Status.Waiting
 
-        HandlerTools.runOnHandlerThread(this.handler!!) {
+        HandlerTools.runOnHandlerThread(this.handler) {
             Log.d(TAG, "addTaskOnThread")
             addTaskOnThread(task)
         }
     }
 
+    @WorkerThread
     private fun addTaskOnThread(task: Task) {
+        if (task !is TaskBase) { assert(false); return }
         checkHandlerThread()
 
         task.addTaskStatusListener(this)
@@ -82,7 +89,7 @@ open class SimpleTaskPool(handler: Handler) : TaskPool {
     }
 
     override fun removeTask(task: Task) {
-        HandlerTools.runOnHandlerThread(this.handler!!) {
+        HandlerTools.runOnHandlerThread(handler) {
             if (tasks.remove(task)) {
                 for (listener in listeners) {
                     listener.onTaskRemoved(this@SimpleTaskPool, task)
@@ -91,6 +98,7 @@ open class SimpleTaskPool(handler: Handler) : TaskPool {
         }
     }
 
+    @WorkerThread
     override fun getTask(taskId: String): Task? {
         checkHandlerThread()
 
@@ -103,22 +111,23 @@ open class SimpleTaskPool(handler: Handler) : TaskPool {
         return null
     }
 
+    @WorkerThread
     override fun getTasks(): List<Task> {
         checkHandlerThread()
 
         return tasks
     }
 
-    override fun addListener(listener: TaskPool.TaskPoolListener) {
+    override fun addListener(listener: TaskPool.Listener) {
         listeners.add(listener)
     }
 
-    override fun removeListener(listener: TaskPool.TaskPoolListener) {
+    override fun removeListener(listener: TaskPool.Listener) {
         listeners.remove(listener)
     }
 
     protected fun checkHandlerThread() {
-        Assert.assertEquals(Looper.myLooper(), this.handler!!.looper)
+        Assert.assertEquals(Looper.myLooper(), this.handler.looper)
     }
 
     companion object {

@@ -1,8 +1,8 @@
 package com.example.alexeyglushkov.taskmanager.task
 
 import android.os.Handler
+import androidx.annotation.WorkerThread
 
-import java.util.ArrayList
 import java.util.HashMap
 
 /**
@@ -10,7 +10,7 @@ import java.util.HashMap
  */
 
 open class TaskProviderWrapper(val provider: TaskProvider) : TaskProvider {
-    private val listenerMap = HashMap<TaskPool.TaskPoolListener, TaskPool.TaskPoolListener>()
+    private val listenerMap = HashMap<TaskPool.Listener, TaskPool.Listener>()
 
     override var handler: Handler
         get() = provider.handler
@@ -24,11 +24,13 @@ open class TaskProviderWrapper(val provider: TaskProvider) : TaskProvider {
             provider.taskProviderId = id
         }
 
-    override val taskCount: Int
-        get() = provider.taskCount
+    override fun getTaskCount(): Int {
+        return provider.getTaskCount()
+    }
 
-    override val tasks: List<Task>
-        get() = provider.tasks
+    override fun getTasks(): List<Task> {
+        return provider.getTasks()
+    }
 
     override var userData: Any?
         get() = provider.userData
@@ -54,8 +56,8 @@ open class TaskProviderWrapper(val provider: TaskProvider) : TaskProvider {
         return provider.getTask(taskId)
     }
 
-    override fun addListener(listener: TaskPool.TaskPoolListener) {
-        val wrapperListener = object : TaskPool.TaskPoolListener {
+    override fun addListener(listener: TaskPool.Listener) {
+        val wrapperListener = object : TaskPool.Listener {
             override fun onTaskAdded(pool: TaskPool, task: Task) {
                 listener.onTaskAdded(this@TaskProviderWrapper, task)
             }
@@ -69,7 +71,7 @@ open class TaskProviderWrapper(val provider: TaskProvider) : TaskProvider {
         provider.addListener(wrapperListener)
     }
 
-    override fun removeListener(listener: TaskPool.TaskPoolListener) {
+    override fun removeListener(listener: TaskPool.Listener) {
         val wrappedListener = listenerMap[listener]
         if (wrappedListener != null) {
             provider.removeListener(wrappedListener)
@@ -77,11 +79,13 @@ open class TaskProviderWrapper(val provider: TaskProvider) : TaskProvider {
         }
     }
 
-    override fun getTopTask(typesToFilter: List<Int>): Task? {
+    @WorkerThread
+    override fun getTopTask(typesToFilter: List<Int>?): Task? {
         return provider.getTopTask(typesToFilter)
     }
 
-    override fun takeTopTask(typesToFilter: List<Int>): Task? {
+    @WorkerThread
+    override fun takeTopTask(typesToFilter: List<Int>?): Task? {
         return provider.takeTopTask(typesToFilter)
     }
 

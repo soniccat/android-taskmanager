@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.taskmanager.task
 
+import androidx.annotation.WorkerThread
+
 /**
  * Created by alexeyglushkov on 30.12.14.
  */
@@ -16,7 +18,6 @@ interface TaskProvider : TaskPool {
     var priority: Int
 
     // TODO: replace to TaskFilter
-    fun getTopTask(typesToFilter: List<Int>): Task?
-
-    fun takeTopTask(typesToFilter: List<Int>): Task?
+    @WorkerThread fun getTopTask(typesToFilter: List<Int>?): Task?
+    @WorkerThread fun takeTopTask(typesToFilter: List<Int>?): Task?
 }
