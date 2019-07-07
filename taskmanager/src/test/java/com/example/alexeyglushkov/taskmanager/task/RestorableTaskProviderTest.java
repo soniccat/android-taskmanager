@@ -46,7 +46,7 @@ public class RestorableTaskProviderTest {
         TaskProvider taskProvider = Mockito.mock(TaskProvider.class);
         Mockito.doReturn(new Handler(Looper.myLooper())).when(taskProvider).getHandler();
         RestorableTaskProvider restorableTaskProvider = new RestorableTaskProvider(taskProvider);
-        final Task task = Mockito.spy(new TestTask());
+        final TaskBase task = Mockito.spy(new TestTask());
 
         Mockito.doAnswer(new Answer() {
             @Override
@@ -138,7 +138,7 @@ public class RestorableTaskProviderTest {
 
         RestorableTaskProvider restorableTaskProvider = new RestorableTaskProvider(taskProvider);
 
-        Task task = Mockito.spy(new TestTask());
+        TaskBase task = Mockito.spy(new TestTask());
         Mockito.doReturn("TestId").when(task).getTaskId();
         Mockito.doReturn(Task.Status.Started).when(task).getTaskStatus();
 
@@ -162,7 +162,7 @@ public class RestorableTaskProviderTest {
 
         RestorableTaskProvider restorableTaskProvider = new RestorableTaskProvider(taskProvider);
 
-        Task task = Mockito.spy(new TestTask());
+        TaskBase task = Mockito.spy(new TestTask());
         Mockito.doReturn("TestId").when(task).getTaskId();
         Mockito.doReturn(Task.Status.Finished).when(task).getTaskStatus();
 

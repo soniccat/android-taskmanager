@@ -39,7 +39,7 @@ class SimpleTaskManager : TaskManager, TaskPool.Listener {
         }
 
     private lateinit var callbackHandler: Handler
-    override lateinit var taskExecutor: TaskExecutor
+    override var taskExecutor: TaskExecutor = SimpleTaskExecutor()
     override var userData: Any? = null
     private var listeners = WeakRefList<TaskManager.TaskManagerListener>()
 
@@ -63,9 +63,17 @@ class SimpleTaskManager : TaskManager, TaskPool.Listener {
     override var usedSpace = SparseArrayCompat<Int>() //type -> task count from loadingTasks
         get() = field.clone()
 
-    override var maxLoadingTasks: Int
-        get() = propGetMaxLoadingTasks()
-        set(value) = propSetMaxLoadingTasks(value)
+    override var maxLoadingTasks: Int = 0
+        get() {
+            checkHandlerThread()
+            return field
+        }
+        set(value) {
+            checkHandlerThread()
+
+            // TODO: we need run tasks when increase the size
+            field = value
+        }
 
     override val loadingTaskCount: Int
         get() = loadingTasks.getTaskCount()
@@ -115,10 +123,9 @@ class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     private fun init(maxLoadingTasks: Int, inHandler: Handler?) {
-        this.taskExecutor = SimpleTaskExecutor()
+        initHandler(inHandler)
         this.maxLoadingTasks = maxLoadingTasks
 
-        initHandler(inHandler)
         callbackHandler = Handler(Looper.myLooper())
 
         loadingTasks = SimpleTaskPool(handler)
@@ -154,21 +161,6 @@ class SimpleTaskManager : TaskManager, TaskPool.Listener {
         })
 
         return SafeList(sortedList, callbackHandler)
-    }
-
-    // TODO: we need run tasks when increase the size
-    @WorkerThread
-    fun propSetMaxLoadingTasks(maxLoadingTasks: Int) {
-        checkHandlerThread()
-
-        this.maxLoadingTasks = maxLoadingTasks
-    }
-
-    @WorkerThread
-    fun propGetMaxLoadingTasks(): Int {
-        checkHandlerThread()
-
-        return maxLoadingTasks
     }
 
     override fun addTask(task: Task) {
@@ -330,7 +322,7 @@ class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     override fun removeListener(listener: TaskManager.TaskManagerListener) {
-        listeners.remove(listener)
+        listeners.removeValue(listener)
     }
 
     override fun addListener(listener: TaskManager.TaskManagerListener) {
@@ -411,8 +403,8 @@ class SimpleTaskManager : TaskManager, TaskPool.Listener {
         val taskId = task.taskId
         if (taskId != null) {
             val addedTask = loadingTasks.getTask(taskId)
+            assert(addedTask != task)
 
-            assertTrue(addedTask !== task)
             if (addedTask != null) {
                 if (task.loadPolicy == Task.LoadPolicy.CancelAdded) {
                     cancelTaskOnThread(addedTask, null)
@@ -504,6 +496,7 @@ class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
                     logTask(task, "Task onCompleted" + if (cancelled) " (Cancelled)" else "")
 
+                    // TODO: remove that after removing RestorableTaskProvider
                     // callback could be changed while running, in RestorableTaskProvider for example
                     val resultCallback = if (task.taskCallback === thisCallback) originalCallback else task.taskCallback
                     handleTaskCompletionOnThread(task, resultCallback, cancelled)

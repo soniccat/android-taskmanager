@@ -18,34 +18,23 @@ import java.util.ArrayList
 open class SimpleTaskPool(handler: Handler) : TaskPool {
 
     //TODO: think about weakref
-    protected var listeners: MutableList<TaskPool.Listener>
-    private var _handler: Handler? = null
+    protected var listeners = mutableListOf<TaskPool.Listener>()
+    private var _handler: Handler = handler
     override var handler: Handler
-        get() = _handler!!
+        get() = _handler
         set(handler) {
-            if (_handler != null) {
-                checkHandlerThread()
-            }
-
+            checkHandlerThread()
             _handler = handler
         }
 
     //TODO: think about a map
-    private val tasks: MutableList<Task>
-
+    protected val _tasks = mutableListOf<Task>()
     override var userData: Any? = null
 
     @WorkerThread
     override fun getTaskCount(): Int {
         checkHandlerThread()
-
-        return tasks.size
-    }
-
-    init {
-        tasks = ArrayList()
-        listeners = ArrayList()
-        _handler = handler
+        return _tasks.size
     }
 
     override fun addTask(task: Task) {
@@ -71,7 +60,7 @@ open class SimpleTaskPool(handler: Handler) : TaskPool {
         checkHandlerThread()
 
         task.addTaskStatusListener(this)
-        tasks.add(task)
+        _tasks.add(task)
 
         triggerOnTaskAdded(task)
     }
@@ -90,7 +79,7 @@ open class SimpleTaskPool(handler: Handler) : TaskPool {
 
     override fun removeTask(task: Task) {
         HandlerTools.runOnHandlerThread(handler) {
-            if (tasks.remove(task)) {
+            if (_tasks.remove(task)) {
                 for (listener in listeners) {
                     listener.onTaskRemoved(this@SimpleTaskPool, task)
                 }
@@ -102,7 +91,7 @@ open class SimpleTaskPool(handler: Handler) : TaskPool {
     override fun getTask(taskId: String): Task? {
         checkHandlerThread()
 
-        for (task in tasks) {
+        for (task in _tasks) {
             if (task.taskId != null && task.taskId == taskId) {
                 return task
             }
@@ -115,7 +104,7 @@ open class SimpleTaskPool(handler: Handler) : TaskPool {
     override fun getTasks(): List<Task> {
         checkHandlerThread()
 
-        return tasks
+        return _tasks
     }
 
     override fun addListener(listener: TaskPool.Listener) {

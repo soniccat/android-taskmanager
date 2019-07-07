@@ -52,9 +52,9 @@ class SimpleTaskManagerSnapshot : TaskManagerSnapshot, TaskManager.TaskManagerLi
 
         waitingTaskInfo = SparseArrayCompat()
         for (taskProvider in taskManager.taskProviders) {
-            waitingTasksCount += taskProvider.taskCount
+            waitingTasksCount += taskProvider.getTaskCount()
 
-            for (task in taskProvider.tasks) {
+            for (task in taskProvider.getTasks()) {
                 var count = waitingTaskInfo.get(task.taskType, 0)
                 ++count
                 waitingTaskInfo.put(task.taskType, count)

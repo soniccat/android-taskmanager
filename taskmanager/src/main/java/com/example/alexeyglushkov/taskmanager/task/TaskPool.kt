@@ -12,14 +12,14 @@ import androidx.annotation.WorkerThread
 
 interface TaskPool : Task.StatusListener {
     var handler: Handler
-    @WorkerThread fun getTaskCount(): Int
-    @WorkerThread fun getTasks(): List<Task>
     var userData: Any?
 
     fun addTask(task: Task)
     fun removeTask(task: Task)
 
     @WorkerThread fun getTask(taskId: String): Task?
+    @WorkerThread fun getTaskCount(): Int
+    @WorkerThread fun getTasks(): List<Task>
 
     fun addListener(listener: Listener)
     fun removeListener(listener: Listener)

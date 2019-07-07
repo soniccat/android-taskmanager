@@ -1,19 +1,19 @@
 package com.example.alexeyglushkov.taskmanager.task.rx
 
+import com.example.alexeyglushkov.taskmanager.task.Task
 import com.example.alexeyglushkov.taskmanager.task.TaskImpl
 
 import org.junit.Assert
 
 import java.util.concurrent.atomic.AtomicBoolean
 import io.reactivex.Completable
-import io.reactivex.Maybe
-import io.reactivex.functions.Action
-import io.reactivex.functions.Consumer
+import io.reactivex.disposables.Disposable
 
 class CompletableTask(private val completable: Completable) : TaskImpl() {
+    var disposable: Disposable? = null
 
-    override fun startTask(callback: Task.Callback) {
-        super.startTask(callback)
+    override fun startTask() {
+        super.startTask()
 
         val finishedFlag = AtomicBoolean()
         completable.subscribe({ finishedFlag.set(true) }, { throwable ->
@@ -22,6 +22,11 @@ class CompletableTask(private val completable: Completable) : TaskImpl() {
         })
 
         Assert.assertTrue("Completable: Completable must be a sync task", finishedFlag.get())
-        private.handleTaskCompletion(callback)
+        private.handleTaskCompletion()
+    }
+
+    override fun cancelTask(info: Any?) {
+        super.cancelTask(info)
+        disposable?.dispose()
     }
 }

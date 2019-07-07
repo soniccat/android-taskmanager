@@ -6,20 +6,20 @@ import org.mockito.Mockito;
  * Created by alexeyglushkov on 30.08.15.
  */
 public class TestTasks {
-    public static Task createTaskMock() {
+    public static TaskBase createTaskMock() {
         return createTaskMock(null, Task.Status.NotStarted, 0, 0);
     }
 
-    public static Task createTaskMock(String id) {
+    public static TaskBase createTaskMock(String id) {
         return createTaskMock(id, Task.Status.NotStarted, 0, 0);
     }
 
-    public static Task createTaskMock(String id, Task.Status status) {
+    public static TaskBase createTaskMock(String id, Task.Status status) {
         return createTaskMock(id, status, 0, 0);
     }
 
-    public static Task createTaskMock(String id, Task.Status status, int type, int priority) {
-        Task task = Mockito.mock(Task.class);
+    public static TaskBase createTaskMock(String id, Task.Status status, int type, int priority) {
+        TaskBase task = Mockito.mock(TaskBase.class);
         TaskPrivate taskPrivate = Mockito.mock(TaskPrivate.class);
 
         Mockito.when(task.getTaskStatus()).thenReturn(status);

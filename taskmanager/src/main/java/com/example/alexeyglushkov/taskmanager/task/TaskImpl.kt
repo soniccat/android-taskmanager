@@ -90,8 +90,8 @@ abstract class TaskImpl : TaskBase() {
         this.cancellationInfo = info
     }
 
-    override fun startTask(callback: Task.Callback) {
-        handleTaskStart(callback)
+    override fun startTask() {
+        handleTaskStart()
     }
 
     override fun addTaskStatusListener(listener: Task.StatusListener) {
@@ -150,7 +150,7 @@ abstract class TaskImpl : TaskBase() {
     }
 
     override fun removeTaskDependency(task: Task) {
-        dependencies.remove(task)
+        dependencies.removeValue(task)
     }
 
     override fun clear() {
@@ -205,12 +205,12 @@ abstract class TaskImpl : TaskBase() {
         return false
     }
 
-    override fun handleTaskStart(callback: Task.Callback) {
-        startCallback = callback
+    override fun handleTaskStart() {
+        startCallback = this.taskCallback
     }
 
-    override fun handleTaskCompletion(callback: Task.Callback) {
-        callback.onCompleted(isCancelled)
+    override fun handleTaskCompletion() {
+        startCallback?.onCompleted(isCancelled)
     }
 
     private fun checkMainThread() {

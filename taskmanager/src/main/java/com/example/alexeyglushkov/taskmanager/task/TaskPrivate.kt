@@ -80,14 +80,14 @@ interface TaskPrivate : Task {
     //
     // Caller: Task
     //
-    fun handleTaskStart(callback: Task.Callback)
+    fun handleTaskStart()
 
     // Call the start callback
     //
     // Caller: Task
     //
     //TODO: just call start callback inside
-    fun handleTaskCompletion(callback: Task.Callback)
+    fun handleTaskCompletion()
 
     // To keep the result
     //

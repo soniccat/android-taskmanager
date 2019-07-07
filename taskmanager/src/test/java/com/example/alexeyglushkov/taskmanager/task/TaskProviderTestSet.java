@@ -134,7 +134,7 @@ public class TaskProviderTestSet {
 
     public void removeTaskWithUnknownType() {
         // Arrange
-        Task task1 = Mockito.mock(Task.class);
+        TaskBase task1 = Mockito.mock(TaskBase.class);
         TaskPrivate taskPrivate1 = Mockito.mock(TaskPrivate.class);
         TaskPool.Listener listener = Mockito.mock(TaskPool.Listener.class);
 
@@ -143,7 +143,7 @@ public class TaskProviderTestSet {
         Mockito.when(task1.getPrivate()).thenReturn(taskPrivate1);
         Mockito.when(task1.getTaskType()).thenReturn(1);
 
-        Task task2 = Mockito.mock(Task.class);
+        TaskBase task2 = Mockito.mock(TaskBase.class);
         TaskPrivate taskPrivate2 = Mockito.mock(TaskPrivate.class);
 
         Mockito.when(task2.getTaskStatus()).thenReturn(Task.Status.NotStarted);

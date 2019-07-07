@@ -6,6 +6,7 @@ import android.os.Looper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 /**
  * Created by alexeyglushkov on 23.08.15.
@@ -19,7 +20,8 @@ public class SimpleTaskManagerTest {
 
     @Before
     public void setUp() throws Exception {
-        taskManager = new SimpleTaskManager(10, new Handler(Looper.myLooper()));
+        Handler handler = Mockito.mock(Handler.class);
+        taskManager = new SimpleTaskManager(10, handler);
         poolTestSet = new TaskPoolTestSet();
         taskManagerTestSet = new TaskManagerTestSet();
 

@@ -96,13 +96,13 @@ public class MainActivity extends BaseActivity implements QuizletService.Quizlet
     private void showAuthorization() {
         Task authTask = new SimpleTask() {
             @Override
-            public void startTask(final Callback callback) {
+            public void startTask() {
                 final Account account = Networks.createAccount(Networks.Network.Quizlet);
                 account.authorize(new Authorizer.AuthorizerCompletion() {
                     @Override
                     public void onFinished(AuthCredentials credentials, Authorizer.AuthError error) {
                         Log.d(TAG, "showAuthorization onFinished " + account.getCredentials().isValid());
-                        getPrivate().handleTaskCompletion(callback);
+                        getPrivate().handleTaskCompletion();
                     }
                 });
             }

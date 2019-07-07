@@ -14,12 +14,12 @@ public abstract class ServiceTaskImp<T> extends BaseServiceTask<T> {
     public ServiceTaskImp() {
         setTask(new TaskImpl() {
             @Override
-            public void startTask(Callback callback) {
-                super.startTask(callback);
+            public void startTask() {
+                super.startTask();
 
                 onStart();
 
-                getPrivate().handleTaskCompletion(callback);
+                getPrivate().handleTaskCompletion();
             }
         });
     }

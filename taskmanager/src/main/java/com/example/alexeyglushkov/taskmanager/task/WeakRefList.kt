@@ -8,7 +8,7 @@ import java.util.ArrayList
  */
 class WeakRefList<T> : ArrayList<WeakReference<T>>() {
 
-    override fun iterator(): Iterator<WeakReference<T>> {
+    override fun iterator(): MutableIterator<WeakReference<T>> {
         clean()
         return super.iterator()
     }
@@ -22,13 +22,9 @@ class WeakRefList<T> : ArrayList<WeakReference<T>>() {
         }
     }
 
-    override operator fun contains(`object`: Any?): Boolean {
-        if (`object` is WeakReference<*>) {
-            return super.contains(`object`)
-        }
-
+    fun containsValue(element: T): Boolean {
         for (ref in this) {
-            if (ref.get() === `object`) {
+            if (ref.get() === element) {
                 return true
             }
         }
@@ -36,14 +32,14 @@ class WeakRefList<T> : ArrayList<WeakReference<T>>() {
         return false
     }
 
-    override fun remove(`object`: Any?): Boolean {
-        if (`object` is WeakReference<*>) {
-            return super.remove(`object`)
-        }
+    override fun contains(element: WeakReference<T>): Boolean {
+        return super.contains(element)
+    }
 
+    fun removeValue(element: T): Boolean {
         var i = 0
         for (ref in this) {
-            if (ref.get() === `object`) {
+            if (ref.get() === element) {
                 removeAt(i)
                 return true
             }
@@ -54,8 +50,11 @@ class WeakRefList<T> : ArrayList<WeakReference<T>>() {
         return false
     }
 
-    companion object {
+    override fun remove(element: WeakReference<T>): Boolean {
+        return super.remove(element)
+    }
 
+    companion object {
         private val serialVersionUID = 4962762847646156417L
     }
 }

@@ -13,8 +13,8 @@ import java.util.ArrayList
  * TODO: document your custom view class.
  */
 class TaskBarView : View {
-    internal var paint: Paint
-    internal var items: ArrayList<TaskBarItem>
+    protected lateinit var paint: Paint
+    protected lateinit var items: ArrayList<TaskBarItem>
 
     constructor(context: Context) : super(context) {
         init(null, 0)

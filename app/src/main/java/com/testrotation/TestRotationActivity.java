@@ -102,8 +102,8 @@ public class TestRotationActivity extends AppCompatActivity {
     static void startTask(TestRotationActivity activity) {
         Task task = new TaskImpl() {
             @Override
-            public void startTask(Callback callback) {
-                super.startTask(callback);
+            public void startTask() {
+                super.startTask();
 
                 try {
                     for(int i=0; i<10; ++i) {
@@ -118,7 +118,7 @@ public class TestRotationActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                handleTaskCompletion(callback);
+                handleTaskCompletion();
             }
         };
 

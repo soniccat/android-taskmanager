@@ -37,8 +37,8 @@ public class TransportTask extends SimpleTask implements TaskTransport.Listener 
         return transport;
     }
 
-    public void startTask(Callback callback) {
-        super.startTask(callback);
+    public void startTask() {
+        super.startTask();
 
         transport.start();
 
@@ -56,7 +56,7 @@ public class TransportTask extends SimpleTask implements TaskTransport.Listener 
             }
         }
 
-        getPrivate().handleTaskCompletion(callback);
+        getPrivate().handleTaskCompletion();
     }
 
     public void setError(Error error) {

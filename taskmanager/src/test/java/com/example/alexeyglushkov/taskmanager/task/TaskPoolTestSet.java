@@ -33,7 +33,7 @@ public class TaskPoolTestSet {
 
     public void addTask(){
         // Arrange
-        Task task = TestTasks.createTaskMock();
+        TaskBase task = TestTasks.createTaskMock();
         TaskPrivate taskPrivate = task.getPrivate();
         TaskPool.Listener listener = Mockito.mock(TaskPool.Listener.class);
 
@@ -62,7 +62,7 @@ public class TaskPoolTestSet {
 
     public void addStartedTask() {
         // Arrange
-        Task task = TestTasks.createTaskMock(null, Task.Status.Started);
+        TaskBase task = TestTasks.createTaskMock(null, Task.Status.Started);
         TaskPrivate taskPrivate = task.getPrivate();
         TaskPool.Listener listener = Mockito.mock(TaskPool.Listener.class);
 

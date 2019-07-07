@@ -11,13 +11,13 @@ import com.example.alexeyglushkov.taskmanager.task.Task;
 public class TestTask extends SimpleTask {
 
     @Override
-    public void startTask(Callback callback) {
-        super.startTask(callback);
+    public void startTask() {
+        super.startTask();
         Log.d("com.example.alexeyglushkov.taskmanager.task.TestTask", "startTask " + getStartCallback());
     }
 
     public void finish() {
         Log.d("com.example.alexeyglushkov.taskmanager.task.TestTask", "finish " + getStartCallback());
-        getPrivate().handleTaskCompletion(getStartCallback());
+        getPrivate().handleTaskCompletion();
     }
 }

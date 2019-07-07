@@ -14,7 +14,7 @@ public class TestTask extends SimpleTask {
         this.workTime = workTime;
     }
 
-    public void startTask(Callback callback) {
+    public void startTask() {
         int chunkCount = (int)((float)workTime / (float)chunkTimeSize);
         for (int i=0; i<chunkCount; ++i) {
             try {
@@ -23,7 +23,7 @@ public class TestTask extends SimpleTask {
             }
         }
 
-        getPrivate().handleTaskCompletion(callback);
+        getPrivate().handleTaskCompletion();
         return;
     }
 }

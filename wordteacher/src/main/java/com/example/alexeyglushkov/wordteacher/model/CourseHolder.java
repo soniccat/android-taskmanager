@@ -88,8 +88,8 @@ public class CourseHolder {
     private Task createLoadCoursesTask(final ProgressListener progressListener) {
         return new SimpleTask() {
             @Override
-            public void startTask(Callback callback) {
-                super.startTask(callback);
+            public void startTask() {
+                super.startTask();
 
                 ArrayList<Course> courses = null;
                 try {
@@ -100,7 +100,7 @@ public class CourseHolder {
                     getPrivate().setTaskError(new Error(e));
                 }
 
-                getPrivate().handleTaskCompletion(callback);
+                getPrivate().handleTaskCompletion();
             }
         };
     }

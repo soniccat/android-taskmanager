@@ -85,13 +85,13 @@ public class MainApplication extends Application {
     public void cleanCache() {
         final Task cleanTask = new SimpleTask() {
             @Override
-            public void startTask(Callback callback) {
-                super.startTask(callback);
+            public void startTask() {
+                super.startTask();
 
                 StorageCleaner cleaner = new DiskStorageCleaner();
                 cleaner.clean(getStorage());
 
-                getPrivate().handleTaskCompletion(callback);
+                getPrivate().handleTaskCompletion();
             }
         };
 
@@ -101,15 +101,15 @@ public class MainApplication extends Application {
     public void loadAccountStore() {
         final Task loadAccountTask = new SimpleTask() {
             @Override
-            public void startTask(Callback callback) {
-                super.startTask(callback);
+            public void startTask() {
+                super.startTask();
                 File authDir = getDir("AuthFolder", Context.MODE_PRIVATE);
                 AccountCacheStore store = new AccountCacheStore(authDir);
                 store.load();
                 restoreAccounts(store);
 
                 getPrivate().setTaskUserData(store);
-                getPrivate().handleTaskCompletion(callback);
+                getPrivate().handleTaskCompletion();
             }
         };
 

@@ -1,21 +1,21 @@
 package com.example.alexeyglushkov.taskmanager.task.rx
 
-import com.example.alexeyglushkov.taskmanager.task.Task
 import com.example.alexeyglushkov.taskmanager.task.TaskImpl
 
 import org.junit.Assert
 
 import java.util.concurrent.atomic.AtomicBoolean
 import io.reactivex.Single
-import io.reactivex.functions.Consumer
+import io.reactivex.disposables.Disposable
 
 class SingleTask<T>(private val single: Single<T>) : TaskImpl() {
+    var disposable: Disposable? = null
 
-    override fun startTask(callback: Task.Callback) {
-        super.startTask(callback)
+    override fun startTask() {
+        super.startTask()
 
         val finishedFlag = AtomicBoolean()
-        single.subscribe({ t ->
+        disposable = single.subscribe({ t ->
             private.taskResult = t
             finishedFlag.set(true)
         }, { throwable ->
@@ -24,6 +24,11 @@ class SingleTask<T>(private val single: Single<T>) : TaskImpl() {
         })
 
         Assert.assertTrue("SingleTask: Single must be a sync task", finishedFlag.get())
-        private.handleTaskCompletion(callback)
+        private.handleTaskCompletion()
+    }
+
+    override fun cancelTask(info: Any?) {
+        super.cancelTask(info)
+        disposable?.dispose()
     }
 }

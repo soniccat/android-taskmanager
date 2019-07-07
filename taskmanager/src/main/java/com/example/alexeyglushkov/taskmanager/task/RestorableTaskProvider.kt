@@ -4,6 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.core.util.Pair
 import android.util.Log
+import androidx.annotation.WorkerThread
 
 import com.example.alexeyglushkov.tools.HandlerTools
 
@@ -15,6 +16,7 @@ import java.util.ArrayList
  * Created by alexeyglushkov on 11.06.17.
  */
 
+// TODO: remove that, just use LiveData
 class RestorableTaskProvider(provider: TaskProvider) : TaskProviderWrapper(provider) {
     var isRecording: Boolean = false
         set(recording) {
@@ -25,7 +27,7 @@ class RestorableTaskProvider(provider: TaskProvider) : TaskProviderWrapper(provi
             }
         }
     var activeTasks: MutableList<Task> = ArrayList()
-    var completedTasks: List<Task> = ArrayList()
+    var completedTasks = mutableListOf<Task>()
 
     enum class RestoreState {
         NotRestored, // task wasn't found
@@ -65,12 +67,13 @@ class RestorableTaskProvider(provider: TaskProvider) : TaskProviderWrapper(provi
             }
 
             if (isRecording) {
-                getCompletedTasks().add(task)
+                completedTasks.add(task)
             }
         }
     }
 
-    override fun takeTopTask(typesToFilter: List<Int>): Task? {
+    @WorkerThread
+    override fun takeTopTask(typesToFilter: List<Int>?): Task? {
         checkHandlerThread()
 
         val task = super.takeTopTask(typesToFilter)
@@ -85,12 +88,8 @@ class RestorableTaskProvider(provider: TaskProvider) : TaskProviderWrapper(provi
         return task
     }
 
-    fun getCompletedTasks(): MutableList<Task> {
-        return completedTasks
-    }
-
     private fun findCompletedTask(taskId: String): Task? {
-        return findTask(getCompletedTasks(), taskId)
+        return findTask(completedTasks, taskId)
     }
 
     fun restoreTaskCompletion(taskId: String, callback: Task.Callback) {
@@ -200,7 +199,7 @@ class RestorableTaskProvider(provider: TaskProvider) : TaskProviderWrapper(provi
     }
 
     private fun clearStoredTasks() {
-        getCompletedTasks().clear()
+        completedTasks.clear()
     }
 
     interface Completion {

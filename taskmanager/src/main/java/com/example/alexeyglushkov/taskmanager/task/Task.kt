@@ -1,8 +1,5 @@
 package com.example.alexeyglushkov.taskmanager.task
 
-import android.telecom.Call
-
-import com.example.alexeyglushkov.streamlib.progress.ProgressInfo
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener
 
 /**
@@ -142,7 +139,7 @@ interface Task : TaskContainer {
     // Caller: TaskManager
     //
     // TODO: check if we need to call setTaskCallback in all implementations
-    fun startTask(callback: Callback)
+    fun startTask()
 
     enum class Status {
         NotStarted, //not started

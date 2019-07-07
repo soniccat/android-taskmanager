@@ -15,7 +15,7 @@ object TaskPools {
     // maybe it's better to move them in Tools file
     fun getFilteredTasks(taskPool: TaskPool, filter: TaskFilter, completion: FilterCompletion) {
         HandlerTools.runOnHandlerThread(taskPool.handler) {
-            val tasks = ArrayList(taskPool.tasks)
+            val tasks = ArrayList(taskPool.getTasks())
             HandlerTools.runOnHandlerThread(filter.handler) {
                 val filteredTasks = ArrayList<Task>()
                 for (task in tasks) {
@@ -35,17 +35,17 @@ object TaskPools {
         }
     }
 
-    internal interface TaskFilter {
+    interface TaskFilter {
         val handler: Handler
         fun keepTask(task: Task): Boolean
     }
 
-    internal interface FilterCompletion {
+    interface FilterCompletion {
         val handler: Handler
         fun completed(tasks: List<Task>)
     }
 
-    internal interface TaskTransformation {
+    interface TaskTransformation {
         fun apply(task: Task)
     }
 }

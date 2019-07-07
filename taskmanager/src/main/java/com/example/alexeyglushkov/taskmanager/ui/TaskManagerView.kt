@@ -4,12 +4,14 @@ import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
 import android.util.SparseArray
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 
 import androidx.collection.SparseArrayCompat
 
 import com.example.alexeyglushkov.taskmanager.R
+import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManagerSnapshot
 import com.example.alexeyglushkov.taskmanager.task.TaskManagerSnapshot
 
 import java.util.ArrayList
@@ -20,14 +22,12 @@ import java.util.HashSet
  * Created by alexeyglushkov on 06.01.15.
  */
 class TaskManagerView : LinearLayout {
-
-    internal var snapshot: TaskManagerSnapshot
-    internal var barView: TaskBarView
-    internal var loadingTasks: TextView
-    internal var waitingTasks: TextView
-    internal var colors: MutableList<Int>
-
-    internal var allTypes: List<Int>
+    private var snapshot: TaskManagerSnapshot = SimpleTaskManagerSnapshot()
+    private lateinit var barView: TaskBarView
+    private lateinit var loadingTasks: TextView
+    private lateinit var waitingTasks: TextView
+    private var colors = mutableListOf<Int>()
+    private var allTypes = listOf<Int>()
 
     constructor(context: Context) : super(context) {}
 
@@ -38,12 +38,11 @@ class TaskManagerView : LinearLayout {
     override fun onFinishInflate() {
         super.onFinishInflate()
 
-        colors = ArrayList()
         colors.addAll(Arrays.asList(Color.CYAN, Color.GREEN, Color.BLUE, Color.MAGENTA))
 
-        barView = findViewById<View>(R.id.bar)
-        loadingTasks = findViewById<View>(R.id.loading)
-        waitingTasks = findViewById<View>(R.id.waiting)
+        barView = findViewById(R.id.bar)
+        loadingTasks = findViewById(R.id.loading)
+        waitingTasks = findViewById(R.id.waiting)
     }
 
     fun showSnapshot(snapshot: TaskManagerSnapshot) {

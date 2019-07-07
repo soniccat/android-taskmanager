@@ -29,7 +29,7 @@ public class TaskManagerTestSet {
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Task task = (Task)invocation.getArguments()[0];
                 Task.Callback callback = (Task.Callback)invocation.getArguments()[1];
-                task.startTask(callback);
+                task.startTask();
                 return null;
             }
         }).when(executor).executeTask((Task) Mockito.any(), (Task.Callback)Mockito.any());
@@ -219,7 +219,7 @@ public class TaskManagerTestSet {
 
     public void startImmediately() {
         // Arrange
-        Task task = TestTasks.createTaskMock();
+        TaskBase task = TestTasks.createTaskMock();
         TaskPrivate taskPrivate = task.getPrivate();
         TaskManager.TaskManagerListener listener = Mockito.mock(TaskManager.TaskManagerListener.class);
 
@@ -368,7 +368,7 @@ public class TaskManagerTestSet {
 
     public void addTask() {
         // Arrange
-        Task task = TestTasks.createTaskMock();
+        TaskBase task = TestTasks.createTaskMock();
         TaskManager.TaskManagerListener listener = Mockito.mock(TaskManager.TaskManagerListener.class);
         TaskPrivate taskPrivate = task.getPrivate();
 
@@ -387,7 +387,7 @@ public class TaskManagerTestSet {
 
     public void addStartedTask() {
         // Arrange
-        final Task task = TestTasks.createTaskMock(null, Task.Status.Started);
+        final TaskBase task = TestTasks.createTaskMock(null, Task.Status.Started);
         TaskManager.TaskManagerListener listener = Mockito.mock(TaskManager.TaskManagerListener.class);
         TaskPrivate taskPrivate = task.getPrivate();
 
@@ -437,8 +437,8 @@ public class TaskManagerTestSet {
 
     public void addTheSameTaskWithCancelPolicy() {
         // Arrange
-        Task task1 = TestTasks.createTestTaskSpy("taskId");
-        Task task2 = TestTasks.createTestTaskSpy("taskId");
+        TaskBase task1 = TestTasks.createTestTaskSpy("taskId");
+        TaskBase task2 = TestTasks.createTestTaskSpy("taskId");
         task2.setLoadPolicy(Task.LoadPolicy.CancelAdded);
 
         // Act
@@ -589,7 +589,7 @@ public class TaskManagerTestSet {
 
     public void removeTask() {
         // Arrange
-        Task task = TestTasks.createTaskMock("taskId", Task.Status.NotStarted);
+        TaskBase task = TestTasks.createTaskMock("taskId", Task.Status.NotStarted);
         TaskManager.TaskManagerListener listener = Mockito.mock(TaskManager.TaskManagerListener.class);
         TaskPrivate taskPrivate = task.getPrivate();
 
