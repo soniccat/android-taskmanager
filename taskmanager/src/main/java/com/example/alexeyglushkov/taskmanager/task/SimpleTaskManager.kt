@@ -490,7 +490,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
         logTask(task, "Task started")
         task.private.taskStatus = Task.Status.Started
-        task.setTaskStartDate(Date())
+        task.private.setTaskStartDate(Date())
 
         val originalCallback = task.taskCallback
         val callback = object : Task.Callback {
@@ -528,13 +528,13 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
         val status = if (isCancelled) Task.Status.Cancelled else Task.Status.Finished
         if (isCancelled) {
-            task.taskError = CancelError()
+            task.private.taskError = CancelError()
         }
 
         // the task will be removed from the provider automatically
         Log.d("tag", "task status " + task.taskStatus.toString())
-        task.taskStatus = status
-        task.clearAllListeners()
+        task.private.taskStatus = status
+        task.private.clearAllListeners()
 
         task.taskCallback = callback // return original callback
 

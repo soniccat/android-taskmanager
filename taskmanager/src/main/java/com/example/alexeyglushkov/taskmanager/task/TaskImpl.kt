@@ -17,7 +17,7 @@ import java.util.Date
 /**
  * Created by alexeyglushkov on 23.07.15.
  */
-abstract class TaskImpl : TaskBase() {
+abstract class TaskImpl : TaskBase(), TaskPrivate {
     override var taskCallback: Task.Callback? = null
     override var startCallback: Task.Callback? = null
     override var cancellationInfo: Any? = null

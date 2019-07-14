@@ -1,6 +1,6 @@
 package com.example.alexeyglushkov.taskmanager.task
 
-abstract class TaskBase: Task, TaskPrivate {
+abstract class TaskBase: Task {
     open val private: TaskPrivate
-        get() = this
+        get() = this as TaskPrivate // force accessing private API via a property
 }
