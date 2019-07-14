@@ -40,11 +40,11 @@ interface TaskManager : TaskPool {
     fun setTaskProviderPriority(provider: TaskProvider, priority: Int)
 
     // Listeners
-    fun removeListener(listener: TaskManagerListener)
+    fun removeListener(listener: Listener)
 
-    fun addListener(listener: TaskManagerListener)
+    fun addListener(listener: Listener)
 
-    interface TaskManagerListener {
+    interface Listener {
         fun onLimitsChanged(taskManager: TaskManager, taskType: Int, availableQueuePart: Float)
 
         // add additional flag showing that a task added to a loading or waiting queue

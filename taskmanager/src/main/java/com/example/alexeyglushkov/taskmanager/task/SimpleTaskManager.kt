@@ -41,7 +41,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     private lateinit var callbackHandler: Handler
     override var taskExecutor: TaskExecutor = SimpleTaskExecutor()
     override var userData: Any? = null
-    private var listeners = WeakRefList<TaskManager.TaskManagerListener>()
+    private var listeners = WeakRefList<TaskManager.Listener>()
 
     private lateinit var loadingTasks: TaskPool
     private lateinit var waitingTasks: TaskProvider
@@ -330,11 +330,11 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         return task
     }
 
-    override fun removeListener(listener: TaskManager.TaskManagerListener) {
+    override fun removeListener(listener: TaskManager.Listener) {
         listeners.removeValue(listener)
     }
 
-    override fun addListener(listener: TaskManager.TaskManagerListener) {
+    override fun addListener(listener: TaskManager.Listener) {
         listeners.add(WeakReference(listener))
     }
 

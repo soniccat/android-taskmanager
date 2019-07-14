@@ -13,7 +13,7 @@ import java.lang.ref.WeakReference
 /**
  * Created by alexeyglushkov on 23.08.15.
  */
-class SimpleTaskManagerSnapshot : TaskManagerSnapshot, TaskManager.TaskManagerListener {
+class SimpleTaskManagerSnapshot : TaskManagerSnapshot, TaskManager.Listener {
     private val callbackHandler: Handler
 
     //public
