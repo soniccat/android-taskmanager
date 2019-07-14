@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger
 /**
  * Created by alexeyglushkov on 08.02.15.
  */
-class SimpleTaskExecutor : TaskExecutor {
+open class SimpleTaskExecutor : TaskExecutor {
 
     override fun executeTask(task: Task, callback: Task.Callback) {
         val thread = sThreadFactory.newThread {

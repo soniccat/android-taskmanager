@@ -20,8 +20,7 @@ public class SimpleTaskManagerTest {
 
     @Before
     public void setUp() throws Exception {
-        Handler handler = Mockito.mock(Handler.class);
-        taskManager = new SimpleTaskManager(10, handler);
+        taskManager = new SimpleTaskManager(10, new Handler(Looper.myLooper()));
         poolTestSet = new TaskPoolTestSet();
         taskManagerTestSet = new TaskManagerTestSet();
 

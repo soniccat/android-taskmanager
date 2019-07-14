@@ -23,7 +23,7 @@ import junit.framework.Assert.assertTrue
 /**
  * Created by alexeyglushkov on 20.09.14.
  */
-class SimpleTaskManager : TaskManager, TaskPool.Listener {
+open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     private var handlerThread: HandlerThread? = null
     private var _handler: Handler? = null
     override var handler: Handler
@@ -54,14 +54,24 @@ class SimpleTaskManager : TaskManager, TaskPool.Listener {
             return _taskProviders
         }
 
-    override var limits: SparseArrayCompat<Float> = SparseArrayCompat()
+    private var _limits = SparseArrayCompat<Float>()
+    override var limits: SparseArrayCompat<Float>
         @WorkerThread
         get() {
             checkHandlerThread()
-            return field.clone()
+            return _limits.clone()
         }
-    override var usedSpace = SparseArrayCompat<Int>() //type -> task count from loadingTasks
-        get() = field.clone()
+        set(value) {
+            checkHandlerThread()
+            _limits = value
+        }
+
+    private var _usedSpace = SparseArrayCompat<Int>()
+    override var usedSpace //type -> task count from loadingTasks
+        get() = _usedSpace.clone()
+        set(value) {
+            _usedSpace = value.clone()
+        }
 
     override var maxLoadingTasks: Int = 0
         get() {
@@ -103,16 +113,15 @@ class SimpleTaskManager : TaskManager, TaskPool.Listener {
         return tasks
     }
 
-    private val taskTypeFilter: List<Int>
-        get() {
-            val taskTypesToFilter = ArrayList<Int>()
-            for (i in 0 until limits.size()) {
-                if (reachedLimit(limits.keyAt(i))) {
-                    taskTypesToFilter.add(limits.keyAt(i))
-                }
+    private fun getTaskTypeFilter(): List<Int> {
+        val taskTypesToFilter = ArrayList<Int>()
+        for (i in 0 until _limits.size()) {
+            if (reachedLimit(_limits.keyAt(i))) {
+                taskTypesToFilter.add(_limits.keyAt(i))
             }
-            return taskTypesToFilter
         }
+        return taskTypesToFilter
+    }
 
     constructor(maxLoadingTasks: Int) {
         init(maxLoadingTasks, null)
@@ -375,9 +384,9 @@ class SimpleTaskManager : TaskManager, TaskPool.Listener {
     override fun setLimit(taskType: Int, availableQueuePart: Float) {
         HandlerTools.runOnHandlerThread(handler) {
             if (availableQueuePart <= 0.0f) {
-                limits.remove(taskType)
+                _limits.remove(taskType)
             } else {
-                limits.put(taskType, availableQueuePart)
+                _limits.put(taskType, availableQueuePart)
             }
 
             for (listener in listeners) {
@@ -434,7 +443,7 @@ class SimpleTaskManager : TaskManager, TaskPool.Listener {
     private fun takeTaskToRunOnThread(): Task? {
         checkHandlerThread()
 
-        val taskTypesToFilter = taskTypeFilter
+        val taskTypesToFilter = getTaskTypeFilter()
         val topWaitingTask = this.waitingTasks.getTopTask(taskTypesToFilter)
 
         var topTaskProvider: TaskProvider? = null
@@ -480,7 +489,7 @@ class SimpleTaskManager : TaskManager, TaskPool.Listener {
         addLoadingTaskOnThread(task)
 
         logTask(task, "Task started")
-        task.taskStatus = Task.Status.Started
+        task.private.taskStatus = Task.Status.Started
         task.setTaskStartDate(Date())
 
         val originalCallback = task.taskCallback
@@ -546,13 +555,13 @@ class SimpleTaskManager : TaskManager, TaskPool.Listener {
         if (task !is TaskBase) { assert(false); return }
         checkHandlerThread()
 
-        if (!task.needCancelTask && !Tasks.isTaskCompleted(task)) {
+        if (!task.private.needCancelTask && !Tasks.isTaskCompleted(task)) {
             val st = task.taskStatus
-            task.cancelTask(info)
+            task.private.cancelTask(info)
 
-            if (st == Task.Status.Waiting || st == Task.Status.NotStarted || st == Task.Status.Blocked || task.canBeCancelledImmediately()) {
+            if (st == Task.Status.Waiting || st == Task.Status.NotStarted || st == Task.Status.Blocked || task.private.canBeCancelledImmediately()) {
                 if (st == Task.Status.Started) {
-                    task.startCallback?.onCompleted(true) // to get the original callback
+                    task.private.startCallback?.onCompleted(true) // to get the original callback
 
                 } else {
                     handleTaskCompletionOnThread(task, task.taskCallback, true)
@@ -563,14 +572,14 @@ class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     private fun reachedLimit(taskType: Int): Boolean {
-        return if (limits.get(taskType, -1.0f) == -1.0f) {
+        return if (_limits.get(taskType, -1.0f) == -1.0f) {
             false
-        } else usedSpace.get(taskType, 0).toFloat() / maxLoadingTasks.toFloat() >= limits.get(taskType, 0.0f)
+        } else _usedSpace.get(taskType, 0).toFloat() / maxLoadingTasks.toFloat() >= _limits.get(taskType, 0.0f)
 
     }
 
     private fun updateUsedSpace(taskType: Int, add: Boolean) {
-        var count: Int = usedSpace.get(taskType, 0)
+        var count: Int = _usedSpace.get(taskType, 0)
         if (add) {
             ++count
         } else {
@@ -578,7 +587,7 @@ class SimpleTaskManager : TaskManager, TaskPool.Listener {
             --count
         }
 
-        usedSpace.put(taskType, count)
+        _usedSpace.put(taskType, count)
     }
 
     // helpers

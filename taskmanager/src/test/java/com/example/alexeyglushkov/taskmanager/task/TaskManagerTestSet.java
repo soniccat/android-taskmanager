@@ -634,10 +634,9 @@ public class TaskManagerTestSet {
     public void checkTaskRemovingAfterFinishing() {
         // Arrange
         TestTask testTask = new TestTask();
-        TaskPool taskPoolMock = Mockito.spy(taskManager);
 
         // Act
-        taskPoolMock.addTask(testTask);
+        taskManager.addTask(testTask);
         testTask.getPrivate().setTaskStatus(Task.Status.Finished);
 
         // Verify
@@ -669,7 +668,7 @@ public class TaskManagerTestSet {
 
         // Verify
         Mockito.verify(listener).onLimitsChanged(taskManager, 1, 0.5f);
-        assertEquals(0.5f, (float) taskManager.getLimits().get(1), 0.001f);
+        assertEquals(0.5f, taskManager.getLimits().get(1), 0.001f);
 
     }
 

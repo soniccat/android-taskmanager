@@ -17,7 +17,7 @@ import java.util.ArrayList
  */
 
 // TODO: remove that, just use LiveData
-class RestorableTaskProvider(provider: TaskProvider) : TaskProviderWrapper(provider) {
+open class RestorableTaskProvider(provider: TaskProvider) : TaskProviderWrapper(provider) {
     var isRecording: Boolean = false
         set(recording) {
             field = recording

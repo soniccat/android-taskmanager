@@ -6,7 +6,7 @@ import androidx.annotation.WorkerThread
 /**
  * Created by alexeyglushkov on 13.08.16.
  */
-class StackTaskProvider(private val areTasksDependent: Boolean //if enabled the top task blocks the next task until the former finishes
+open class StackTaskProvider(private val areTasksDependent: Boolean //if enabled the top task blocks the next task until the former finishes
                         , handler: Handler,
                         override var taskProviderId: String) : SimpleTaskPool(handler), TaskProvider, Task.StatusListener {
     override var priority: Int = 0
