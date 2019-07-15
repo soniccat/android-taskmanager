@@ -2,9 +2,7 @@ package com.example.alexeyglushkov.taskmanager.task
 
 import android.os.Handler
 import android.os.HandlerThread
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doAnswer
-import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.*
 
 import org.mockito.Mockito
 import org.mockito.invocation.InvocationOnMock
@@ -228,10 +226,10 @@ class TaskManagerTestSet {
         taskManager.startImmediately(task)
 
         // Verify
-        Mockito.verify(taskPrivate).taskStatus = Task.Status.Started
-        Mockito.verify<TaskManager.Listener>(listener, Mockito.never()).onTaskAdded(taskManager, task, false)
-        Mockito.verify<TaskManager.Listener>(listener, Mockito.never()).onTaskRemoved(taskManager, task, false)
-        Mockito.verify<TaskManager.Listener>(listener).onTaskAdded(taskManager, task, true)
+        verify(taskPrivate).taskStatus = Task.Status.Started
+        verify(listener, never()).onTaskAdded(taskManager, task, false)
+        verify(listener, never()).onTaskRemoved(taskManager, task, false)
+        verify(listener).onTaskAdded(taskManager, task, true)
     }
 
     fun startImmediatelySkipPolicy() {
