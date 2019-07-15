@@ -2,6 +2,9 @@ package com.example.alexeyglushkov.taskmanager.task
 
 import android.os.Handler
 import android.os.HandlerThread
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doAnswer
+import com.nhaarman.mockitokotlin2.mock
 
 import org.mockito.Mockito
 import org.mockito.invocation.InvocationOnMock
@@ -23,16 +26,13 @@ class TaskManagerTestSet {
         this.taskManager = taskManager
 
         // mock executor
-        val executor = Mockito.mock(TaskExecutor::class.java)
-        Mockito.doAnswer(object : Answer<Any> {
-            @Throws(Throwable::class)
-            override fun answer(invocation: InvocationOnMock): Any? {
-                val task = invocation.arguments[0] as Task
-                val callback = invocation.arguments[1] as Task.Callback
-                task.startTask()
-                return null
-            }
-        }).`when`(executor).executeTask(Mockito.any<Any>() as Task, Mockito.any<Any>() as Task.Callback)
+        val executor = mock<TaskExecutor>()
+        doAnswer { invocation ->
+            val task = invocation.arguments[0] as Task
+            val callback = invocation.arguments[1] as Task.Callback
+            task.startTask()
+            return@doAnswer null
+        }.`when`(executor).executeTask(any(), any())
 
         taskManager.taskExecutor = executor
     }
@@ -208,7 +208,7 @@ class TaskManagerTestSet {
 
     fun setTaskExecutor() {
         // Arrange
-        val executor = Mockito.mock(TaskExecutor::class.java)
+        val executor = mock<TaskExecutor>()
 
         // Act
         taskManager.taskExecutor = executor
@@ -221,7 +221,7 @@ class TaskManagerTestSet {
         // Arrange
         val task = TestTasks.createTaskMock()
         val taskPrivate = task.private
-        val listener = Mockito.mock(TaskManager.Listener::class.java)
+        val listener = mock<TaskManager.Listener>()
 
         // Act
         taskManager.addListener(listener)
