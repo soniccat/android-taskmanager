@@ -116,7 +116,7 @@ open class SimpleTaskPool(handler: Handler) : TaskPool {
     }
 
     protected fun checkHandlerThread() {
-        //Assert.assertEquals(Looper.myLooper(), this.handler.looper)
+        Assert.assertEquals(Looper.myLooper(), this.handler.looper)
     }
 
     companion object {

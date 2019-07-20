@@ -275,7 +275,7 @@ open class PriorityTaskProvider(handler: Handler, override var taskProviderId: S
     }
 
     private fun checkHandlerThread() {
-        //Assert.assertEquals(Looper.myLooper(), this.handler.looper)
+        Assert.assertEquals(Looper.myLooper(), this.handler.looper)
     }
 
     companion object {

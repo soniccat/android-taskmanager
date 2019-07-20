@@ -94,6 +94,11 @@ dependencies {
     implementation project(':authcachemanager')
     implementation project(':service')
     implementation project(':quizlet_repository')
+
+    // for getting source no :)
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.2.0-alpha02'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0-alpha02'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0-alpha02'
 }
 
 task generateClass() {
