@@ -26,15 +26,12 @@ public class AuthorizationActivity extends AppCompatActivity implements OAuthWeb
     private WebView webView;
     private boolean isHandled;
 
-    // TODO: think about pending intent or something else
-    //private @Nullable OAuthWebClient.Callback webCallback;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authorization);
 
-        webView = (WebView)findViewById(R.id.web_view);
+        webView = findViewById(R.id.web_view);
         webView.getSettings().setJavaScriptEnabled(true);
 
         webView.setWebViewClient(new WebViewClient() {
@@ -42,8 +39,10 @@ public class AuthorizationActivity extends AppCompatActivity implements OAuthWeb
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (url.startsWith(Networks.INSTANCE.getCALLBACK_URL())) {
                     AuthActivityProxy.finish(url, null);
-                    isHandled = true;
-                    finish();
+                    if (!isHandled) {
+                        isHandled = true;
+                        finish();
+                    }
                     return true;
                 }
 
@@ -54,9 +53,11 @@ public class AuthorizationActivity extends AppCompatActivity implements OAuthWeb
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 super.onReceivedError(view, errorCode, description, failingUrl);
                 Error error = new Error("AuthorizationActivity webView error " + errorCode + " " + description);
-                AuthActivityProxy.finish(null, error);
-                isHandled = true;
-                finish();
+                if (!isHandled) {
+                    AuthActivityProxy.finish(null, error);
+                    isHandled = true;
+                    finish();
+                }
             }
         });
 
@@ -68,13 +69,14 @@ public class AuthorizationActivity extends AppCompatActivity implements OAuthWeb
     public void finish() {
         if (!isHandled) {
             AuthActivityProxy.finish(null, new CancelError());
+            isHandled = true;
         }
 
+        webView.setWebViewClient(null);
         super.finish();
 
         if (AuthActivityProxy.getCurrentActivity() == this) {
             AuthActivityProxy.setCurrentActivity(null);
-            //AuthActivityProxy.setCurrentCallback(null);
         }
     }
 
@@ -84,7 +86,6 @@ public class AuthorizationActivity extends AppCompatActivity implements OAuthWeb
             @Override
             public void run() {
                 webView.loadUrl(url);
-                //webCallback = callback;
             }
         });
 

@@ -56,14 +56,6 @@ public class AuthActivityProxy implements OAuthWebClient {
         }
     }
 
-//    public static Callback getCurrentCallback() {
-//        return currentCallback;
-//    }
-
-//    public static void setCurrentCallback(Callback currentCallback) {
-//        AuthActivityProxy.currentCallback = currentCallback;
-//    }
-
     @Override
     public Single<String> loadUrl(String url) {
         Assert.assertNotNull(currentActivity);
@@ -71,7 +63,6 @@ public class AuthActivityProxy implements OAuthWebClient {
         Intent intent = new Intent(getCurrentActivity(), AuthorizationActivity.class);
         intent.putExtra(AuthorizationActivity.LOAD_URL, url);
 
-        //setCurrentCallback(callback);
         getCurrentActivity().startActivity(intent);
         return getAuthResult();
     }
