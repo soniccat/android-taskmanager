@@ -16,8 +16,6 @@ import com.example.alexeyglushkov.streamlib.progress.ProgressListener
 //
 // All setters mustn't be called after starting the task
 
-// TODO: need to add nullable nonnullable annotations
-
 interface Task : TaskContainer {
     // Set the callback to handle the result.
     // TaskManager uses this callback but calls the original
@@ -89,6 +87,7 @@ interface Task : TaskContainer {
     // Caller: Client, TaskManager
     //
     fun taskDuration(): Long
+
     //TODO: finish comments
     // Set/Get additional information to the task
     //

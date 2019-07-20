@@ -495,8 +495,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         val originalCallback = task.taskCallback
         val callback = object : Task.Callback {
             override fun onCompleted(cancelled: Boolean) {
-                val thisCallback = this
-
                 HandlerTools.runOnHandlerThread(handler, Runnable {
                     if (Tasks.isTaskCompleted(task)) {
                         // may happen if canBeCancelledImmediately returns true
@@ -505,9 +503,8 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
                     logTask(task, "Task onCompleted" + if (cancelled) " (Cancelled)" else "")
 
-                    // TODO: remove that after removing RestorableTaskProvider
-                    // callback could be changed while running, in RestorableTaskProvider for example
-                    val resultCallback = if (task.taskCallback === thisCallback) originalCallback else task.taskCallback
+                    // if the callback was changed while running
+                    val resultCallback = if (task.taskCallback === this) originalCallback else task.taskCallback
                     handleTaskCompletionOnThread(task, resultCallback, cancelled)
                 })
             }
