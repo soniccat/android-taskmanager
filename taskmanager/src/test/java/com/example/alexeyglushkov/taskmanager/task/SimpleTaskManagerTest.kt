@@ -5,8 +5,6 @@ import android.os.Looper
 
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mockito
 
 /**
  * Created by alexeyglushkov on 23.08.15.

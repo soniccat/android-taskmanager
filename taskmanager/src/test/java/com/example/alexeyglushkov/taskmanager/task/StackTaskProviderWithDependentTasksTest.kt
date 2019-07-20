@@ -2,13 +2,14 @@ package com.example.alexeyglushkov.taskmanager.task
 
 import android.os.Handler
 import android.os.Looper
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.never
+import com.nhaarman.mockitokotlin2.spy
+import com.nhaarman.mockitokotlin2.verify
 
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito
-
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.assertNull
+import org.junit.Assert.*
 
 /**
  * Created by alexeyglushkov on 13.08.16.
@@ -38,8 +39,8 @@ class StackTaskProviderWithDependentTasksTest {
         // Arrange
         val testTask1 = TestTask()
         val testTask2 = TestTask()
-        val providerMock = Mockito.spy(taskProvider)
-        val listener = Mockito.mock(TaskPool.Listener::class.java)
+        val providerMock = spy(taskProvider)
+        val listener = mock<TaskPool.Listener>()
 
         // Act
         providerMock.addListener(listener)
@@ -49,10 +50,10 @@ class StackTaskProviderWithDependentTasksTest {
         providerMock.addTask(testTask2)
 
         // Verify
-        Mockito.verify<TaskPool.Listener>(listener, Mockito.never()).onTaskAdded(providerMock, testTask2)
+        verify(listener, never()).onTaskAdded(providerMock, testTask2)
         testTask1.private.taskStatus = Task.Status.Finished
 
-        Mockito.verify<TaskPool.Listener>(listener).onTaskAdded(providerMock, testTask2)
+        verify(listener).onTaskAdded(providerMock, testTask2)
         assertEquals(1, taskProvider.getTaskCount())
     }
 
@@ -61,7 +62,7 @@ class StackTaskProviderWithDependentTasksTest {
         // Arrange
         val testTask1 = TestTask()
         val testTask2 = TestTask()
-        val providerMock = Mockito.spy(taskProvider)
+        val providerMock = spy(taskProvider)
 
         // Act
         providerMock.addTask(testTask1)
@@ -83,7 +84,7 @@ class StackTaskProviderWithDependentTasksTest {
         // Arrange
         val testTask1 = TestTask()
         val testTask2 = TestTask()
-        val providerMock = Mockito.spy(taskProvider)
+        val providerMock = spy(taskProvider)
 
         // Act
         providerMock.addTask(testTask1)

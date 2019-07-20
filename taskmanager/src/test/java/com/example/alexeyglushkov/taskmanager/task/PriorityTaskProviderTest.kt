@@ -2,13 +2,11 @@ package com.example.alexeyglushkov.taskmanager.task
 
 import android.os.Handler
 import android.os.Looper
+import com.nhaarman.mockitokotlin2.mock
 
 import org.junit.Before
 import org.junit.Test
-
-import junit.framework.Assert.assertEquals
-
-import org.mockito.Mockito
+import org.junit.Assert.*
 
 import java.util.Arrays
 
@@ -45,7 +43,7 @@ open class PriorityTaskProviderTest {
     @Test
     fun testUpdatePriorities() {
         // Arrange
-        val listener = Mockito.mock<TaskPool.Listener>(TaskPool.Listener::class.java)
+        val listener = mock<TaskPool.Listener>()
 
         taskProvider.addListener(listener)
         taskProvider.addTask(TestTasks.createTestTaskSpy("a", 1, 1))

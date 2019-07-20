@@ -2,12 +2,12 @@ package com.example.alexeyglushkov.taskmanager.task
 
 import android.os.Handler
 import android.os.HandlerThread
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.never
+import com.nhaarman.mockitokotlin2.spy
+import com.nhaarman.mockitokotlin2.verify
 
-import org.mockito.Mockito
-
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.assertFalse
-import junit.framework.Assert.assertTrue
+import org.junit.Assert.*
 
 open class TaskPoolTestSet {
 
@@ -27,7 +27,6 @@ open class TaskPoolTestSet {
         taskPool.handler = handler
 
         // Verify
-        assertTrue(taskPool.handler != null)
         assertEquals(handler, taskPool.handler)
     }
 
@@ -35,15 +34,15 @@ open class TaskPoolTestSet {
         // Arrange
         val task = TestTasks.createTaskMock()
         val taskPrivate = task.private
-        val listener = Mockito.mock(TaskPool.Listener::class.java)
+        val listener = mock<TaskPool.Listener>()
 
         // Act
         taskPool.addListener(listener)
         taskPool.addTask(task)
 
         // Verify
-        Mockito.verify(taskPrivate).taskStatus = Task.Status.Waiting
-        Mockito.verify<TaskPool.Listener>(listener).onTaskAdded(taskPool, task)
+        verify(taskPrivate).taskStatus = Task.Status.Waiting
+        verify(listener).onTaskAdded(taskPool, task)
 
         assertEquals(taskPool.getTaskCount(), 1)
         assertTrue(taskPool.getTasks().contains(task))
@@ -51,29 +50,29 @@ open class TaskPoolTestSet {
 
     fun addTaskAddStatusListener() {
         // Arrange
-        val task = Mockito.spy(TestTask())
+        val task = spy(TestTask())
 
         // Act
         taskPool.addTask(task)
 
         // Verify
-        Mockito.verify<Task>(task).addTaskStatusListener(taskPool)
+        verify<Task>(task).addTaskStatusListener(taskPool)
     }
 
     fun addStartedTask() {
         // Arrange
         val task = TestTasks.createTaskMock(null, Task.Status.Started)
         val taskPrivate = task.private
-        val listener = Mockito.mock(TaskPool.Listener::class.java)
+        val listener = mock<TaskPool.Listener>()
 
         // Act
         taskPool.addListener(listener)
         taskPool.addTask(task)
 
         // Verify
-        Mockito.verify(taskPrivate, Mockito.never()).taskStatus = Task.Status.Waiting
-        Mockito.verify(task, Mockito.never()).addTaskStatusListener(taskPool)
-        Mockito.verify<TaskPool.Listener>(listener, Mockito.never()).onTaskAdded(taskPool, task)
+        verify(taskPrivate, never()).taskStatus = Task.Status.Waiting
+        verify(task, never()).addTaskStatusListener(taskPool)
+        verify(listener, never()).onTaskAdded(taskPool, task)
 
         assertEquals(taskPool.getTaskCount(), 0)
         assertFalse(taskPool.getTasks().contains(task))
@@ -82,7 +81,7 @@ open class TaskPoolTestSet {
     fun removeTask() {
         // Arrange
         val task = TestTasks.createTaskMock("taskId", Task.Status.NotStarted)
-        val listener = Mockito.mock(TaskPool.Listener::class.java)
+        val listener = mock<TaskPool.Listener>()
 
         // Act
         taskPool.addListener(listener)
@@ -90,8 +89,8 @@ open class TaskPoolTestSet {
         taskPool.removeTask(task)
 
         // Verify
-        Mockito.verify<TaskPool.Listener>(listener).onTaskAdded(taskPool, task)
-        Mockito.verify<TaskPool.Listener>(listener).onTaskRemoved(taskPool, task)
+        verify(listener).onTaskAdded(taskPool, task)
+        verify(listener).onTaskRemoved(taskPool, task)
 
         assertEquals(0, taskPool.getTaskCount())
     }
@@ -100,7 +99,7 @@ open class TaskPoolTestSet {
         // Arrange
         val task1 = TestTasks.createTaskMock("taskId", Task.Status.NotStarted)
         val task2 = TestTasks.createTaskMock("taskId", Task.Status.NotStarted)
-        val listener = Mockito.mock(TaskPool.Listener::class.java)
+        val listener = mock<TaskPool.Listener>()
 
         // Act
         taskPool.addListener(listener)
@@ -108,10 +107,10 @@ open class TaskPoolTestSet {
         taskPool.removeTask(task2)
 
         // Verify
-        Mockito.verify<TaskPool.Listener>(listener).onTaskAdded(taskPool, task1)
-        Mockito.verify<TaskPool.Listener>(listener, Mockito.never()).onTaskRemoved(taskPool, task1)
-        Mockito.verify<TaskPool.Listener>(listener, Mockito.never()).onTaskAdded(taskPool, task2)
-        Mockito.verify<TaskPool.Listener>(listener, Mockito.never()).onTaskRemoved(taskPool, task2)
+        verify(listener).onTaskAdded(taskPool, task1)
+        verify(listener, never()).onTaskRemoved(taskPool, task1)
+        verify(listener, never()).onTaskAdded(taskPool, task2)
+        verify(listener, never()).onTaskRemoved(taskPool, task2)
 
         assertEquals(1, taskPool.getTaskCount())
     }
@@ -183,8 +182,8 @@ open class TaskPoolTestSet {
     fun addStateListener() {
         // Arrange
         val task = TestTasks.createTaskMock("taskId", Task.Status.NotStarted)
-        val listener1 = Mockito.mock(TaskPool.Listener::class.java)
-        val listener2 = Mockito.mock(TaskPool.Listener::class.java)
+        val listener1 = mock<TaskPool.Listener>()
+        val listener2 = mock<TaskPool.Listener>()
 
         // Act
         taskPool.addListener(listener1)
@@ -192,15 +191,15 @@ open class TaskPoolTestSet {
         taskPool.addTask(task)
 
         // Verify
-        Mockito.verify<TaskPool.Listener>(listener1).onTaskAdded(taskPool, task)
-        Mockito.verify<TaskPool.Listener>(listener2).onTaskAdded(taskPool, task)
+        verify(listener1).onTaskAdded(taskPool, task)
+        verify(listener2).onTaskAdded(taskPool, task)
     }
 
     fun removeStateListener() {
         // Arrange
         val task = TestTasks.createTaskMock("taskId", Task.Status.NotStarted)
-        val listener1 = Mockito.mock(TaskPool.Listener::class.java)
-        val listener2 = Mockito.mock(TaskPool.Listener::class.java)
+        val listener1 = mock<TaskPool.Listener>()
+        val listener2 = mock<TaskPool.Listener>()
 
         // Act
         taskPool.addListener(listener1)
@@ -210,21 +209,21 @@ open class TaskPoolTestSet {
         taskPool.addTask(task)
 
         // Verify
-        Mockito.verify<TaskPool.Listener>(listener1, Mockito.never()).onTaskAdded(taskPool, task)
-        Mockito.verify<TaskPool.Listener>(listener2, Mockito.never()).onTaskAdded(taskPool, task)
+        verify(listener1, never()).onTaskAdded(taskPool, task)
+        verify(listener2, never()).onTaskAdded(taskPool, task)
     }
 
     fun changeTaskStatus() {
         // Arrange
         val testTask = TestTask()
-        val taskPoolMock = Mockito.spy(taskPool)
+        val taskPoolMock = spy(taskPool)
 
         // Act
         taskPoolMock.addTask(testTask)
         testTask.private.taskStatus = Task.Status.Started
 
         // Verify
-        Mockito.verify(taskPoolMock).onTaskStatusChanged(testTask, Task.Status.Waiting, Task.Status.Started)
+        verify(taskPoolMock).onTaskStatusChanged(testTask, Task.Status.Waiting, Task.Status.Started)
 
         assertEquals(1, taskPool.getTaskCount())
     }
@@ -232,7 +231,7 @@ open class TaskPoolTestSet {
     fun checkTaskRemovingAfterFinishing() {
         // Arrange
         val testTask = TestTask()
-        val taskPoolMock = Mockito.spy(taskPool)
+        val taskPoolMock = spy(taskPool)
 
         // Act
         taskPoolMock.addTask(testTask)

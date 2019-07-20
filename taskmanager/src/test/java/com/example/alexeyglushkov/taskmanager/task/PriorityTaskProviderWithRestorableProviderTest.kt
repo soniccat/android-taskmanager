@@ -9,7 +9,7 @@ import android.os.Looper
 
 class PriorityTaskProviderWithRestorableProviderTest : PriorityTaskProviderTest() {
 
-    protected override val priorityTaskProvider: PriorityTaskProvider
+    override val priorityTaskProvider: PriorityTaskProvider
         get() {
             val restorableTaskProvider = taskProvider as RestorableTaskProvider
             return restorableTaskProvider.provider as PriorityTaskProvider

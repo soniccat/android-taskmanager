@@ -1,11 +1,14 @@
 package com.example.alexeyglushkov.taskmanager.task
 
-import org.mockito.Mockito
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.never
+import com.nhaarman.mockitokotlin2.verify
 
 import java.util.Arrays
 
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertNull
+import org.mockito.Mockito.`when`
 
 /**
  * Created by alexeyglushkov on 15.08.15.
@@ -62,7 +65,7 @@ class TaskProviderTestSet {
         taskProvider.addTask(TestTasks.createTestTaskSpy("f", 3))
 
         // Act
-        val task = taskProvider.getTopTask(Arrays.asList(*arrayOf(1)))
+        val task = taskProvider.getTopTask(Arrays.asList(1))
 
         // Verify
         assertEquals("b", task!!.taskId)
@@ -90,7 +93,7 @@ class TaskProviderTestSet {
 
     fun takeTopTaskWithFilter() {
         // Arrange
-        val listener = Mockito.mock<TaskPool.Listener>(TaskPool.Listener::class.java)
+        val listener = mock<TaskPool.Listener>()
 
         taskProvider.addListener(listener)
         taskProvider.addTask(TestTasks.createTestTaskSpy("a", 1))
@@ -101,10 +104,10 @@ class TaskProviderTestSet {
         taskProvider.addTask(TestTasks.createTestTaskSpy("f", 3))
 
         // Act
-        val task = taskProvider.takeTopTask(Arrays.asList(*arrayOf(1)))
+        val task = taskProvider.takeTopTask(Arrays.asList(1))
 
         // Verify
-        Mockito.verify<TaskPool.Listener>(listener).onTaskRemoved(taskProvider, task!!)
+        verify(listener).onTaskRemoved(taskProvider, task!!)
 
         assertEquals("b", task.taskId)
         assertEquals(5, taskProvider.getTaskCount())
@@ -134,22 +137,22 @@ class TaskProviderTestSet {
 
     fun removeTaskWithUnknownType() {
         // Arrange
-        val task1 = Mockito.mock(TaskBase::class.java)
-        val taskPrivate1 = Mockito.mock(TaskPrivate::class.java)
-        val listener = Mockito.mock(TaskPool.Listener::class.java)
+        val task1 = mock<TaskBase>()
+        val taskPrivate1 = mock<TaskPrivate>()
+        val listener = mock<TaskPool.Listener>()
 
-        Mockito.`when`<Task.Status>(task1.taskStatus).thenReturn(Task.Status.NotStarted)
-        Mockito.`when`<String>(task1.taskId).thenReturn("taskId")
-        Mockito.`when`(task1.private).thenReturn(taskPrivate1)
-        Mockito.`when`(task1.taskType).thenReturn(1)
+        `when`<Task.Status>(task1.taskStatus).thenReturn(Task.Status.NotStarted)
+        `when`<String>(task1.taskId).thenReturn("taskId")
+        `when`(task1.private).thenReturn(taskPrivate1)
+        `when`(task1.taskType).thenReturn(1)
 
-        val task2 = Mockito.mock(TaskBase::class.java)
-        val taskPrivate2 = Mockito.mock(TaskPrivate::class.java)
+        val task2 = mock<TaskBase>()
+        val taskPrivate2 = mock<TaskPrivate>()
 
-        Mockito.`when`<Task.Status>(task2.taskStatus).thenReturn(Task.Status.NotStarted)
-        Mockito.`when`<String>(task2.taskId).thenReturn("taskId")
-        Mockito.`when`(task2.private).thenReturn(taskPrivate2)
-        Mockito.`when`(task2.taskType).thenReturn(2)
+        `when`<Task.Status>(task2.taskStatus).thenReturn(Task.Status.NotStarted)
+        `when`<String>(task2.taskId).thenReturn("taskId")
+        `when`(task2.private).thenReturn(taskPrivate2)
+        `when`(task2.taskType).thenReturn(2)
 
         // Act
         taskProvider.addListener(listener)
@@ -157,10 +160,10 @@ class TaskProviderTestSet {
         taskProvider.removeTask(task2)
 
         // Verify
-        Mockito.verify<TaskPool.Listener>(listener).onTaskAdded(taskProvider, task1)
-        Mockito.verify<TaskPool.Listener>(listener, Mockito.never()).onTaskRemoved(taskProvider, task1)
-        Mockito.verify<TaskPool.Listener>(listener, Mockito.never()).onTaskAdded(taskProvider, task2)
-        Mockito.verify<TaskPool.Listener>(listener, Mockito.never()).onTaskRemoved(taskProvider, task2)
+        verify(listener).onTaskAdded(taskProvider, task1)
+        verify(listener, never()).onTaskRemoved(taskProvider, task1)
+        verify(listener, never()).onTaskAdded(taskProvider, task2)
+        verify(listener, never()).onTaskRemoved(taskProvider, task2)
 
         assertEquals(1, taskProvider.getTaskCount())
     }
