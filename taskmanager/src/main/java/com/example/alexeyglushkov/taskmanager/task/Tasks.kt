@@ -39,7 +39,7 @@ object Tasks {
         return st == Task.Status.Finished || st == Task.Status.Cancelled
     }
 
-    fun <T> fromSingle(single: Single<T>): Task {
+    fun <T> fromSingle(single: Single<T>): TaskBase {
         return SingleTask(single)
     }
 
@@ -69,11 +69,11 @@ object Tasks {
         }
     }
 
-    fun <T> fromMaybe(maybe: Maybe<T>): Task {
+    fun <T> fromMaybe(maybe: Maybe<T>): TaskBase {
         return MaybeTask(maybe)
     }
 
-    fun fromCompletable(completable: Completable): Task {
+    fun fromCompletable(completable: Completable): TaskBase {
         return CompletableTask(completable)
     }
 
@@ -96,10 +96,6 @@ object Tasks {
 
             taskPool.addTask(task)
         }
-    }
-
-    fun asPrivate(task: Task, block: (TaskPrivate) -> Unit) {
-        block(task as TaskPrivate)
     }
 
     // TODO: think about a better name

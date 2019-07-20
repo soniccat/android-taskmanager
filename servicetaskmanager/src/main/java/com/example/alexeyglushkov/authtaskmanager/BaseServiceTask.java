@@ -2,6 +2,7 @@ package com.example.alexeyglushkov.authtaskmanager;
 
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder;
 import com.example.alexeyglushkov.taskmanager.task.Task;
+import com.example.alexeyglushkov.taskmanager.task.TaskBase;
 import com.example.alexeyglushkov.taskmanager.task.Tasks;
 
 import androidx.annotation.NonNull;
@@ -12,7 +13,7 @@ import io.reactivex.Single;
 import androidx.annotation.Nullable;
 
 public class BaseServiceTask<T> implements ServiceTask<T> {
-    protected Task task;
+    protected TaskBase task;
 
     //// Initialization
 
@@ -31,7 +32,7 @@ public class BaseServiceTask<T> implements ServiceTask<T> {
         return new BaseServiceTask<>(Tasks.INSTANCE.fromCompletable(completable));
     }
 
-    protected BaseServiceTask(Task task) {
+    protected BaseServiceTask(TaskBase task) {
         this.task = task;
     }
 
@@ -46,7 +47,7 @@ public class BaseServiceTask<T> implements ServiceTask<T> {
 
     // Setters
 
-    public void setTask(Task task) {
+    public void setTask(TaskBase task) {
         this.task = task;
     }
 

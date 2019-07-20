@@ -75,14 +75,13 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     override var maxLoadingTasks: Int = 0
         get() {
-            checkHandlerThread()
             return field
         }
         set(value) {
-            checkHandlerThread()
-
-            // TODO: we need run tasks when increase the size
             field = value
+            // TODO: handle somehow on the thread
+            // TODO: we need run tasks when increase the size
+            // TODO: probably we should cancel tasks after decreasing
         }
 
     override val loadingTaskCount: Int
