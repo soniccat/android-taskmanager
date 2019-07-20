@@ -4,15 +4,8 @@ import android.os.Handler
 import android.os.HandlerThread
 import com.nhaarman.mockitokotlin2.*
 
-import org.mockito.Mockito
-import org.mockito.invocation.InvocationOnMock
-import org.mockito.stubbing.Answer
-
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.assertFalse
-import junit.framework.Assert.assertNotNull
-import junit.framework.Assert.assertNull
-import junit.framework.Assert.assertTrue
+import org.junit.Assert.*
+import org.mockito.Mockito.`when`
 
 /**
  * Created by alexeyglushkov on 23.08.15.
@@ -237,7 +230,7 @@ class TaskManagerTestSet {
         val task1 = TestTasks.createTestTaskSpy("taskId")
         val task2 = TestTasks.createTestTaskSpy("taskId")
 
-        val listener = Mockito.mock(TaskManager.Listener::class.java)
+        val listener = mock<TaskManager.Listener>()
 
         // Act
         taskManager.addListener(listener)
@@ -246,13 +239,13 @@ class TaskManagerTestSet {
 
         // Verify
         assertEquals(Task.Status.Started, task1.taskStatus)
-        Mockito.verify<TaskManager.Listener>(listener).onTaskAdded(taskManager, task1, true)
+        verify(listener).onTaskAdded(taskManager, task1, true)
 
         assertEquals(Task.Status.Cancelled, task2.taskStatus)
-        Mockito.verify<TaskManager.Listener>(listener, Mockito.never()).onTaskAdded(taskManager, task2, false)
-        Mockito.verify<TaskManager.Listener>(listener, Mockito.never()).onTaskRemoved(taskManager, task2, false)
-        Mockito.verify<TaskManager.Listener>(listener, Mockito.never()).onTaskAdded(taskManager, task2, true)
-        Mockito.verify<TaskManager.Listener>(listener, Mockito.never()).onTaskRemoved(taskManager, task2, true)
+        verify(listener, never()).onTaskAdded(taskManager, task2, false)
+        verify(listener, never()).onTaskRemoved(taskManager, task2, false)
+        verify(listener, never()).onTaskAdded(taskManager, task2, true)
+        verify(listener, never()).onTaskRemoved(taskManager, task2, true)
     }
 
     fun startImmediatelySkipPolicyWithFinish() {
@@ -260,13 +253,13 @@ class TaskManagerTestSet {
         val task1 = TestTasks.createTestTaskSpy("taskId")
         val task2 = TestTasks.createTestTaskSpy("taskId")
 
-        val callback1 = Mockito.mock(Task.Callback::class.java)
-        val callback2 = Mockito.mock(Task.Callback::class.java)
+        val callback1 = mock<Task.Callback>()
+        val callback2 = mock<Task.Callback>()
 
         task1.taskCallback = callback1
         task2.taskCallback = callback2
 
-        val listener = Mockito.mock(TaskManager.Listener::class.java)
+        val listener = mock<TaskManager.Listener>()
 
         // Act
         taskManager.addListener(listener)
@@ -275,25 +268,25 @@ class TaskManagerTestSet {
         task1.finish()
 
         assertEquals(Task.Status.Finished, task1.taskStatus)
-        Mockito.verify<TaskManager.Listener>(listener).onTaskAdded(taskManager, task1, true)
-        Mockito.verify<TaskManager.Listener>(listener).onTaskRemoved(taskManager, task1, true)
+        verify(listener).onTaskAdded(taskManager, task1, true)
+        verify(listener).onTaskRemoved(taskManager, task1, true)
 
         assertEquals(Task.Status.Cancelled, task2.taskStatus)
-        Mockito.verify<TaskManager.Listener>(listener, Mockito.never()).onTaskAdded(taskManager, task2, false)
-        Mockito.verify<TaskManager.Listener>(listener, Mockito.never()).onTaskRemoved(taskManager, task2, false)
-        Mockito.verify<TaskManager.Listener>(listener, Mockito.never()).onTaskAdded(taskManager, task2, true)
-        Mockito.verify<TaskManager.Listener>(listener, Mockito.never()).onTaskRemoved(taskManager, task2, true)
-        Mockito.verify<Task.Callback>(callback1).onCompleted(false)
-        Mockito.verify<Task.Callback>(callback2).onCompleted(true)
+        verify(listener, never()).onTaskAdded(taskManager, task2, false)
+        verify(listener, never()).onTaskRemoved(taskManager, task2, false)
+        verify(listener, never()).onTaskAdded(taskManager, task2, true)
+        verify(listener, never()).onTaskRemoved(taskManager, task2, true)
+        verify(callback1).onCompleted(false)
+        verify(callback2).onCompleted(true)
     }
 
     fun startImmediatelyFinish() {
         // Arrange
         val task = TestTask()
-        val callback = Mockito.mock(Task.Callback::class.java)
+        val callback = mock<Task.Callback>()
         task.taskCallback = callback
 
-        val listener = Mockito.mock(TaskManager.Listener::class.java)
+        val listener = mock<TaskManager.Listener>()
 
         // Act
         taskManager.addListener(listener)
@@ -302,22 +295,22 @@ class TaskManagerTestSet {
 
         // Verify
         assertEquals(Task.Status.Finished, task.taskStatus)
-        Mockito.verify<TaskManager.Listener>(listener, Mockito.never()).onTaskAdded(taskManager, task, false)
-        Mockito.verify<TaskManager.Listener>(listener, Mockito.never()).onTaskRemoved(taskManager, task, false)
-        Mockito.verify<TaskManager.Listener>(listener).onTaskAdded(taskManager, task, true)
-        Mockito.verify<TaskManager.Listener>(listener).onTaskRemoved(taskManager, task, true)
-        Mockito.verify<Task.Callback>(callback).onCompleted(false)
+        verify(listener, never()).onTaskAdded(taskManager, task, false)
+        verify(listener, never()).onTaskRemoved(taskManager, task, false)
+        verify(listener).onTaskAdded(taskManager, task, true)
+        verify(listener).onTaskRemoved(taskManager, task, true)
+        verify(callback).onCompleted(false)
         assertEquals(0, taskManager.getTaskCount())
     }
 
     fun startImmediatelyFinishWithChangedCallback() {
         // Arrange
         val task = TestTask()
-        val callback1 = Mockito.mock(Task.Callback::class.java)
-        val callback2 = Mockito.mock(Task.Callback::class.java)
+        val callback1 = mock<Task.Callback>()
+        val callback2 = mock<Task.Callback>()
         task.taskCallback = callback1
 
-        val listener = Mockito.mock(TaskManager.Listener::class.java)
+        val listener = mock<TaskManager.Listener>()
 
         // Act
         taskManager.addListener(listener)
@@ -327,25 +320,25 @@ class TaskManagerTestSet {
 
         // Verify
         assertEquals(Task.Status.Finished, task.taskStatus)
-        Mockito.verify<TaskManager.Listener>(listener, Mockito.never()).onTaskAdded(taskManager, task, false)
-        Mockito.verify<TaskManager.Listener>(listener, Mockito.never()).onTaskRemoved(taskManager, task, false)
-        Mockito.verify<TaskManager.Listener>(listener).onTaskAdded(taskManager, task, true)
-        Mockito.verify<TaskManager.Listener>(listener).onTaskRemoved(taskManager, task, true)
-        Mockito.verify<Task.Callback>(callback1, Mockito.never()).onCompleted(Mockito.anyBoolean())
-        Mockito.verify<Task.Callback>(callback2).onCompleted(false)
+        verify(listener, never()).onTaskAdded(taskManager, task, false)
+        verify(listener, never()).onTaskRemoved(taskManager, task, false)
+        verify(listener).onTaskAdded(taskManager, task, true)
+        verify(listener).onTaskRemoved(taskManager, task, true)
+        verify(callback1, never()).onCompleted(any())
+        verify(callback2).onCompleted(false)
         assertEquals(0, taskManager.getTaskCount())
     }
 
     fun startImmediatelyCancelWithChangedCallback() {
         // Arrange
         val task = TestTasks.createTestTaskSpy("taskId")
-        Mockito.`when`(task.canBeCancelledImmediately()).thenReturn(true)
+        `when`(task.canBeCancelledImmediately()).thenReturn(true)
 
-        val callback1 = Mockito.mock(Task.Callback::class.java)
-        val callback2 = Mockito.mock(Task.Callback::class.java)
+        val callback1 = mock<Task.Callback>()
+        val callback2 = mock<Task.Callback>()
         task.taskCallback = callback1
 
-        val listener = Mockito.mock(TaskManager.Listener::class.java)
+        val listener = mock<TaskManager.Listener>()
 
         // Act
         taskManager.addListener(listener)
@@ -355,19 +348,19 @@ class TaskManagerTestSet {
 
         // Verify
         assertEquals(Task.Status.Cancelled, task.taskStatus)
-        Mockito.verify<TaskManager.Listener>(listener, Mockito.never()).onTaskAdded(taskManager, task, false)
-        Mockito.verify<TaskManager.Listener>(listener, Mockito.never()).onTaskRemoved(taskManager, task, false)
-        Mockito.verify<TaskManager.Listener>(listener).onTaskAdded(taskManager, task, true)
-        Mockito.verify<TaskManager.Listener>(listener).onTaskRemoved(taskManager, task, true)
-        Mockito.verify<Task.Callback>(callback1, Mockito.never()).onCompleted(Mockito.anyBoolean())
-        Mockito.verify<Task.Callback>(callback2).onCompleted(true)
+        verify(listener, never()).onTaskAdded(taskManager, task, false)
+        verify(listener, never()).onTaskRemoved(taskManager, task, false)
+        verify(listener).onTaskAdded(taskManager, task, true)
+        verify(listener).onTaskRemoved(taskManager, task, true)
+        verify(callback1, never()).onCompleted(any())
+        verify(callback2).onCompleted(true)
         assertEquals(0, taskManager.getTaskCount())
     }
 
     fun addTask() {
         // Arrange
         val task = TestTasks.createTaskMock()
-        val listener = Mockito.mock(TaskManager.Listener::class.java)
+        val listener = mock<TaskManager.Listener>()
         val taskPrivate = task.private
 
         // Act
@@ -375,9 +368,9 @@ class TaskManagerTestSet {
         taskManager.addTask(task)
 
         // Verify
-        Mockito.verify(taskPrivate, Mockito.atLeast(1)).taskStatus = Task.Status.Waiting
-        Mockito.verify<TaskManager.Listener>(listener).onTaskAdded(taskManager, task, false)
-        Mockito.verify<TaskManager.Listener>(listener).onTaskAdded(taskManager, task, true)
+        verify(taskPrivate, atLeast(1)).taskStatus = Task.Status.Waiting
+        verify(listener).onTaskAdded(taskManager, task, false)
+        verify(listener).onTaskAdded(taskManager, task, true)
 
         assertEquals(taskManager.getTaskCount(), 1)
         assertTrue(taskManager.getTasks().contains(task))
@@ -386,7 +379,7 @@ class TaskManagerTestSet {
     fun addStartedTask() {
         // Arrange
         val task = TestTasks.createTaskMock(null, Task.Status.Started)
-        val listener = Mockito.mock(TaskManager.Listener::class.java)
+        val listener = mock<TaskManager.Listener>()
         val taskPrivate = task.private
 
         // Act
@@ -394,10 +387,10 @@ class TaskManagerTestSet {
         taskManager.addTask(task)
 
         // Verify
-        Mockito.verify(taskPrivate, Mockito.never()).taskStatus = Task.Status.Waiting
-        Mockito.verify(task, Mockito.never()).addTaskStatusListener(taskManager)
-        Mockito.verify<TaskManager.Listener>(listener, Mockito.never()).onTaskAdded(taskManager, task, true)
-        Mockito.verify<TaskManager.Listener>(listener, Mockito.never()).onTaskAdded(taskManager, task, false)
+        verify(taskPrivate, never()).taskStatus = Task.Status.Waiting
+        verify(task, never()).addTaskStatusListener(taskManager)
+        verify(listener, never()).onTaskAdded(taskManager, task, true)
+        verify(listener, never()).onTaskAdded(taskManager, task, false)
 
         assertEquals(taskManager.getTaskCount(), 0)
         assertFalse(taskManager.getTasks().contains(task))
@@ -405,7 +398,7 @@ class TaskManagerTestSet {
 
     fun addTheSameTaskWithSkipPolicy() {
         // Arrange
-        val listener = Mockito.mock(TaskManager.Listener::class.java)
+        val listener = mock<TaskManager.Listener>()
 
         val task1 = TestTasks.createTestTaskSpy("taskId")
         val task2 = TestTasks.createTestTaskSpy("taskId")
@@ -418,16 +411,16 @@ class TaskManagerTestSet {
 
         // Verify
         assertEquals(Task.Status.Started, task1.taskStatus)
-        Mockito.verify<Task>(task1, Mockito.atLeastOnce()).taskId
-        Mockito.verify<TaskManager.Listener>(listener).onTaskAdded(taskManager, task1, true)
-        Mockito.verify<TaskManager.Listener>(listener).onTaskRemoved(taskManager, task1, false)
-        Mockito.verify<TaskManager.Listener>(listener).onTaskAdded(taskManager, task1, false)
+        verify<Task>(task1, atLeastOnce()).taskId
+        verify(listener).onTaskAdded(taskManager, task1, true)
+        verify(listener).onTaskRemoved(taskManager, task1, false)
+        verify(listener).onTaskAdded(taskManager, task1, false)
 
         assertEquals(Task.Status.Cancelled, task2.taskStatus)
-        Mockito.verify<Task>(task2, Mockito.atLeastOnce()).taskId
-        Mockito.verify<TaskManager.Listener>(listener).onTaskAdded(taskManager, task2, false)
-        Mockito.verify<TaskManager.Listener>(listener, Mockito.never()).onTaskAdded(taskManager, task2, true)
-        Mockito.verify<TaskManager.Listener>(listener).onTaskRemoved(taskManager, task2, false)
+        verify<Task>(task2, atLeastOnce()).taskId
+        verify(listener).onTaskAdded(taskManager, task2, false)
+        verify(listener, never()).onTaskAdded(taskManager, task2, true)
+        verify(listener).onTaskRemoved(taskManager, task2, false)
 
         assertEquals(taskManager.getTaskCount(), 1)
         assertTrue(taskManager.getTasks().contains(task1))
@@ -457,10 +450,10 @@ class TaskManagerTestSet {
 
     fun taskCallbackCalled() {
         // Arrange
-        val listener = Mockito.mock(TaskManager.Listener::class.java)
+        val listener = mock<TaskManager.Listener>()
 
         val task = TestTasks.createTestTaskSpy("taskId")
-        val callback = Mockito.mock(Task.Callback::class.java)
+        val callback = mock<Task.Callback>()
         task.taskCallback = callback
 
         taskManager.addListener(listener)
@@ -471,17 +464,17 @@ class TaskManagerTestSet {
 
         // Verify
         assertEquals(Task.Status.Finished, task.taskStatus)
-        Mockito.verify<TaskManager.Listener>(listener).onTaskRemoved(taskManager, task, true)
-        Mockito.verify<Task.Callback>(callback).onCompleted(false)
+        verify(listener).onTaskRemoved(taskManager, task, true)
+        verify(callback).onCompleted(false)
     }
 
     fun changedTaskCallbackCalled() {
         // Arrange
-        val listener = Mockito.mock(TaskManager.Listener::class.java)
+        val listener = mock<TaskManager.Listener>()
 
         val task = TestTasks.createTestTaskSpy("taskId")
-        val callback = Mockito.mock(Task.Callback::class.java)
-        val newCallback = Mockito.mock(Task.Callback::class.java)
+        val callback = mock<Task.Callback>()
+        val newCallback = mock<Task.Callback>()
         task.taskCallback = callback
 
         taskManager.addListener(listener)
@@ -493,19 +486,19 @@ class TaskManagerTestSet {
 
         // Verify
         assertEquals(Task.Status.Finished, task.taskStatus)
-        Mockito.verify<TaskManager.Listener>(listener).onTaskRemoved(taskManager, task, true)
-        Mockito.verify<Task.Callback>(callback, Mockito.never()).onCompleted(Mockito.anyBoolean())
-        Mockito.verify<Task.Callback>(newCallback).onCompleted(false)
+        verify(listener).onTaskRemoved(taskManager, task, true)
+        verify(callback, never()).onCompleted(any())
+        verify(newCallback).onCompleted(false)
     }
 
     fun taskWithCancelledImmediatelyCallbackCalledAfterCancel() {
         // Arrange
-        val listener = Mockito.mock(TaskManager.Listener::class.java)
+        val listener = mock<TaskManager.Listener>()
 
         val task = TestTasks.createTestTaskSpy("taskId")
-        Mockito.`when`(task.canBeCancelledImmediately()).thenReturn(true)
+        `when`(task.canBeCancelledImmediately()).thenReturn(true)
 
-        val callback = Mockito.mock(Task.Callback::class.java)
+        val callback = mock<Task.Callback>()
         task.taskCallback = callback
 
         taskManager.addListener(listener)
@@ -517,19 +510,19 @@ class TaskManagerTestSet {
 
         // Verify
         assertEquals(Task.Status.Cancelled, task.taskStatus)
-        Mockito.verify<TaskManager.Listener>(listener).onTaskRemoved(taskManager, task, true)
-        Mockito.verify<Task.Callback>(callback).onCompleted(true)
+        verify(listener).onTaskRemoved(taskManager, task, true)
+        verify(callback).onCompleted(true)
     }
 
     fun taskWithCancelledImmediatelyAndChangedCallbackCalled() {
         // Arrange
-        val listener = Mockito.mock(TaskManager.Listener::class.java)
+        val listener = mock<TaskManager.Listener>()
 
         val task = TestTasks.createTestTaskSpy("taskId")
-        Mockito.`when`(task.canBeCancelledImmediately()).thenReturn(true)
+        `when`(task.canBeCancelledImmediately()).thenReturn(true)
 
-        val callback = Mockito.mock(Task.Callback::class.java)
-        val newCallback = Mockito.mock(Task.Callback::class.java)
+        val callback = mock<Task.Callback>()
+        val newCallback = mock<Task.Callback>()
         task.taskCallback = callback
 
         taskManager.addListener(listener)
@@ -542,16 +535,16 @@ class TaskManagerTestSet {
 
         // Verify
         assertEquals(Task.Status.Cancelled, task.taskStatus)
-        Mockito.verify<TaskManager.Listener>(listener).onTaskRemoved(taskManager, task, true)
-        Mockito.verify<Task.Callback>(callback, Mockito.never()).onCompleted(true)
-        Mockito.verify<Task.Callback>(newCallback).onCompleted(true)
+        verify(listener).onTaskRemoved(taskManager, task, true)
+        verify(callback, never()).onCompleted(true)
+        verify(newCallback).onCompleted(true)
     }
 
     fun addStateListener() {
         // Arrange
         val task = TestTasks.createTaskMock("taskId", Task.Status.NotStarted)
-        val listener1 = Mockito.mock(TaskManager.Listener::class.java)
-        val listener2 = Mockito.mock(TaskManager.Listener::class.java)
+        val listener1 = mock<TaskManager.Listener>()
+        val listener2 = mock<TaskManager.Listener>()
 
         // Act
         taskManager.addListener(listener1)
@@ -559,17 +552,17 @@ class TaskManagerTestSet {
         taskManager.addTask(task)
 
         // Verify
-        Mockito.verify<TaskManager.Listener>(listener1).onTaskAdded(taskManager, task, false)
-        Mockito.verify<TaskManager.Listener>(listener1).onTaskAdded(taskManager, task, true)
-        Mockito.verify<TaskManager.Listener>(listener2).onTaskAdded(taskManager, task, false)
-        Mockito.verify<TaskManager.Listener>(listener2).onTaskAdded(taskManager, task, true)
+        verify(listener1).onTaskAdded(taskManager, task, false)
+        verify(listener1).onTaskAdded(taskManager, task, true)
+        verify(listener2).onTaskAdded(taskManager, task, false)
+        verify(listener2).onTaskAdded(taskManager, task, true)
     }
 
     fun removeStateListener() {
         // Arrange
         val task = TestTasks.createTaskMock("taskId", Task.Status.NotStarted)
-        val listener1 = Mockito.mock(TaskManager.Listener::class.java)
-        val listener2 = Mockito.mock(TaskManager.Listener::class.java)
+        val listener1 = mock<TaskManager.Listener>()
+        val listener2 = mock<TaskManager.Listener>()
 
         // Act
         taskManager.addListener(listener1)
@@ -579,16 +572,16 @@ class TaskManagerTestSet {
         taskManager.addTask(task)
 
         // Verify
-        Mockito.verify<TaskManager.Listener>(listener1, Mockito.never()).onTaskAdded(taskManager, task, false)
-        Mockito.verify<TaskManager.Listener>(listener1, Mockito.never()).onTaskAdded(taskManager, task, true)
-        Mockito.verify<TaskManager.Listener>(listener2, Mockito.never()).onTaskAdded(taskManager, task, false)
-        Mockito.verify<TaskManager.Listener>(listener2, Mockito.never()).onTaskAdded(taskManager, task, true)
+        verify(listener1, never()).onTaskAdded(taskManager, task, false)
+        verify(listener1, never()).onTaskAdded(taskManager, task, true)
+        verify(listener2, never()).onTaskAdded(taskManager, task, false)
+        verify(listener2, never()).onTaskAdded(taskManager, task, true)
     }
 
     fun removeTask() {
         // Arrange
         val task = TestTasks.createTaskMock("taskId", Task.Status.NotStarted)
-        val listener = Mockito.mock(TaskManager.Listener::class.java)
+        val listener = mock<TaskManager.Listener>()
         val taskPrivate = task.private
 
         // Act
@@ -597,10 +590,10 @@ class TaskManagerTestSet {
         taskManager.removeTask(task)
 
         // Verify
-        Mockito.verify<TaskManager.Listener>(listener).onTaskAdded(taskManager, task, false)
-        Mockito.verify<TaskManager.Listener>(listener).onTaskAdded(taskManager, task, true)
-        Mockito.verify<TaskManager.Listener>(listener).onTaskRemoved(taskManager, task, false)
-        Mockito.verify(taskPrivate).cancelTask(null)
+        verify(listener).onTaskAdded(taskManager, task, false)
+        verify(listener).onTaskAdded(taskManager, task, true)
+        verify(listener).onTaskRemoved(taskManager, task, false)
+        verify(taskPrivate).cancelTask(null)
 
         assertEquals(1, taskManager.getTaskCount())
     }
@@ -609,7 +602,7 @@ class TaskManagerTestSet {
         // Arrange
         val task1 = TestTasks.createTaskMock("taskId", Task.Status.NotStarted)
         val task2 = TestTasks.createTaskMock("taskId", Task.Status.NotStarted)
-        val listener = Mockito.mock(TaskManager.Listener::class.java)
+        val listener = mock<TaskManager.Listener>()
 
         // Act
         taskManager.addListener(listener)
@@ -617,14 +610,14 @@ class TaskManagerTestSet {
         taskManager.removeTask(task2)
 
         // Verify
-        Mockito.verify<TaskManager.Listener>(listener).onTaskAdded(taskManager, task1, false)
-        Mockito.verify<TaskManager.Listener>(listener).onTaskAdded(taskManager, task1, true)
-        Mockito.verify<TaskManager.Listener>(listener).onTaskRemoved(taskManager, task1, false)
-        Mockito.verify<TaskManager.Listener>(listener, Mockito.never()).onTaskRemoved(taskManager, task1, true)
-        Mockito.verify<TaskManager.Listener>(listener, Mockito.never()).onTaskAdded(taskManager, task2, false)
-        Mockito.verify<TaskManager.Listener>(listener, Mockito.never()).onTaskAdded(taskManager, task2, true)
-        Mockito.verify<TaskManager.Listener>(listener, Mockito.never()).onTaskRemoved(taskManager, task2, false)
-        Mockito.verify<TaskManager.Listener>(listener, Mockito.never()).onTaskRemoved(taskManager, task2, true)
+        verify(listener).onTaskAdded(taskManager, task1, false)
+        verify(listener).onTaskAdded(taskManager, task1, true)
+        verify(listener).onTaskRemoved(taskManager, task1, false)
+        verify(listener, never()).onTaskRemoved(taskManager, task1, true)
+        verify(listener, never()).onTaskAdded(taskManager, task2, false)
+        verify(listener, never()).onTaskAdded(taskManager, task2, true)
+        verify(listener, never()).onTaskRemoved(taskManager, task2, false)
+        verify(listener, never()).onTaskRemoved(taskManager, task2, true)
 
         assertEquals(1, taskManager.getTaskCount())
     }
@@ -653,19 +646,19 @@ class TaskManagerTestSet {
         taskManager.handler = handler
 
         // Verify
-        Mockito.verify(taskProvider).handler = handler
+        verify(taskProvider).handler = handler
         assertEquals(handler, taskManager.handler)
     }
 
     fun setLimit() {
-        val listener = Mockito.mock(TaskManager.Listener::class.java)
+        val listener = mock<TaskManager.Listener>()
 
         // Act
         taskManager.addListener(listener)
         taskManager.setLimit(1, 0.5f)
 
         // Verify
-        Mockito.verify<TaskManager.Listener>(listener).onLimitsChanged(taskManager, 1, 0.5f)
+        verify(listener).onLimitsChanged(taskManager, 1, 0.5f)
         assertEquals(0.5f, taskManager.limits.get(1)!!, 0.001f)
 
     }
@@ -683,14 +676,14 @@ class TaskManagerTestSet {
 
     private fun createTaskProviderSpy(id: String, taskManager: TaskManager): TaskProvider {
         val taskProvider = TestTaskProvider(taskManager.handler, id)
-        return Mockito.spy(taskProvider)
+        return spy(taskProvider)
     }
 
     private fun createTaskProviderMock(id: String, taskManager: TaskManager, priority: Int = 0): TaskProvider {
-        val provider = Mockito.mock(TaskProvider::class.java)
-        Mockito.`when`(provider.taskProviderId).thenReturn(id)
-        Mockito.`when`(provider.handler).thenReturn(taskManager.handler)
-        Mockito.`when`(provider.priority).thenReturn(priority)
+        val provider = mock<TaskProvider>()
+        `when`(provider.taskProviderId).thenReturn(id)
+        `when`(provider.handler).thenReturn(taskManager.handler)
+        `when`(provider.priority).thenReturn(priority)
         return provider
     }
 
