@@ -23,7 +23,7 @@ class TaskManagerTestSet {
             val callback = invocation.arguments[1] as Task.Callback
             task.startTask()
             return@doAnswer null
-        }.`when`(executor).executeTask(any(), any())
+        }.`when`(executor).executeTask(any())
 
         taskManager.taskExecutor = executor
     }

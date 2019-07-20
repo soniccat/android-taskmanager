@@ -19,6 +19,14 @@ import java.util.Comparator
 import java.util.Date
 
 import junit.framework.Assert.assertTrue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import java.lang.Exception
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * Created by alexeyglushkov on 20.09.14.
@@ -42,6 +50,10 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     override var taskExecutor: TaskExecutor = SimpleTaskExecutor()
     override var userData: Any? = null
     private var listeners = WeakRefList<TaskManager.Listener>()
+
+    private val task = Job()
+    private val taskScope = CoroutineScope(Dispatchers.IO + task)
+
 
     private lateinit var loadingTasks: TaskPool
     private lateinit var waitingTasks: TaskProvider
@@ -494,23 +506,49 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         val originalCallback = task.taskCallback
         val callback = object : Task.Callback {
             override fun onCompleted(cancelled: Boolean) {
-                HandlerTools.runOnHandlerThread(handler, Runnable {
-                    if (Tasks.isTaskCompleted(task)) {
-                        // may happen if canBeCancelledImmediately returns true
-                        return@Runnable
-                    }
-
-                    logTask(task, "Task onCompleted" + if (cancelled) " (Cancelled)" else "")
-
-                    // if the callback was changed while running
-                    val resultCallback = if (task.taskCallback === this) originalCallback else task.taskCallback
-                    handleTaskCompletionOnThread(task, resultCallback, cancelled)
-                })
+//                HandlerTools.runOnHandlerThread(handler, Runnable {
+//                })
             }
         }
 
         task.taskCallback = callback
-        taskExecutor.executeTask(task, callback)
+        taskScope.launch {
+            var isCancelled = false
+            var result: Any?
+            try {
+                result = start(task)
+            } catch (e: Exception) {
+                isCancelled = e is CancelError
+            }
+
+//            if (Tasks.isTaskCompleted(task)) {
+//                // may happen if canBeCancelledImmediately returns true
+//                return@Runnable
+//            }
+
+            logTask(task, "Task onCompleted" + if (isCancelled) " (Cancelled)" else "")
+
+            // if the callback was changed while running
+            //val resultCallback = if (task.taskCallback == callback) originalCallback else task.taskCallback
+            handleTaskCompletionOnThread(task, originalCallback, isCancelled)
+        }
+
+    }
+
+    suspend fun start(task: Task): Any? {
+        return suspendCoroutine {
+            task.taskCallback = object : Task.Callback {
+                override fun onCompleted(cancelled: Boolean) {
+                    val error = task.taskError
+                    if (error != null) {
+                        it.resumeWithException(error)
+                    } else {
+                        it.resume(task.taskResult)
+                    }
+                }
+            }
+            task.startTask()
+        }
     }
 
     private fun logTask(task: Task, prefix: String) {
@@ -598,7 +636,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     private fun checkHandlerThread() {
-        Assert.assertEquals(Looper.myLooper(), handler.looper)
+        //Assert.assertEquals(Looper.myLooper(), handler.looper)
     }
 
     companion object {
