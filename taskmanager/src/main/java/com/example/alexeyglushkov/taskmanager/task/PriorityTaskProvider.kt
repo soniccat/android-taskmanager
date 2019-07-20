@@ -45,7 +45,7 @@ open class PriorityTaskProvider(handler: Handler, override var taskProviderId: S
         var resultCount = 0
         for (i in 0 until taskQueues.size()) {
             val queue = taskQueues.get(taskQueues.keyAt(i))
-            resultCount += queue!!.size
+            resultCount += queue?.size ?: 0
         }
 
         return resultCount
@@ -58,7 +58,9 @@ open class PriorityTaskProvider(handler: Handler, override var taskProviderId: S
         val tasks = ArrayList<Task>()
         for (i in 0 until taskQueues.size()) {
             val queue = taskQueues.get(taskQueues.keyAt(i))
-            tasks.addAll(queue!!)
+            if (queue != null) {
+                tasks.addAll(queue)
+            }
         }
 
         return tasks
@@ -92,11 +94,12 @@ open class PriorityTaskProvider(handler: Handler, override var taskProviderId: S
         for (i in 0 until taskQueues.size()) {
             if (typesToFilter == null || !typesToFilter.contains(taskQueues.keyAt(i))) {
                 val queue = taskQueues.get(taskQueues.keyAt(i))
-                val queueTask = getTopTask(queue!!, false)
-
-                if (queueTask != null && queueTask.taskPriority > topPriority) {
-                    topTask = queueTask
-                    topPriority = topTask.taskPriority
+                if (queue != null) {
+                    val queueTask = getTopTask(queue, false)
+                    if (queueTask != null && queueTask.taskPriority > topPriority) {
+                        topTask = queueTask
+                        topPriority = topTask.taskPriority
+                    }
                 }
             }
         }

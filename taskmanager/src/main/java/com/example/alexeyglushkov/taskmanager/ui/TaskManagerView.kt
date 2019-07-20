@@ -102,16 +102,17 @@ class TaskManagerView : LinearLayout {
                 reachedLimit = usedSpace >= snapshot.loadingLimits.get(type, 0.0f)
             }
 
-            val item = TaskBarView.TaskBarItem(type, count.toFloat() / maxQueueSize.toFloat(), getColor(type)!!, reachedLimit)
+            val item = TaskBarView.TaskBarItem(type, count.toFloat() / maxQueueSize.toFloat(), getColor(type), reachedLimit)
             barView.addItem(item)
         }
     }
 
-    private fun getColor(index: Int): Int? {
+    private fun getColor(index: Int): Int {
         return if (index < colors.size) {
             colors[index]
-        } else Color.BLACK
-
+        } else {
+            Color.BLACK
+        }
     }
 
     private fun updateAllTypesArray() {

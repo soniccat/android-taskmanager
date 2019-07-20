@@ -9,33 +9,32 @@ import com.example.alexeyglushkov.taskmanager.task.SimpleTask
 
 class FileLoadTask(protected var fileName: String,
                    protected var reader: InputStreamDataReader<*>,
-                   protected var context: Context?) : SimpleTask() {
+                   context: Context) : SimpleTask() {
+    val context: Context
+
+    init {
+        this.context = context.applicationContext
+    }
 
     protected val fileSize: Long
         get() {
-            val file = File(context!!.filesDir, fileName)
+            val file = File(context.filesDir, fileName)
             return file.length()
         }
 
     override fun startTask() {
         super.startTask()
+        val name = this.fileName
 
-        if (context != null) {
-            val name = this.fileName
+        try {
+            reader.setProgressUpdater(private.createProgressUpdater(fileSize.toFloat()))
 
-            try {
-                reader.setProgressUpdater(private.createProgressUpdater(fileSize.toFloat()))
+            val fis = this.context.openFileInput(name)
+            val data = InputStreamDataReaders.readOnce(reader, fis)
+            taskResult = data
 
-                val fis = this.context!!.openFileInput(name)
-                val data = InputStreamDataReaders.readOnce(reader, fis)
-                taskResult = data
-
-            } catch (e: Exception) {
-                private.taskError = Error("FileLoadTask exception: " + e.message)
-            }
-
-        } else {
-            private.taskError = Error("Context is null")
+        } catch (e: Exception) {
+            private.taskError = Error("FileLoadTask exception: " + e.message)
         }
 
         private.handleTaskCompletion()

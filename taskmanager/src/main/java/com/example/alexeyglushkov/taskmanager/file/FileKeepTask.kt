@@ -8,23 +8,26 @@ import com.example.alexeyglushkov.taskmanager.task.SimpleTask
 
 class FileKeepTask<T>(private val fileName: String,
                       private val writer: OutputStreamDataWriter<T>,
-                      private val data: T, private val context: Context?) : SimpleTask() {
+                      private val data: T,
+                      context: Context) : SimpleTask() {
+
+    val context: Context
+
+    init {
+        this.context = context.applicationContext
+    }
 
     override fun startTask() {
         super.startTask()
 
-        if (context != null) {
-            val name = this.fileName
-            try {
-                val fos = context.openFileOutput(name, Context.MODE_PRIVATE)
-                OutputStreamDataWriters.writeOnce<T>(writer, fos, data)
+        val name = this.fileName
+        try {
+            val fos = context.openFileOutput(name, Context.MODE_PRIVATE)
+            OutputStreamDataWriters.writeOnce<T>(writer, fos, data)
 
-            } catch (e: Exception) {
-                e.printStackTrace()
-                taskError = Error("FileKeepTask exception: " + e.message)
-            }
-        } else {
-            taskError = Error("Context is null")
+        } catch (e: Exception) {
+            e.printStackTrace()
+            taskError = Error("FileKeepTask exception: " + e.message)
         }
 
         private.handleTaskCompletion()
