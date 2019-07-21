@@ -6,6 +6,9 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 
 import com.example.alexeyglushkov.tools.HandlerTools
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 import org.junit.Assert
 
@@ -15,21 +18,25 @@ import java.util.ArrayList
  * Created by alexeyglushkov on 30.12.14.
  */
 // TODO: think about abstractTaskPool without tasks list to be able to inherit code in PriorityTaskProvider
-open class SimpleTaskPool(handler: Handler) : TaskPool {
+open class SimpleTaskPool(scope: CoroutineScope) : TaskPool {
 
     //TODO: think about weakref
     protected var listeners = mutableListOf<TaskPool.Listener>()
-    private var _handler: Handler = handler
-    override var handler: Handler
-        get() = _handler
-        set(handler) {
-            checkHandlerThread()
-            _handler = handler
+
+    private var _scope: CoroutineScope? = null
+    override var scope: CoroutineScope
+        get() = _scope!!
+        set(value) {
+            _scope = value
         }
 
     //TODO: think about a map
     protected val _tasks = mutableListOf<Task>()
     override var userData: Any? = null
+
+    init {
+        _scope = scope
+    }
 
     @WorkerThread
     override fun getTaskCount(): Int {
@@ -48,7 +55,7 @@ open class SimpleTaskPool(handler: Handler) : TaskPool {
         // TaskPool must set Waiting status on the current thread
         task.private.taskStatus = Task.Status.Waiting
 
-        HandlerTools.runOnHandlerThread(this.handler) {
+        scope.launch {
             Log.d(TAG, "addTaskOnThread")
             addTaskOnThread(task)
         }
@@ -78,7 +85,7 @@ open class SimpleTaskPool(handler: Handler) : TaskPool {
     }
 
     override fun removeTask(task: Task) {
-        HandlerTools.runOnHandlerThread(handler) {
+        scope.launch {
             if (_tasks.remove(task)) {
                 for (listener in listeners) {
                     listener.onTaskRemoved(this@SimpleTaskPool, task)
@@ -116,7 +123,7 @@ open class SimpleTaskPool(handler: Handler) : TaskPool {
     }
 
     protected fun checkHandlerThread() {
-        Assert.assertEquals(Looper.myLooper(), this.handler.looper)
+        //Assert.assertEquals(Looper.myLooper(), this.handler.looper)
     }
 
     companion object {

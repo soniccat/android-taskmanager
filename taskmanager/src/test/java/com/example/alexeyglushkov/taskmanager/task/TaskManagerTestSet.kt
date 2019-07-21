@@ -3,6 +3,8 @@ package com.example.alexeyglushkov.taskmanager.task
 import android.os.Handler
 import android.os.HandlerThread
 import com.nhaarman.mockitokotlin2.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 import org.junit.Assert.*
 import org.mockito.Mockito.`when`
@@ -634,20 +636,20 @@ class TaskManagerTestSet {
         assertEquals(0, taskManager.getTaskCount())
     }
 
-    fun setGetHandler() {
+    fun setGetScope() {
         // Arrange
         val handlerThread = HandlerThread("HandlerThread")
         handlerThread.start()
-        val handler = Handler(handlerThread.looper)
+        val scope = CoroutineScope(Dispatchers.Main)
         val taskProvider = createTaskProviderMock("0", taskManager)
 
         // Act
         taskManager.addTaskProvider(taskProvider)
-        taskManager.handler = handler
+        taskManager.scope = scope
 
         // Verify
-        verify(taskProvider).handler = handler
-        assertEquals(handler, taskManager.handler)
+        verify(taskProvider).scope = scope
+        assertEquals(scope, taskManager.scope)
     }
 
     fun setLimit() {
@@ -675,20 +677,20 @@ class TaskManagerTestSet {
     // Tools
 
     private fun createTaskProviderSpy(id: String, taskManager: TaskManager): TaskProvider {
-        val taskProvider = TestTaskProvider(taskManager.handler, id)
+        val taskProvider = TestTaskProvider(taskManager.scope, id)
         return spy(taskProvider)
     }
 
     private fun createTaskProviderMock(id: String, taskManager: TaskManager, priority: Int = 0): TaskProvider {
         val provider = mock<TaskProvider>()
         `when`(provider.taskProviderId).thenReturn(id)
-        `when`(provider.handler).thenReturn(taskManager.handler)
+        `when`(provider.scope).thenReturn(taskManager.scope)
         `when`(provider.priority).thenReturn(priority)
         return provider
     }
 
     private fun createTaskProviderSpy(id: String, taskManager: TaskManager, priority: Int): TaskProvider {
-        val provider = PriorityTaskProvider(taskManager.handler, id)
+        val provider = PriorityTaskProvider(taskManager.scope, id)
         provider.priority = priority
         return provider
     }

@@ -2,6 +2,7 @@ package com.example.alexeyglushkov.taskmanager.task
 
 import android.os.Handler
 import android.os.Looper
+import kotlinx.coroutines.test.TestCoroutineScope
 
 import org.junit.Before
 import org.junit.Test
@@ -28,7 +29,7 @@ open class StackTaskProviderTest {
     }
 
     protected open fun prepareTaskProvider(): TaskProvider {
-        return StackTaskProvider(false, Handler(Looper.myLooper()), "TestId")
+        return StackTaskProvider(false, TestCoroutineScope(), "TestId")
     }
 
     protected fun preparePoolTest() {

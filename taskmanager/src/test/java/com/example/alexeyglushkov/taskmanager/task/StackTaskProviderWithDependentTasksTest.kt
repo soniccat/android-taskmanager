@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
+import kotlinx.coroutines.test.TestCoroutineScope
 
 import org.junit.Before
 import org.junit.Test
@@ -23,7 +24,7 @@ class StackTaskProviderWithDependentTasksTest {
     @Before
     @Throws(Exception::class)
     fun setUp() {
-        taskProvider = StackTaskProvider(true, Handler(Looper.myLooper()), "TestId")
+        taskProvider = StackTaskProvider(true, TestCoroutineScope(), "TestId")
 
         poolTest = TaskPoolTestSet()
         providerTest = TaskProviderTestSet()

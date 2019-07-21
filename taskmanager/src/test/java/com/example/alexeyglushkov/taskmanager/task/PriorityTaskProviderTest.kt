@@ -3,6 +3,7 @@ package com.example.alexeyglushkov.taskmanager.task
 import android.os.Handler
 import android.os.Looper
 import com.nhaarman.mockitokotlin2.mock
+import kotlinx.coroutines.test.TestCoroutineScope
 
 import org.junit.Before
 import org.junit.Test
@@ -35,7 +36,7 @@ open class PriorityTaskProviderTest {
     }
 
     protected open fun prepareTaskProvider(): TaskProvider {
-        return PriorityTaskProvider(Handler(Looper.myLooper()), "TestId")
+        return PriorityTaskProvider(TestCoroutineScope(), "TestId")
     }
 
     // PriorityTaskProviderTests

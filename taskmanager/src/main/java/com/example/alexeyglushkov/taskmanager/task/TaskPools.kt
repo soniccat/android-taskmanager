@@ -3,6 +3,7 @@ package com.example.alexeyglushkov.taskmanager.task
 import android.os.Handler
 
 import com.example.alexeyglushkov.tools.HandlerTools
+import kotlinx.coroutines.launch
 
 import java.util.ArrayList
 
@@ -14,7 +15,7 @@ object TaskPools {
     // TODO: I am not sure that these methods are necessary
     // maybe it's better to move them in Tools file
     fun getFilteredTasks(taskPool: TaskPool, filter: TaskFilter, completion: FilterCompletion) {
-        HandlerTools.runOnHandlerThread(taskPool.handler) {
+        taskPool.scope.launch {
             val tasks = ArrayList(taskPool.getTasks())
             HandlerTools.runOnHandlerThread(filter.handler) {
                 val filteredTasks = ArrayList<Task>()

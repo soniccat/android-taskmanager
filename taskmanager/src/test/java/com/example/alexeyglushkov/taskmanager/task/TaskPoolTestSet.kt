@@ -6,6 +6,8 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 import org.junit.Assert.*
 
@@ -21,13 +23,13 @@ open class TaskPoolTestSet {
         // Arrange
         val handlerThread = HandlerThread("HandlerThread")
         handlerThread.start()
-        val handler = Handler(handlerThread.looper)
+        val scope = CoroutineScope(Dispatchers.Main)
 
         // Act
-        taskPool.handler = handler
+        taskPool.scope = scope
 
         // Verify
-        assertEquals(handler, taskPool.handler)
+        assertEquals(scope, taskPool.scope)
     }
 
     fun addTask() {

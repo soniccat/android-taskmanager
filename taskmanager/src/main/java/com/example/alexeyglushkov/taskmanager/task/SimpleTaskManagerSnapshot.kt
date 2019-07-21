@@ -7,6 +7,7 @@ import android.util.SparseArray
 import androidx.collection.SparseArrayCompat
 
 import com.example.alexeyglushkov.tools.HandlerTools
+import kotlinx.coroutines.launch
 
 import java.lang.ref.WeakReference
 
@@ -40,9 +41,8 @@ class SimpleTaskManagerSnapshot : TaskManagerSnapshot, TaskManager.Listener {
     }
 
     private fun bind(taskManager: TaskManager) {
-        HandlerTools.runOnHandlerThread(taskManager.handler) {
+        taskManager.scope.launch {
             bindOnThread(taskManager)
-
             HandlerTools.runOnHandlerThread(callbackHandler) { triggerOnSnapshotListeners() }
         }
     }

@@ -2,6 +2,7 @@ package com.example.alexeyglushkov.taskmanager.task
 
 import android.os.Handler
 import androidx.annotation.WorkerThread
+import kotlinx.coroutines.CoroutineScope
 
 import java.util.HashMap
 
@@ -12,10 +13,10 @@ import java.util.HashMap
 open class TaskProviderWrapper(val provider: TaskProvider) : TaskProvider {
     private val listenerMap = HashMap<TaskPool.Listener, TaskPool.Listener>()
 
-    override var handler: Handler
-        get() = provider.handler
+    override var scope: CoroutineScope
+        get() = provider.scope
         set(handler) {
-            provider.handler = handler
+            provider.scope = handler
         }
 
     override var taskProviderId: String

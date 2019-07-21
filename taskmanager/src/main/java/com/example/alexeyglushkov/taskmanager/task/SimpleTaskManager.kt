@@ -1,7 +1,6 @@
 package com.example.alexeyglushkov.taskmanager.task
 
 import android.os.Handler
-import android.os.HandlerThread
 import android.os.Looper
 import androidx.collection.SparseArrayCompat
 
@@ -22,6 +21,7 @@ import junit.framework.Assert.assertTrue
 import kotlinx.coroutines.*
 import kotlinx.coroutines.android.asCoroutineDispatcher
 import java.lang.Exception
+import java.util.concurrent.Executors
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -30,30 +30,26 @@ import kotlin.coroutines.suspendCoroutine
  * Created by alexeyglushkov on 20.09.14.
  */
 open class SimpleTaskManager : TaskManager, TaskPool.Listener {
-    private var handlerThread: HandlerThread? = null
-    private var _handler: Handler? = null
-    override var handler: Handler
-        get() = _handler!!
+    private var _scope: CoroutineScope? = null
+    override var scope: CoroutineScope
+        get() = _scope!!
         set(value) {
-            _handler = value
+            _scope = value
 
-            loadingTasks.handler = value
-            waitingTasks.handler = value
+            loadingTasks.scope = value
+            waitingTasks.scope = value
             for (provider in taskProviders) {
-                provider.handler = value
+                provider.scope = value
             }
         }
-    private lateinit var handlerDispatcher: CoroutineDispatcher
 
     private lateinit var callbackHandler: Handler
     override var taskExecutor: TaskExecutor = SimpleTaskExecutor()
     override var userData: Any? = null
     private var listeners = WeakRefList<TaskManager.Listener>()
 
-    private val taskJob = Job()
+    private val taskJob = SupervisorJob()
     private val taskScope = CoroutineScope(Dispatchers.IO + taskJob)
-    private val handlerJob = Job()
-    private lateinit var handlerScope: CoroutineScope
 
     private lateinit var loadingTasks: TaskPool
     private lateinit var waitingTasks: TaskProvider
@@ -138,40 +134,35 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         init(maxLoadingTasks, null)
     }
 
-    constructor(maxLoadingTasks: Int, inHandler: Handler) {
-        init(maxLoadingTasks, inHandler)
+    constructor(maxLoadingTasks: Int, scope: CoroutineScope) {
+        init(maxLoadingTasks, scope)
     }
 
-    private fun init(maxLoadingTasks: Int, inHandler: Handler?) {
-        initHandler(inHandler)
+    private fun init(maxLoadingTasks: Int, inScope: CoroutineScope?) {
+        initScope(inScope)
         this.maxLoadingTasks = maxLoadingTasks
 
         callbackHandler = Handler(Looper.myLooper())
 
-        loadingTasks = SimpleTaskPool(handler)
+        loadingTasks = SimpleTaskPool(scope)
         loadingTasks.addListener(this)
 
         // TODO: consider putting it to taskProviders list
-        waitingTasks = PriorityTaskProvider(handler, "TaskManagerProviderId")
+        waitingTasks = PriorityTaskProvider(scope, "TaskManagerProviderId")
         waitingTasks.addListener(this)
 
         _taskProviders = createTaskProviders()
     }
 
-    private fun initHandler(inHandler: Handler?) {
-        val handler: Handler
-        if (inHandler != null) {
-            handler = inHandler
+    private fun initScope(inScope: CoroutineScope?) {
+        val scope: CoroutineScope
+        if (inScope != null) {
+            scope = inScope
         } else {
-            val localHandlerThread = HandlerThread("SimpleTaskManager Thread")
-            handlerThread = localHandlerThread
-            localHandlerThread.start()
-            handler = Handler(localHandlerThread.looper)
+            scope = CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher() + SupervisorJob())
         }
 
-        handlerDispatcher = handler.asCoroutineDispatcher("SimpleTaskManager handler dispatcher")
-        handlerScope = CoroutineScope(handlerDispatcher + handlerJob)
-        _handler = handler
+        _scope = scope
     }
 
     private fun createTaskProviders(): SafeList<TaskProvider> {
@@ -202,7 +193,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         // TaskManager must set Waiting status on the current thread
         task.private.taskStatus = Task.Status.Waiting
 
-        handlerScope.launch {
+        scope.launch {
             checkHandlerThread()
             // task will be launched in onTaskAdded method
             waitingTasks.addTask(task)
@@ -214,7 +205,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     override fun startImmediately(task: Task) {
-        handlerScope.launch {
+        scope.launch {
             if (handleTaskLoadPolicy(task)) {
                 startTaskOnThread(task)
 
@@ -225,16 +216,16 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     override fun cancel(task: Task, info: Any?) {
-        handlerScope.launch {
+        scope.launch {
             cancelTaskOnThread(task, info)
         }
     }
 
     override fun addTaskProvider(provider: TaskProvider) {
-        Assert.assertEquals(provider.handler, handler)
+        Assert.assertEquals(provider.scope, scope)
         Assert.assertNotNull(provider.taskProviderId)
 
-        handlerScope.launch {
+        scope.launch {
             addTaskProviderOnThread(provider)
         }
     }
@@ -253,7 +244,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     override fun setTaskProviderPriority(provider: TaskProvider, priority: Int) {
-        handlerScope.launch {
+        scope.launch {
             setTaskProviderPriorityOnThread(provider, priority)
         }
     }
@@ -394,7 +385,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     // ==
 
     override fun removeTaskProvider(provider: TaskProvider) {
-        handlerScope.launch {
+        scope.launch {
             removeTaskProviderOnThread(provider)
         }
     }
@@ -407,7 +398,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     override fun setLimit(taskType: Int, availableQueuePart: Float) {
-        handlerScope.launch {
+        scope.launch {
             if (availableQueuePart <= 0.0f) {
                 _limits.remove(taskType)
             } else {
@@ -422,7 +413,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     // TODO: add getter and setter in the interface
     fun setWaitingTaskProvider(provider: TaskProvider) {
-        Assert.assertEquals(provider.handler, handler)
+        Assert.assertEquals(provider.scope, scope)
 
         this.waitingTasks = provider
     }
@@ -526,7 +517,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         }
 
         task.taskCallback = callback
-        taskScope.launch {
+        taskScope.launch(SupervisorJob()) {
             var isCancelled = false
             var result: Any?
             try {
@@ -540,7 +531,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 //                return@Runnable
 //            }
 
-            withContext(handlerDispatcher) {
+            launch(scope.coroutineContext) {
                 checkHandlerThread()
                 logTask(task, "Task onCompleted" + if (isCancelled) " (Cancelled)" else "")
 
@@ -550,7 +541,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
             }
 
         }
-
     }
 
     suspend fun start(task: Task): Any? {
@@ -654,7 +644,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     private fun checkHandlerThread() {
-        Assert.assertEquals(Looper.myLooper(), handler.looper)
+//        Assert.assertEquals(Looper.myLooper(), handler.looper)
     }
 
     companion object {

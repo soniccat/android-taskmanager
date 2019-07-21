@@ -2,13 +2,14 @@ package com.example.alexeyglushkov.taskmanager.task
 
 import android.os.Handler
 import androidx.annotation.WorkerThread
+import kotlinx.coroutines.CoroutineScope
 
 /**
  * Created by alexeyglushkov on 13.08.16.
  */
 open class StackTaskProvider(private val areTasksDependent: Boolean //if enabled the top task blocks the next task until the former finishes
-                        , handler: Handler,
-                        override var taskProviderId: String) : SimpleTaskPool(handler), TaskProvider, Task.StatusListener {
+                        , scope: CoroutineScope,
+                        override var taskProviderId: String) : SimpleTaskPool(scope), TaskProvider, Task.StatusListener {
     override var priority: Int = 0
     private var isBlocked: Boolean = false
 

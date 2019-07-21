@@ -8,6 +8,8 @@ import androidx.annotation.WorkerThread
 import androidx.collection.SparseArrayCompat
 
 import com.example.alexeyglushkov.tools.HandlerTools
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 import org.junit.Assert
 
@@ -21,22 +23,22 @@ import java.util.Comparator
 // A task source for TaskManager
 
 // TODO: try to extend SimpleTaskPool to remove code duplications
-open class PriorityTaskProvider(handler: Handler, override var taskProviderId: String) : TaskProvider, TaskPool {
-    private var _handler: Handler?
-    override var handler: Handler
-        get() = _handler!!
+open class PriorityTaskProvider(scope: CoroutineScope, override var taskProviderId: String) : TaskProvider, TaskPool {
+    private var _scope: CoroutineScope?
+    override var scope: CoroutineScope
+        get() = _scope!!
         set(handler) {
             checkHandlerThread()
-            _handler = handler
+            _scope = handler
         }
 
     override var userData: Any? = null
-    private val listeners: MutableList<TaskPool.Listener>
+    private val listeners: MutableList<TaskPool.Listener> = ArrayList()
     override var priority: Int = 0
 
     // Task type -> priority queue
     // TODO: try to use PriorityBlockingQueue
-    private val taskQueues: SparseArrayCompat<SortedList<Task>>
+    private val taskQueues: SparseArrayCompat<SortedList<Task>> = SparseArrayCompat()
 
     @WorkerThread
     override fun getTaskCount(): Int {
@@ -67,9 +69,7 @@ open class PriorityTaskProvider(handler: Handler, override var taskProviderId: S
     }
 
     init {
-        taskQueues = SparseArrayCompat()
-        listeners = ArrayList()
-        _handler = handler
+        _scope = scope
     }
 
     private fun createQueue(): SortedList<Task> {
@@ -144,7 +144,7 @@ open class PriorityTaskProvider(handler: Handler, override var taskProviderId: S
     }
 
     fun updatePriorities(provider: PriorityProvider) {
-        HandlerTools.runOnHandlerThread(this.handler) {
+        scope.launch {
             for (i in 0 until taskQueues.size()) {
                 val queue = taskQueues.valueAt(i)
                 val tasks = taskQueues.get(taskQueues.keyAt(i))
@@ -170,13 +170,13 @@ open class PriorityTaskProvider(handler: Handler, override var taskProviderId: S
         // TaskProvider must set Waiting status on the current thread
         task.private.taskStatus = Task.Status.Waiting
 
-        HandlerTools.runOnHandlerThread(this.handler) {
+        scope.launch {
             addTaskOnThread(task)
         }
     }
 
     override fun removeTask(task: Task) {
-        HandlerTools.runOnHandlerThread(this.handler) {
+        scope.launch {
             removeTaskOnThread(task)
         }
     }
@@ -275,7 +275,7 @@ open class PriorityTaskProvider(handler: Handler, override var taskProviderId: S
     }
 
     private fun checkHandlerThread() {
-        Assert.assertEquals(Looper.myLooper(), this.handler.looper)
+        //Assert.assertEquals(Looper.myLooper(), this.handler.looper)
     }
 
     companion object {

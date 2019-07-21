@@ -2,6 +2,8 @@ package com.example.alexeyglushkov.taskmanager.task
 
 import android.os.Handler
 import androidx.annotation.WorkerThread
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 
 /**
  * Created by alexeyglushkov on 30.12.14.
@@ -11,7 +13,7 @@ import androidx.annotation.WorkerThread
 // A pool must remove task when it finishes
 
 interface TaskPool : Task.StatusListener {
-    var handler: Handler
+    var scope: CoroutineScope
     var userData: Any?
 
     fun addTask(task: Task)

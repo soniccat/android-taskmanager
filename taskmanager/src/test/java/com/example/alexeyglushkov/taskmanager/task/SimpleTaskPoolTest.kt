@@ -2,6 +2,7 @@ package com.example.alexeyglushkov.taskmanager.task
 
 import android.os.Handler
 import android.os.Looper
+import kotlinx.coroutines.test.TestCoroutineScope
 
 import org.junit.Before
 import org.junit.Test
@@ -14,7 +15,7 @@ class SimpleTaskPoolTest : TaskPoolTestSet() {
     @Before
     @Throws(Exception::class)
     fun setUp() {
-        this@SimpleTaskPoolTest.before(SimpleTaskPool(Handler(Looper.myLooper())))
+        this@SimpleTaskPoolTest.before(SimpleTaskPool(TestCoroutineScope()))
     }
 
     @Test

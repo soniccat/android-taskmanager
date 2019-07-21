@@ -2,6 +2,7 @@ package com.example.alexeyglushkov.taskmanager.task
 
 import android.os.Handler
 import android.os.Looper
+import kotlinx.coroutines.test.TestCoroutineScope
 
 import org.junit.Before
 import org.junit.Test
@@ -19,7 +20,7 @@ class SimpleTaskManagerTest {
     @Before
     @Throws(Exception::class)
     fun setUp() {
-        taskManager = SimpleTaskManager(10, Handler(Looper.myLooper()))
+        taskManager = SimpleTaskManager(10, TestCoroutineScope())
         poolTestSet = TaskPoolTestSet()
         taskManagerTestSet = TaskManagerTestSet()
 
@@ -168,8 +169,8 @@ class SimpleTaskManagerTest {
     }
 
     @Test
-    fun testSetGetHandler() {
-        taskManagerTestSet.setGetHandler()
+    fun testSetGetScope() {
+        taskManagerTestSet.setGetScope()
     }
 
     @Test
