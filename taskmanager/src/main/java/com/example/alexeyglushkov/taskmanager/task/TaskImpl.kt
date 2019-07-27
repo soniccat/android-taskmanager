@@ -175,7 +175,7 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
                 triggerProgressListeners(updater)
             }
 
-            override fun onProgressCancelled(updater: ProgressUpdater, info: Any) {
+            override fun onProgressCancelled(updater: ProgressUpdater, info: Any?) {
                 triggerProgressListeners(updater)
                 cancelTask(info)
             }

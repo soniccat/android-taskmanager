@@ -533,8 +533,8 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
             withContext(taskScope.coroutineContext + job) {
                 try {
                     result = start(task)
-                } catch (e: Exception) {
-                    isCancelled = e is CancelError
+                } catch (e: Throwable) {
+                    isCancelled = job.isCancelled || e is CancelError
                 }
             }
 
@@ -562,6 +562,8 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
                     val error = task.taskError
                     if (error != null) {
                         it.resumeWithException(error)
+                    } else if (cancelled) {
+                        it.resumeWithException(CancelError())
                     } else {
                         it.resume(task.taskResult)
                     }
