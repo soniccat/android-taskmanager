@@ -37,6 +37,10 @@ dependencies {
     implementation 'junit:junit:' + project.ext.junitVersion
     implementation 'io.reactivex.rxjava2:rxandroid:' + project.ext.rxAndroidVersion
     implementation 'io.reactivex.rxjava2:rxjava:' + project.ext.rxJavaVersion
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:" + project.ext.coroutinesVersion
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:" + project.ext.coroutinesVersion
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:' + project.ext.coroutinesVersion
+
     annotationProcessor 'android.arch.lifecycle:compiler:' + rootProject.archLifecycleVersion
     implementation project(path: ':quizlet_repository')
     implementation project(path: ':authcachemanager')

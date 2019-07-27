@@ -167,7 +167,7 @@ class MainApplicationModule {
     @Provides
     @MainScope
     fun createCourseHolder(@Named("appContext") context: Context, taskManager: TaskManager): CourseHolder {
-        val taskProvider = StackTaskProvider(true, taskManager.handler, "CourseHolderTaskProvider");
+        val taskProvider = StackTaskProvider(true, taskManager.scope, "CourseHolderTaskProvider");
         taskManager.addTaskProvider(taskProvider)
 
         val authDir = context.getDir("CourseHolder", Context.MODE_PRIVATE)
