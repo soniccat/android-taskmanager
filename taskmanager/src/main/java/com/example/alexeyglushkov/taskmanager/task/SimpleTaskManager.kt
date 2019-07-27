@@ -512,7 +512,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         checkScopeThread()
         assertTrue(Tasks.isTaskReadyToStart(task))
 
-        withContext(scope.coroutineContext) {
+        scope.launch {
             addLoadingTaskOnThread(task)
 
             logTask(task, "Task started")
@@ -584,10 +584,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
             }
             task.startTask()
         }
-    }
-
-    private fun logTask(task: Task, prefix: String) {
-        Log.d(TAG, prefix + " " + task.javaClass.toString() + "(" + task.taskStatus + ")" + " id= " + task.taskId + " priority= " + task.taskPriority + " time " + task.taskDuration())
     }
 
     @WorkerThread
@@ -663,7 +659,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         _usedSpace.put(taskType, count)
     }
 
-    /// thread safe stuff
+    /// thread checking stuff
 
     private val ScopeTheadId = "SimpleTaskManagerScopeTheadId"
     private val threadLocal = ThreadLocal<String>()
@@ -681,5 +677,11 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     fun checkScopeThread() {
         assert(isScopeThread())
+    }
+
+    /// Helpers
+
+    private fun logTask(task: Task, prefix: String) {
+        Log.d(TAG, prefix + " " + task.javaClass.toString() + "(" + task.taskStatus + ")" + " id= " + task.taskId + " priority= " + task.taskPriority + " time " + task.taskDuration())
     }
 }
