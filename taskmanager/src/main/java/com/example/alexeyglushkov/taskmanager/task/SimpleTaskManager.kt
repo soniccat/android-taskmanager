@@ -1,6 +1,7 @@
 package com.example.alexeyglushkov.taskmanager.task
 
 import android.os.Handler
+import android.os.HandlerThread
 import android.os.Looper
 import androidx.collection.SparseArrayCompat
 
@@ -20,7 +21,6 @@ import java.util.Date
 import junit.framework.Assert.assertTrue
 import kotlinx.coroutines.*
 import kotlinx.coroutines.android.asCoroutineDispatcher
-import java.lang.Exception
 import java.util.concurrent.Executors
 import kotlin.coroutines.*
 
@@ -28,6 +28,10 @@ import kotlin.coroutines.*
  * Created by alexeyglushkov on 20.09.14.
  */
 open class SimpleTaskManager : TaskManager, TaskPool.Listener {
+    companion object {
+        internal val TAG = "SimpleTaskManager"
+    }
+
     private var _scope: CoroutineScope? = null
     override var scope: CoroutineScope
         get() = _scope!!
@@ -42,7 +46,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         }
 
     private lateinit var callbackHandler: Handler
-    override var taskExecutor: TaskExecutor = SimpleTaskExecutor()
+    override var taskExecutor: TaskExecutor = SimpleTaskExecutor() // TODO: remove
     override var userData: Any? = null
     private var listeners = WeakRefList<TaskManager.Listener>()
 
@@ -56,21 +60,20 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     private lateinit var _taskProviders: SafeList<TaskProvider>
     override val taskProviders: SafeList<TaskProvider>
         @WorkerThread
-        get() {
-            checkHandlerThread()
-            return _taskProviders
+         get() {
+            return safeRun { _taskProviders }
         }
 
     private var _limits = SparseArrayCompat<Float>()
     override var limits: SparseArrayCompat<Float>
         @WorkerThread
         get() {
-            checkHandlerThread()
-            return _limits.clone()
+            return safeRun { _limits.clone() }
         }
         set(value) {
-            checkHandlerThread()
-            _limits = value
+            safeRun {
+                _limits = value
+            }
         }
 
     private var _usedSpace = SparseArrayCompat<Int>()
@@ -96,14 +99,14 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     @WorkerThread
     override fun getTaskCount(): Int {
-        checkHandlerThread()
+        return safeRun {
+            var taskCount = loadingTasks.getTaskCount() + waitingTasks.getTaskCount()
+            for (provider in taskProviders) {
+                taskCount += provider.getTaskCount()
+            }
 
-        var taskCount = loadingTasks.getTaskCount() + waitingTasks.getTaskCount()
-        for (provider in taskProviders) {
-            taskCount += provider.getTaskCount()
+            return@safeRun taskCount
         }
-
-        return taskCount
     }
 
     @WorkerThread
@@ -158,7 +161,15 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         if (inScope != null) {
             scope = inScope
         } else {
-            scope = CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher() + SupervisorJob())
+            val localHandlerThread = HandlerThread("SimpleTaskManager Thread")
+            localHandlerThread.start()
+            val handler = Handler(localHandlerThread.looper)
+            val dispatcher = handler.asCoroutineDispatcher("SimpleTaskManager handler dispatcher")
+            scope = CoroutineScope(dispatcher + Job())
+        }
+
+        scope.launch {
+            threadLocal.set(ScopeTheadId)
         }
 
         _scope = scope
@@ -193,7 +204,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         task.private.taskStatus = Task.Status.Waiting
 
         scope.launch {
-            checkHandlerThread()
             // task will be launched in onTaskAdded method
             waitingTasks.addTask(task)
         }
@@ -231,7 +241,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     @WorkerThread
     private fun addTaskProviderOnThread(provider: TaskProvider) {
-        checkHandlerThread()
+        checkScopeThread()
 
         val oldTaskProvider = getTaskProvider(provider.taskProviderId)
         if (oldTaskProvider != null) {
@@ -250,7 +260,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     @WorkerThread
     private fun setTaskProviderPriorityOnThread(provider: TaskProvider, priority: Int) {
-        checkHandlerThread()
+        checkScopeThread()
 
         provider.priority = priority
         (taskProviders.originalList as SortedList<*>).updateSortedOrder()
@@ -259,12 +269,13 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     override fun getTaskProvider(id: String): TaskProvider? {
         var taskProvider: TaskProvider? = null
 
-        if (Looper.myLooper() == taskProviders.handler.looper) {
+        if (Looper.myLooper() == taskProviders.safeHandler.looper) {
             taskProvider = findProvider(taskProviders.safeList, id)
 
         } else {
-            checkHandlerThread()
-            taskProvider = findProvider(this.taskProviders, id)
+            safeRun {
+                taskProvider = findProvider(taskProviders, id)
+            }
         }
 
         return taskProvider
@@ -284,15 +295,13 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     @WorkerThread
     override fun onTaskAdded(pool: TaskPool, task: Task) {
         scope.launch {
-            checkHandlerThread()
-
             val isLoadingPool = pool === loadingTasks
             if (isLoadingPool) {
                 updateUsedSpace(task.taskType, true)
             }
 
             Log.d("add", "onTaskAdded " + isLoadingPool + " " + task.taskId)
-            triggerOnTaskAdded(task, isLoadingPool)
+            triggerOnTaskAddedOnThread(task, isLoadingPool)
 
             if (!isLoadingPool) {
                 if (handleTaskLoadPolicy(task)) {
@@ -307,15 +316,15 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     @WorkerThread
     override fun onTaskRemoved(pool: TaskPool, task: Task) {
-        checkHandlerThread()
+        scope.launch {
+            val isLoadingPool = pool === loadingTasks
+            if (isLoadingPool) {
+                updateUsedSpace(task.taskType, false)
+            }
 
-        val isLoadingPool = pool === loadingTasks
-        if (isLoadingPool) {
-            updateUsedSpace(task.taskType, false)
+            Log.d("add", "onTaskRemoved " + isLoadingPool + " " + task.taskId)
+            triggerOnTaskRemovedOnThread(task, isLoadingPool)
         }
-
-        Log.d("add", "onTaskRemoved " + isLoadingPool + " " + task.taskId)
-        triggerOnTaskRemoved(task, isLoadingPool)
     }
 
     // == TaskPool interface
@@ -326,23 +335,23 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     @WorkerThread
     override fun getTask(taskId: String): Task? {
-        checkHandlerThread()
+        return safeRun {
+            var task: Task? = loadingTasks.getTask(taskId)
+            if (task == null) {
+                task = waitingTasks.getTask(taskId)
+            }
 
-        var task: Task? = loadingTasks.getTask(taskId)
-        if (task == null) {
-            task = waitingTasks.getTask(taskId)
-        }
-
-        if (task == null) {
-            for (provider in taskProviders) {
-                task = provider.getTask(taskId)
-                if (task != null) {
-                    break
+            if (task == null) {
+                for (provider in taskProviders) {
+                    task = provider.getTask(taskId)
+                    if (task != null) {
+                        break
+                    }
                 }
             }
-        }
 
-        return task
+            return@safeRun task
+        }
     }
 
     override fun removeListener(listener: TaskManager.Listener) {
@@ -366,8 +375,8 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     @WorkerThread
-    private fun triggerOnTaskAdded(task: Task, isLoadingQueue: Boolean) {
-        checkHandlerThread()
+    private fun triggerOnTaskAddedOnThread(task: Task, isLoadingQueue: Boolean) {
+        checkScopeThread()
 
         for (listener in listeners) {
             listener.get()?.onTaskAdded(this, task, isLoadingQueue)
@@ -375,8 +384,8 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     @WorkerThread
-    private fun triggerOnTaskRemoved(task: Task, isLoadingQueue: Boolean) {
-        checkHandlerThread()
+    private fun triggerOnTaskRemovedOnThread(task: Task, isLoadingQueue: Boolean) {
+        checkScopeThread()
 
         for (listener in listeners) {
             listener.get()?.onTaskRemoved(this, task, isLoadingQueue)
@@ -393,7 +402,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     @WorkerThread
     private fun removeTaskProviderOnThread(provider: TaskProvider) {
-        checkHandlerThread()
+        checkScopeThread()
 
         taskProviders.remove(provider)
     }
@@ -423,46 +432,42 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     @WorkerThread
     suspend private fun handleTaskLoadPolicy(task: Task): Boolean {
-        return withContext(scope.coroutineContext) {
-            checkHandlerThread()
+        checkScopeThread()
 
-            //search for the task with the same id
-            val taskId = task.taskId
-            if (taskId != null) {
-                val addedTask = loadingTasks.getTask(taskId)
-                assert(addedTask != task)
+        //search for the task with the same id
+        val taskId = task.taskId
+        if (taskId != null) {
+            val addedTask = loadingTasks.getTask(taskId)
+            assert(addedTask != task)
 
-                if (addedTask != null) {
-                    if (task.loadPolicy == Task.LoadPolicy.CancelAdded) {
-                        cancelTaskOnThread(addedTask, null)
-                    } else {
-                        Log.d(TAG, "The task was skipped due to the Load Policy " + task.loadPolicy.toString() + task.javaClass.toString() + " " + taskId + " " + task.taskStatus.toString())
-                        return@withContext false
-                    }
+            if (addedTask != null) {
+                if (task.loadPolicy == Task.LoadPolicy.CancelAdded) {
+                    cancelTaskOnThread(addedTask, null)
+                } else {
+                    Log.d(TAG, "The task was skipped due to the Load Policy " + task.loadPolicy.toString() + task.javaClass.toString() + " " + taskId + " " + task.taskStatus.toString())
+                    return false
                 }
             }
-            return@withContext true
         }
+        return true
     }
 
     @WorkerThread
     suspend private fun checkTasksToRunOnThread() {
-        withContext(scope.coroutineContext) {
-            checkHandlerThread()
+        checkScopeThread()
 
-            if (loadingTasks.getTaskCount() < maxLoadingTasks) {
-                val task = takeTaskToRunOnThread()
+        if (loadingTasks.getTaskCount() < maxLoadingTasks) {
+            val task = takeTaskToRunOnThread()
 
-                if (task != null) {
-                    startTaskOnThread(task)
-                }
+            if (task != null) {
+                startTaskOnThread(task)
             }
         }
     }
 
     @WorkerThread
     private fun takeTaskToRunOnThread(): Task? {
-        checkHandlerThread()
+        checkScopeThread()
 
         val taskTypesToFilter = getTaskTypeFilter()
         val topWaitingTask = this.waitingTasks.getTopTask(taskTypesToFilter)
@@ -503,11 +508,11 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     @WorkerThread
     suspend private fun startTaskOnThread(task: Task) {
-        withContext(scope.coroutineContext) {
-            if (task !is TaskBase) { assert(false); return@withContext  }
-            checkHandlerThread()
-            assertTrue(Tasks.isTaskReadyToStart(task))
+        if (task !is TaskBase) { assert(false); return }
+        checkScopeThread()
+        assertTrue(Tasks.isTaskReadyToStart(task))
 
+        withContext(scope.coroutineContext) {
             addLoadingTaskOnThread(task)
 
             logTask(task, "Task started")
@@ -541,7 +546,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
             val isJobCancelled = coroutineContext[Job]?.isCancelled ?: false
             taskToJobMap.remove(task)
             if (!isCancelled) {
-                checkHandlerThread()
                 logTask(task, "Task onCompleted" + if (isCancelled) " (Cancelled)" else "")
 
                 // if the callback was changed while running
@@ -549,6 +553,14 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
                 handleTaskCompletionOnThread(task, originalCallback, isCancelled)
             }
         }
+    }
+
+    @WorkerThread
+    private fun addLoadingTaskOnThread(task: Task) {
+        checkScopeThread()
+
+        loadingTasks.addTask(task)
+        Log.d(TAG, "loading task count " + loadingTasks.getTaskCount())
     }
 
     suspend fun start(task: TaskBase): Any? {
@@ -580,57 +592,53 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     @WorkerThread
     suspend private fun handleTaskCompletionOnThread(task: Task, callback: Task.Callback?, isCancelled: Boolean) {
-        withContext(scope.coroutineContext) {
-            if (task !is TaskBase) { assert(false); return@withContext }
-            checkHandlerThread()
+        if (task !is TaskBase) { assert(false); return }
+        checkScopeThread()
 
-            val status = if (isCancelled) Task.Status.Cancelled else Task.Status.Finished
-            if (isCancelled) {
-                task.private.taskError = CancelError()
-            }
+        val status = if (isCancelled) Task.Status.Cancelled else Task.Status.Finished
+        if (isCancelled) {
+            task.private.taskError = CancelError()
+        }
 
-            // the task will be removed from the provider automatically
-            Log.d("tag", "task status " + task.taskStatus.toString())
-            task.private.taskStatus = status
-            task.private.clearAllListeners()
+        // the task will be removed from the provider automatically
+        Log.d("tag", "task status " + task.taskStatus.toString())
+        task.private.taskStatus = status
+        task.private.clearAllListeners()
 
-            task.taskCallback = callback // return original callback
+        task.taskCallback = callback // return original callback
 
-            HandlerTools.runOnHandlerThread(callbackHandler) {
-                callback?.onCompleted(isCancelled)
-            }
+        HandlerTools.runOnHandlerThread(callbackHandler) {
+            callback?.onCompleted(isCancelled)
+        }
 
-            //TODO: for the another status like cancelled new task won't be started
-            //but we cant't just call checkTasksToRunOnThread because of Task.LoadPolicy.CancelAdded
-            //because we want to have new task already in waiting queue but now it isn't
-            if (status == Task.Status.Finished) {
-                checkTasksToRunOnThread()
-            }
+        //TODO: for the another status like cancelled new task won't be started
+        //but we cant't just call checkTasksToRunOnThread because of Task.LoadPolicy.CancelAdded
+        //because we want to have new task already in waiting queue but now it isn't
+        if (status == Task.Status.Finished) {
+            checkTasksToRunOnThread()
         }
     }
 
     @WorkerThread
     suspend private fun cancelTaskOnThread(task: Task, info: Any?) {
-        withContext(scope.coroutineContext) {
-            if (task !is TaskBase) { assert(false); return@withContext }
-            checkHandlerThread()
+        if (task !is TaskBase) { assert(false); return }
+        checkScopeThread()
 
-            if (!task.private.needCancelTask && !Tasks.isTaskCompleted(task)) {
-                val st = task.taskStatus
-                task.private.cancelTask(info)
+        if (!task.private.needCancelTask && !Tasks.isTaskCompleted(task)) {
+            val st = task.taskStatus
+            task.private.cancelTask(info)
 
-                val job = taskToJobMap.get(task)
-                if (st == Task.Status.Waiting || st == Task.Status.NotStarted || st == Task.Status.Blocked || task.private.canBeCancelledImmediately()) {
-                    if (st == Task.Status.Started) {
-                        if (job != null) {
-                            job.cancel()
-                        }
-                        //task.private.startCallback?.onCompleted(true) // to get the original callback
-
-                    } else {
-                        handleTaskCompletionOnThread(task, task.taskCallback, true)
-                        logTask(task, "Cancelled")
+            val job = taskToJobMap.get(task)
+            if (st == Task.Status.Waiting || st == Task.Status.NotStarted || st == Task.Status.Blocked || task.private.canBeCancelledImmediately()) {
+                if (st == Task.Status.Started) {
+                    if (job != null) {
+                        job.cancel()
                     }
+                    //task.private.startCallback?.onCompleted(true) // to get the original callback
+
+                } else {
+                    handleTaskCompletionOnThread(task, task.taskCallback, true)
+                    logTask(task, "Cancelled")
                 }
             }
         }
@@ -655,24 +663,23 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         _usedSpace.put(taskType, count)
     }
 
-    // helpers
+    /// thread safe stuff
 
-    @WorkerThread
-    suspend private fun addLoadingTaskOnThread(task: Task) {
-        withContext(scope.coroutineContext) {
-            if (task !is TaskBase) { assert(false); return@withContext  }
-            checkHandlerThread()
+    private val ScopeTheadId = "SimpleTaskManagerScopeTheadId"
+    private val threadLocal = ThreadLocal<String>()
+    private fun isScopeThread() = threadLocal.get() == ScopeTheadId
 
-            loadingTasks.addTask(task)
-            Log.d(TAG, "loading task count " + loadingTasks.getTaskCount())
+    private fun <T> safeRun(block: () -> T) : T {
+        if (isScopeThread()) {
+            return block()
+        } else {
+            return runBlocking(scope.coroutineContext) {
+                return@runBlocking block()
+            }
         }
     }
 
-    private fun checkHandlerThread() {
-//        Assert.assertEquals(Looper.myLooper(), handler.looper)
-    }
-
-    companion object {
-        internal val TAG = "SimpleTaskManager"
+    fun checkScopeThread() {
+        assert(isScopeThread())
     }
 }

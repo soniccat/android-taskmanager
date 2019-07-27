@@ -31,7 +31,6 @@ import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 import com.playground.PlaygroundActivity;
 import com.rssclient.controllers.MainRssActivity;
 import com.rssclient.controllers.R;
-import com.testrotation.TestRotationActivity;
 
 import java.io.File;
 import java.util.List;

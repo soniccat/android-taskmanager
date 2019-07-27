@@ -12,7 +12,7 @@ import java.util.ArrayList
 
 class SafeList<T>(val originalList: ArrayList<T>,
         // Getters
-                  val handler: Handler) : ArrayList<T>() {
+                  val safeHandler: Handler) : ArrayList<T>() {
     val safeList = ArrayList<T>()
 
     init {
@@ -53,7 +53,7 @@ class SafeList<T>(val originalList: ArrayList<T>,
     // Sync methods
 
     private fun fillSafeList() {
-        HandlerTools.runOnHandlerThread(handler) { fillSafeListOnThread(originalList.clone() as ArrayList<T>) }
+        HandlerTools.runOnHandlerThread(safeHandler) { fillSafeListOnThread(originalList.clone() as ArrayList<T>) }
     }
 
     private fun fillSafeListOnThread(list: ArrayList<T>) {
