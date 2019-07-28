@@ -55,7 +55,9 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     private lateinit var loadingTasks: TaskPool
     private lateinit var waitingTasks: TaskProvider
+
     private var taskToJobMap = HashMap<Task, Job>()
+    private var taskToCallbackMap = HashMap<Task, Task.Callback?>() // keep original callbacks
 
     private lateinit var _taskProviders: SafeList<TaskProvider>
     override val taskProviders: SafeList<TaskProvider>
@@ -519,18 +521,10 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
             task.private.taskStatus = Task.Status.Started
             task.private.setTaskStartDate(Date())
 
-            val originalCallback = task.taskCallback
-            // TODO: need not to call callback from task to remove that
-            val callback = object : Task.Callback {
-                override fun onCompleted(cancelled: Boolean) {
-//                HandlerTools.runOnHandlerThread(handler, Runnable {
-//                })
-                }
-            }
-
-            task.taskCallback = callback
+            //task.taskCallback = callback
             val job = SupervisorJob()
             taskToJobMap.put(task, job)
+            taskToCallbackMap.put(task, task.taskCallback)
 
             var isCancelled = false
             var result: Any?
@@ -539,18 +533,16 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
                 try {
                     result = start(task)
                 } catch (e: Throwable) {
-                    isCancelled = job.isCancelled || e is CancelError
+                    isCancelled = job.isCancelled
                 }
             }
 
-            val isJobCancelled = coroutineContext[Job]?.isCancelled ?: false
-            taskToJobMap.remove(task)
-            if (!isCancelled) {
-                logTask(task, "Task onCompleted" + if (isCancelled) " (Cancelled)" else "")
+            //val isJobCancelled = coroutineContext[Job]?.isCancelled ?: false
 
-                // if the callback was changed while running
-                //val resultCallback = if (task.taskCallback == callback) originalCallback else task.taskCallback
-                handleTaskCompletionOnThread(task, originalCallback, isCancelled)
+            logTask(task, "Task onCompleted" + if (isCancelled) " (Cancelled)" else "")
+            taskToJobMap.remove(task)
+            if (!isCancelled) { // if isCancelled originalCallback is already called
+                handleTaskCompletionOnThread(task, isCancelled)
             }
         }
     }
@@ -575,7 +567,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
                     if (error != null) {
                         it.resumeWithException(error)
                     } else if (cancelled) {
-                        it.resumeWithException(CancelError())
+                        it.resumeWithException(CancellationException())
                     } else {
                         it.resume(task.taskResult)
                     }
@@ -587,7 +579,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     @WorkerThread
-    suspend private fun handleTaskCompletionOnThread(task: Task, callback: Task.Callback?, isCancelled: Boolean) {
+    suspend private fun handleTaskCompletionOnThread(task: Task, isCancelled: Boolean) {
         if (task !is TaskBase) { assert(false); return }
         checkScopeThread()
 
@@ -601,10 +593,9 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         task.private.taskStatus = status
         task.private.clearAllListeners()
 
-        task.taskCallback = callback // return original callback
-
+        task.taskCallback = taskToCallbackMap[task] // return original callback
         HandlerTools.runOnHandlerThread(callbackHandler) {
-            callback?.onCompleted(isCancelled)
+            task.taskCallback?.onCompleted(isCancelled)
         }
 
         //TODO: for the another status like cancelled new task won't be started
@@ -627,13 +618,16 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
             val job = taskToJobMap.get(task)
             if (st == Task.Status.Waiting || st == Task.Status.NotStarted || st == Task.Status.Blocked || task.private.canBeCancelledImmediately()) {
                 if (st == Task.Status.Started) {
-                    if (job != null) {
-                        job.cancel()
-                    }
-                    //task.private.startCallback?.onCompleted(true) // to get the original callback
+                    if (task.private.canBeCancelledImmediately()) {
+                        taskToCallbackMap[task]?.onCompleted(true) // to get the original callback
+                        taskToCallbackMap[task] = null
 
+                        if (job != null) {
+                            job.cancel()
+                        }
+                    }
                 } else {
-                    handleTaskCompletionOnThread(task, task.taskCallback, true)
+                    handleTaskCompletionOnThread(task, true)
                     logTask(task, "Cancelled")
                 }
             }
@@ -676,7 +670,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     fun checkScopeThread() {
-        assert(isScopeThread())
+        Assert.assertTrue("Scope thread is expected", isScopeThread())
     }
 
     /// Helpers
