@@ -46,12 +46,15 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         }
 
     private lateinit var callbackHandler: Handler
-    override var taskExecutor: TaskExecutor = SimpleTaskExecutor() // TODO: remove
     override var userData: Any? = null
     private var listeners = WeakRefList<TaskManager.Listener>()
 
-    private val taskJob = SupervisorJob()
-    private val taskScope = CoroutineScope(Dispatchers.IO + taskJob)
+    private var _taskScope: CoroutineScope? = null
+    private var taskScope: CoroutineScope
+        get() = _taskScope!!
+        set(value) {
+            _taskScope = value
+        }
 
     private lateinit var loadingTasks: TaskPool
     private lateinit var waitingTasks: TaskProvider
@@ -135,15 +138,16 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     constructor(maxLoadingTasks: Int) {
-        init(maxLoadingTasks, null)
+        init(maxLoadingTasks, null, null)
     }
 
-    constructor(maxLoadingTasks: Int, scope: CoroutineScope) {
-        init(maxLoadingTasks, scope)
+    constructor(maxLoadingTasks: Int, scope: CoroutineScope, taskScope: CoroutineScope) {
+        init(maxLoadingTasks, scope, taskScope)
     }
 
-    private fun init(maxLoadingTasks: Int, inScope: CoroutineScope?) {
+    private fun init(maxLoadingTasks: Int, inScope: CoroutineScope?, inTaskScope: CoroutineScope?) {
         initScope(inScope)
+        initTaskSope(inTaskScope)
         this.maxLoadingTasks = maxLoadingTasks
 
         callbackHandler = Handler(Looper.myLooper())
@@ -167,7 +171,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
             localHandlerThread.start()
             val handler = Handler(localHandlerThread.looper)
             val dispatcher = handler.asCoroutineDispatcher("SimpleTaskManager handler dispatcher")
-            scope = CoroutineScope(dispatcher + Job())
+            scope = CoroutineScope(dispatcher + SupervisorJob())
         }
 
         scope.launch {
@@ -175,6 +179,14 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         }
 
         _scope = scope
+    }
+
+    private fun initTaskSope(inScope: CoroutineScope?) {
+        if (inScope != null) {
+            taskScope = inScope
+        } else {
+            taskScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        }
     }
 
     private fun createTaskProviders(): SafeList<TaskProvider> {

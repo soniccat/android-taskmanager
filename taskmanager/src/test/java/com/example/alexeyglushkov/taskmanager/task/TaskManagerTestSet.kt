@@ -17,17 +17,6 @@ class TaskManagerTestSet {
 
     fun before(taskManager: TaskManager) {
         this.taskManager = taskManager
-
-        // mock executor
-        val executor = mock<TaskExecutor>()
-        doAnswer { invocation ->
-            val task = invocation.arguments[0] as Task
-            val callback = invocation.arguments[1] as Task.Callback
-            task.startTask()
-            return@doAnswer null
-        }.`when`(executor).executeTask(any())
-
-        taskManager.taskExecutor = executor
     }
 
     fun setMaxLoadingTasks() {
@@ -199,17 +188,6 @@ class TaskManagerTestSet {
         assertTrue(taskProviderIndex(taskProvider2) == 0)
     }
 
-    fun setTaskExecutor() {
-        // Arrange
-        val executor = mock<TaskExecutor>()
-
-        // Act
-        taskManager.taskExecutor = executor
-
-        // Verify
-        assertEquals(executor, taskManager.taskExecutor)
-    }
-
     fun startImmediately() {
         // Arrange
         val task = TestTasks.createTaskMock()
@@ -302,60 +280,6 @@ class TaskManagerTestSet {
         verify(listener).onTaskAdded(taskManager, task, true)
         verify(listener).onTaskRemoved(taskManager, task, true)
         verify(callback).onCompleted(false)
-        assertEquals(0, taskManager.getTaskCount())
-    }
-
-    fun startImmediatelyFinishWithChangedCallback() {
-        // Arrange
-        val task = TestTask()
-        val callback1 = mock<Task.Callback>()
-        val callback2 = mock<Task.Callback>()
-        task.taskCallback = callback1
-
-        val listener = mock<TaskManager.Listener>()
-
-        // Act
-        taskManager.addListener(listener)
-        taskManager.startImmediately(task)
-        task.taskCallback = callback2
-        task.finish()
-
-        // Verify
-        assertEquals(Task.Status.Finished, task.taskStatus)
-        verify(listener, never()).onTaskAdded(taskManager, task, false)
-        verify(listener, never()).onTaskRemoved(taskManager, task, false)
-        verify(listener).onTaskAdded(taskManager, task, true)
-        verify(listener).onTaskRemoved(taskManager, task, true)
-        verify(callback1, never()).onCompleted(any())
-        verify(callback2).onCompleted(false)
-        assertEquals(0, taskManager.getTaskCount())
-    }
-
-    fun startImmediatelyCancelWithChangedCallback() {
-        // Arrange
-        val task = TestTasks.createTestTaskSpy("taskId")
-        `when`(task.canBeCancelledImmediately()).thenReturn(true)
-
-        val callback1 = mock<Task.Callback>()
-        val callback2 = mock<Task.Callback>()
-        task.taskCallback = callback1
-
-        val listener = mock<TaskManager.Listener>()
-
-        // Act
-        taskManager.addListener(listener)
-        taskManager.startImmediately(task)
-        task.taskCallback = callback2
-        taskManager.cancel(task, null)
-
-        // Verify
-        assertEquals(Task.Status.Cancelled, task.taskStatus)
-        verify(listener, never()).onTaskAdded(taskManager, task, false)
-        verify(listener, never()).onTaskRemoved(taskManager, task, false)
-        verify(listener).onTaskAdded(taskManager, task, true)
-        verify(listener).onTaskRemoved(taskManager, task, true)
-        verify(callback1, never()).onCompleted(any())
-        verify(callback2).onCompleted(true)
         assertEquals(0, taskManager.getTaskCount())
     }
 
@@ -470,29 +394,6 @@ class TaskManagerTestSet {
         verify(callback).onCompleted(false)
     }
 
-    fun changedTaskCallbackCalled() {
-        // Arrange
-        val listener = mock<TaskManager.Listener>()
-
-        val task = TestTasks.createTestTaskSpy("taskId")
-        val callback = mock<Task.Callback>()
-        val newCallback = mock<Task.Callback>()
-        task.taskCallback = callback
-
-        taskManager.addListener(listener)
-
-        // Act
-        taskManager.addTask(task)
-        task.taskCallback = newCallback
-        task.finish()
-
-        // Verify
-        assertEquals(Task.Status.Finished, task.taskStatus)
-        verify(listener).onTaskRemoved(taskManager, task, true)
-        verify(callback, never()).onCompleted(any())
-        verify(newCallback).onCompleted(false)
-    }
-
     fun taskWithCancelledImmediatelyCallbackCalledAfterCancel() {
         // Arrange
         val listener = mock<TaskManager.Listener>()
@@ -514,32 +415,6 @@ class TaskManagerTestSet {
         assertEquals(Task.Status.Cancelled, task.taskStatus)
         verify(listener).onTaskRemoved(taskManager, task, true)
         verify(callback).onCompleted(true)
-    }
-
-    fun taskWithCancelledImmediatelyAndChangedCallbackCalled() {
-        // Arrange
-        val listener = mock<TaskManager.Listener>()
-
-        val task = TestTasks.createTestTaskSpy("taskId")
-        `when`(task.canBeCancelledImmediately()).thenReturn(true)
-
-        val callback = mock<Task.Callback>()
-        val newCallback = mock<Task.Callback>()
-        task.taskCallback = callback
-
-        taskManager.addListener(listener)
-
-        // Act
-        taskManager.addTask(task)
-        task.taskCallback = newCallback
-        taskManager.cancel(task, null)
-        task.finish()
-
-        // Verify
-        assertEquals(Task.Status.Cancelled, task.taskStatus)
-        verify(listener).onTaskRemoved(taskManager, task, true)
-        verify(callback, never()).onCompleted(true)
-        verify(newCallback).onCompleted(true)
     }
 
     fun addStateListener() {

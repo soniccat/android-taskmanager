@@ -20,7 +20,8 @@ class SimpleTaskManagerTest {
     @Before
     @Throws(Exception::class)
     fun setUp() {
-        taskManager = SimpleTaskManager(10, TestCoroutineScope())
+        val scope = TestCoroutineScope()
+        taskManager = SimpleTaskManager(10, scope, scope)
         poolTestSet = TaskPoolTestSet()
         taskManagerTestSet = TaskManagerTestSet()
 
@@ -64,18 +65,8 @@ class SimpleTaskManagerTest {
     }
 
     @Test
-    fun testChangedTaskCallbackCalled() {
-        taskManagerTestSet.changedTaskCallbackCalled()
-    }
-
-    @Test
     fun testTaskWithCancelledImmediatelyCallbackCalledAfterCancel() {
         taskManagerTestSet.taskWithCancelledImmediatelyCallbackCalledAfterCancel()
-    }
-
-    @Test
-    fun testTaskWithCancelledImmediatelyAndChangedCallbackCalled() {
-        taskManagerTestSet.taskWithCancelledImmediatelyAndChangedCallbackCalled()
     }
 
     @Test
@@ -129,11 +120,6 @@ class SimpleTaskManagerTest {
     }
 
     @Test
-    fun testSetTaskExecutor() {
-        taskManagerTestSet.setTaskExecutor()
-    }
-
-    @Test
     fun testStartImmediately() {
         taskManagerTestSet.startImmediately()
     }
@@ -151,16 +137,6 @@ class SimpleTaskManagerTest {
     @Test
     fun testStartImmediatelyFinish() {
         taskManagerTestSet.startImmediatelyFinish()
-    }
-
-    @Test
-    fun testStartImmediatelyFinishWithChangedCallback() {
-        taskManagerTestSet.startImmediatelyFinishWithChangedCallback()
-    }
-
-    @Test
-    fun testStartImmediatelyCancelWithChangedCallback() {
-        taskManagerTestSet.startImmediatelyCancelWithChangedCallback()
     }
 
     @Test

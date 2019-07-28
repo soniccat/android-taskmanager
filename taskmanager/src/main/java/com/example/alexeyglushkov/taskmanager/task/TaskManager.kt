@@ -3,6 +3,7 @@ package com.example.alexeyglushkov.taskmanager.task
 import android.util.SparseArray
 
 import androidx.collection.SparseArrayCompat
+import kotlinx.coroutines.CoroutineScope
 
 import java.util.ArrayList
 
@@ -17,7 +18,6 @@ interface TaskManager : TaskPool {
     val usedSpace: SparseArrayCompat<Int> //type -> task count from loadingTasks
     val loadingTaskCount: Int
     val taskProviders: ArrayList<TaskProvider> //always sorted by priority
-    var taskExecutor: TaskExecutor
 
     // TODO: extract limits to a Rule class: TaskManagerRule/TaskManagerConstraint
     fun setLimit(taskType: Int, availableQueuePart: Float)
