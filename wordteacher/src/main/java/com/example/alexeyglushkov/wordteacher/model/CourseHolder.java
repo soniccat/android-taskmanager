@@ -89,8 +89,6 @@ public class CourseHolder {
         return new SimpleTask() {
             @Override
             public void startTask() {
-                super.startTask();
-
                 ArrayList<Course> courses = null;
                 try {
                     courses = loadCoursesSync(progressListener);

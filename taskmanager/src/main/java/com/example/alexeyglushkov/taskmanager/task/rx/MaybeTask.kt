@@ -13,8 +13,6 @@ class MaybeTask<T>(private val maybe: Maybe<T>) : TaskImpl() {
     var disposable: Disposable? = null
 
     override fun startTask() {
-        super.startTask()
-
         val finishedFlag = AtomicBoolean()
         disposable = maybe.subscribe({ t ->
             private.taskResult = t

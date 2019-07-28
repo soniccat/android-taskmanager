@@ -11,12 +11,11 @@ import com.example.alexeyglushkov.taskmanager.task.Task
 open class TestTask : SimpleTask() {
 
     override fun startTask() {
-        super.startTask()
-        Log.d("com.example.alexeyglushkov.taskmanager.task.TestTask", "startTask " + startCallback!!)
+        Log.d("com.example.alexeyglushkov.taskmanager.task.TestTask", "startTask " + taskCallback!!)
     }
 
     fun finish() {
-        Log.d("com.example.alexeyglushkov.taskmanager.task.TestTask", "finish " + startCallback!!)
+        Log.d("com.example.alexeyglushkov.taskmanager.task.TestTask", "finish " + taskCallback!!)
         private.handleTaskCompletion()
     }
 }

@@ -18,8 +18,6 @@ class FileKeepTask<T>(private val fileName: String,
     }
 
     override fun startTask() {
-        super.startTask()
-
         val name = this.fileName
         try {
             val fos = context.openFileOutput(name, Context.MODE_PRIVATE)

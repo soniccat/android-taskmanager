@@ -16,8 +16,6 @@ public abstract class ServiceTaskImp<T> extends BaseServiceTask<T> {
         setTask(new TaskImpl() {
             @Override
             public void startTask() {
-                super.startTask();
-
                 onStart();
 
                 getPrivate().handleTaskCompletion();

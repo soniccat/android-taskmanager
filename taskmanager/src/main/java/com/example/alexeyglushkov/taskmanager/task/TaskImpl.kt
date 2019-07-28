@@ -19,7 +19,6 @@ import java.util.Date
  */
 abstract class TaskImpl : TaskBase, TaskPrivate {
     override var taskCallback: Task.Callback? = null
-    override var startCallback: Task.Callback? = null
     override var cancellationInfo: Any? = null
         protected set
 
@@ -91,10 +90,6 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
     override fun cancelTask(info: Any?) {
         needCancelTask = true
         this.cancellationInfo = info
-    }
-
-    override fun startTask() {
-        handleTaskStart()
     }
 
     override fun addTaskStatusListener(listener: Task.StatusListener) {
@@ -208,12 +203,8 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
         return false
     }
 
-    override fun handleTaskStart() {
-        startCallback = this.taskCallback
-    }
-
     override fun handleTaskCompletion() {
-        startCallback?.onCompleted(isCancelled)
+        taskCallback?.onCompleted(isCancelled)
     }
 
     private fun checkMainThread() {

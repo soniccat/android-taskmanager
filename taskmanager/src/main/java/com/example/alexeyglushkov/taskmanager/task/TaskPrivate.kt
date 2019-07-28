@@ -12,8 +12,6 @@ import java.util.Date
 // Contains methods being used only by TaskManager, TaskPool or a Task
 
 interface TaskPrivate : Task {
-    var startCallback: Task.Callback? // get the callback which is passed in startTask
-
     val needCancelTask: Boolean
 
     // Get dependencies
@@ -76,13 +74,7 @@ interface TaskPrivate : Task {
     //
     fun triggerProgressListeners(progressInfo: ProgressInfo)
 
-    // Updates start callback
-    //
-    // Caller: Task
-    //
-    fun handleTaskStart()
-
-    // Call the start callback
+    // Call the taskCallback
     //
     // Caller: Task
     //

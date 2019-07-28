@@ -136,8 +136,6 @@ interface Task : TaskContainer {
     // Transfer callback from TaskManager
     //
     // Caller: TaskManager
-    //
-    // TODO: check if we need to call setTaskCallback in all implementations
     fun startTask()
 
     enum class Status {

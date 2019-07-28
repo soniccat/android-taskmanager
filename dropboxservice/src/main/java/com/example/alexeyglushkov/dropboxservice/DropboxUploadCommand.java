@@ -25,7 +25,6 @@ public class DropboxUploadCommand extends ServiceTaskImp implements IServiceTask
 
     @Override
     public void startTask(Callback callback) {
-        super.startTask(callback);
 
         try {
             // TODO: read whole bytes is needed to upload to show progress

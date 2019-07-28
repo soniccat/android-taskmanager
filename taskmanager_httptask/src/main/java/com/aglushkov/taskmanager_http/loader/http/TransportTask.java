@@ -38,8 +38,6 @@ public class TransportTask extends SimpleTask implements TaskTransport.Listener 
     }
 
     public void startTask() {
-        super.startTask();
-
         transport.start();
 
         if (getNeedCancelTask()) {

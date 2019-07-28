@@ -12,8 +12,6 @@ class SingleTask<T>(private val single: Single<T>) : TaskImpl() {
     var disposable: Disposable? = null
 
     override fun startTask() {
-        super.startTask()
-
         val finishedFlag = AtomicBoolean()
         disposable = single.subscribe({ t ->
             private.taskResult = t
