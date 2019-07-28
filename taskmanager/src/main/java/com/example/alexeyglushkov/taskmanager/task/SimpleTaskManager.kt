@@ -606,6 +606,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         task.private.clearAllListeners()
 
         task.taskCallback = taskToCallbackMap[task] // return original callback
+        taskToCallbackMap[task] = null
         HandlerTools.runOnHandlerThread(callbackHandler) {
             task.taskCallback?.onCompleted(isCancelled)
         }
@@ -631,8 +632,8 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
             if (st == Task.Status.Waiting || st == Task.Status.NotStarted || st == Task.Status.Blocked || task.private.canBeCancelledImmediately()) {
                 if (st == Task.Status.Started) {
                     if (task.private.canBeCancelledImmediately()) {
-                        taskToCallbackMap[task]?.onCompleted(true) // to get the original callback
-                        taskToCallbackMap[task] = null
+                        handleTaskCompletionOnThread(task, true)
+                        logTask(task, "Immediately Cancelled")
 
                         if (job != null) {
                             job.cancel()
