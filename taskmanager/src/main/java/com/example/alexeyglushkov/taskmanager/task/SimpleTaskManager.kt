@@ -208,7 +208,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         //TODO: think how to handle adding two same task
         //Assert.assertEquals(task.getTaskStatus(), Task.Status.NotStarted);
         if (!Tasks.isTaskReadyToStart(task)) {
-            Log.d(TAG, "Can't put task " + task.javaClass.toString() + " because it has been added " + task.taskStatus.toString())
+            Log.d(TAG, "addTask: Can't add task " + task.javaClass.toString() + " because it has been added " + task.taskStatus.toString())
             return
         }
 
@@ -574,7 +574,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
                         it.resume(Unit)
                     }
                 }
-
             }
             task.startTask()
         }
@@ -600,6 +599,8 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
             task.taskCallback = taskToCallbackMap[task] // return original callback
             taskToCallbackMap[task] = null
         }
+
+        // TODO: use callback scope
         HandlerTools.runOnHandlerThread(callbackHandler) {
             task.taskCallback?.onCompleted(isCancelled)
         }

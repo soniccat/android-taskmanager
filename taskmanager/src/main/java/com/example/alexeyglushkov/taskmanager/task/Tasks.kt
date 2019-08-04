@@ -10,6 +10,10 @@ import com.example.alexeyglushkov.tools.HandlerTools
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 /**
  * Created by alexeyglushkov on 28.12.14.
@@ -39,61 +43,24 @@ object Tasks {
         return st == Task.Status.Finished || st == Task.Status.Cancelled
     }
 
-    fun <T> fromSingle(single: Single<T>): TaskBase {
-        return SingleTask(single)
-    }
-
-    fun <T> toSingle(task: Task, taskPool: TaskPool): Single<T> {
-        return Single.create { emitter ->
-            val callback = task.taskCallback
+    suspend fun run(task: TaskBase, taskPool: TaskPool): Any? {
+        return suspendCancellableCoroutine {
+            it.invokeOnCancellation {
+                task.private.cancelTask(null)
+            }
 
             task.taskCallback = object : Task.Callback {
                 override fun onCompleted(cancelled: Boolean) {
-                    callback?.onCompleted(cancelled)
-
                     val error = task.taskError
                     if (error != null) {
-                        emitter.onError(error)
+                        it.resumeWithException(error)
+                    } else if (cancelled) {
+                        it.resumeWithException(CancellationException())
                     } else {
-                        try {
-                            val result = task.taskResult as T
-                            emitter.onSuccess(result)
-                        } catch (e: Exception) {
-                            emitter.onError(e)
-                        }
+                        it.resume(task.taskResult)
                     }
                 }
             }
-
-            taskPool.addTask(task)
-        }
-    }
-
-    fun <T> fromMaybe(maybe: Maybe<T>): TaskBase {
-        return MaybeTask(maybe)
-    }
-
-    fun fromCompletable(completable: Completable): TaskBase {
-        return CompletableTask(completable)
-    }
-
-    fun toCompletable(task: Task, taskPool: TaskPool): Completable {
-        return Completable.create { emitter ->
-            val callback = task.taskCallback
-
-            task.taskCallback = object : Task.Callback {
-                override fun onCompleted(cancelled: Boolean) {
-                    callback?.onCompleted(cancelled)
-
-                    val error = task.taskError
-                    if (error != null) {
-                        emitter.onError(error)
-                    } else {
-                        emitter.onComplete()
-                    }
-                }
-            }
-
             taskPool.addTask(task)
         }
     }
