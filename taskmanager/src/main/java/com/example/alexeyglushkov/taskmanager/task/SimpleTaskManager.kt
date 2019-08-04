@@ -21,7 +21,6 @@ import java.util.Date
 import junit.framework.Assert.assertTrue
 import kotlinx.coroutines.*
 import kotlinx.coroutines.android.asCoroutineDispatcher
-import java.util.concurrent.Executors
 import kotlin.coroutines.*
 
 /**
@@ -221,10 +220,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
             // task will be launched in onTaskAdded method
             waitingTasks.addTask(task)
         }
-//        HandlerTools.runOnHandlerThread(handler) {
-//            // task will be launched in onTaskAdded method
-//            waitingTasks.addTask(task)
-//        }
     }
 
     override fun startImmediately(task: Task) {
@@ -455,7 +450,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
             assert(addedTask != task)
 
             if (addedTask != null) {
-                if (task.loadPolicy == Task.LoadPolicy.CancelAdded) {
+                if (task.loadPolicy == Task.LoadPolicy.CancelPreviouslyAdded) {
                     cancelTaskOnThread(addedTask, null)
                 } else {
                     Log.d(TAG, "The task was skipped due to the Load Policy " + task.loadPolicy.toString() + task.javaClass.toString() + " " + taskId + " " + task.taskStatus.toString())
@@ -533,28 +528,23 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
             task.private.taskStatus = Task.Status.Started
             task.private.setTaskStartDate(Date())
 
-            //task.taskCallback = callback
             val job = SupervisorJob()
             taskToJobMap.put(task, job)
             taskToCallbackMap.put(task, task.taskCallback)
 
             var isCancelled = false
-            var result: Any?
-
             withContext(taskScope.coroutineContext + job) {
                 try {
-                    result = start(task)
+                    start(task)
                 } catch (e: Throwable) {
                     isCancelled = job.isCancelled
                 }
             }
 
-            //val isJobCancelled = coroutineContext[Job]?.isCancelled ?: false
-
             logTask(task, "Task onCompleted" + if (isCancelled) " (Cancelled)" else "")
             taskToJobMap.remove(task)
-            if (!isCancelled) { // if isCancelled originalCallback is already called
-                handleTaskCompletionOnThread(task, isCancelled)
+            if (!isCancelled) {
+                handleTaskCompletionOnThread(task, false)
             }
         }
     }
@@ -567,7 +557,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         Log.d(TAG, "loading task count " + loadingTasks.getTaskCount())
     }
 
-    suspend fun start(task: TaskBase): Any? {
+    suspend fun start(task: TaskBase) {
         return suspendCancellableCoroutine {
             it.invokeOnCancellation {
                 task.private.cancelTask(null)
@@ -581,7 +571,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
                     } else if (cancelled) {
                         it.resumeWithException(CancellationException())
                     } else {
-                        it.resume(task.taskResult)
+                        it.resume(Unit)
                     }
                 }
 
@@ -595,6 +585,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         if (task !is TaskBase) { assert(false); return }
         checkScopeThread()
 
+        val wasStarted = task.taskStatus == Task.Status.Started
         val status = if (isCancelled) Task.Status.Cancelled else Task.Status.Finished
         if (isCancelled) {
             task.private.taskError = CancelError()
@@ -605,13 +596,15 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         task.private.taskStatus = status
         task.private.clearAllListeners()
 
-        task.taskCallback = taskToCallbackMap[task] // return original callback
-        taskToCallbackMap[task] = null
+        if (wasStarted) {
+            task.taskCallback = taskToCallbackMap[task] // return original callback
+            taskToCallbackMap[task] = null
+        }
         HandlerTools.runOnHandlerThread(callbackHandler) {
             task.taskCallback?.onCompleted(isCancelled)
         }
 
-        //TODO: for the another status like cancelled new task won't be started
+        //TODO: for another status like cancelled new task won't be started
         //but we cant't just call checkTasksToRunOnThread because of Task.LoadPolicy.CancelAdded
         //because we want to have new task already in waiting queue but now it isn't
         if (status == Task.Status.Finished) {

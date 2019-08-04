@@ -1,6 +1,5 @@
 package com.example.alexeyglushkov.taskmanager.task
 
-import android.os.Handler
 import android.os.HandlerThread
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.CoroutineScope
@@ -328,7 +327,7 @@ class TaskManagerTestSet {
 
         val task1 = TestTasks.createTestTaskSpy("taskId")
         val task2 = TestTasks.createTestTaskSpy("taskId")
-        task2.loadPolicy = Task.LoadPolicy.SkipIfAdded
+        task2.loadPolicy = Task.LoadPolicy.SkipIfAlreadyAdded
 
         // Act
         taskManager.addListener(listener)
@@ -356,7 +355,7 @@ class TaskManagerTestSet {
         // Arrange
         val task1 = TestTasks.createTestTaskSpy("taskId")
         val task2 = TestTasks.createTestTaskSpy("taskId")
-        task2.loadPolicy = Task.LoadPolicy.CancelAdded
+        task2.loadPolicy = Task.LoadPolicy.CancelPreviouslyAdded
 
         // Act
         taskManager.addTask(task1)

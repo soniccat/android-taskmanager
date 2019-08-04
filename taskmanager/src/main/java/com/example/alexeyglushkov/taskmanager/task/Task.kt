@@ -148,8 +148,8 @@ interface Task : TaskContainer {
     }
 
     enum class LoadPolicy {
-        SkipIfAdded, // don't load if the state isn't equal to Waiting
-        CancelAdded // cancel already added task, in this case you shouldn't do anything with cancelled task
+        SkipIfAlreadyAdded, // don't load this task if there is another loading task with the same id
+        CancelPreviouslyAdded // cancel already added task, in this case you shouldn't do anything with cancelled task
         // TODO: AddDependency add dependency to start after finishing
     }
 

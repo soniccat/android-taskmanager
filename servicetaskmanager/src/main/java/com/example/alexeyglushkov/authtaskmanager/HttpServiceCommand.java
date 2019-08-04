@@ -33,7 +33,7 @@ public class HttpServiceCommand<T> extends BaseServiceTask<T> {
 
     private void setTaskConnectionBuilder(Task task, HttpUrlConnectionBuilder connectionBuilder) {
         task.setTaskId(connectionBuilder.getStringUrl());
-        task.setLoadPolicy(Task.LoadPolicy.CancelAdded);
+        task.setLoadPolicy(Task.LoadPolicy.CancelPreviouslyAdded);
     }
 
     public void setCacheClient(Cache cacheClient) {

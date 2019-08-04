@@ -259,7 +259,7 @@ public class RssItemsActivity extends AppCompatActivity implements RssItemsAdapt
 
         task.addTaskProgressListener(this);
         task.setTaskProgressMinChange(0.2f);
-        task.setLoadPolicy(Task.LoadPolicy.SkipIfAdded);
+        task.setLoadPolicy(Task.LoadPolicy.SkipIfAlreadyAdded);
 
         taskProvider.addTask(task);
     }

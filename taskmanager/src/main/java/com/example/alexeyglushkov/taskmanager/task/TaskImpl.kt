@@ -31,7 +31,7 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
     override var taskError: Error? = null
     override var taskResult: Any? = null
     override var taskId: String? = null
-    override var loadPolicy: Task.LoadPolicy = Task.LoadPolicy.SkipIfAdded
+    override var loadPolicy: Task.LoadPolicy = Task.LoadPolicy.SkipIfAlreadyAdded
     override var taskPriority: Int = 0
     override var taskType: Int = 0
 

@@ -21,7 +21,7 @@ public class Image implements Serializable, Tasks.TaskListener, HttpURLConnectio
     protected int height;
     protected int byteSize;
     protected Task.Status loadStatus;
-    protected Task.LoadPolicy loadPolicy = Task.LoadPolicy.SkipIfAdded;
+    protected Task.LoadPolicy loadPolicy = Task.LoadPolicy.SkipIfAlreadyAdded;
 
     protected WeakReference<Task> processingTask;
 

@@ -101,7 +101,7 @@ public class TaskConfigFragment extends Fragment {
         config.count = count.getInt();
         config.startId = startId.getInt();
         config.duration = duration.getInt();
-        config.loadPolicy = loadPolicy.getInt() == 0 ? Task.LoadPolicy.SkipIfAdded : Task.LoadPolicy.CancelAdded;
+        config.loadPolicy = loadPolicy.getInt() == 0 ? Task.LoadPolicy.SkipIfAlreadyAdded : Task.LoadPolicy.CancelPreviouslyAdded;
         config.priority = priority.getInt();
     }
 
