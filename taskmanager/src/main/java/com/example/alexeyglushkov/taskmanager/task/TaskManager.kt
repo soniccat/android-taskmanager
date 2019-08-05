@@ -11,7 +11,7 @@ import java.util.ArrayList
  * Created by alexeyglushkov on 20.09.14.
  */
 
-interface TaskManager : TaskPool {
+interface TaskManager : TaskPool, TaskPool.Listener {
     // Task Limits
     var maxLoadingTasks: Int
     val limits: SparseArrayCompat<Float>

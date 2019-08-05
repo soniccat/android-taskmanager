@@ -571,7 +571,9 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     suspend fun start(task: TaskBase) {
         return suspendCancellableCoroutine {
             it.invokeOnCancellation {
-                task.private.cancelTask(null)
+                if (!Tasks.isTaskCompleted(task) && !task.private.needCancelTask) {
+                    cancel(task, null) // that shouldn't happen as we cancel the job after cancelling the task
+                }
             }
 
             task.taskCallback = object : Task.Callback {

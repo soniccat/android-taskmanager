@@ -242,4 +242,19 @@ open class TaskPoolTestSet {
         // Verify
         assertEquals(0, taskPool.getTaskCount())
     }
+
+    fun cancelTask() {
+        // Arrange
+        val testTask = TestTask()
+        val info = "info"
+        val listener = mock<TaskPool.Listener>()
+
+        // Act
+        taskPool.addListener(listener)
+        taskPool.addTask(testTask)
+        taskPool.cancelTask(testTask, info)
+
+        // Verify
+        verify(listener).onTaskCancelled(taskPool, testTask, info)
+    }
 }

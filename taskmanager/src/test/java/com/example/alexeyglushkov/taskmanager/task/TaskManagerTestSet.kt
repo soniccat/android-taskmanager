@@ -1,6 +1,5 @@
 package com.example.alexeyglushkov.taskmanager.task
 
-import android.os.HandlerThread
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -512,8 +511,6 @@ class TaskManagerTestSet {
 
     fun setGetScope() {
         // Arrange
-        val handlerThread = HandlerThread("HandlerThread")
-        handlerThread.start()
         val scope = CoroutineScope(Dispatchers.Main)
         val taskProvider = createTaskProviderMock("0", taskManager)
 
@@ -546,6 +543,49 @@ class TaskManagerTestSet {
 
         // Verify
         assertNull(taskManager.limits.get(1))
+    }
+
+    fun cancelWaitingTaskFromPool() {
+        // Arrange
+        val taskProvider = createTaskProviderMock("0", taskManager)
+        val taskCallback = mock<Task.Callback>()
+        val testTask = TestTasks.createTestTaskSpy("taskId")
+        testTask.taskCallback = taskCallback
+        val cancelInfo = "info"
+
+        // Act
+        taskManager.addTaskProvider(taskProvider)
+        taskManager.maxLoadingTasks = 0
+        taskManager.onTaskCancelled(taskProvider, testTask, cancelInfo)
+
+        // Verify
+        assertEquals(Task.Status.Cancelled, testTask.taskStatus)
+        assertEquals(cancelInfo, testTask.cancellationInfo)
+        verify(taskCallback).onCompleted(true)
+    }
+
+    fun cancelStartedTaskFromPool() {
+        // Arrange
+        val taskProvider = createTaskProviderMock("0", taskManager)
+        val taskCallback = mock<Task.Callback>()
+        val testTask = TestTasks.createTestTaskSpy("taskId")
+        testTask.taskCallback = taskCallback
+        val cancelInfo = "info"
+
+        `when`(taskProvider.getTopTask(any())).doReturn(testTask)
+        `when`(taskProvider.takeTopTask(any())).doReturn(testTask)
+        `when`(testTask.canBeCancelledImmediately()).thenReturn(true)
+
+        // Act
+        taskManager.maxLoadingTasks = 1
+        taskManager.addTaskProvider(taskProvider)
+        taskManager.onTaskAdded(taskProvider, testTask)
+        taskManager.onTaskCancelled(taskProvider, testTask, cancelInfo)
+
+        // Verify
+        assertEquals(Task.Status.Cancelled, testTask.taskStatus)
+        assertEquals(cancelInfo, testTask.cancellationInfo)
+        verify(taskCallback).onCompleted(true)
     }
 
     // Tools

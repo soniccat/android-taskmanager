@@ -38,6 +38,7 @@ object Tasks {
         return st != Task.Status.Started && st != Task.Status.Finished && st != Task.Status.Cancelled
     }
 
+    // TODO: convert to extension
     fun isTaskCompleted(task: Task): Boolean {
         val st = task.taskStatus
         return st == Task.Status.Finished || st == Task.Status.Cancelled

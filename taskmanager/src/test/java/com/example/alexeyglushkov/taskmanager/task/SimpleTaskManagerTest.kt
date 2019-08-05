@@ -169,6 +169,16 @@ class SimpleTaskManagerTest {
         taskManagerTestSet.setLimitRemove()
     }
 
+    @Test
+    fun testCancelWaitingTaskFromPool() {
+        taskManagerTestSet.cancelWaitingTaskFromPool()
+    }
+
+    @Test
+    fun testCancelStartedTaskFromPool() {
+        taskManagerTestSet.cancelStartedTaskFromPool()
+    }
+
     // PoolTests
 
     @Test

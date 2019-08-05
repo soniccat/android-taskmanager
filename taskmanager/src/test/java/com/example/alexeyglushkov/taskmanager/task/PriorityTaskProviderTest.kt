@@ -221,4 +221,9 @@ open class PriorityTaskProviderTest {
     fun testCheckTaskRemovingAfterFinishing() {
         poolTestSet.checkTaskRemovingAfterFinishing()
     }
+
+    @Test
+    fun testCancelTask() {
+        poolTestSet.cancelTask()
+    }
 }

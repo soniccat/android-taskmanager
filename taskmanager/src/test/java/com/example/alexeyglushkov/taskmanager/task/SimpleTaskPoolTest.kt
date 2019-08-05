@@ -87,4 +87,9 @@ class SimpleTaskPoolTest : TaskPoolTestSet() {
     fun testCheckTaskRemovingAfterFinishing() {
         this@SimpleTaskPoolTest.checkTaskRemovingAfterFinishing()
     }
+
+    @Test
+    fun testCancelTask() {
+        this@SimpleTaskPoolTest.cancelTask()
+    }
 }

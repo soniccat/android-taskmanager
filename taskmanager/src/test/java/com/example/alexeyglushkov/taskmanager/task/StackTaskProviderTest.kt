@@ -158,4 +158,9 @@ open class StackTaskProviderTest {
     fun testCheckTaskRemovingAfterFinishing() {
         poolTest.checkTaskRemovingAfterFinishing()
     }
+
+    @Test
+    fun testCancelTask() {
+        poolTest.cancelTask()
+    }
 }

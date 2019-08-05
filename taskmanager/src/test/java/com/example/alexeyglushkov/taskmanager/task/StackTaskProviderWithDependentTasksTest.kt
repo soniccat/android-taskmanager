@@ -221,4 +221,9 @@ class StackTaskProviderWithDependentTasksTest {
     fun testCheckTaskRemovingAfterFinishing() {
         poolTest.checkTaskRemovingAfterFinishing()
     }
+
+    @Test
+    fun testCancelTask() {
+        poolTest.cancelTask()
+    }
 }
