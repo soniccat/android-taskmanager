@@ -45,6 +45,7 @@ open class StackTaskProvider(private val areTasksDependent: Boolean //if enabled
         return result
     }
 
+    @WorkerThread
     private fun onTaskTaken(task: Task) {
         if (areTasksDependent) {
             isBlocked = true

@@ -38,11 +38,15 @@ open class SimpleTaskPool(scope: CoroutineScope) : TaskPool {
         _scope = scope
     }
 
-    @WorkerThread
-    override fun getTaskCount(): Int {
-        checkHandlerThread()
-        return _tasks.size
+    //// Events
+
+    override fun onTaskStatusChanged(task: Task, oldStatus: Task.Status, newStatus: Task.Status) {
+        if (Tasks.isTaskCompleted(task)) {
+            removeTask(task)
+        }
     }
+
+    /// Actions
 
     override fun addTask(task: Task) {
         if (task !is TaskBase) { assert(false); return }
@@ -72,26 +76,66 @@ open class SimpleTaskPool(scope: CoroutineScope) : TaskPool {
         triggerOnTaskAdded(task)
     }
 
+    @WorkerThread
     protected open fun triggerOnTaskAdded(task: Task) {
         for (listener in listeners) {
             listener.onTaskAdded(this, task)
         }
     }
 
-    override fun onTaskStatusChanged(task: Task, oldStatus: Task.Status, newStatus: Task.Status) {
-        if (Tasks.isTaskCompleted(task)) {
-            removeTask(task)
+    override fun removeTask(task: Task) {
+        scope.launch {
+            removeTaskOnThread(task)
         }
     }
 
-    override fun removeTask(task: Task) {
-        scope.launch {
-            if (_tasks.remove(task)) {
-                for (listener in listeners) {
-                    listener.onTaskRemoved(this@SimpleTaskPool, task)
-                }
+    @WorkerThread
+    private fun removeTaskOnThread(task: Task) {
+        if (_tasks.remove(task)) {
+            for (listener in listeners) {
+                listener.onTaskRemoved(this@SimpleTaskPool, task)
             }
         }
+    }
+
+    override fun cancelTask(task: Task, info: Any?) {
+        scope.launch {
+            cancelTaskOnThread(task, info)
+        }
+    }
+
+    @WorkerThread
+    private fun cancelTaskOnThread(task: Task, info: Any?) {
+        for (listener in listeners) {
+            listener.onTaskCancelled(this@SimpleTaskPool, task, info)
+        }
+    }
+
+    override fun addListener(listener: TaskPool.Listener) {
+        listeners.add(listener)
+    }
+
+    override fun removeListener(listener: TaskPool.Listener) {
+        listeners.remove(listener)
+    }
+
+    protected fun checkHandlerThread() {
+        //Assert.assertEquals(Looper.myLooper(), this.handler.looper)
+    }
+
+    //// Getters
+
+    @WorkerThread
+    override fun getTaskCount(): Int {
+        checkHandlerThread()
+        return _tasks.size
+    }
+
+    @WorkerThread
+    override fun getTasks(): List<Task> {
+        checkHandlerThread()
+
+        return _tasks
     }
 
     @WorkerThread
@@ -105,25 +149,6 @@ open class SimpleTaskPool(scope: CoroutineScope) : TaskPool {
         }
 
         return null
-    }
-
-    @WorkerThread
-    override fun getTasks(): List<Task> {
-        checkHandlerThread()
-
-        return _tasks
-    }
-
-    override fun addListener(listener: TaskPool.Listener) {
-        listeners.add(listener)
-    }
-
-    override fun removeListener(listener: TaskPool.Listener) {
-        listeners.remove(listener)
-    }
-
-    protected fun checkHandlerThread() {
-        //Assert.assertEquals(Looper.myLooper(), this.handler.looper)
     }
 
     companion object {

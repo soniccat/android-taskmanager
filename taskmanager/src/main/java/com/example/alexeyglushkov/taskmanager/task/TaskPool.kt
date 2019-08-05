@@ -13,11 +13,12 @@ import kotlinx.coroutines.CoroutineScope
 // A pool must remove task when it finishes
 
 interface TaskPool : Task.StatusListener {
-    var scope: CoroutineScope
+    var scope: CoroutineScope // TODO: hide scope by an abstract Object content
     var userData: Any?
 
     fun addTask(task: Task)
     fun removeTask(task: Task)
+    fun cancelTask(task: Task, info: Any?) // TODO: think about moving to TaskProvider
 
     @WorkerThread fun getTask(taskId: String): Task?
     @WorkerThread fun getTaskCount(): Int
@@ -27,7 +28,8 @@ interface TaskPool : Task.StatusListener {
     fun removeListener(listener: Listener)
 
     interface Listener {
-        fun onTaskAdded(pool: TaskPool, task: Task)
-        fun onTaskRemoved(pool: TaskPool, task: Task)
+        @WorkerThread fun onTaskAdded(pool: TaskPool, task: Task)
+        @WorkerThread fun onTaskRemoved(pool: TaskPool, task: Task)
+        @WorkerThread fun onTaskCancelled(pool: TaskPool, task: Task, info: Any?)
     }
 }

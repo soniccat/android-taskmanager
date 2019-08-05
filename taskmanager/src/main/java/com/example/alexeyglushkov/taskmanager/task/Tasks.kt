@@ -43,10 +43,10 @@ object Tasks {
         return st == Task.Status.Finished || st == Task.Status.Cancelled
     }
 
-    suspend fun run(task: TaskBase, taskPool: TaskPool): Any? {
+    suspend fun run(task: Task, taskPool: TaskPool): Any? {
         return suspendCancellableCoroutine {
             it.invokeOnCancellation {
-                task.private.cancelTask(null)
+                taskPool.cancelTask(task, null)
             }
 
             task.taskCallback = object : Task.Callback {

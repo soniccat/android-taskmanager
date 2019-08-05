@@ -15,9 +15,8 @@ object TasksRx {
     fun <T> toSingle(task: Task, taskPool: TaskPool): Single<T> {
         return Single.create { emitter ->
             val callback = task.taskCallback
-
             emitter.setCancellable {
-                // TODO: support cancellation through a taskPool
+                taskPool.cancelTask(task, null)
             }
 
             task.taskCallback = object : Task.Callback {
@@ -53,6 +52,9 @@ object TasksRx {
     fun toCompletable(task: Task, taskPool: TaskPool): Completable {
         return Completable.create { emitter ->
             val callback = task.taskCallback
+            emitter.setCancellable {
+                taskPool.cancelTask(task, null)
+            }
 
             task.taskCallback = object : Task.Callback {
                 override fun onCompleted(cancelled: Boolean) {

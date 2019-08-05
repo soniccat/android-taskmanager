@@ -181,6 +181,12 @@ open class PriorityTaskProvider(scope: CoroutineScope, override var taskProvider
         }
     }
 
+    override fun cancelTask(task: Task, info: Any?) {
+        scope.launch {
+            cancelTaskOnThread(task, info)
+        }
+    }
+
     override fun onTaskStatusChanged(task: Task, oldStatus: Task.Status, newStatus: Task.Status) {
         if (Tasks.isTaskCompleted(task)) {
             removeTask(task)
@@ -212,6 +218,15 @@ open class PriorityTaskProvider(scope: CoroutineScope, override var taskProvider
 
         for (listener in listeners) {
             listener.onTaskRemoved(this@PriorityTaskProvider, task)
+        }
+    }
+
+    @WorkerThread
+    private fun cancelTaskOnThread(task: Task, info: Any?) {
+        checkHandlerThread()
+
+        for (listener in listeners) {
+            listener.onTaskCancelled(this@PriorityTaskProvider, task, info)
         }
     }
 

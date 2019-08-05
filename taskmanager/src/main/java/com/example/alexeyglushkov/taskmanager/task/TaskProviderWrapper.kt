@@ -53,6 +53,10 @@ open class TaskProviderWrapper(val provider: TaskProvider) : TaskProvider {
         provider.removeTask(task)
     }
 
+    override fun cancelTask(task: Task, info: Any?) {
+        provider.cancelTask(task, info)
+    }
+
     override fun getTask(taskId: String): Task? {
         return provider.getTask(taskId)
     }
@@ -65,6 +69,10 @@ open class TaskProviderWrapper(val provider: TaskProvider) : TaskProvider {
 
             override fun onTaskRemoved(pool: TaskPool, task: Task) {
                 listener.onTaskRemoved(this@TaskProviderWrapper, task)
+            }
+
+            override fun onTaskCancelled(pool: TaskPool, task: Task, info: Any?) {
+                listener.onTaskCancelled(this@TaskProviderWrapper, task, info)
             }
         }
 

@@ -336,7 +336,18 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         }
     }
 
+    @WorkerThread
+    override fun onTaskCancelled(pool: TaskPool, task: Task, info: Any?) {
+        scope.launch {
+            cancelTaskOnThread(task, info)
+        }
+    }
+
     // == TaskPool interface
+
+    override fun cancelTask(task: Task, info: Any?) {
+        cancel(task, info)
+    }
 
     override fun removeTask(task: Task) {
         cancel(task, null)
@@ -446,7 +457,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         //search for the task with the same id
         val taskId = task.taskId
         if (taskId != null) {
-            val addedTask = loadingTasks.getTask(taskId)
+            val addedTask = loadingTasks.getTask(taskId) // TODO: what about waiting tasks? need to search through them too...
             assert(addedTask != task)
 
             if (addedTask != null) {
@@ -623,20 +634,22 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
             task.private.cancelTask(info)
 
             val job = taskToJobMap.get(task)
-            if (st == Task.Status.Waiting || st == Task.Status.NotStarted || st == Task.Status.Blocked || task.private.canBeCancelledImmediately()) {
+            val canBeCancelledImmediately = task.private.canBeCancelledImmediately()
+            if (Tasks.isTaskReadyToStart(task)) {
+                handleTaskCompletionOnThread(task, true)
+                logTask(task, "Cancelled")
+
+            } else if (canBeCancelledImmediately) {
                 if (st == Task.Status.Started) {
-                    if (task.private.canBeCancelledImmediately()) {
+                    if (canBeCancelledImmediately) {
                         handleTaskCompletionOnThread(task, true)
                         logTask(task, "Immediately Cancelled")
 
                         if (job != null) {
                             job.cancel()
                         }
-                    }
-                } else {
-                    handleTaskCompletionOnThread(task, true)
-                    logTask(task, "Cancelled")
-                }
+                    } // else wait until the task handles needCancelTask
+                } // else ignore, the callback is already called
             }
         }
     }
