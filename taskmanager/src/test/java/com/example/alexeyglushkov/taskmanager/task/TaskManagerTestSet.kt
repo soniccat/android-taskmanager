@@ -545,6 +545,44 @@ class TaskManagerTestSet {
         assertNull(taskManager.limits.get(1))
     }
 
+    fun addTaskFromPoolWhenMaxLoadingTasksIsEnough() {
+        // Arrange
+        val taskProvider = createTaskProviderMock("0", taskManager)
+        val taskCallback = mock<Task.Callback>()
+        val testTask = TestTasks.createTestTaskSpy("taskId")
+        testTask.taskCallback = taskCallback
+
+        `when`(taskProvider.getTopTask(any())).doReturn(testTask)
+        `when`(taskProvider.takeTopTask(any())).doReturn(testTask)
+
+        // Act
+        taskManager.maxLoadingTasks = 1
+        taskManager.addTaskProvider(taskProvider)
+        taskManager.onTaskAdded(taskProvider, testTask)
+
+        // Verify
+        assertEquals(Task.Status.Started, testTask.taskStatus)
+    }
+
+    fun addTaskFromPoolWhenMaxLoadingTasksIsNotEnough() {
+        // Arrange
+        val taskProvider = createTaskProviderMock("0", taskManager)
+        val taskCallback = mock<Task.Callback>()
+        val testTask = TestTasks.createTestTaskSpy("taskId")
+        testTask.taskCallback = taskCallback
+
+        `when`(taskProvider.getTopTask(any())).doReturn(testTask)
+        `when`(taskProvider.takeTopTask(any())).doReturn(testTask)
+
+        // Act
+        taskManager.maxLoadingTasks = 0
+        taskManager.addTaskProvider(taskProvider)
+        taskManager.onTaskAdded(taskProvider, testTask)
+
+        // Verify
+        assertTrue(Tasks.isTaskReadyToStart(testTask))
+    }
+
     fun cancelWaitingTaskFromPool() {
         // Arrange
         val taskProvider = createTaskProviderMock("0", taskManager)

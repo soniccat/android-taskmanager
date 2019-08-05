@@ -175,6 +175,16 @@ class SimpleTaskManagerTest {
     }
 
     @Test
+    fun testAddTaskFromPoolWhenMaxLoadingTasksIsEnough() {
+        taskManagerTestSet.addTaskFromPoolWhenMaxLoadingTasksIsEnough()
+    }
+
+    @Test
+    fun testAddTaskFromPoolWhenMaxLoadingTasksIsNotEnough() {
+        taskManagerTestSet.addTaskFromPoolWhenMaxLoadingTasksIsNotEnough()
+    }
+
+    @Test
     fun testCancelStartedTaskFromPool() {
         taskManagerTestSet.cancelStartedTaskFromPool()
     }
