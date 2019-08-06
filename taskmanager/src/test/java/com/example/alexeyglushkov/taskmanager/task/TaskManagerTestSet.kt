@@ -108,7 +108,7 @@ class TaskManagerTestSet {
         taskManager.addTaskProvider(taskProvider2)
 
         // Verify
-        assertEquals(2, taskManager.taskProviders.size)
+        assertEquals(3, taskManager.taskProviders.size)
         assertNotNull(taskManager.getTaskProvider("provider1"))
         assertNotNull(taskManager.getTaskProvider("provider2"))
 
@@ -128,7 +128,7 @@ class TaskManagerTestSet {
         taskManager.addTaskProvider(taskProvider3)
 
         // Verify
-        assertEquals(3, taskManager.taskProviders.size)
+        assertEquals(4, taskManager.taskProviders.size)
         assertNotNull(taskManager.getTaskProvider("provider1"))
         assertNotNull(taskManager.getTaskProvider("provider2"))
         assertNotNull(taskManager.getTaskProvider("provider3"))
@@ -148,8 +148,14 @@ class TaskManagerTestSet {
         taskManager.addTaskProvider(taskProvider2)
 
         // Verify
-        assertEquals(1, taskManager.taskProviders.size)
+        assertEquals(2, taskManager.taskProviders.size)
         assertEquals(taskProvider2, taskManager.getTaskProvider("provider1"))
+    }
+
+    fun checkDefaultWaitingTaskProvider() {
+        // Verify
+        assertEquals(1, taskManager.taskProviders.size)
+        assertNotNull(taskManager.taskProviders.get(0).taskProviderId)
     }
 
     fun removeTaskProvider() {
@@ -163,9 +169,31 @@ class TaskManagerTestSet {
         taskManager.removeTaskProvider(taskProvider1)
 
         // Verify
-        assertEquals(1, taskManager.taskProviders.size)
+        assertEquals(2, taskManager.taskProviders.size)
         assertNull(taskManager.getTaskProvider("provider1"))
         assertNotNull(taskManager.getTaskProvider("provider2"))
+    }
+
+    fun removeTaskProviderWithWaitingTasks() {
+        // Arrange
+        val listener = mock<Task.Callback>()
+        val task = TestTasks.createTestTaskSpy("taskId")
+        task.taskCallback = listener
+
+        val taskProvider = createTaskProviderMock("provider", taskManager)
+        `when`(taskProvider.getTasks()).doReturn(listOf(task))
+        `when`(taskProvider.takeTopTask(any())).doReturn(task)
+        `when`(taskProvider.getTopTask(any())).doReturn(task)
+        `when`(task.canBeCancelledImmediately()).thenReturn(true)
+
+        // Act
+        taskManager.maxLoadingTasks = 0
+        taskManager.addTaskProvider(taskProvider)
+        taskManager.removeTaskProvider(taskProvider)
+
+        // Verify
+        assertEquals(Task.Status.Cancelled, task.taskStatus)
+        verify(listener).onCompleted(true)
     }
 
     fun setTaskProviderPriority() {

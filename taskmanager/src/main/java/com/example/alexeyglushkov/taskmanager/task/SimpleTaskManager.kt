@@ -29,6 +29,7 @@ import kotlin.coroutines.*
 open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     companion object {
         internal val TAG = "SimpleTaskManager"
+        const val WaitingTaskProviderId = "WaitingTaskProviderId"
     }
 
     private var _scope: CoroutineScope? = null
@@ -38,8 +39,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
             _scope = value
 
             loadingTasks.scope = value
-            waitingTasks.scope = value
-            for (provider in taskProviders) {
+            for (provider in _taskProviders) {
                 provider.scope = value
             }
         }
@@ -62,10 +62,12 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     private var taskToCallbackMap = HashMap<Task, Task.Callback?>() // keep original callbacks
 
     private lateinit var _taskProviders: SafeList<TaskProvider>
-    override val taskProviders: SafeList<TaskProvider>
-        @WorkerThread
+    override val taskProviders: List<TaskProvider>
          get() {
-            return safeRun { _taskProviders }
+            return if (isScopeThread())
+                _taskProviders.originalList
+            else
+                _taskProviders.safeList
         }
 
     private var _limits = SparseArrayCompat<Float>()
@@ -104,8 +106,8 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     @WorkerThread
     override fun getTaskCount(): Int {
         return safeRun {
-            var taskCount = loadingTasks.getTaskCount() + waitingTasks.getTaskCount()
-            for (provider in taskProviders) {
+            var taskCount = loadingTasks.getTaskCount()
+            for (provider in _taskProviders) {
                 taskCount += provider.getTaskCount()
             }
 
@@ -118,8 +120,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         val tasks = ArrayList<Task>()
 
         tasks.addAll(loadingTasks.getTasks())
-        tasks.addAll(waitingTasks.getTasks())
-        for (provider in taskProviders) {
+        for (provider in _taskProviders) {
             tasks.addAll(provider.getTasks())
         }
 
@@ -154,11 +155,8 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         loadingTasks = SimpleTaskPool(scope)
         loadingTasks.addListener(this)
 
-        // TODO: consider putting it to taskProviders list
-        waitingTasks = PriorityTaskProvider(scope, "TaskManagerProviderId")
-        waitingTasks.addListener(this)
-
         _taskProviders = createTaskProviders()
+        createWaitingTaskProvider()
     }
 
     private fun initScope(inScope: CoroutineScope?) {
@@ -200,6 +198,13 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         })
 
         return SafeList(sortedList, callbackHandler)
+    }
+
+    private fun createWaitingTaskProvider() {
+        waitingTasks = PriorityTaskProvider(scope, WaitingTaskProviderId)
+        waitingTasks.addListener(this)
+
+        _taskProviders.add(waitingTasks)
     }
 
     override fun addTask(task: Task) {
@@ -249,16 +254,16 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     @WorkerThread
-    private fun addTaskProviderOnThread(provider: TaskProvider) {
+    suspend private fun addTaskProviderOnThread(provider: TaskProvider) {
         checkScopeThread()
 
         val oldTaskProvider = getTaskProvider(provider.taskProviderId)
         if (oldTaskProvider != null) {
-            taskProviders.remove(oldTaskProvider)
+            removeTaskProviderOnThread(oldTaskProvider)
         }
 
         provider.addListener(this)
-        taskProviders.add(provider)
+        _taskProviders.add(provider)
     }
 
     override fun setTaskProviderPriority(provider: TaskProvider, priority: Int) {
@@ -272,25 +277,14 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         checkScopeThread()
 
         provider.priority = priority
-        (taskProviders.originalList as SortedList<*>).updateSortedOrder()
+        (_taskProviders.originalList as SortedList<*>).updateSortedOrder()
     }
 
     override fun getTaskProvider(id: String): TaskProvider? {
-        var taskProvider: TaskProvider? = null
-
-        if (Looper.myLooper() == taskProviders.safeHandler.looper) {
-            taskProvider = findProvider(taskProviders.safeList, id)
-
-        } else {
-            safeRun {
-                taskProvider = findProvider(taskProviders, id)
-            }
-        }
-
-        return taskProvider
+        return findProvider(taskProviders, id)
     }
 
-    private fun findProvider(providers: ArrayList<TaskProvider>, id: String): TaskProvider? {
+    private fun findProvider(providers: List<TaskProvider>, id: String): TaskProvider? {
         for (taskProvider in providers) {
             if (taskProvider.taskProviderId == id) {
                 return taskProvider
@@ -358,11 +352,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         return safeRun {
             var task: Task? = loadingTasks.getTask(taskId)
             if (task == null) {
-                task = waitingTasks.getTask(taskId)
-            }
-
-            if (task == null) {
-                for (provider in taskProviders) {
+                for (provider in _taskProviders) {
                     task = provider.getTask(taskId)
                     if (task != null) {
                         break
@@ -421,10 +411,15 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     @WorkerThread
-    private fun removeTaskProviderOnThread(provider: TaskProvider) {
+    suspend private fun removeTaskProviderOnThread(provider: TaskProvider) {
         checkScopeThread()
 
-        taskProviders.remove(provider)
+        // cancel all tasks
+        for (task in ArrayList(provider.getTasks())) {
+            cancelTaskOnThread(task, null)
+        }
+
+        _taskProviders.remove(provider)
     }
 
     override fun setLimit(taskType: Int, availableQueuePart: Float) {
@@ -441,11 +436,11 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         }
     }
 
-    // TODO: add getter and setter in the interface
     fun setWaitingTaskProvider(provider: TaskProvider) {
         Assert.assertEquals(provider.scope, scope)
 
-        this.waitingTasks = provider
+        provider.taskProviderId = WaitingTaskProviderId
+        addTaskProvider(provider)
     }
 
     // Private
@@ -490,22 +485,16 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         checkScopeThread()
 
         val taskTypesToFilter = getTaskTypeFilter()
-        val topWaitingTask = this.waitingTasks.getTopTask(taskTypesToFilter)
-
         var topTaskProvider: TaskProvider? = null
         var topPriorityTask: Task? = null
         var topPriority = -1
 
-        if (topWaitingTask != null) {
-            topPriorityTask = topWaitingTask
-            topPriority = topWaitingTask.taskPriority
-        }
-
         var i = 0
-        for (provider in taskProviders) {
+        for (provider in _taskProviders) {
             val t = provider.getTopTask(taskTypesToFilter)
             if (t != null && t.taskPriority > topPriority) {
                 topPriorityTask = t
+                topPriority = t.taskPriority
                 topTaskProvider = provider
             }
 
@@ -513,12 +502,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         }
 
         if (topPriorityTask != null && !reachedLimit(topPriorityTask.taskType)) {
-            if (topTaskProvider == null) {
-                topPriorityTask = waitingTasks.takeTopTask(taskTypesToFilter)
-
-            } else {
-                topPriorityTask = topTaskProvider.takeTopTask(taskTypesToFilter)
-            }
+            topPriorityTask = topTaskProvider!!.takeTopTask(taskTypesToFilter)
         } else {
             topPriorityTask = null
         }

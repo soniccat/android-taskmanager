@@ -115,8 +115,18 @@ class SimpleTaskManagerTest {
     }
 
     @Test
+    fun checkDefaultWaitingTaskProvider() {
+        taskManagerTestSet.checkDefaultWaitingTaskProvider()
+    }
+
+    @Test
     fun testRemoveTaskProvider() {
         taskManagerTestSet.removeTaskProvider()
+    }
+
+    @Test
+    fun testRemoveTaskProviderWithWaitingTasks() {
+        taskManagerTestSet.removeTaskProviderWithWaitingTasks()
     }
 
     @Test

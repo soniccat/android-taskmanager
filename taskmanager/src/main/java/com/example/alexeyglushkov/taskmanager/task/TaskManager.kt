@@ -17,7 +17,7 @@ interface TaskManager : TaskPool, TaskPool.Listener {
     val limits: SparseArrayCompat<Float>
     val usedSpace: SparseArrayCompat<Int> //type -> task count from loadingTasks
     val loadingTaskCount: Int
-    val taskProviders: ArrayList<TaskProvider> //always sorted by priority
+    val taskProviders: List<TaskProvider> //always sorted by priority
 
     // TODO: extract limits to a Rule class: TaskManagerRule/TaskManagerConstraint
     fun setLimit(taskType: Int, availableQueuePart: Float)
@@ -39,9 +39,10 @@ interface TaskManager : TaskPool, TaskPool.Listener {
     // TODO: rename to addTaskProvider
     fun setTaskProviderPriority(provider: TaskProvider, priority: Int)
 
+
+
     // Listeners
     fun removeListener(listener: Listener)
-
     fun addListener(listener: Listener)
 
     interface Listener {

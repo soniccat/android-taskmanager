@@ -1,6 +1,7 @@
 package com.example.alexeyglushkov.taskmanager.task
 
 import android.os.Handler
+import android.os.Looper
 
 import com.example.alexeyglushkov.tools.HandlerTools
 
@@ -11,7 +12,6 @@ import java.util.ArrayList
  */
 
 class SafeList<T>(val originalList: ArrayList<T>,
-        // Getters
                   val safeHandler: Handler) : ArrayList<T>() {
     val safeList = ArrayList<T>()
 
@@ -28,6 +28,14 @@ class SafeList<T>(val originalList: ArrayList<T>,
         val result = originalList.add(element)
         fillSafeList()
         return result
+    }
+
+    override fun get(index: Int): T {
+        if (Looper.myLooper() == safeHandler.looper) {
+            return safeList[index]
+        } else {
+            return originalList[index]
+        }
     }
 
     override fun removeAt(index: Int): T {
