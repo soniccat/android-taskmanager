@@ -89,7 +89,7 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
 
     override fun cancelTask(info: Any?) {
         needCancelTask = true
-        this.cancellationInfo = info
+        cancellationInfo = info
     }
 
     override fun addTaskStatusListener(listener: Task.StatusListener) {

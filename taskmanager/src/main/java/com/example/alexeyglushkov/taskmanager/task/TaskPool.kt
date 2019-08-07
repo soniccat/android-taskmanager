@@ -24,10 +24,11 @@ interface TaskPool : Task.StatusListener {
     @WorkerThread fun getTaskCount(): Int
     @WorkerThread fun getTasks(): List<Task>
 
-    fun addListener(listener: Listener)
+    fun addListener(listener: Listener) // TODO: replace to setListener...
     fun removeListener(listener: Listener)
 
     interface Listener {
+        @WorkerThread fun onTaskConflict(pool: TaskPool, newTask: Task, oldTask: Task): Task
         @WorkerThread fun onTaskAdded(pool: TaskPool, task: Task)
         @WorkerThread fun onTaskRemoved(pool: TaskPool, task: Task)
         @WorkerThread fun onTaskCancelled(pool: TaskPool, task: Task, info: Any?)

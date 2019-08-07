@@ -21,7 +21,7 @@ import java.util.ArrayList
 open class SimpleTaskPool(scope: CoroutineScope) : TaskPool {
 
     //TODO: think about weakref
-    protected var listeners = mutableListOf<TaskPool.Listener>()
+    protected var listeners = mutableListOf<TaskPool.Listener>() // TODO: set one listener
 
     private var _scope: CoroutineScope? = null
     override var scope: CoroutineScope
@@ -71,9 +71,21 @@ open class SimpleTaskPool(scope: CoroutineScope) : TaskPool {
         checkHandlerThread()
 
         task.addTaskStatusListener(this)
-        _tasks.add(task)
 
-        triggerOnTaskAdded(task)
+        var resultTask = task
+        val taskId = task.taskId
+        if (taskId != null) {
+            val oldTask = getTask(taskId)
+            val listener = listeners.firstOrNull()
+            if (oldTask != null && listener != null) {
+                resultTask = listener.onTaskConflict(this, task, oldTask)
+            }
+        }
+
+        if (resultTask == task) {
+            _tasks.add(task)
+            triggerOnTaskAdded(task)
+        }
     }
 
     @WorkerThread

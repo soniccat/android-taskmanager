@@ -229,7 +229,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     override fun startImmediately(task: Task) {
         scope.launch {
-            if (handleTaskLoadPolicy(task)) {
+            if (handleTaskLoadPolicy(task, null)) {
                 startTaskOnThread(task)
 
             } else {
@@ -296,6 +296,18 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     // == TaskPool.TaskPoolListener
 
     @WorkerThread
+    override fun onTaskConflict(pool: TaskPool, newTask: Task, oldTask: Task): Task {
+        assertTrue(isScopeThread())
+
+        var taskResult: Task = newTask
+        runBlocking(scope.coroutineContext) {
+            taskResult = resolveConflictTasks(newTask, oldTask)
+        }
+
+        return taskResult
+    }
+
+    @WorkerThread
     override fun onTaskAdded(pool: TaskPool, task: Task) {
         scope.launch {
             val isLoadingPool = pool === loadingTasks
@@ -307,7 +319,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
             triggerOnTaskAddedOnThread(task, isLoadingPool)
 
             if (!isLoadingPool) {
-                if (handleTaskLoadPolicy(task)) {
+                if (handleTaskLoadPolicy(task, pool)) {
                     checkTasksToRunOnThread()
 
                 } else {
@@ -446,25 +458,41 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     // Private
 
     @WorkerThread
-    suspend private fun handleTaskLoadPolicy(task: Task): Boolean {
+    suspend private fun handleTaskLoadPolicy(task: Task, taskPool: TaskPool?): Boolean {
         checkScopeThread()
 
-        //search for the task with the same id
         val taskId = task.taskId
         if (taskId != null) {
-            val addedTask = loadingTasks.getTask(taskId) // TODO: what about waiting tasks? need to search through them too...
-            assert(addedTask != task)
-
-            if (addedTask != null) {
-                if (task.loadPolicy == Task.LoadPolicy.CancelPreviouslyAdded) {
-                    cancelTaskOnThread(addedTask, null)
-                } else {
-                    Log.d(TAG, "The task was skipped due to the Load Policy " + task.loadPolicy.toString() + task.javaClass.toString() + " " + taskId + " " + task.taskStatus.toString())
-                    return false
+            val pools = ArrayList<TaskPool>(taskProviders) + loadingTasks
+            for (pool in pools) {
+                if (pool != taskPool) {
+                    val t = pool.getTask(taskId)
+                    if (t != null) {
+                        assert(t != task)
+                        val resultTask = resolveConflictTasks(task, t)
+                        if (resultTask == t) {
+                            break // quit when task fails
+                        }
+                    }
                 }
             }
         }
         return true
+    }
+
+    @WorkerThread
+    suspend private fun resolveConflictTasks(newTask: Task, oldTask: Task): Task {
+        if (newTask.loadPolicy == Task.LoadPolicy.CancelPreviouslyAdded) {
+            cancelTaskOnThread(oldTask, null)
+            return newTask
+        } else {
+            Log.d(TAG, "The task was skipped due to the Load Policy "
+                    + newTask.loadPolicy.toString()
+                    + newTask.javaClass.toString()
+                    + " " + newTask.taskId
+                    + " " + newTask.taskStatus.toString())
+            return oldTask
+        }
     }
 
     @WorkerThread
