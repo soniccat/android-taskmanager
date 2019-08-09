@@ -29,7 +29,7 @@ open class StackTaskProviderTest {
     }
 
     protected open fun prepareTaskProvider(): TaskProvider {
-        return StackTaskProvider(false, TestCoroutineScope(), "TestId")
+        return StackTaskProvider(false, "TestId", TestCoroutineScope())
     }
 
     protected fun preparePoolTest() {

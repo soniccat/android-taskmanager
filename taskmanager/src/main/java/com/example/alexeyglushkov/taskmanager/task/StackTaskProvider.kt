@@ -7,9 +7,9 @@ import kotlinx.coroutines.CoroutineScope
 /**
  * Created by alexeyglushkov on 13.08.16.
  */
-open class StackTaskProvider(private val areTasksDependent: Boolean //if enabled the top task blocks the next task until the former finishes
-                        , scope: CoroutineScope,
-                        override var taskProviderId: String) : SimpleTaskPool(scope), TaskProvider, Task.StatusListener {
+open class StackTaskProvider(private val areTasksDependent: Boolean, //if enabled the top task blocks the next task until the former finishes
+                             override var taskProviderId: String,
+                             scope: CoroutineScope): ListTaskPool(scope), TaskProvider, Task.StatusListener {
     override var priority: Int = 0
     private var isBlocked: Boolean = false
 
@@ -67,14 +67,6 @@ open class StackTaskProvider(private val areTasksDependent: Boolean //if enabled
         triggerOnTaskRemoved(task)
     }
 
-    private fun triggerOnTaskRemoved(task: Task) {
-        checkHandlerThread()
-
-        for (listener in listeners) {
-            listener.onTaskRemoved(this@StackTaskProvider, task)
-        }
-    }
-
     private fun canTakeTask(): Boolean {
         return !areTasksDependent || !isBlocked
     }
@@ -93,4 +85,6 @@ open class StackTaskProvider(private val areTasksDependent: Boolean //if enabled
 
         return result
     }
+
+    override fun tag() = "StackTaskProvider"
 }

@@ -152,7 +152,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
         callbackHandler = Handler(Looper.myLooper())
 
-        loadingTasks = SimpleTaskPool(scope)
+        loadingTasks = ListTaskPool(scope)
         loadingTasks.addListener(this)
 
         _taskProviders = createTaskProviders()

@@ -22,7 +22,7 @@ public class ServiceTaskRunner implements ServiceCommandRunner {
 
     public ServiceTaskRunner(TaskManager taskManager, String id) {
         this.taskManager = taskManager;
-        this.taskProvider = new StackTaskProvider(true, this.taskManager.getScope(), id);
+        this.taskProvider = new StackTaskProvider(true, id, this.taskManager.getScope());
         this.taskManager.addTaskProvider(this.taskProvider);
     }
 

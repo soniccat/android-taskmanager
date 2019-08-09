@@ -1,17 +1,11 @@
 package com.example.alexeyglushkov.taskmanager.task
 
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import androidx.annotation.WorkerThread
 
 import androidx.collection.SparseArrayCompat
 
-import com.example.alexeyglushkov.tools.HandlerTools
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-
-import org.junit.Assert
 
 import java.util.ArrayList
 import java.util.Comparator
@@ -23,17 +17,7 @@ import java.util.Comparator
 // A task source for TaskManager
 
 // TODO: try to extend SimpleTaskPool to remove code duplications
-open class PriorityTaskProvider(scope: CoroutineScope, override var taskProviderId: String) : TaskProvider, TaskPool {
-    private var _scope: CoroutineScope?
-    override var scope: CoroutineScope
-        get() = _scope!!
-        set(handler) {
-            checkHandlerThread()
-            _scope = handler
-        }
-
-    override var userData: Any? = null
-    private val listeners: MutableList<TaskPool.Listener> = ArrayList()
+open class PriorityTaskProvider(scope: CoroutineScope, override var taskProviderId: String): TaskPoolBase(scope), TaskProvider, Task.StatusListener {
     override var priority: Int = 0
 
     // Task type -> priority queue
@@ -66,10 +50,6 @@ open class PriorityTaskProvider(scope: CoroutineScope, override var taskProvider
         }
 
         return tasks
-    }
-
-    init {
-        _scope = scope
     }
 
     private fun createQueue(): SortedList<Task> {
@@ -159,75 +139,14 @@ open class PriorityTaskProvider(scope: CoroutineScope, override var taskProvider
         }
     }
 
-    override fun addTask(task: Task) {
-        if (task !is TaskBase) { assert(false); return }
-
-        if (!Tasks.isTaskReadyToStart(task)) {
-            Log.e(TAG, "Can't put task " + task.javaClass.toString() + " because it's already started " + task.taskStatus.toString())
-            return
-        }
-
-        // TaskProvider must set Waiting status on the current thread
-        task.private.taskStatus = Task.Status.Waiting
-
-        scope.launch {
-            addTaskOnThread(task)
-        }
-    }
-
-    override fun removeTask(task: Task) {
-        scope.launch {
-            removeTaskOnThread(task)
-        }
-    }
-
-    override fun cancelTask(task: Task, info: Any?) {
-        scope.launch {
-            cancelTaskOnThread(task, info)
-        }
-    }
-
-    override fun onTaskStatusChanged(task: Task, oldStatus: Task.Status, newStatus: Task.Status) {
-        if (Tasks.isTaskCompleted(task)) {
-            removeTask(task)
-        }
-    }
-
     @WorkerThread
-    private fun addTaskOnThread(task: Task) {
-        task.addTaskStatusListener(this@PriorityTaskProvider)
+    override fun addTaskInternal(task: Task) {
         addTaskToQueue(task)
-
-        for (listener in listeners) {
-            listener.onTaskAdded(this@PriorityTaskProvider, task)
-        }
     }
 
     @WorkerThread
-    private fun removeTaskOnThread(task: Task) {
-        checkHandlerThread()
-
-        if (removeTaskFromQueue(task)) {
-            triggerOnTaskRemoved(task)
-        }
-    }
-
-    @WorkerThread
-    private fun triggerOnTaskRemoved(task: Task) {
-        checkHandlerThread()
-
-        for (listener in listeners) {
-            listener.onTaskRemoved(this@PriorityTaskProvider, task)
-        }
-    }
-
-    @WorkerThread
-    private fun cancelTaskOnThread(task: Task, info: Any?) {
-        checkHandlerThread()
-
-        for (listener in listeners) {
-            listener.onTaskCancelled(this@PriorityTaskProvider, task, info)
-        }
+    override fun removeTaskInternal(task: Task): Boolean {
+        return removeTaskFromQueue(task)
     }
 
     @WorkerThread
@@ -281,19 +200,5 @@ open class PriorityTaskProvider(scope: CoroutineScope, override var taskProvider
         return resultTask
     }
 
-    override fun addListener(listener: TaskPool.Listener) {
-        listeners.add(listener)
-    }
-
-    override fun removeListener(listener: TaskPool.Listener) {
-        listeners.remove(listener)
-    }
-
-    private fun checkHandlerThread() {
-        //Assert.assertEquals(Looper.myLooper(), this.handler.looper)
-    }
-
-    companion object {
-        internal val TAG = "PriorityTaskProvider"
-    }
+    override fun tag() = "PriorityTaskProvider"
 }

@@ -24,7 +24,7 @@ class StackTaskProviderWithDependentTasksTest {
     @Before
     @Throws(Exception::class)
     fun setUp() {
-        taskProvider = StackTaskProvider(true, TestCoroutineScope(), "TestId")
+        taskProvider = StackTaskProvider(true, "TestId", TestCoroutineScope())
 
         poolTest = TaskPoolTestSet()
         providerTest = TaskProviderTestSet()

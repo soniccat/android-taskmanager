@@ -1,7 +1,5 @@
 package com.example.alexeyglushkov.taskmanager.task
 
-import android.os.Handler
-import android.os.Looper
 import kotlinx.coroutines.test.TestCoroutineScope
 
 import org.junit.Before
@@ -11,85 +9,85 @@ import org.junit.Test
  * Created by alexeyglushkov on 08.08.15.
  */
 
-class SimpleTaskPoolTest : TaskPoolTestSet() {
+class SimpleTaskPoolBaseTest : TaskPoolTestSet() {
     @Before
     @Throws(Exception::class)
     fun setUp() {
-        this@SimpleTaskPoolTest.before(SimpleTaskPool(TestCoroutineScope()))
+        this@SimpleTaskPoolBaseTest.before(ListTaskPool(TestCoroutineScope()))
     }
 
     @Test
     fun testSetGetHandler() {
-        this@SimpleTaskPoolTest.setGetHandler()
+        this@SimpleTaskPoolBaseTest.setGetHandler()
     }
 
     @Test
     fun testAddTask() {
-        this@SimpleTaskPoolTest.addTask()
+        this@SimpleTaskPoolBaseTest.addTask()
     }
 
     @Test
     fun testAddStartedTask() {
-        this@SimpleTaskPoolTest.addStartedTask()
+        this@SimpleTaskPoolBaseTest.addStartedTask()
     }
 
     @Test
     fun testRemoveTask() {
-        this@SimpleTaskPoolTest.removeTask()
+        this@SimpleTaskPoolBaseTest.removeTask()
     }
 
     @Test
     fun testRemoveUnknownTask() {
-        this@SimpleTaskPoolTest.removeUnknownTask()
+        this@SimpleTaskPoolBaseTest.removeUnknownTask()
     }
 
     @Test
     fun testGetTask() {
-        this@SimpleTaskPoolTest.getTask()
+        this@SimpleTaskPoolBaseTest.getTask()
     }
 
     @Test
     fun testGetUnknownTask() {
-        this@SimpleTaskPoolTest.getUnknownTask()
+        this@SimpleTaskPoolBaseTest.getUnknownTask()
     }
 
     @Test
     fun testGetTaskCount() {
-        this@SimpleTaskPoolTest.getTaskCount()
+        this@SimpleTaskPoolBaseTest.getTaskCount()
     }
 
     @Test
     fun testGetTaskCount2() {
-        this@SimpleTaskPoolTest.getTaskCount2()
+        this@SimpleTaskPoolBaseTest.getTaskCount2()
     }
 
     @Test
     fun testSetGetUserData() {
-        this@SimpleTaskPoolTest.setGetUserData()
+        this@SimpleTaskPoolBaseTest.setGetUserData()
     }
 
     @Test
     fun testAddStateListener() {
-        this@SimpleTaskPoolTest.addStateListener()
+        this@SimpleTaskPoolBaseTest.addStateListener()
     }
 
     @Test
     fun testRemoveStateListener() {
-        this@SimpleTaskPoolTest.removeStateListener()
+        this@SimpleTaskPoolBaseTest.removeStateListener()
     }
 
     @Test
     fun testChangeTaskStatus() {
-        this@SimpleTaskPoolTest.changeTaskStatus()
+        this@SimpleTaskPoolBaseTest.changeTaskStatus()
     }
 
     @Test
     fun testCheckTaskRemovingAfterFinishing() {
-        this@SimpleTaskPoolTest.checkTaskRemovingAfterFinishing()
+        this@SimpleTaskPoolBaseTest.checkTaskRemovingAfterFinishing()
     }
 
     @Test
     fun testCancelTask() {
-        this@SimpleTaskPoolTest.cancelTask()
+        this@SimpleTaskPoolBaseTest.cancelTask()
     }
 }

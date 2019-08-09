@@ -1,25 +1,16 @@
 package com.example.alexeyglushkov.taskmanager.task
 
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.annotation.WorkerThread
 
-import com.example.alexeyglushkov.tools.HandlerTools
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-
-import org.junit.Assert
-
-import java.util.ArrayList
 
 /**
  * Created by alexeyglushkov on 30.12.14.
  */
 // TODO: think about abstractTaskPool without tasks list to be able to inherit code in PriorityTaskProvider
-open class SimpleTaskPool(scope: CoroutineScope) : TaskPool {
-
+abstract class TaskPoolBase(scope: CoroutineScope) : TaskPool {
     //TODO: think about weakref
     protected var listeners = mutableListOf<TaskPool.Listener>() // TODO: set one listener
 
@@ -30,8 +21,6 @@ open class SimpleTaskPool(scope: CoroutineScope) : TaskPool {
             _scope = value
         }
 
-    //TODO: think about a map
-    protected val _tasks = mutableListOf<Task>()
     override var userData: Any? = null
 
     init {
@@ -52,7 +41,7 @@ open class SimpleTaskPool(scope: CoroutineScope) : TaskPool {
         if (task !is TaskBase) { assert(false); return }
 
         if (!Tasks.isTaskReadyToStart(task)) {
-            Log.d(TAG, "Can't put task " + task.javaClass.toString() + " because it has been added " + task.taskStatus.toString())
+            Log.d(tag(), "Can't put task " + task.javaClass.toString() + " because it has been added " + task.taskStatus.toString())
             return
         }
 
@@ -60,7 +49,6 @@ open class SimpleTaskPool(scope: CoroutineScope) : TaskPool {
         task.private.taskStatus = Task.Status.Waiting
 
         scope.launch {
-            Log.d(TAG, "addTaskOnThread")
             addTaskOnThread(task)
         }
     }
@@ -83,10 +71,13 @@ open class SimpleTaskPool(scope: CoroutineScope) : TaskPool {
         }
 
         if (resultTask == task) {
-            _tasks.add(task)
+            addTaskInternal(task)
             triggerOnTaskAdded(task)
         }
     }
+
+    @WorkerThread
+    abstract protected fun addTaskInternal(task: Task)
 
     @WorkerThread
     protected open fun triggerOnTaskAdded(task: Task) {
@@ -103,12 +94,21 @@ open class SimpleTaskPool(scope: CoroutineScope) : TaskPool {
 
     @WorkerThread
     private fun removeTaskOnThread(task: Task) {
-        if (_tasks.remove(task)) {
-            for (listener in listeners) {
-                listener.onTaskRemoved(this@SimpleTaskPool, task)
-            }
+        if (removeTaskInternal(task)) {
+            triggerOnTaskRemoved(task)
         }
     }
+
+    protected fun triggerOnTaskRemoved(task: Task) {
+        checkHandlerThread()
+
+        for (listener in listeners) {
+            listener.onTaskRemoved(this@TaskPoolBase, task)
+        }
+    }
+
+    @WorkerThread
+    abstract protected fun removeTaskInternal(task: Task): Boolean
 
     override fun cancelTask(task: Task, info: Any?) {
         scope.launch {
@@ -119,7 +119,7 @@ open class SimpleTaskPool(scope: CoroutineScope) : TaskPool {
     @WorkerThread
     private fun cancelTaskOnThread(task: Task, info: Any?) {
         for (listener in listeners) {
-            listener.onTaskCancelled(this@SimpleTaskPool, task, info)
+            listener.onTaskCancelled(this@TaskPoolBase, task, info)
         }
     }
 
@@ -135,35 +135,5 @@ open class SimpleTaskPool(scope: CoroutineScope) : TaskPool {
         //Assert.assertEquals(Looper.myLooper(), this.handler.looper)
     }
 
-    //// Getters
-
-    @WorkerThread
-    override fun getTaskCount(): Int {
-        checkHandlerThread()
-        return _tasks.size
-    }
-
-    @WorkerThread
-    override fun getTasks(): List<Task> {
-        checkHandlerThread()
-
-        return _tasks
-    }
-
-    @WorkerThread
-    override fun getTask(taskId: String): Task? {
-        checkHandlerThread()
-
-        for (task in _tasks) {
-            if (task.taskId != null && task.taskId == taskId) {
-                return task
-            }
-        }
-
-        return null
-    }
-
-    companion object {
-        internal val TAG = "SimpleTaskPool"
-    }
+    open protected fun tag() = "SimpleTaskPool"
 }
