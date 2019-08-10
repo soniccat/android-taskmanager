@@ -231,9 +231,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         scope.launch {
             if (handleTaskLoadPolicy(task, null)) {
                 startTaskOnThread(task)
-
-            } else {
-                cancelTaskOnThread(task, null)
             }
         }
     }
@@ -321,9 +318,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
             if (!isLoadingPool) {
                 if (handleTaskLoadPolicy(task, pool)) {
                     checkTasksToRunOnThread()
-
-                } else {
-                    cancelTaskOnThread(task, null)
                 }
             }
         }
@@ -457,6 +451,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     // Private
 
+    // returns true when load policy checks pass
     @WorkerThread
     suspend private fun handleTaskLoadPolicy(task: Task, taskPool: TaskPool?): Boolean {
         checkScopeThread()
@@ -471,7 +466,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
                         assert(t != task)
                         val resultTask = resolveConflictTasks(task, t)
                         if (resultTask == t) {
-                            break // quit when task fails
+                            return false // quit when task fails
                         }
                     }
                 }
@@ -491,6 +486,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
                     + newTask.javaClass.toString()
                     + " " + newTask.taskId
                     + " " + newTask.taskStatus.toString())
+            cancelTaskOnThread(newTask, null)
             return oldTask
         }
     }

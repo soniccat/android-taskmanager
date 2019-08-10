@@ -16,7 +16,6 @@ import java.util.Comparator
 
 // A task source for TaskManager
 
-// TODO: try to extend SimpleTaskPool to remove code duplications
 open class PriorityTaskProvider(scope: CoroutineScope, override var taskProviderId: String): TaskPoolBase(scope), TaskProvider, Task.StatusListener {
     override var priority: Int = 0
 
