@@ -3,7 +3,6 @@ package com.example.alexeyglushkov.taskmanager.task
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
-import androidx.collection.SparseArrayCompat
 
 import android.util.Log
 import androidx.annotation.WorkerThread
@@ -44,6 +43,8 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
             }
         }
 
+    private lateinit var coordinator: TaskManagerCoordinator
+
     private lateinit var callbackHandler: Handler
     override var userData: Any? = null
     private var listeners = WeakRefList<TaskManager.Listener>()
@@ -68,36 +69,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
                 _taskProviders.originalList
             else
                 _taskProviders.safeList
-        }
-
-    private var _limits = SparseArrayCompat<Float>()
-    override var limits: SparseArrayCompat<Float>
-        @WorkerThread
-        get() {
-            return safeRun { _limits.clone() }
-        }
-        set(value) {
-            safeRun {
-                _limits = value
-            }
-        }
-
-    private var _usedSpace = SparseArrayCompat<Int>()
-    override var usedSpace //type -> task count from loadingTasks
-        get() = _usedSpace.clone()
-        set(value) {
-            _usedSpace = value.clone()
-        }
-
-    override var maxLoadingTasks: Int = 0
-        get() {
-            return field
-        }
-        set(value) {
-            field = value
-            // TODO: handle somehow on the thread
-            // TODO: we need run tasks when increase the size
-            // TODO: probably we should cancel tasks after decreasing
         }
 
     override val loadingTaskCount: Int
@@ -127,28 +98,19 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         return tasks
     }
 
-    private fun getTaskTypeFilter(): List<Int> {
-        val taskTypesToFilter = ArrayList<Int>()
-        for (i in 0 until _limits.size()) {
-            if (reachedLimit(_limits.keyAt(i))) {
-                taskTypesToFilter.add(_limits.keyAt(i))
-            }
-        }
-        return taskTypesToFilter
+    constructor(inCoordinator: TaskManagerCoordinator) {
+        init(inCoordinator, null, null)
     }
 
-    constructor(maxLoadingTasks: Int) {
-        init(maxLoadingTasks, null, null)
+    constructor(inCoordinator: TaskManagerCoordinator, scope: CoroutineScope, taskScope: CoroutineScope) {
+        init(inCoordinator, scope, taskScope)
     }
 
-    constructor(maxLoadingTasks: Int, scope: CoroutineScope, taskScope: CoroutineScope) {
-        init(maxLoadingTasks, scope, taskScope)
-    }
-
-    private fun init(maxLoadingTasks: Int, inScope: CoroutineScope?, inTaskScope: CoroutineScope?) {
+    private fun init(inCoordinator: TaskManagerCoordinator, inScope: CoroutineScope?, inTaskScope: CoroutineScope?) {
+        coordinator = inCoordinator
         initScope(inScope)
         initTaskSope(inTaskScope)
-        this.maxLoadingTasks = maxLoadingTasks
+        //this.maxLoadingTasks = maxLoadingTasks
 
         callbackHandler = Handler(Looper.myLooper())
 
@@ -309,7 +271,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         scope.launch {
             val isLoadingPool = pool === loadingTasks
             if (isLoadingPool) {
-                updateUsedSpace(task.taskType, true)
+                coordinator.onTaskAdded(pool, task)
             }
 
             Log.d("add", "onTaskAdded " + isLoadingPool + " " + task.taskId)
@@ -328,7 +290,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         scope.launch {
             val isLoadingPool = pool === loadingTasks
             if (isLoadingPool) {
-                updateUsedSpace(task.taskType, false)
+                coordinator.onTaskRemoved(pool, task)
             }
 
             Log.d("add", "onTaskRemoved " + isLoadingPool + " " + task.taskId)
@@ -426,20 +388,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         }
 
         _taskProviders.remove(provider)
-    }
-
-    override fun setLimit(taskType: Int, availableQueuePart: Float) {
-        scope.launch {
-            if (availableQueuePart <= 0.0f) {
-                _limits.remove(taskType)
-            } else {
-                _limits.put(taskType, availableQueuePart)
-            }
-
-            for (listener in listeners) {
-                listener.get()?.onLimitsChanged(this@SimpleTaskManager, taskType, availableQueuePart)
-            }
-        }
     }
 
     fun setWaitingTaskProvider(provider: TaskProvider) {
@@ -662,25 +610,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
                 } // else ignore, the callback is already called
             }
         }
-    }
-
-    private fun reachedLimit(taskType: Int): Boolean {
-        return if (_limits.get(taskType, -1.0f) == -1.0f) {
-            false
-        } else _usedSpace.get(taskType, 0).toFloat() / maxLoadingTasks.toFloat() >= _limits.get(taskType, 0.0f)
-
-    }
-
-    private fun updateUsedSpace(taskType: Int, add: Boolean) {
-        var count: Int = _usedSpace.get(taskType, 0)
-        if (add) {
-            ++count
-        } else {
-            assertTrue(count > 0)
-            --count
-        }
-
-        _usedSpace.put(taskType, count)
     }
 
     /// thread checking stuff

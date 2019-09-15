@@ -74,6 +74,10 @@ open class TaskProviderWrapper(val provider: TaskProvider) : TaskProvider {
             override fun onTaskCancelled(pool: TaskPool, task: Task, info: Any?) {
                 listener.onTaskCancelled(this@TaskProviderWrapper, task, info)
             }
+
+            override fun onTaskConflict(pool: TaskPool, newTask: Task, oldTask: Task): Task {
+                return listener.onTaskConflict(this@TaskProviderWrapper, newTask, oldTask)
+            }
         }
 
         listenerMap[listener] = wrapperListener

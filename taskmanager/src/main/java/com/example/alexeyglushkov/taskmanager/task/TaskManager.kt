@@ -13,9 +13,9 @@ import java.util.ArrayList
 
 interface TaskManager : TaskPool, TaskPool.Listener {
     // Task Limits
-    var maxLoadingTasks: Int
-    val limits: SparseArrayCompat<Float>
-    val usedSpace: SparseArrayCompat<Int> //type -> task count from loadingTasks
+    //var maxLoadingTasks: Int
+    //val limits: SparseArrayCompat<Float>
+    //val usedSpace: SparseArrayCompat<Int> //type -> task count from loadingTasks
     val loadingTaskCount: Int
     val taskProviders: List<TaskProvider> //always sorted by priority
 

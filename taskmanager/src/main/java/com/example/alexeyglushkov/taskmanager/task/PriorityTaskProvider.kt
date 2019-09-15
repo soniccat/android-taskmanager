@@ -64,7 +64,7 @@ open class PriorityTaskProvider(scope: CoroutineScope, override var taskProvider
     }
 
     @WorkerThread
-    override fun getTopTask(typesToFilter: List<Int>?): Task? {
+    override fun getTopTask(): Task? {
         checkHandlerThread()
 
         var topTask: Task? = null
@@ -87,7 +87,7 @@ open class PriorityTaskProvider(scope: CoroutineScope, override var taskProvider
     }
 
     @WorkerThread
-    override fun takeTopTask(typesToFilter: List<Int>?): Task? {
+    override fun takeTopTask(): Task? {
         checkHandlerThread()
 
         val task = getTopTask(typesToFilter)
@@ -172,6 +172,43 @@ open class PriorityTaskProvider(scope: CoroutineScope, override var taskProvider
 
     interface PriorityProvider {
         fun getPriority(task: Task): Int
+    }
+
+    class TaskIterator(val taskQueues: SparseArrayCompat<SortedList<Task>>,
+                       override val skipBlocked: Boolean = true,
+                       override val skipTaskTypes: List<Int> = ArrayList()): TaskProvider.TaskIterator {
+        private var queueIndex = 0
+        private var taskIndex = 0
+
+        override fun nextTask(): Task? {
+            while (queueIndex < taskQueues.size()) {
+                val queueKey = taskQueues.keyAt(queueIndex)
+                if (!skipTaskTypes.contains(queueKey)) {
+                    val queue = taskQueues.get(taskQueues.keyAt(queueIndex))!!
+                    while (taskIndex < queue.size) {
+                        val task = queue[taskIndex]
+                        taskIndex += 1
+
+                        if (!skipBlocked || !task.isBlocked()) {
+                            return task;
+                        }
+                    }
+                }
+
+                taskIndex = 0
+                queueIndex += 1
+            }
+
+            // reset
+            taskIndex = 0
+            queueIndex = 0
+
+            return null
+        }
+    }
+
+    override fun getIterator(skipBlocked: Boolean, skipTaskTypes: List<Int>): TaskProvider.TaskIterator {
+        return TaskIterator(taskQueues, skipBlocked, skipTaskTypes)
     }
 
     @WorkerThread
