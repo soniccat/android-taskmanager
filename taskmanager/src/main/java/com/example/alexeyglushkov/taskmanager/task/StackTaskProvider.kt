@@ -12,6 +12,7 @@ open class StackTaskProvider(private val areTasksDependent: Boolean, //if enable
                              scope: CoroutineScope): ListTaskPool(scope), TaskProvider, Task.StatusListener {
     override var priority: Int = 0
     private var isBlocked: Boolean = false
+    override var taskFilter: TaskProvider.TaskFilter? = null
 
     override fun triggerOnTaskAdded(task: Task) {
         if (!isBlocked) {
@@ -20,10 +21,10 @@ open class StackTaskProvider(private val areTasksDependent: Boolean, //if enable
     }
 
     @WorkerThread
-    override fun getTopTask(typesToFilter: List<Int>?): Task? {
+    override fun getTopTask(): Task? {
         var result: Task? = null
         if (canTakeTask()) {
-            val index = getTopTaskIndex(typesToFilter)
+            val index = getTopTaskIndex()
             if (index != -1) {
                 result = _tasks[index]
             }
@@ -33,10 +34,10 @@ open class StackTaskProvider(private val areTasksDependent: Boolean, //if enable
     }
 
     @WorkerThread
-    override fun takeTopTask(typesToFilter: List<Int>?): Task? {
+    override fun takeTopTask(): Task? {
         var result: Task? = null
         if (canTakeTask()) {
-            val index = getTopTaskIndex(typesToFilter)
+            val index = getTopTaskIndex()
             result = _tasks[index]
             _tasks.removeAt(index)
             onTaskTaken(result)
@@ -71,13 +72,14 @@ open class StackTaskProvider(private val areTasksDependent: Boolean, //if enable
         return !areTasksDependent || !isBlocked
     }
 
-    private fun getTopTaskIndex(typesToFilter: List<Int>?): Int {
+    private fun getTopTaskIndex(): Int {
         var result = -1
         for (i in 0 until _tasks.size) {
             val task = _tasks[i]
+            val taskFilter = taskFilter
+            val isFiltered = taskFilter != null && !taskFilter.isFiltered(task)
 
-            val passFilter = typesToFilter == null || !typesToFilter.contains(task.taskType)
-            if (!task.isBlocked() && passFilter) {
+            if (!task.isBlocked() && !isFiltered) {
                 result = i
                 break
             }

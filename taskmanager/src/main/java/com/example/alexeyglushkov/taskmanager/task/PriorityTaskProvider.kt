@@ -18,6 +18,7 @@ import java.util.Comparator
 
 open class PriorityTaskProvider(scope: CoroutineScope, override var taskProviderId: String): TaskPoolBase(scope), TaskProvider, Task.StatusListener {
     override var priority: Int = 0
+    override var taskFilter: TaskProvider.TaskFilter? = null
 
     // Task type -> priority queue
     // TODO: try to use PriorityBlockingQueue
@@ -65,16 +66,21 @@ open class PriorityTaskProvider(scope: CoroutineScope, override var taskProvider
 
     @WorkerThread
     override fun getTopTask(): Task? {
+        return getTopTask(false)
+    }
+
+    private fun getTopTask(needPoll: Boolean): Task? {
         checkHandlerThread()
 
         var topTask: Task? = null
         var topPriority = -1
+        val taskFilter = taskFilter
 
         for (i in 0 until taskQueues.size()) {
-            if (typesToFilter == null || !typesToFilter.contains(taskQueues.keyAt(i))) {
+            if (taskFilter == null || !taskFilter.filterTaskTypes.contains(taskQueues.keyAt(i))) {
                 val queue = taskQueues.get(taskQueues.keyAt(i))
                 if (queue != null) {
-                    val queueTask = getTopTask(queue, false)
+                    val queueTask = getTopTask(queue, needPoll)
                     if (queueTask != null && queueTask.taskPriority > topPriority) {
                         topTask = queueTask
                         topPriority = topTask.taskPriority
@@ -82,7 +88,6 @@ open class PriorityTaskProvider(scope: CoroutineScope, override var taskProvider
                 }
             }
         }
-
         return topTask
     }
 
@@ -90,15 +95,9 @@ open class PriorityTaskProvider(scope: CoroutineScope, override var taskProvider
     override fun takeTopTask(): Task? {
         checkHandlerThread()
 
-        val task = getTopTask(typesToFilter)
+        val task = getTopTask(true)
         if (task != null) {
-            val queue = taskQueues.get(task.taskType)
-            queue?.let {
-                val polledTask = getTopTask(it, true)
-                if (polledTask != null) {
-                    triggerOnTaskRemoved(polledTask)
-                }
-            }
+            triggerOnTaskRemoved(task)
         }
 
         return task
@@ -107,11 +106,13 @@ open class PriorityTaskProvider(scope: CoroutineScope, override var taskProvider
     @WorkerThread
     private fun getTopTask(queue: SortedList<Task>, needPoll: Boolean): Task? {
         var topTask: Task? = null
-
         val iterator = queue.iterator()
         while (iterator.hasNext()) {
             topTask = iterator.next()
-            if (!topTask.isBlocked()) {
+
+            val taskFilter = taskFilter
+            val isFiltered = taskFilter != null && taskFilter.isFiltered(topTask)
+            if (!isFiltered && !topTask.isBlocked()) {
                 if (needPoll) {
                     iterator.remove()
                 }
@@ -172,43 +173,6 @@ open class PriorityTaskProvider(scope: CoroutineScope, override var taskProvider
 
     interface PriorityProvider {
         fun getPriority(task: Task): Int
-    }
-
-    class TaskIterator(val taskQueues: SparseArrayCompat<SortedList<Task>>,
-                       override val skipBlocked: Boolean = true,
-                       override val skipTaskTypes: List<Int> = ArrayList()): TaskProvider.TaskIterator {
-        private var queueIndex = 0
-        private var taskIndex = 0
-
-        override fun nextTask(): Task? {
-            while (queueIndex < taskQueues.size()) {
-                val queueKey = taskQueues.keyAt(queueIndex)
-                if (!skipTaskTypes.contains(queueKey)) {
-                    val queue = taskQueues.get(taskQueues.keyAt(queueIndex))!!
-                    while (taskIndex < queue.size) {
-                        val task = queue[taskIndex]
-                        taskIndex += 1
-
-                        if (!skipBlocked || !task.isBlocked()) {
-                            return task;
-                        }
-                    }
-                }
-
-                taskIndex = 0
-                queueIndex += 1
-            }
-
-            // reset
-            taskIndex = 0
-            queueIndex = 0
-
-            return null
-        }
-    }
-
-    override fun getIterator(skipBlocked: Boolean, skipTaskTypes: List<Int>): TaskProvider.TaskIterator {
-        return TaskIterator(taskQueues, skipBlocked, skipTaskTypes)
     }
 
     @WorkerThread

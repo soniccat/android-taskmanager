@@ -17,21 +17,13 @@ interface TaskProvider : TaskPool {
     // priority is used to determine the order of accessing to the providers int a TaskManager
     // it affects tasks order if the tasks have the same priority
     var priority: Int
-    var taskFilter: TaskFilter
+    var taskFilter: TaskFilter?
 
     @WorkerThread fun getTopTask(): Task?
     @WorkerThread fun takeTopTask(): Task?
-    @WorkerThread fun getIterator(skipBlocked: Boolean = true, skipTaskTypes: List<Int> = Collections.emptyList()): TaskIterator
 
     interface TaskFilter {
         val filterTaskTypes: List<Int>
         fun isFiltered(task: Task): Boolean
-    }
-
-    interface TaskIterator {
-        val skipBlocked: Boolean
-        val skipTaskTypes: List<Int>
-
-        @WorkerThread fun nextTask(): Task?
     }
 }

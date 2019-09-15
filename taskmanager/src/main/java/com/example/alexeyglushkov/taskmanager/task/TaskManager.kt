@@ -20,7 +20,7 @@ interface TaskManager : TaskPool, TaskPool.Listener {
     val taskProviders: List<TaskProvider> //always sorted by priority
 
     // TODO: extract limits to a Rule class: TaskManagerRule/TaskManagerConstraint
-    fun setLimit(taskType: Int, availableQueuePart: Float)
+    //fun setLimit(taskType: Int, availableQueuePart: Float)
 
     // Task Running
 

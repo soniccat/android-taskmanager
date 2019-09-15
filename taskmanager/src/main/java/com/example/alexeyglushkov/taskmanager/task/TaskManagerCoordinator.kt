@@ -1,7 +1,13 @@
 package com.example.alexeyglushkov.taskmanager.task
 
 interface TaskManagerCoordinator {
-    fun canAddTask(task: Task): Boolean
-    fun onTaskAdded(pool: TaskPool, task: Task)
-    fun onTaskRemoved(pool: TaskPool, task: Task)
+    var threadRunner: ThreadRunner
+
+    fun canAddMoreTasks(): Boolean
+
+    fun onTaskProviderAdded(taskProvider: TaskProvider)
+    fun onTaskProviderRemoved(taskProvider: TaskProvider)
+
+    fun onTaskStartedLoading(pool: TaskPool, task: Task)
+    fun onTaskFinishedLoading(pool: TaskPool, task: Task)
 }

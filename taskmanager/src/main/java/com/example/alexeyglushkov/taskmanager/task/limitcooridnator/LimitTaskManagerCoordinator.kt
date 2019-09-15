@@ -2,23 +2,23 @@ package com.example.alexeyglushkov.taskmanager.task.limitcooridnator
 
 import androidx.annotation.WorkerThread
 import androidx.collection.SparseArrayCompat
-import com.example.alexeyglushkov.taskmanager.task.Task
-import com.example.alexeyglushkov.taskmanager.task.TaskManagerCoordinator
-import com.example.alexeyglushkov.taskmanager.task.TaskPool
+import com.example.alexeyglushkov.taskmanager.task.*
 import junit.framework.Assert
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import java.util.ArrayList
 
-class LimitTaskManagerCoordinator(private var scope: CoroutineScope, maxLoadingTasks: Int): TaskManagerCoordinator {
+class LimitTaskManagerCoordinator(maxLoadingTasks: Int): TaskManagerCoordinator {
+    override lateinit var threadRunner: ThreadRunner
+
     private var _limits = SparseArrayCompat<Float>()
     var limits: SparseArrayCompat<Float>
         @WorkerThread
         get() {
-            return safeRun { _limits.clone() }
+            return threadRunner.run {
+                _limits.clone()
+            }
         }
         set(value) {
-            safeRun {
+            threadRunner.run {
                 _limits = value
             }
         }
@@ -30,6 +30,7 @@ class LimitTaskManagerCoordinator(private var scope: CoroutineScope, maxLoadingT
             _usedSpace = value.clone()
         }
 
+    var loadingTaskCount: Int = 0
     var maxLoadingTasks: Int = 0
         get() {
             return field
@@ -41,6 +42,15 @@ class LimitTaskManagerCoordinator(private var scope: CoroutineScope, maxLoadingT
             // TODO: probably we should cancel tasks after decreasing
         }
 
+    val taskFilter = object : TaskProvider.TaskFilter {
+        override val filterTaskTypes: List<Int>
+            get() = getTaskTypeFilter()
+
+        override fun isFiltered(task: Task): Boolean {
+            return filterTaskTypes.contains(task.taskType)
+        }
+    }
+
     init {
         this.maxLoadingTasks = maxLoadingTasks
     }
@@ -51,11 +61,25 @@ class LimitTaskManagerCoordinator(private var scope: CoroutineScope, maxLoadingT
         } else _usedSpace.get(taskType, 0).toFloat() / maxLoadingTasks.toFloat() >= _limits.get(taskType, 0.0f)
     }
 
-    override fun onTaskAdded(pool: TaskPool, task: Task) {
+    override fun onTaskProviderAdded(taskProvider: TaskProvider) {
+        taskProvider.taskFilter = taskFilter
+    }
+
+    override fun onTaskProviderRemoved(taskProvider: TaskProvider) {
+        taskProvider.taskFilter = null
+    }
+
+    override fun canAddMoreTasks(): Boolean {
+        return loadingTaskCount < maxLoadingTasks;
+    }
+
+    override fun onTaskStartedLoading(pool: TaskPool, task: Task) {
+        loadingTaskCount += 1
         updateUsedSpace(task.taskType, true)
     }
 
-    override fun onTaskRemoved(pool: TaskPool, task: Task) {
+    override fun onTaskFinishedLoading(pool: TaskPool, task: Task) {
+        loadingTaskCount -= 1
         updateUsedSpace(task.taskType, false)
     }
 
@@ -72,7 +96,7 @@ class LimitTaskManagerCoordinator(private var scope: CoroutineScope, maxLoadingT
     }
 
     fun setLimit(taskType: Int, availableQueuePart: Float) {
-        scope.launch {
+        threadRunner.launch {
             if (availableQueuePart <= 0.0f) {
                 _limits.remove(taskType)
             } else {
