@@ -60,7 +60,7 @@ class SimpleTaskManagerSnapshot : TaskManagerSnapshot, TaskManager.Listener {
                 waitingTaskInfo.put(task.taskType, count)
             }
         }
-
+        
         maxQueueSize = taskManager.maxLoadingTasks
         loadingLimits = taskManager.limits
         usedLoadingSpace = taskManager.usedSpace

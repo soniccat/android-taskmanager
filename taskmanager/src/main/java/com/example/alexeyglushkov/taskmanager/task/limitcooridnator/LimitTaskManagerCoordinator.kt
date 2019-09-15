@@ -103,9 +103,10 @@ class LimitTaskManagerCoordinator(maxLoadingTasks: Int): TaskManagerCoordinator 
                 _limits.put(taskType, availableQueuePart)
             }
 
-            for (listener in listeners) {
-                listener.get()?.onLimitsChanged(this, taskType, availableQueuePart)
-            }
+            // TODO:
+//            for (listener in listeners) {
+//                listener.get()?.onLimitsChanged(this, taskType, availableQueuePart)
+//            }
         }
     }
 

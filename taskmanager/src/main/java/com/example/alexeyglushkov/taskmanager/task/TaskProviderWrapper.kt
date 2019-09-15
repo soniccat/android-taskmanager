@@ -12,6 +12,11 @@ import java.util.HashMap
 
 open class TaskProviderWrapper(val provider: TaskProvider) : TaskProvider {
     private val listenerMap = HashMap<TaskPool.Listener, TaskPool.Listener>()
+    override var taskFilter: TaskProvider.TaskFilter?
+        get() = provider.taskFilter
+        set(value) {
+            provider.taskFilter = value
+        }
 
     override var scope: CoroutineScope
         get() = provider.scope
@@ -93,13 +98,13 @@ open class TaskProviderWrapper(val provider: TaskProvider) : TaskProvider {
     }
 
     @WorkerThread
-    override fun getTopTask(typesToFilter: List<Int>?): Task? {
-        return provider.getTopTask(typesToFilter)
+    override fun getTopTask(): Task? {
+        return provider.getTopTask()
     }
 
     @WorkerThread
-    override fun takeTopTask(typesToFilter: List<Int>?): Task? {
-        return provider.takeTopTask(typesToFilter)
+    override fun takeTopTask(): Task? {
+        return provider.takeTopTask()
     }
 
     override fun onTaskStatusChanged(task: Task, oldStatus: Task.Status, newStatus: Task.Status) {
