@@ -1,8 +1,6 @@
 package com.example.alexeyglushkov.taskmanager.task
 
 interface TaskManagerCoordinator {
-    var threadRunner: ThreadRunner
-
     fun canAddMoreTasks(): Boolean
 
     fun onTaskProviderAdded(taskProvider: TaskProvider)

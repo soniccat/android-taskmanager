@@ -7,7 +7,7 @@ import org.junit.Assert
 import java.util.ArrayList
 
 class LimitTaskManagerCoordinator(maxLoadingTasks: Int): TaskManagerCoordinator {
-    override lateinit var threadRunner: ThreadRunner
+    lateinit var threadRunner: ThreadRunner
 
     private var _limits = SparseArrayCompat<Float>()
     var limits: SparseArrayCompat<Float>
@@ -43,11 +43,12 @@ class LimitTaskManagerCoordinator(maxLoadingTasks: Int): TaskManagerCoordinator 
         }
 
     val taskFilter = object : TaskProvider.TaskFilter {
-        override val filterTaskTypes: List<Int>
-            get() = getTaskTypeFilter()
+        override fun getFilterTaskTypes(): List<Int> {
+            return getTaskTypeFilter()
+        }
 
         override fun isFiltered(task: Task): Boolean {
-            return filterTaskTypes.contains(task.taskType)
+            return getTaskTypeFilter().contains(task.taskType)
         }
     }
 

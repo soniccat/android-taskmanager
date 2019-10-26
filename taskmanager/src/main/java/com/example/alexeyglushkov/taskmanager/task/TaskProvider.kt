@@ -23,7 +23,7 @@ interface TaskProvider : TaskPool {
     @WorkerThread fun takeTopTask(): Task?
 
     interface TaskFilter {
-        val filterTaskTypes: List<Int>
+        fun getFilterTaskTypes(): List<Int>
         fun isFiltered(task: Task): Boolean
     }
 }
