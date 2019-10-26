@@ -3,7 +3,7 @@ package com.example.alexeyglushkov.taskmanager.task.limitcooridnator
 import androidx.annotation.WorkerThread
 import androidx.collection.SparseArrayCompat
 import com.example.alexeyglushkov.taskmanager.task.*
-import junit.framework.Assert
+import org.junit.Assert
 import java.util.ArrayList
 
 class LimitTaskManagerCoordinator(maxLoadingTasks: Int): TaskManagerCoordinator {

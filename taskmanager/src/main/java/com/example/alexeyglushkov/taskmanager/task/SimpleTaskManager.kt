@@ -17,7 +17,6 @@ import java.util.ArrayList
 import java.util.Comparator
 import java.util.Date
 
-import junit.framework.Assert.assertTrue
 import kotlinx.coroutines.*
 import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlin.coroutines.*
@@ -25,7 +24,7 @@ import kotlin.coroutines.*
 /**
  * Created by alexeyglushkov on 20.09.14.
  */
-open class SimpleTaskManager : TaskManager, TaskPool.Listener {
+open class SimpleTaskManager : TaskManager, TaskPool.Listener, TaskManagerCoordinatorHolder {
     companion object {
         internal val TAG = "SimpleTaskManager"
         const val WaitingTaskProviderId = "WaitingTaskProviderId"
@@ -71,8 +70,12 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
                 _taskProviders.safeList
         }
 
-    override val loadingTaskCount: Int
-        get() = loadingTasks.getTaskCount()
+    override val taskManagerCoordinator: TaskManagerCoordinator
+        get() = coordinator
+
+    override fun getLoadingTaskCount(): Int {
+        return loadingTasks.getTaskCount()
+    }
 
     @WorkerThread
     override fun getTaskCount(): Int {
@@ -110,7 +113,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         initScope(inScope)
         initTaskSope(inTaskScope)
         coordinator = inCoordinator
-        //this.maxLoadingTasks = maxLoadingTasks
 
         callbackHandler = Handler(Looper.myLooper())
 
@@ -173,8 +175,8 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     override fun addTask(task: Task) {
         if (task !is TaskBase) { assert(false); return }
 
-        //TODO: think how to handle adding two same task
-        //Assert.assertEquals(task.getTaskStatus(), Task.Status.NotStarted);
+        // TODO: think how to handle adding two same task
+        // Assert.assertEquals(task.getTaskStatus(), Task.Status.NotStarted);
         if (!Tasks.isTaskReadyToStart(task)) {
             Log.d(TAG, "addTask: Can't add task " + task.javaClass.toString() + " because it has been added " + task.taskStatus.toString())
             return
@@ -488,7 +490,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     suspend private fun startTaskOnThread(task: Task) {
         if (task !is TaskBase) { assert(false); return }
         threadRunner.checkThread()
-        assertTrue(Tasks.isTaskReadyToStart(task))
+        Assert.assertTrue(Tasks.isTaskReadyToStart(task))
 
         scope.launch {
             addLoadingTaskOnThread(task)

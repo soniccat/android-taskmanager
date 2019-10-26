@@ -2,9 +2,9 @@ package com.example.alexeyglushkov.taskmanager.task
 
 import android.os.Handler
 import android.os.Looper
-import android.util.SparseArray
 
 import androidx.collection.SparseArrayCompat
+import com.example.alexeyglushkov.taskmanager.task.limitcooridnator.LimitTaskManagerCoordinator
 
 import com.example.alexeyglushkov.tools.HandlerTools
 import kotlinx.coroutines.launch
@@ -17,7 +17,7 @@ import java.lang.ref.WeakReference
 class SimpleTaskManagerSnapshot : TaskManagerSnapshot, TaskManager.Listener {
     private val callbackHandler: Handler
 
-    //public
+    // public
 
     override var loadingTasksCount: Int = 0
         private set
@@ -48,7 +48,19 @@ class SimpleTaskManagerSnapshot : TaskManagerSnapshot, TaskManager.Listener {
     }
 
     private fun bindOnThread(taskManager: TaskManager) {
-        loadingTasksCount = taskManager.loadingTaskCount
+        val coordinator: LimitTaskManagerCoordinator
+        if (taskManager is TaskManagerCoordinatorHolder) {
+            val aCoordinator = taskManager.taskManagerCoordinator
+            if (aCoordinator is LimitTaskManagerCoordinator) {
+                coordinator = aCoordinator
+            } else {
+                throw IllegalArgumentException("LimitTaskManagerCoordinator is expected in taskManager.taskManagerCoordinator")
+            }
+        } else {
+            throw IllegalArgumentException("TaskManagerCoordinatorHolder is expected in taskManager")
+        }
+
+        loadingTasksCount = taskManager.getLoadingTaskCount()
 
         waitingTaskInfo = SparseArrayCompat()
         for (taskProvider in taskManager.taskProviders) {
@@ -60,10 +72,10 @@ class SimpleTaskManagerSnapshot : TaskManagerSnapshot, TaskManager.Listener {
                 waitingTaskInfo.put(task.taskType, count)
             }
         }
-        
-        maxQueueSize = taskManager.maxLoadingTasks
-        loadingLimits = taskManager.limits
-        usedLoadingSpace = taskManager.usedSpace
+
+        maxQueueSize = coordinator.maxLoadingTasks
+        loadingLimits = coordinator.limits
+        usedLoadingSpace = coordinator.usedSpace
 
         taskManager.addListener(this)
     }

@@ -14,7 +14,7 @@ class CompletableTask(private val completable: Completable) : TaskImpl() {
 
     override fun startTask() {
         val finishedFlag = AtomicBoolean()
-        completable.subscribe({ finishedFlag.set(true) }, { throwable ->
+        disposable = completable.subscribe({ finishedFlag.set(true) }, { throwable ->
             private.taskError = Error(throwable)
             finishedFlag.set(true)
         })

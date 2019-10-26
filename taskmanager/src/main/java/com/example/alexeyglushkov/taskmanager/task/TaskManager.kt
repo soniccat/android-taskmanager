@@ -16,7 +16,7 @@ interface TaskManager : TaskPool, TaskPool.Listener {
     //var maxLoadingTasks: Int
     //val limits: SparseArrayCompat<Float>
     //val usedSpace: SparseArrayCompat<Int> //type -> task count from loadingTasks
-    val loadingTaskCount: Int
+    fun getLoadingTaskCount(): Int
     val taskProviders: List<TaskProvider> //always sorted by priority
 
     // TODO: extract limits to a Rule class: TaskManagerRule/TaskManagerConstraint
