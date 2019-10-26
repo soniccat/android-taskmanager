@@ -63,7 +63,7 @@ open class PriorityTaskProviderTest {
             }
         })
 
-        val task = taskProvider.getTopTask(null)
+        val task = taskProvider.getTopTask()
 
         // Verify
         assertEquals("d", task!!.taskId)
@@ -80,7 +80,7 @@ open class PriorityTaskProviderTest {
         taskProvider.addTask(TestTasks.createTestTaskSpy("f", 2, 6))
 
         // Act
-        val task = taskProvider.getTopTask(null)
+        val task = taskProvider.getTopTask()
 
         // Verify
         assertEquals("f", task!!.taskId)
@@ -96,8 +96,14 @@ open class PriorityTaskProviderTest {
         taskProvider.addTask(TestTasks.createTestTaskSpy("e", 1, 5))
         taskProvider.addTask(TestTasks.createTestTaskSpy("f", 3, 6))
 
+        taskProvider.taskFilter = object : TaskProvider.TaskFilter {
+            override fun getFilteredTaskTypes(): List<Int> {
+                return listOf(3)
+            }
+        }
+
         // Act
-        val task = taskProvider.getTopTask(Arrays.asList(*arrayOf(3)))
+        val task = taskProvider.getTopTask()
 
         // Verify
         assertEquals("e", task!!.taskId)

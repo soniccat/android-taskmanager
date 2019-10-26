@@ -4,7 +4,7 @@ import android.os.Handler
 import android.os.Looper
 
 import androidx.collection.SparseArrayCompat
-import com.example.alexeyglushkov.taskmanager.task.limitcooridnator.LimitTaskManagerCoordinator
+import com.example.alexeyglushkov.taskmanager.task.coordinators.LimitTaskManagerCoordinator
 
 import com.example.alexeyglushkov.tools.HandlerTools
 import kotlinx.coroutines.launch
@@ -49,15 +49,12 @@ class SimpleTaskManagerSnapshot : TaskManagerSnapshot, TaskManager.Listener {
 
     private fun bindOnThread(taskManager: TaskManager) {
         val coordinator: LimitTaskManagerCoordinator
-        if (taskManager is TaskManagerCoordinatorHolder) {
-            val aCoordinator = taskManager.taskManagerCoordinator
-            if (aCoordinator is LimitTaskManagerCoordinator) {
-                coordinator = aCoordinator
-            } else {
-                throw IllegalArgumentException("LimitTaskManagerCoordinator is expected in taskManager.taskManagerCoordinator")
-            }
+
+        val aCoordinator = taskManager.taskManagerCoordinator
+        if (aCoordinator is LimitTaskManagerCoordinator) {
+            coordinator = aCoordinator
         } else {
-            throw IllegalArgumentException("TaskManagerCoordinatorHolder is expected in taskManager")
+            throw IllegalArgumentException("LimitTaskManagerCoordinator is expected in taskManager.taskManagerCoordinator")
         }
 
         loadingTasksCount = taskManager.getLoadingTaskCount()

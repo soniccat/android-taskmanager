@@ -48,7 +48,7 @@ class TaskProviderTestSet {
         taskProvider.addTask(TestTasks.createTestTaskSpy("f", 2))
 
         // Act
-        val task = taskProvider.getTopTask(null)
+        val task = taskProvider.getTopTask()
 
         // Verify
         assertEquals("a", task!!.taskId)
@@ -64,8 +64,14 @@ class TaskProviderTestSet {
         taskProvider.addTask(TestTasks.createTestTaskSpy("e", 1))
         taskProvider.addTask(TestTasks.createTestTaskSpy("f", 3))
 
+        taskProvider.taskFilter = object : TaskProvider.TaskFilter {
+            override fun getFilteredTaskTypes(): List<Int> {
+                return listOf(1)
+            }
+        }
+
         // Act
-        val task = taskProvider.getTopTask(Arrays.asList(1))
+        val task = taskProvider.getTopTask()
 
         // Verify
         assertEquals("b", task!!.taskId)
@@ -85,7 +91,7 @@ class TaskProviderTestSet {
         taskProvider.addTask(TestTasks.createTestTaskSpy("b", 0))
         taskProvider.addTask(TestTasks.createTestTaskSpy("c", 0))
 
-        val task = taskProvider.getTopTask(null)
+        val task = taskProvider.getTopTask()
 
         // Verify
         assertEquals("d", task!!.taskId)
@@ -103,8 +109,14 @@ class TaskProviderTestSet {
         taskProvider.addTask(TestTasks.createTestTaskSpy("e", 1))
         taskProvider.addTask(TestTasks.createTestTaskSpy("f", 3))
 
+        taskProvider.taskFilter = object : TaskProvider.TaskFilter {
+            override fun getFilteredTaskTypes(): List<Int> {
+                return listOf(1)
+            }
+        }
+
         // Act
-        val task = taskProvider.takeTopTask(Arrays.asList(1))
+        val task = taskProvider.takeTopTask()
 
         // Verify
         verify(listener).onTaskRemoved(taskProvider, task!!)
@@ -128,7 +140,7 @@ class TaskProviderTestSet {
         taskProvider.addTask(TestTasks.createTestTaskSpy("b", 0))
         taskProvider.addTask(TestTasks.createTestTaskSpy("c", 0))
 
-        val task = taskProvider.takeTopTask(null)
+        val task = taskProvider.takeTopTask()
 
         // Verify
         assertEquals("d", task!!.taskId)

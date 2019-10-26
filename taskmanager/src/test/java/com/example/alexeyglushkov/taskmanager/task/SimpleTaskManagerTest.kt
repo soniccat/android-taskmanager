@@ -1,7 +1,6 @@
 package com.example.alexeyglushkov.taskmanager.task
 
-import android.os.Handler
-import android.os.Looper
+import com.nhaarman.mockitokotlin2.mock
 import kotlinx.coroutines.test.TestCoroutineScope
 
 import org.junit.Before
@@ -19,19 +18,16 @@ class SimpleTaskManagerTest {
 
     @Before
     @Throws(Exception::class)
-    fun setUp() {
+    fun before() {
+        val coordinator: TaskManagerCoordinator = mock()
+
         val scope = TestCoroutineScope()
-        taskManager = SimpleTaskManager(10, scope, scope)
+        taskManager = SimpleTaskManager(coordinator, scope, scope)
         poolTestSet = TaskPoolTestSet()
         taskManagerTestSet = TaskManagerTestSet()
 
         poolTestSet.before(taskManager)
         taskManagerTestSet.before(taskManager)
-    }
-
-    @Test
-    fun testSetMaxLoadingTasks() {
-        taskManagerTestSet.setMaxLoadingTasks()
     }
 
     @Test
@@ -170,23 +166,13 @@ class SimpleTaskManagerTest {
     }
 
     @Test
-    fun testSetLimit() {
-        taskManagerTestSet.setLimit()
-    }
-
-    @Test
-    fun testSetLimitRemove() {
-        taskManagerTestSet.setLimitRemove()
-    }
-
-    @Test
     fun testCancelWaitingTaskFromPool() {
         taskManagerTestSet.cancelWaitingTaskFromPool()
     }
 
     @Test
     fun testAddTaskFromPoolWhenMaxLoadingTasksIsEnough() {
-        taskManagerTestSet.addTaskFromPoolWhenMaxLoadingTasksIsEnough()
+        taskManagerTestSet.addTaskFromPoolWhenCanLoad()
     }
 
     @Test

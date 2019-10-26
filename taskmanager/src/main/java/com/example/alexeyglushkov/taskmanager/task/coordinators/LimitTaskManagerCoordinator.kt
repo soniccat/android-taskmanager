@@ -1,12 +1,14 @@
-package com.example.alexeyglushkov.taskmanager.task.limitcooridnator
+package com.example.alexeyglushkov.taskmanager.task.coordinators
 
 import androidx.annotation.WorkerThread
 import androidx.collection.SparseArrayCompat
 import com.example.alexeyglushkov.taskmanager.task.*
 import org.junit.Assert
+import java.lang.ref.WeakReference
 import java.util.ArrayList
 
 class LimitTaskManagerCoordinator(maxLoadingTasks: Int): TaskManagerCoordinator {
+    var listeners = WeakRefList<Listener>()
     lateinit var threadRunner: ThreadRunner
 
     private var _limits = SparseArrayCompat<Float>()
@@ -43,12 +45,8 @@ class LimitTaskManagerCoordinator(maxLoadingTasks: Int): TaskManagerCoordinator 
         }
 
     val taskFilter = object : TaskProvider.TaskFilter {
-        override fun getFilterTaskTypes(): List<Int> {
-            return getTaskTypeFilter()
-        }
-
-        override fun isFiltered(task: Task): Boolean {
-            return getTaskTypeFilter().contains(task.taskType)
+        override fun getFilteredTaskTypes(): List<Int> {
+            return this@LimitTaskManagerCoordinator.getFilteredTaskTypes()
         }
     }
 
@@ -104,14 +102,13 @@ class LimitTaskManagerCoordinator(maxLoadingTasks: Int): TaskManagerCoordinator 
                 _limits.put(taskType, availableQueuePart)
             }
 
-            // TODO:
-//            for (listener in listeners) {
-//                listener.get()?.onLimitsChanged(this, taskType, availableQueuePart)
-//            }
+            for (listener in listeners) {
+                listener.get()?.onLimitsChanged(this, taskType, availableQueuePart)
+            }
         }
     }
 
-    private fun getTaskTypeFilter(): List<Int> {
+    private fun getFilteredTaskTypes(): List<Int> {
         val taskTypesToFilter = ArrayList<Int>()
         for (i in 0 until _limits.size()) {
             if (reachedLimit(_limits.keyAt(i))) {
@@ -119,5 +116,17 @@ class LimitTaskManagerCoordinator(maxLoadingTasks: Int): TaskManagerCoordinator 
             }
         }
         return taskTypesToFilter
+    }
+
+    // Listeners
+    fun removeListener(listener: Listener) {
+        listeners.removeValue(listener)
+    }
+    fun addListener(listener: Listener) {
+        listeners.add(WeakReference(listener))
+    }
+
+    interface Listener {
+        fun onLimitsChanged(coordinator: LimitTaskManagerCoordinator, taskType: Int, availableQueuePart: Float)
     }
 }

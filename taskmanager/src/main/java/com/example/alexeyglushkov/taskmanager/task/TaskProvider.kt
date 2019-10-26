@@ -23,7 +23,9 @@ interface TaskProvider : TaskPool {
     @WorkerThread fun takeTopTask(): Task?
 
     interface TaskFilter {
-        fun getFilterTaskTypes(): List<Int>
-        fun isFiltered(task: Task): Boolean
+        fun getFilteredTaskTypes(): List<Int>
+        fun isFiltered(task: Task): Boolean {
+            return getFilteredTaskTypes().contains(task.taskType)
+        }
     }
 }

@@ -17,14 +17,6 @@ class TaskManagerTestSet {
         this.taskManager = taskManager
     }
 
-    fun setMaxLoadingTasks() {
-        // Act
-        taskManager.maxLoadingTasks = 100
-
-        // Verify
-        assertEquals(100, taskManager.maxLoadingTasks)
-    }
-
     fun getTasks() {
         // Arrange
         val task1 = TestTasks.createTaskMock("taskId1", Task.Status.NotStarted)
@@ -34,7 +26,7 @@ class TaskManagerTestSet {
         val taskProvider = createTaskProviderSpy("0", taskManager)
 
         // Act
-        taskManager.maxLoadingTasks = 0
+        //taskManager.maxLoadingTasks = 0
         taskManager.addTaskProvider(taskProvider)
         taskManager.addTask(task1)
         taskManager.addTask(task2)
@@ -56,7 +48,7 @@ class TaskManagerTestSet {
         val taskProvider = createTaskProviderSpy("0", taskManager)
 
         // Act
-        taskManager.maxLoadingTasks = 0
+        //taskManager.maxLoadingTasks = 0
         taskManager.addTaskProvider(taskProvider)
         taskManager.addTask(task1)
         taskManager.addTask(task2)
@@ -78,7 +70,7 @@ class TaskManagerTestSet {
         taskManager.addTask(task3)
 
         // Verify
-        assertEquals(3, taskManager.loadingTaskCount)
+        assertEquals(3, taskManager.getLoadingTaskCount())
     }
 
     fun getTaskFromProvider() {
@@ -88,7 +80,7 @@ class TaskManagerTestSet {
         val task = TestTasks.createTaskMock("task1")
 
         // Act
-        taskManager.maxLoadingTasks = 0
+        //taskManager.maxLoadingTasks = 0
         taskManager.addTaskProvider(taskProvider1)
         taskManager.addTaskProvider(taskProvider2)
         taskProvider1.addTask(task)
@@ -182,12 +174,12 @@ class TaskManagerTestSet {
 
         val taskProvider = createTaskProviderMock("provider", taskManager)
         `when`(taskProvider.getTasks()).doReturn(listOf(task))
-        `when`(taskProvider.takeTopTask(any())).doReturn(task)
-        `when`(taskProvider.getTopTask(any())).doReturn(task)
+        `when`(taskProvider.takeTopTask()).doReturn(task)
+        `when`(taskProvider.getTopTask()).doReturn(task)
         `when`(task.canBeCancelledImmediately()).thenReturn(true)
 
         // Act
-        taskManager.maxLoadingTasks = 0
+        //taskManager.maxLoadingTasks = 0
         taskManager.addTaskProvider(taskProvider)
         taskManager.removeTaskProvider(taskProvider)
 
@@ -551,40 +543,24 @@ class TaskManagerTestSet {
         assertEquals(scope, taskManager.scope)
     }
 
-    fun setLimit() {
-        val listener = mock<TaskManager.Listener>()
-
-        // Act
-        taskManager.addListener(listener)
-        taskManager.setLimit(1, 0.5f)
-
-        // Verify
-        verify(listener).onLimitsChanged(taskManager, 1, 0.5f)
-        assertEquals(0.5f, taskManager.limits.get(1)!!, 0.001f)
-
-    }
-
-    fun setLimitRemove() {
-        // Act
-        taskManager.setLimit(1, 0.5f)
-        taskManager.setLimit(1, 0.0f)
-
-        // Verify
-        assertNull(taskManager.limits.get(1))
-    }
-
-    fun addTaskFromPoolWhenMaxLoadingTasksIsEnough() {
+    fun addTaskFromPoolWhenCanLoad() {
         // Arrange
+        val coordinator = object : TestTaskManagerCoordinator() {
+            override fun canAddMoreTasks(): Boolean {
+                return true
+            }
+        }
+
         val taskProvider = createTaskProviderMock("0", taskManager)
         val taskCallback = mock<Task.Callback>()
         val testTask = TestTasks.createTestTaskSpy("taskId")
         testTask.taskCallback = taskCallback
 
-        `when`(taskProvider.getTopTask(any())).doReturn(testTask)
-        `when`(taskProvider.takeTopTask(any())).doReturn(testTask)
+        `when`(taskManager.taskManagerCoordinator).doReturn(coordinator)
+        `when`(taskProvider.getTopTask()).doReturn(testTask)
+        `when`(taskProvider.takeTopTask()).doReturn(testTask)
 
         // Act
-        taskManager.maxLoadingTasks = 1
         taskManager.addTaskProvider(taskProvider)
         taskManager.onTaskAdded(taskProvider, testTask)
 
@@ -599,11 +575,11 @@ class TaskManagerTestSet {
         val testTask = TestTasks.createTestTaskSpy("taskId")
         testTask.taskCallback = taskCallback
 
-        `when`(taskProvider.getTopTask(any())).doReturn(testTask)
-        `when`(taskProvider.takeTopTask(any())).doReturn(testTask)
+        `when`(taskProvider.getTopTask()).doReturn(testTask)
+        `when`(taskProvider.takeTopTask()).doReturn(testTask)
 
         // Act
-        taskManager.maxLoadingTasks = 0
+        //taskManager.maxLoadingTasks = 0
         taskManager.addTaskProvider(taskProvider)
         taskManager.onTaskAdded(taskProvider, testTask)
 
@@ -621,7 +597,7 @@ class TaskManagerTestSet {
 
         // Act
         taskManager.addTaskProvider(taskProvider)
-        taskManager.maxLoadingTasks = 0
+        //taskManager.maxLoadingTasks = 0
         taskManager.onTaskCancelled(taskProvider, testTask, cancelInfo)
 
         // Verify
@@ -632,18 +608,24 @@ class TaskManagerTestSet {
 
     fun cancelStartedTaskFromPool() {
         // Arrange
+        val coordinator = object : TestTaskManagerCoordinator() {
+            override fun canAddMoreTasks(): Boolean {
+                return true
+            }
+        }
         val taskProvider = createTaskProviderMock("0", taskManager)
         val taskCallback = mock<Task.Callback>()
         val testTask = TestTasks.createTestTaskSpy("taskId")
         testTask.taskCallback = taskCallback
         val cancelInfo = "info"
 
-        `when`(taskProvider.getTopTask(any())).doReturn(testTask)
-        `when`(taskProvider.takeTopTask(any())).doReturn(testTask)
+        `when`(taskManager.taskManagerCoordinator).doReturn(coordinator)
+        `when`(taskProvider.getTopTask()).doReturn(testTask)
+        `when`(taskProvider.takeTopTask()).doReturn(testTask)
         `when`(testTask.canBeCancelledImmediately()).thenReturn(true)
 
         // Act
-        taskManager.maxLoadingTasks = 1
+        //taskManager.maxLoadingTasks = 1
         taskManager.addTaskProvider(taskProvider)
         taskManager.onTaskAdded(taskProvider, testTask)
         taskManager.onTaskCancelled(taskProvider, testTask, cancelInfo)

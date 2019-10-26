@@ -12,6 +12,9 @@ import java.util.ArrayList
  */
 
 interface TaskManager : TaskPool, TaskPool.Listener {
+    // TaskManagerCoordinator sets taskFilters to taskProviders
+    val taskManagerCoordinator: TaskManagerCoordinator
+
     // Task Limits
     //var maxLoadingTasks: Int
     //val limits: SparseArrayCompat<Float>
@@ -38,8 +41,6 @@ interface TaskManager : TaskPool, TaskPool.Listener {
     fun getTaskProvider(id: String): TaskProvider?
     // TODO: rename to addTaskProvider
     fun setTaskProviderPriority(provider: TaskProvider, priority: Int)
-
-
 
     // Listeners
     fun removeListener(listener: Listener)

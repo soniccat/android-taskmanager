@@ -24,7 +24,7 @@ import kotlin.coroutines.*
 /**
  * Created by alexeyglushkov on 20.09.14.
  */
-open class SimpleTaskManager : TaskManager, TaskPool.Listener, TaskManagerCoordinatorHolder {
+open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     companion object {
         internal val TAG = "SimpleTaskManager"
         const val WaitingTaskProviderId = "WaitingTaskProviderId"
@@ -42,7 +42,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener, TaskManagerCoordi
             }
         }
     private lateinit var threadRunner: ScopeThreadRunner
-    private lateinit var coordinator: TaskManagerCoordinator
 
     private lateinit var callbackHandler: Handler
     override var userData: Any? = null
@@ -70,8 +69,9 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener, TaskManagerCoordi
                 _taskProviders.safeList
         }
 
+    private lateinit var _coordinator: TaskManagerCoordinator
     override val taskManagerCoordinator: TaskManagerCoordinator
-        get() = coordinator
+        get() = _coordinator
 
     override fun getLoadingTaskCount(): Int {
         return loadingTasks.getTaskCount()
@@ -112,7 +112,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener, TaskManagerCoordi
     private fun init(inCoordinator: TaskManagerCoordinator, inScope: CoroutineScope?, inTaskScope: CoroutineScope?) {
         initScope(inScope)
         initTaskSope(inTaskScope)
-        coordinator = inCoordinator
+        _coordinator = inCoordinator
 
         callbackHandler = Handler(Looper.myLooper())
 
@@ -226,7 +226,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener, TaskManagerCoordi
 
         provider.addListener(this)
         _taskProviders.add(provider)
-        coordinator.onTaskProviderAdded(provider)
+        taskManagerCoordinator.onTaskProviderAdded(provider)
     }
 
     override fun setTaskProviderPriority(provider: TaskProvider, priority: Int) {
@@ -275,7 +275,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener, TaskManagerCoordi
         scope.launch {
             val isLoadingPool = pool === loadingTasks
             if (isLoadingPool) {
-                coordinator.onTaskStartedLoading(pool, task)
+                taskManagerCoordinator.onTaskStartedLoading(pool, task)
             }
 
             Log.d("add", "onTaskAdded " + isLoadingPool + " " + task.taskId)
@@ -294,7 +294,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener, TaskManagerCoordi
         scope.launch {
             val isLoadingPool = pool === loadingTasks
             if (isLoadingPool) {
-                coordinator.onTaskFinishedLoading(pool, task)
+                taskManagerCoordinator.onTaskFinishedLoading(pool, task)
             }
 
             Log.d("add", "onTaskRemoved " + isLoadingPool + " " + task.taskId)
@@ -392,7 +392,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener, TaskManagerCoordi
         }
 
         _taskProviders.remove(provider)
-        coordinator.onTaskProviderRemoved(provider)
+        taskManagerCoordinator.onTaskProviderRemoved(provider)
     }
 
     fun setWaitingTaskProvider(provider: TaskProvider) {
@@ -448,7 +448,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener, TaskManagerCoordi
     suspend private fun checkTasksToRunOnThread() {
         threadRunner.checkThread()
 
-        if (coordinator.canAddMoreTasks()) {
+        if (taskManagerCoordinator.canAddMoreTasks()) {
             val task = takeTaskToRunOnThread()
 
             if (task != null) {

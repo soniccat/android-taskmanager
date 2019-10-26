@@ -77,7 +77,7 @@ open class PriorityTaskProvider(scope: CoroutineScope, override var taskProvider
         val taskFilter = taskFilter
 
         for (i in 0 until taskQueues.size()) {
-            if (taskFilter == null || !taskFilter.getFilterTaskTypes().contains(taskQueues.keyAt(i))) {
+            if (taskFilter == null || !taskFilter.getFilteredTaskTypes().contains(taskQueues.keyAt(i))) {
                 val queue = taskQueues.get(taskQueues.keyAt(i))
                 if (queue != null) {
                     val queueTask = getTopTask(queue, needPoll)

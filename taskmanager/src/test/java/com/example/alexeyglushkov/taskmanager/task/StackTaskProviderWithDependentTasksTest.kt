@@ -46,7 +46,7 @@ class StackTaskProviderWithDependentTasksTest {
         // Act
         providerMock.addListener(listener)
         providerMock.addTask(testTask1)
-        providerMock.takeTopTask(null)
+        providerMock.takeTopTask()
 
         providerMock.addTask(testTask2)
 
@@ -67,10 +67,10 @@ class StackTaskProviderWithDependentTasksTest {
 
         // Act
         providerMock.addTask(testTask1)
-        val task1 = providerMock.takeTopTask(null)
+        val task1 = providerMock.takeTopTask()
 
         providerMock.addTask(testTask2)
-        val task2 = providerMock.takeTopTask(null)
+        val task2 = providerMock.takeTopTask()
 
         // Verify
         assertEquals(testTask1, task1)
@@ -89,11 +89,11 @@ class StackTaskProviderWithDependentTasksTest {
 
         // Act
         providerMock.addTask(testTask1)
-        val task1 = providerMock.getTopTask(null)
-        providerMock.takeTopTask(null)
+        val task1 = providerMock.getTopTask()
+        providerMock.takeTopTask()
 
         providerMock.addTask(testTask2)
-        val task2 = providerMock.getTopTask(null)
+        val task2 = providerMock.getTopTask()
 
         // Verify
         assertEquals(testTask1, task1)
