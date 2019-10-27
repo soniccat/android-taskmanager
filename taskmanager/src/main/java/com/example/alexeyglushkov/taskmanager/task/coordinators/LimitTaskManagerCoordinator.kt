@@ -44,7 +44,7 @@ class LimitTaskManagerCoordinator(maxLoadingTasks: Int): TaskManagerCoordinator 
             // TODO: probably we should cancel tasks after decreasing
         }
 
-    val taskFilter = object : TaskProvider.TaskFilter {
+    override val taskFilter = object : TaskProvider.TaskFilter {
         override fun getFilteredTaskTypes(): List<Int> {
             return this@LimitTaskManagerCoordinator.getFilteredTaskTypes()
         }
@@ -58,14 +58,6 @@ class LimitTaskManagerCoordinator(maxLoadingTasks: Int): TaskManagerCoordinator 
         return if (_limits.get(taskType, -1.0f) == -1.0f) {
             false
         } else _usedSpace.get(taskType, 0).toFloat() / maxLoadingTasks.toFloat() >= _limits.get(taskType, 0.0f)
-    }
-
-    override fun onTaskProviderAdded(taskProvider: TaskProvider) {
-        taskProvider.taskFilter = taskFilter
-    }
-
-    override fun onTaskProviderRemoved(taskProvider: TaskProvider) {
-        taskProvider.taskFilter = null
     }
 
     override fun canAddMoreTasks(): Boolean {

@@ -5,6 +5,7 @@ import kotlinx.coroutines.test.TestCoroutineScope
 
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.`when`
 
 /**
  * Created by alexeyglushkov on 23.08.15.
@@ -19,8 +20,7 @@ class SimpleTaskManagerTest {
     @Before
     @Throws(Exception::class)
     fun before() {
-        val coordinator: TaskManagerCoordinator = mock()
-
+        val coordinator: TaskManagerCoordinator = TestTaskManagerCoordinator()
         val scope = TestCoroutineScope()
         taskManager = SimpleTaskManager(coordinator, scope, scope)
         poolTestSet = TaskPoolTestSet()

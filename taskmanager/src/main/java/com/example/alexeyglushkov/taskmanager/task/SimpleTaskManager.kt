@@ -226,7 +226,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
         provider.addListener(this)
         _taskProviders.add(provider)
-        taskManagerCoordinator.onTaskProviderAdded(provider)
+        provider.taskFilter = taskManagerCoordinator.taskFilter
     }
 
     override fun setTaskProviderPriority(provider: TaskProvider, priority: Int) {
@@ -392,7 +392,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         }
 
         _taskProviders.remove(provider)
-        taskManagerCoordinator.onTaskProviderRemoved(provider)
+        provider.taskFilter = null
     }
 
     fun setWaitingTaskProvider(provider: TaskProvider) {

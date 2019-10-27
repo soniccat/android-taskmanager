@@ -1,10 +1,9 @@
 package com.example.alexeyglushkov.taskmanager.task
 
 interface TaskManagerCoordinator {
-    fun canAddMoreTasks(): Boolean
+    val taskFilter: TaskProvider.TaskFilter
 
-    fun onTaskProviderAdded(taskProvider: TaskProvider)
-    fun onTaskProviderRemoved(taskProvider: TaskProvider)
+    fun canAddMoreTasks(): Boolean
 
     fun onTaskStartedLoading(pool: TaskPool, task: Task)
     fun onTaskFinishedLoading(pool: TaskPool, task: Task)
