@@ -7,7 +7,6 @@ import com.example.alexeyglushkov.authorization.Api.Foursquare2Api
 import com.example.alexeyglushkov.authorization.Auth.Account
 import com.example.alexeyglushkov.authorization.Auth.AccountStore
 import com.example.alexeyglushkov.authorization.Auth.Authorizer
-import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner
 import com.example.alexeyglushkov.authorization.Auth.SimpleAccount
 import com.example.alexeyglushkov.authorization.OAuth.OAuth20Authorizer
 import com.example.alexeyglushkov.authorization.OAuth.OAuthAuthorizerBuilder
@@ -23,11 +22,8 @@ import com.example.alexeyglushkov.quizletservice.tasks.QuizletServiceTaskProvide
 import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManager
 import com.example.alexeyglushkov.taskmanager.task.StackTaskProvider
 import com.example.alexeyglushkov.taskmanager.task.TaskManager
-import com.example.alexeyglushkov.wordteacher.authorization.AuthActivityProxy
-import com.example.alexeyglushkov.wordteacher.model.Course
+import com.example.alexeyglushkov.authorization.AuthActivityProxy
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder
-
-import java.io.File
 
 import javax.inject.Named
 

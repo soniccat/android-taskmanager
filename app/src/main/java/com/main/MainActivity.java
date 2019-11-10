@@ -20,9 +20,13 @@ import com.example.alexeyglushkov.authtaskmanager.HttpServiceCommand;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
 import com.example.alexeyglushkov.cachemanager.Storage;
+import com.example.alexeyglushkov.cachemanager.clients.Cache;
+import com.example.alexeyglushkov.cachemanager.clients.SimpleCache;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.service.SimpleService;
+import com.example.alexeyglushkov.streamlib.convertors.BytesStringConverter;
+import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
@@ -33,7 +37,12 @@ import com.rssclient.controllers.R;
 import java.io.File;
 import java.util.List;
 
-public class MainActivity extends BaseActivity implements QuizletService.QuizletServiceListener {
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
+public class MainActivity extends BaseActivity {
     private static final String TAG = "MainActivity";
     private SimpleService service;
     private Storage storage;
@@ -74,7 +83,7 @@ public class MainActivity extends BaseActivity implements QuizletService.Quizlet
                 } else if (position == 5) {
                     loadSets(true);
                 } else if (position == 6) {
-                    testRotation();
+                    //testRotation();
                 }
             }
         });
@@ -95,9 +104,9 @@ public class MainActivity extends BaseActivity implements QuizletService.Quizlet
             @Override
             public void startTask() {
                 final Account account = Networks.createAccount(Networks.Network.Quizlet);
-                account.authorize(new Authorizer.AuthorizerCompletion() {
+                account.authorize().subscribeOn(Schedulers.io()).subscribe(new Consumer<AuthCredentials>() {
                     @Override
-                    public void onFinished(AuthCredentials credentials, Authorizer.AuthError error) {
+                    public void accept(AuthCredentials authCredentials) throws Exception {
                         Log.d(TAG, "showAuthorization onFinished " + account.getCredentials().isValid());
                         getPrivate().handleTaskCompletion();
                     }
@@ -116,17 +125,16 @@ public class MainActivity extends BaseActivity implements QuizletService.Quizlet
         HttpUrlConnectionBuilder builder = new HttpUrlConnectionBuilder();
         builder.setUrl("https://api.foursquare.com/v2/users/self?v=20140806&m=foursquare");
 
-        final HttpServiceCommand cmd = new HttpServiceCommand();
-        StorageClient storageClient = new StorageClient(storage, 0);
-        storageClient.setCacheMode(IStorageClient.CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD);
-        cmd.setCacheClient(storageClient);
-        cmd.setConnectionBuilder(builder);
-        cmd.setServiceCommandCallback(new ServiceCommand.CommandCallback() {
+        final HttpServiceCommand cmd = new HttpServiceCommand<>(builder, new BytesStringConverter() {
             @Override
-            public void onCompleted(ServiceCommand command, Error error) {
-                Log.d(TAG, "finished " + cmd.getResponse());
+            public String convert(byte[] bytes) {
+                String str = super.convert(bytes);
+                return str;
             }
         });
+        SimpleCache cache = new SimpleCache(storage);
+        cache.setCacheMode(Cache.CacheMode.CHECK_CACHE_IF_ERROR_THEN_LOAD);
+        cmd.setCacheClient(cache);
 
         service.runCommand(cmd, true);
     }
@@ -169,19 +177,6 @@ public class MainActivity extends BaseActivity implements QuizletService.Quizlet
         getMainApplication().getQuizletService().loadSets(null);
     }
 
-    // QuizletServiceListener
-
-
-    @Override
-    public void onStateChanged(QuizletService service, QuizletService.State oldState) {
-        Log.d("Quizlet", "fine ");
-    }
-
-    @Override
-    public void onLoadError(QuizletService service, Error error) {
-        Log.d("Quizlet", "error " + error.getMessage());
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -204,8 +199,8 @@ public class MainActivity extends BaseActivity implements QuizletService.Quizlet
         return super.onOptionsItemSelected(item);
     }
 
-    void testRotation() {
-        Intent intent = new Intent(this, TestRotationActivity.class);
-        startActivity(intent);
-    }
+//    void testRotation() {
+//        Intent intent = new Intent(this, TestRotationActivity.class);
+//        startActivity(intent);
+//    }
 }

@@ -16,11 +16,10 @@ import com.example.alexeyglushkov.cachemanager.Storage
 import com.example.alexeyglushkov.quizletservice.QuizletRepository
 import com.example.alexeyglushkov.taskmanager.task.TaskManager
 import com.example.alexeyglushkov.tools.ContextProvider
-import com.example.alexeyglushkov.wordteacher.authorization.AuthActivityProxy
+import com.example.alexeyglushkov.authorization.AuthActivityProxy
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder
 import io.reactivex.internal.functions.Functions
 import io.reactivex.schedulers.Schedulers
-import org.junit.Assert
 import javax.inject.Inject
 import javax.inject.Named
 

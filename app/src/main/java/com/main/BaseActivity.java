@@ -2,7 +2,7 @@ package com.main;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.authorization.AuthActivityProxy;
+import com.example.alexeyglushkov.authorization.AuthActivityProxy;
 
 /**
  * Created by alexeyglushkov on 12.12.15.

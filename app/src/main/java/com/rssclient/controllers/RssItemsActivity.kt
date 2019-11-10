@@ -35,7 +35,6 @@ import java.net.URL
 
 class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapshotChangedListener, ProgressListener {
     internal var taskProvider: PriorityTaskProvider? = null
-    internal var coordinator: LimitTaskManagerCoordinator? = null
     internal lateinit var taskManager: TaskManager
     internal var listView: ListView? = null
     internal lateinit var rssStorage: RssStorage
@@ -69,15 +68,6 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapsho
         feed = rssStorage.getFeed(url)
         taskManager = application.taskManager
         taskProvider = taskManager.getTaskProvider(PROVIDER_ID) as PriorityTaskProvider?
-
-        if (coordinator == null) {
-            coordinator = LimitTaskManagerCoordinator(10).apply {
-                setLimit(1, 0.5f)
-                setLimit(2, 0.5f)
-            }
-
-            taskManager.taskManagerCoordinator = coordinator!!
-        }
 
         if (taskProvider == null) {
             taskProvider = PriorityTaskProvider(taskManager.scope, PROVIDER_ID)

@@ -1,10 +1,9 @@
-package com.example.alexeyglushkov.wordteacher.authorization;
+package com.example.alexeyglushkov.authorization;
 
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import io.reactivex.Observable;
+
 import io.reactivex.Single;
 
 import android.webkit.WebView;
@@ -12,16 +11,14 @@ import android.webkit.WebViewClient;
 
 import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient;
 import com.example.alexeyglushkov.tools.CancelError;
-import com.example.alexeyglushkov.wordteacher.R;
-
-import com.example.alexeyglushkov.wordteacher.main.Networks;
 
 /**
  * Created by alexeyglushkov on 24.10.15.
  */
-public class AuthorizationActivity extends AppCompatActivity implements OAuthWebClient {
+public class AuthorizationActivity extends AppCompatActivity /*implements OAuthWebClient*/ {
     private static final String TAG = "AuthorizationActivity";
     public static final String LOAD_URL = "LOAD_URL";
+    public static final String CALLBACK_URL = "CALLBACK_URL";
 
     private WebView webView;
     private boolean isHandled;
@@ -37,7 +34,8 @@ public class AuthorizationActivity extends AppCompatActivity implements OAuthWeb
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url.startsWith(Networks.INSTANCE.getCALLBACK_URL())) {
+                String callback = getIntent().getExtras().getString(CALLBACK_URL);
+                if (url.startsWith(callback)) {
                     AuthActivityProxy.finish(url, null);
                     if (!isHandled) {
                         isHandled = true;
@@ -61,8 +59,13 @@ public class AuthorizationActivity extends AppCompatActivity implements OAuthWeb
             }
         });
 
-        String url = getIntent().getExtras().getString(LOAD_URL);
-        loadUrl(url);
+        final String url = getIntent().getExtras().getString(LOAD_URL);
+        AuthorizationActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                webView.loadUrl(url);
+            }
+        });
     }
 
     @Override
@@ -80,7 +83,6 @@ public class AuthorizationActivity extends AppCompatActivity implements OAuthWeb
         }
     }
 
-    @Override
     public Single<String> loadUrl(final String url) {
         AuthorizationActivity.this.runOnUiThread(new Runnable() {
             @Override

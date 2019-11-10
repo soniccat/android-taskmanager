@@ -1,6 +1,5 @@
 package com.example.alexeyglushkov.authorization.OAuth;
 
-import io.reactivex.Observable;
 import io.reactivex.Single;
 
 /**
@@ -8,5 +7,5 @@ import io.reactivex.Single;
  */
 
 public interface OAuthWebClient {
-    Single<String> loadUrl(String url);
+    Single<String> loadUrl(String url, String callback);
 }

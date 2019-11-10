@@ -2,10 +2,7 @@ package com.example.alexeyglushkov.wordteacher.main
 
 import androidx.appcompat.app.AppCompatActivity
 
-import com.example.alexeyglushkov.authorization.Auth.Account
-import com.example.alexeyglushkov.authorization.Auth.AccountStore
-
-import com.example.alexeyglushkov.wordteacher.authorization.AuthActivityProxy
+import com.example.alexeyglushkov.authorization.AuthActivityProxy
 
 /**
  * Created by alexeyglushkov on 12.12.15.

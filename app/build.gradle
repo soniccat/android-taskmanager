@@ -103,6 +103,8 @@ dependencies {
     implementation 'junit:junit:' + project.ext.junitVersion
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:" + project.ext.coroutinesVersion
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:" + project.ext.coroutinesVersion
+    implementation 'io.reactivex.rxjava2:rxandroid:' + project.ext.rxAndroidVersion
+    implementation 'io.reactivex.rxjava2:rxjava:' + project.ext.rxJavaVersion
 
     // for getting source no :)
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.2.0-rc02'

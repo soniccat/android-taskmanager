@@ -1,4 +1,4 @@
-package com.example.alexeyglushkov.wordteacher.authorization;
+package com.example.alexeyglushkov.authorization;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -54,11 +54,12 @@ public class AuthActivityProxy implements OAuthWebClient {
     }
 
     @Override
-    public Single<String> loadUrl(String url) {
+    public Single<String> loadUrl(String url, String callback) {
         Assert.assertNotNull(currentActivity);
 
         Intent intent = new Intent(getCurrentActivity(), AuthorizationActivity.class);
         intent.putExtra(AuthorizationActivity.LOAD_URL, url);
+        intent.putExtra(AuthorizationActivity.CALLBACK_URL, callback);
 
         getCurrentActivity().startActivity(intent);
         return getAuthResult();

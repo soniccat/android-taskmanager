@@ -5,8 +5,10 @@ import com.example.alexeyglushkov.authcachemanager.AccountCacheStore;
 import com.example.alexeyglushkov.authorization.Auth.Account;
 import com.example.alexeyglushkov.authorization.Auth.AccountStore;
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner;
+import com.example.alexeyglushkov.authorization.AuthActivityProxy;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
+import com.example.alexeyglushkov.cachemanager.SimpleStorageCleaner;
 import com.example.alexeyglushkov.cachemanager.StorageCleaner;
 import com.example.alexeyglushkov.cachemanager.Storage;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
@@ -14,12 +16,15 @@ import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.quizletservice.tasks.QuizletServiceTaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 import com.example.alexeyglushkov.taskmanager.task.Task;
+import com.example.alexeyglushkov.taskmanager.task.TaskManagerCoordinator;
+import com.example.alexeyglushkov.taskmanager.task.coordinators.LimitTaskManagerCoordinator;
 import com.rssclient.model.RssStorage;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManager;
 import com.example.alexeyglushkov.taskmanager.task.TaskManager;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 import java.io.File;
 
@@ -29,7 +34,7 @@ public class MainApplication extends Application {
 
     private QuizletService quizletService;
 
-
+    private TaskManagerCoordinator coordinator;
     private TaskManager taskManager;
     private RssStorage rssStorage;
 
@@ -47,7 +52,13 @@ public class MainApplication extends Application {
         super.onCreate();
 
         authWebClient = new AuthActivityProxy();
-        taskManager = new SimpleTaskManager(10);
+
+        LimitTaskManagerCoordinator newCoordinator = new LimitTaskManagerCoordinator(10);
+        newCoordinator.setLimit(1, 0.5f);
+        newCoordinator.setLimit(2, 0.5f);
+
+        coordinator = newCoordinator;
+        taskManager = new SimpleTaskManager(coordinator);
         rssStorage = new RssStorage("RssStorage");
 
         File cacheDir = getDir("ServiceCache", MODE_PRIVATE);
@@ -85,7 +96,7 @@ public class MainApplication extends Application {
         final Task cleanTask = new SimpleTask() {
             @Override
             public void startTask() {
-                StorageCleaner cleaner = new DiskStorageCleaner();
+                StorageCleaner cleaner = new SimpleStorageCleaner();
                 cleaner.clean(getStorage());
 
                 getPrivate().handleTaskCompletion();
@@ -101,7 +112,12 @@ public class MainApplication extends Application {
             public void startTask() {
                 File authDir = getDir("AuthFolder", Context.MODE_PRIVATE);
                 AccountCacheStore store = new AccountCacheStore(authDir);
-                store.load();
+
+                try {
+                    store.load();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 restoreAccounts(store);
 
                 getPrivate().setTaskUserData(store);

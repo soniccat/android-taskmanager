@@ -123,7 +123,7 @@ public class OAuth20AuthorizerImpl implements OAuth20Authorizer
 
 	private Single<String> webAuthorization() {
         String url = getAuthorizationUrl();
-		return getWebClient().loadUrl(url).flatMap(new Function<String, SingleSource<? extends String>>() {
+		return getWebClient().loadUrl(url, config.getCallback()).flatMap(new Function<String, SingleSource<? extends String>>() {
 			@Override
 			public SingleSource<? extends String> apply(String url) throws Exception {
 				Uri uri = Uri.parse(url);
