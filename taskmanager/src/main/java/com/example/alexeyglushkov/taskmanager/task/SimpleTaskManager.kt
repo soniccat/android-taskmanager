@@ -19,6 +19,7 @@ import java.util.Date
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.android.asCoroutineDispatcher
+import java.lang.Exception
 import kotlin.coroutines.*
 
 /**
@@ -135,12 +136,11 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
             scope = CoroutineScope(dispatcher + SupervisorJob())
         }
 
+        _scope = scope
+        threadRunner = ScopeThreadRunner(scope, "SimpleTaskManagerScopeTheadId")
         scope.launch {
             threadRunner.setup()
         }
-
-        _scope = scope
-        threadRunner = ScopeThreadRunner(scope, "SimpleTaskManagerScopeTheadId")
     }
 
     private fun initTaskSope(inScope: CoroutineScope?) {

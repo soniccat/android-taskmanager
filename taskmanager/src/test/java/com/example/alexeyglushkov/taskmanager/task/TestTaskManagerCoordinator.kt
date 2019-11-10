@@ -1,6 +1,6 @@
 package com.example.alexeyglushkov.taskmanager.task
 
-open class TestTaskManagerCoordinator: TaskManagerCoordinator {
+open class TestTaskManagerCoordinator(var canAddMoreTasks: Boolean = false): TaskManagerCoordinator {
     override val taskFilter: TaskProvider.TaskFilter = object : TaskProvider.TaskFilter {
         override fun getFilteredTaskTypes(): List<Int> {
             return emptyList()
@@ -8,7 +8,7 @@ open class TestTaskManagerCoordinator: TaskManagerCoordinator {
     }
 
     override fun canAddMoreTasks(): Boolean {
-        return false
+        return canAddMoreTasks
     }
 
     override fun onTaskStartedLoading(pool: TaskPool, task: Task) {

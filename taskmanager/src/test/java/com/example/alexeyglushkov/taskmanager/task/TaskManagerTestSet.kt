@@ -60,6 +60,7 @@ class TaskManagerTestSet {
 
     fun getLoadingTaskCount() {
         // Arrange
+        setCanAddMoreTasks(taskManager)
         val task1 = TestTasks.createTaskMock("taskId1")
         val task2 = TestTasks.createTaskMock("taskId2")
         val task3 = TestTasks.createTaskMock("taskId3")
@@ -225,6 +226,7 @@ class TaskManagerTestSet {
 
     fun startImmediatelySkipPolicy() {
         // Arrange
+        setCanAddMoreTasks(taskManager)
         val task1 = TestTasks.createTestTaskSpy("taskId")
         val task2 = TestTasks.createTestTaskSpy("taskId")
 
@@ -248,6 +250,7 @@ class TaskManagerTestSet {
 
     fun startImmediatelySkipPolicyWithFinish() {
         // Arrange
+        setCanAddMoreTasks(taskManager)
         val task1 = TestTasks.createTestTaskSpy("taskId")
         val task2 = TestTasks.createTestTaskSpy("taskId")
 
@@ -303,6 +306,7 @@ class TaskManagerTestSet {
 
     fun addTask() {
         // Arrange
+        setCanAddMoreTasks(taskManager)
         val task = TestTasks.createTaskMock()
         val listener = mock<TaskManager.Listener>()
         val taskPrivate = task.private
@@ -342,6 +346,7 @@ class TaskManagerTestSet {
 
     fun addTheSameTaskWithSkipPolicy() {
         // Arrange
+        setCanAddMoreTasks(taskManager)
         val listener = mock<TaskManager.Listener>()
 
         val task1 = TestTasks.createTestTaskSpy("taskId")
@@ -372,6 +377,7 @@ class TaskManagerTestSet {
 
     fun addTheSameTaskWithCancelPolicy() {
         // Arrange
+        setCanAddMoreTasks(taskManager)
         val task1 = TestTasks.createTestTaskSpy("taskId")
         val task2 = TestTasks.createTestTaskSpy("taskId")
         task2.loadPolicy = Task.LoadPolicy.CancelPreviouslyAdded
@@ -394,6 +400,7 @@ class TaskManagerTestSet {
 
     fun taskCallbackCalled() {
         // Arrange
+        setCanAddMoreTasks(taskManager)
         val listener = mock<TaskManager.Listener>()
 
         val task = TestTasks.createTestTaskSpy("taskId")
@@ -414,6 +421,7 @@ class TaskManagerTestSet {
 
     fun taskWithCancelledImmediatelyCallbackCalledAfterCancel() {
         // Arrange
+        setCanAddMoreTasks(taskManager)
         val listener = mock<TaskManager.Listener>()
 
         val task = TestTasks.createTestTaskSpy("taskId")
@@ -437,6 +445,7 @@ class TaskManagerTestSet {
 
     fun addStateListener() {
         // Arrange
+        setCanAddMoreTasks(taskManager)
         val task = TestTasks.createTaskMock("taskId", Task.Status.NotStarted)
         val listener1 = mock<TaskManager.Listener>()
         val listener2 = mock<TaskManager.Listener>()
@@ -475,6 +484,7 @@ class TaskManagerTestSet {
 
     fun removeTask() {
         // Arrange
+        setCanAddMoreTasks(taskManager)
         val task = TestTasks.createTaskMock("taskId", Task.Status.NotStarted)
         val listener = mock<TaskManager.Listener>()
         val taskPrivate = task.private
@@ -495,6 +505,7 @@ class TaskManagerTestSet {
 
     fun removeUnknownTask() {
         // Arrange
+        setCanAddMoreTasks(taskManager)
         val task1 = TestTasks.createTaskMock("taskId", Task.Status.NotStarted)
         val task2 = TestTasks.createTaskMock("taskId", Task.Status.NotStarted)
         val listener = mock<TaskManager.Listener>()
@@ -545,18 +556,12 @@ class TaskManagerTestSet {
 
     fun addTaskFromPoolWhenCanLoad() {
         // Arrange
-        val coordinator = object : TestTaskManagerCoordinator() {
-            override fun canAddMoreTasks(): Boolean {
-                return true
-            }
-        }
-
+        setCanAddMoreTasks(taskManager)
         val taskProvider = createTaskProviderMock("0", taskManager)
         val taskCallback = mock<Task.Callback>()
         val testTask = TestTasks.createTestTaskSpy("taskId")
         testTask.taskCallback = taskCallback
 
-        `when`(taskManager.taskManagerCoordinator).doReturn(coordinator)
         `when`(taskProvider.getTopTask()).doReturn(testTask)
         `when`(taskProvider.takeTopTask()).doReturn(testTask)
 
@@ -608,18 +613,13 @@ class TaskManagerTestSet {
 
     fun cancelStartedTaskFromPool() {
         // Arrange
-        val coordinator = object : TestTaskManagerCoordinator() {
-            override fun canAddMoreTasks(): Boolean {
-                return true
-            }
-        }
+        setCanAddMoreTasks(taskManager)
         val taskProvider = createTaskProviderMock("0", taskManager)
         val taskCallback = mock<Task.Callback>()
         val testTask = TestTasks.createTestTaskSpy("taskId")
         testTask.taskCallback = taskCallback
         val cancelInfo = "info"
 
-        `when`(taskManager.taskManagerCoordinator).doReturn(coordinator)
         `when`(taskProvider.getTopTask()).doReturn(testTask)
         `when`(taskProvider.takeTopTask()).doReturn(testTask)
         `when`(testTask.canBeCancelledImmediately()).thenReturn(true)
@@ -637,6 +637,10 @@ class TaskManagerTestSet {
     }
 
     // Tools
+
+    private fun setCanAddMoreTasks(taskManager: TaskManager) {
+        (taskManager.taskManagerCoordinator as TestTaskManagerCoordinator).canAddMoreTasks = true
+    }
 
     private fun createTaskProviderSpy(id: String, taskManager: TaskManager): TaskProvider {
         val taskProvider = TestTaskProvider(taskManager.scope, id)

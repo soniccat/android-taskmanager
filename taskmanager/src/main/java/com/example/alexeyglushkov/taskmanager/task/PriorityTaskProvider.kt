@@ -74,20 +74,28 @@ open class PriorityTaskProvider(scope: CoroutineScope, override var taskProvider
 
         var topTask: Task? = null
         var topPriority = -1
+        var topQueue: SortedList<Task>? = null
         val taskFilter = taskFilter
 
         for (i in 0 until taskQueues.size()) {
             if (taskFilter == null || !taskFilter.getFilteredTaskTypes().contains(taskQueues.keyAt(i))) {
                 val queue = taskQueues.get(taskQueues.keyAt(i))
                 if (queue != null) {
-                    val queueTask = getTopTask(queue, needPoll)
+                    val queueTask = getTopTask(queue, false)
                     if (queueTask != null && queueTask.taskPriority > topPriority) {
+                        topQueue = queue
                         topTask = queueTask
                         topPriority = topTask.taskPriority
                     }
                 }
             }
         }
+
+        if (needPoll && topQueue != null) {
+            val resultTopTask = getTopTask(topQueue, true) // do poll
+            assert(resultTopTask == topTask)
+        }
+
         return topTask
     }
 
