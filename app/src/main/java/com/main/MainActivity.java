@@ -20,8 +20,6 @@ import com.example.alexeyglushkov.authtaskmanager.HttpServiceCommand;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider;
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner;
 import com.example.alexeyglushkov.cachemanager.Storage;
-import com.example.alexeyglushkov.cachemanager.clients.IStorageClient;
-import com.example.alexeyglushkov.cachemanager.clients.StorageClient;
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
 import com.example.alexeyglushkov.quizletservice.QuizletService;
 import com.example.alexeyglushkov.service.SimpleService;

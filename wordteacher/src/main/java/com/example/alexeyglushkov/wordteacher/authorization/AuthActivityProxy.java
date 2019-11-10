@@ -3,7 +3,6 @@ package com.example.alexeyglushkov.wordteacher.authorization;
 import android.app.Activity;
 import android.content.Intent;
 
-import com.example.alexeyglushkov.authorization.Auth.Authorizer;
 import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient;
 
 import org.junit.Assert;
@@ -16,8 +15,6 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Single;
-import io.reactivex.SingleEmitter;
-import io.reactivex.SingleOnSubscribe;
 
 /**
  * Created by alexeyglushkov on 25.11.15.

@@ -4,6 +4,7 @@ import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnection
 import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.TaskBase;
 import com.example.alexeyglushkov.taskmanager.task.Tasks;
+import com.example.alexeyglushkov.taskmanager.task.rx.TasksRx;
 
 import androidx.annotation.NonNull;
 import io.reactivex.Completable;
@@ -21,15 +22,15 @@ public class BaseServiceTask<T> implements ServiceTask<T> {
     }
 
     public static <T> BaseServiceTask<T> fromSingle(Single<T> single) {
-        return new BaseServiceTask<>(Tasks.INSTANCE.fromSingle(single));
+        return new BaseServiceTask<>(TasksRx.INSTANCE.fromSingle(single));
     }
 
     public static <T> BaseServiceTask<T> fromMaybe(Maybe<T> maybe) {
-        return new BaseServiceTask<>(Tasks.INSTANCE.fromMaybe(maybe));
+        return new BaseServiceTask<>(TasksRx.INSTANCE.fromMaybe(maybe));
     }
 
     public static BaseServiceTask<Object> fromCompletable(Completable completable) {
-        return new BaseServiceTask<>(Tasks.INSTANCE.fromCompletable(completable));
+        return new BaseServiceTask<>(TasksRx.INSTANCE.fromCompletable(completable));
     }
 
     protected BaseServiceTask(TaskBase task) {

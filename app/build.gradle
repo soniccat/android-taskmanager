@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion project.ext.compileSdkVersion
@@ -85,20 +87,27 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:'  + project.ext.legacySupportVersion
     implementation 'androidx.appcompat:appcompat:' + project.ext.appCompatVersion
     implementation 'android.arch.lifecycle:extensions:' + project.ext.archLifecycleVersion
+    implementation project(path: ':tools')
     annotationProcessor 'android.arch.lifecycle:compiler:' + rootProject.archLifecycleVersion
     testImplementation 'org.mockito:mockito-core:1.9.5'
     implementation project(':taskmanager')
     implementation project(':taskmanager_httptask')
+    implementation project(':storagemanager')
     implementation project(':authorization')
     implementation project(':servicetaskmanager')
     implementation project(':authcachemanager')
     implementation project(':service')
     implementation project(':quizlet_repository')
+    implementation project(':streamlib')
+    implementation project(':quizlet_repository')
+    implementation 'junit:junit:' + project.ext.junitVersion
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:" + project.ext.coroutinesVersion
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:" + project.ext.coroutinesVersion
 
     // for getting source no :)
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.2.0-alpha02'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0-alpha02'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0-alpha02'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.2.0-rc02'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0-rc02'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0-rc02'
 }
 
 task generateClass() {

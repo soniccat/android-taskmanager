@@ -71,7 +71,12 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         }
 
     private lateinit var _coordinator: TaskManagerCoordinator
-    override val taskManagerCoordinator: TaskManagerCoordinator
+    override var taskManagerCoordinator: TaskManagerCoordinator
+        set(value) {
+            // it's experimental
+            // TODO: need to handle it properly
+            _coordinator = value
+        }
         get() = _coordinator
 
     override fun getLoadingTaskCount(): Int {

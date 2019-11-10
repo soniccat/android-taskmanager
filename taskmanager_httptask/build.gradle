@@ -1,4 +1,6 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion project.ext.compileSdkVersion
@@ -27,6 +29,8 @@ dependencies {
     implementation project(':storagemanager')
     implementation project(':streamlib')
     implementation project(':tools')
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:" + project.ext.coroutinesVersion
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:" + project.ext.coroutinesVersion
 
     implementation 'junit:junit:' + project.ext.junitVersion
     androidTestImplementation 'androidx.test:runner:1.2.0'

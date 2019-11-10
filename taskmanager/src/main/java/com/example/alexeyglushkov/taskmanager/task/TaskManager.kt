@@ -13,7 +13,7 @@ import java.util.ArrayList
 
 interface TaskManager : TaskPool, TaskPool.Listener {
     // TaskManagerCoordinator sets taskFilters to taskProviders
-    val taskManagerCoordinator: TaskManagerCoordinator
+    var taskManagerCoordinator: TaskManagerCoordinator
 
     // Task Limits
     //var maxLoadingTasks: Int
