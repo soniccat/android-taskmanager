@@ -83,7 +83,7 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapsho
         listView!!.setOnScrollListener(object : OnScrollListener {
             override fun onScrollStateChanged(view: AbsListView, scrollState: Int) {}
             override fun onScroll(view: AbsListView, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
-                val adapter = view.adapter as RssItemsAdapter
+                val adapter = view.adapter as? RssItemsAdapter
                 if (adapter != null) {
                     this@RssItemsActivity.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount)
                 }

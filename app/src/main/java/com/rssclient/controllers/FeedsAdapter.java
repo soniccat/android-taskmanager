@@ -79,7 +79,9 @@ public class FeedsAdapter extends ArrayAdapter<RssFeed> {
         holder.text.setText(feed.name());
         holder.position = position;
 
-        loadImage(feed.image(), holder);
+        if (feed.image() != null) {
+            loadImage(feed.image(), holder);
+        }
 
         return convertView;
     }

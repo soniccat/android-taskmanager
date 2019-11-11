@@ -75,7 +75,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         set(value) {
             // it's experimental
             // TODO: need to handle it properly
-            _coordinator = value
+            setupCoordinator(value)
         }
         get() = _coordinator
 
@@ -118,7 +118,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     private fun init(inCoordinator: TaskManagerCoordinator, inScope: CoroutineScope?, inTaskScope: CoroutineScope?) {
         initScope(inScope)
         initTaskSope(inTaskScope)
-        _coordinator = inCoordinator
+        setupCoordinator(inCoordinator)
 
         callbackHandler = Handler(Looper.myLooper())
 
@@ -146,6 +146,11 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         scope.launch {
             threadRunner.setup()
         }
+    }
+
+    private fun setupCoordinator(aCooridinator: TaskManagerCoordinator) {
+        _coordinator = aCooridinator
+        _coordinator.threadRunner = threadRunner
     }
 
     private fun initTaskSope(inScope: CoroutineScope?) {

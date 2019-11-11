@@ -9,7 +9,7 @@ import java.util.ArrayList
 
 class LimitTaskManagerCoordinator(maxLoadingTasks: Int): TaskManagerCoordinator {
     var listeners = WeakRefList<Listener>()
-    lateinit var threadRunner: ThreadRunner
+    override var threadRunner: ThreadRunner = InstantThreadRunner()
 
     private var _limits = SparseArrayCompat<Float>()
     var limits: SparseArrayCompat<Float>
@@ -20,7 +20,7 @@ class LimitTaskManagerCoordinator(maxLoadingTasks: Int): TaskManagerCoordinator 
             }
         }
         set(value) {
-            threadRunner.run {
+            threadRunner.launch {
                 _limits = value
             }
         }
