@@ -18,9 +18,21 @@ class ScopeThreadRunner(val scope: CoroutineScope, val threadId: String): Thread
         }
     }
 
-    override fun <T> run(block: () -> T): T {
+//    override fun <T> run(block: () -> T): T {
+//        if (isOnThread()) {
+//            return block()
+//        } else {
+//            return runBlocking(scope.coroutineContext) {
+//                return@runBlocking block()
+//            }
+//        }
+//    }
+
+    override fun <T> run(block: suspend () -> T): T {
         if (isOnThread()) {
-            return block()
+            return runBlocking {
+                block()
+            }
         } else {
             return runBlocking(scope.coroutineContext) {
                 return@runBlocking block()

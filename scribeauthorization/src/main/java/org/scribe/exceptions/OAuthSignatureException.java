@@ -7,9 +7,9 @@ package org.scribe.exceptions;
  */
 public class OAuthSignatureException extends OAuthException
 {
-  private static final long serialVersionUID = 1L;
   private static final String MSG = "Error while signing string: %s";
-  
+  private static final long serialVersionUID = 5507932791511846644L;
+
   /**
    * Default constructor
    * 

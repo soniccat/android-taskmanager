@@ -139,9 +139,8 @@ class TaskManagerView : LinearLayout {
             allTypesSet.add(type)
         }
 
-        val allTypesArray = arrayOfNulls<Int>(allTypesSet.size)
-        allTypesSet.toTypedArray<Int>()
+        val allTypesArray = allTypesSet.toTypedArray()
         Arrays.sort(allTypesArray)
-        allTypes = Arrays.asList<Int>(*allTypesArray)
+        allTypes = listOf(*allTypesArray)
     }
 }

@@ -271,13 +271,9 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     @WorkerThread
     override fun onTaskConflict(pool: TaskPool, newTask: Task, oldTask: Task): Task {
         threadRunner.checkThread()
-
-        var taskResult: Task = newTask
-        runBlocking(scope.coroutineContext) {
-            taskResult = resolveConflictTasks(newTask, oldTask)
+        return threadRunner.run {
+            resolveConflictTasks(newTask, oldTask)
         }
-
-        return taskResult
     }
 
     @WorkerThread

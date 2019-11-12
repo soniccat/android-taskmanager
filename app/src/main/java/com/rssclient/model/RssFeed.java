@@ -21,6 +21,8 @@ import com.example.alexeyglushkov.taskmanager.task.Task;
 import com.example.alexeyglushkov.taskmanager.task.Tasks;
 
 public class RssFeed implements Parcelable, Serializable, Tasks.TaskListener, HttpURLConnectionProvider {
+    private static final long serialVersionUID = 7603336069987943527L;
+
     String name;
     URL url;
     Task.Status loadStatus = Task.Status.NotStarted;
@@ -372,8 +374,6 @@ public class RssFeed implements Parcelable, Serializable, Tasks.TaskListener, Ht
     };
 
     // Serializable
-
-    private static final long serialVersionUID = 0L;
 
     private void writeObject(java.io.ObjectOutputStream out) throws IOException {
         // write 'this' to 'out'...

@@ -26,6 +26,8 @@ import com.example.alexeyglushkov.taskmanager.task.Tasks;
 
 public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener {
 
+    private static final long serialVersionUID = -4315556649639854776L;
+
     public interface RssStorageCallback {
         void completed(RssStorage storage, Error error);
     }
@@ -202,8 +204,6 @@ public class RssStorage implements Parcelable, Serializable, Tasks.TaskListener 
     public Context context() {
         return context.get();
     }
-
-    private static final long serialVersionUID = 0L;
 
     private void writeObject(java.io.ObjectOutputStream out)
             throws IOException {

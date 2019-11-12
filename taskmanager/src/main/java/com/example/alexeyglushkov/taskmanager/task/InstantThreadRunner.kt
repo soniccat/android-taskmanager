@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.taskmanager.task
 
+import kotlinx.coroutines.runBlocking
+
 class InstantThreadRunner: ThreadRunner {
     override fun setup() {
     }
@@ -8,8 +10,14 @@ class InstantThreadRunner: ThreadRunner {
         block()
     }
 
-    override fun <T> run(block: () -> T): T {
-        return block()
+//    override fun <T> run(block: () -> T): T {
+//        return block()
+//    }
+
+    override fun <T> run(block: suspend () -> T): T {
+        return runBlocking {
+            block()
+        }
     }
 
     override fun isOnThread(): Boolean {

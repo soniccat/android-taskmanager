@@ -6,8 +6,8 @@ package org.scribe.exceptions;
  * 
  * @author Pablo Fernandez
  */
-public class OAuthException extends RuntimeException
-{
+public class OAuthException extends RuntimeException {
+  private static final long serialVersionUID = 7627049118418417646L;
 
   /**
    * Default constructor 
@@ -28,6 +28,4 @@ public class OAuthException extends RuntimeException
   {
     super(message, null);
   }
-
-  private static final long serialVersionUID = 1L;
 }

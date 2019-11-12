@@ -16,6 +16,8 @@ import com.example.alexeyglushkov.taskmanager.task.Tasks;
 
 //TODO: think about implementing task container and moving check of setTaskCompleted to taskmanager
 public class Image implements Serializable, Tasks.TaskListener, HttpURLConnectionProvider {
+    private static final long serialVersionUID = 2567033384508404225L;
+
     protected URL url;
     protected int width;
     protected int height;
@@ -82,13 +84,12 @@ public class Image implements Serializable, Tasks.TaskListener, HttpURLConnectio
         this.loadPolicy = loadPolicy;
     }
 
-    private static final long serialVersionUID = 0L;
-
     private void writeObject(java.io.ObjectOutputStream out) throws IOException {
         // write 'this' to 'out'...
         out.writeUTF(url.toString());
         out.writeInt(width);
         out.writeInt(height);
+        out.writeInt(loadPolicy.ordinal());
     }
 
     private void readObject(java.io.ObjectInputStream in) throws IOException,
@@ -106,6 +107,9 @@ public class Image implements Serializable, Tasks.TaskListener, HttpURLConnectio
 
         width = in.readInt();
         height = in.readInt();
+
+        int loadPolicyInt = in.readInt();
+        loadPolicy = Task.LoadPolicy.values()[loadPolicyInt];
     }
 
     public Task.Status loadStatus() {
