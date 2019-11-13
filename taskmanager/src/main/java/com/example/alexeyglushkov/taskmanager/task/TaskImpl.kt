@@ -52,7 +52,7 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
             val oldStatus = this.taskStatus
             _taskStatus = value
 
-            Log.d("TaskImpl", "setTaskStatus " + value + " " + Thread.currentThread()) //TODO: CRASH: get concurrent access crash in triggerStatusListeners
+            Log.d("TaskImpl", "setTaskStatus " + value + " " + taskId + " " + Thread.currentThread()) //TODO: CRASH: get concurrent access crash in triggerStatusListeners
             triggerStatusListeners(oldStatus, this.taskStatus)
         }
 
