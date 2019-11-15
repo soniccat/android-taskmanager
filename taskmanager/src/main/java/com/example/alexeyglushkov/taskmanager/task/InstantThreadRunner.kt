@@ -10,11 +10,11 @@ class InstantThreadRunner: ThreadRunner {
         block()
     }
 
-//    override fun <T> run(block: () -> T): T {
-//        return block()
-//    }
+    override fun <T> run(block: () -> T): T {
+        return block()
+    }
 
-    override fun <T> run(block: suspend () -> T): T {
+    override fun <T> runSuspend(block: suspend () -> T): T {
         return runBlocking {
             block()
         }
