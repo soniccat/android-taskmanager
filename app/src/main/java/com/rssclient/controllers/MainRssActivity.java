@@ -46,6 +46,9 @@ public class MainRssActivity extends AppCompatActivity implements FeedsAdapter.F
 
         if (rssStorage == null) {
             rssStorage = application.getRssStorage();
+            if (rssStorage.feeds().size() == 0) { // TODO: update to livedata
+                this.loadRssStorage();
+            }
         }
 
         setContentView(R.layout.activity_main_rss);
@@ -119,7 +122,6 @@ public class MainRssActivity extends AppCompatActivity implements FeedsAdapter.F
         });
 
         this.updateTableAdapter();
-        this.loadRssStorage();
     }
 
     @Override

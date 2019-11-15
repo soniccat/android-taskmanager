@@ -31,6 +31,7 @@ abstract class TaskPoolBase(scope: CoroutineScope) : TaskPool {
 
     override fun onTaskStatusChanged(task: Task, oldStatus: Task.Status, newStatus: Task.Status) {
         if (Tasks.isTaskCompleted(task)) {
+            Log.d(tag(), "going to remove task")
             removeTask(task)
         }
     }
@@ -88,6 +89,7 @@ abstract class TaskPoolBase(scope: CoroutineScope) : TaskPool {
 
     override fun removeTask(task: Task) {
         scope.launch {
+            Log.d(tag(), "will remove task")
             removeTaskOnThread(task)
         }
     }

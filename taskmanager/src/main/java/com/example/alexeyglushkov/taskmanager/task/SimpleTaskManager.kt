@@ -226,7 +226,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     @WorkerThread
-    suspend private fun addTaskProviderOnThread(provider: TaskProvider) {
+    private fun addTaskProviderOnThread(provider: TaskProvider) {
         threadRunner.checkThread()
 
         val oldTaskProvider = getTaskProvider(provider.taskProviderId)
@@ -389,7 +389,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     @WorkerThread
-    suspend private fun removeTaskProviderOnThread(provider: TaskProvider) {
+    private fun removeTaskProviderOnThread(provider: TaskProvider) {
         threadRunner.checkThread()
 
         // cancel all tasks
@@ -412,7 +412,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     // returns true when load policy checks pass
     @WorkerThread
-    suspend private fun handleTaskLoadPolicy(task: Task, taskPool: TaskPool?): Boolean {
+    private fun handleTaskLoadPolicy(task: Task, taskPool: TaskPool?): Boolean {
         threadRunner.checkThread()
 
         val taskId = task.taskId
@@ -435,7 +435,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     @WorkerThread
-    suspend private fun resolveConflictTasks(newTask: Task, oldTask: Task): Task {
+    private fun resolveConflictTasks(newTask: Task, oldTask: Task): Task {
         if (newTask.loadPolicy == Task.LoadPolicy.CancelPreviouslyAdded) {
             cancelTaskOnThread(oldTask, null)
             return newTask
@@ -451,7 +451,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     @WorkerThread
-    suspend private fun checkTasksToRunOnThread() {
+    private fun checkTasksToRunOnThread() {
         threadRunner.checkThread()
 
         if (taskManagerCoordinator.canAddMoreTasks()) {
@@ -493,7 +493,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     @WorkerThread
-    suspend private fun startTaskOnThread(task: Task) {
+    private fun startTaskOnThread(task: Task) {
         if (task !is TaskBase) { assert(false); return }
         threadRunner.checkThread()
         Assert.assertTrue(Tasks.isTaskReadyToStart(task))
@@ -559,7 +559,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     @WorkerThread
-    suspend private fun handleTaskCompletionOnThread(task: Task, isCancelled: Boolean) {
+    private fun handleTaskCompletionOnThread(task: Task, isCancelled: Boolean) {
         if (task !is TaskBase) { assert(false); return }
         threadRunner.checkThread()
 
@@ -593,7 +593,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     @WorkerThread
-    suspend private fun cancelTaskOnThread(task: Task, info: Any?) {
+    private fun cancelTaskOnThread(task: Task, info: Any?) {
         if (task !is TaskBase) { assert(false); return }
         threadRunner.checkThread()
 
