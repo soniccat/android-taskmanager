@@ -10,28 +10,27 @@ import kotlinx.coroutines.launch
  * Created by alexeyglushkov on 30.12.14.
  */
 // TODO: think about abstractTaskPool without tasks list to be able to inherit code in PriorityTaskProvider
-abstract class TaskPoolBase(scope: CoroutineScope) : TaskPool {
+abstract class TaskPoolBase(threadRunner: ThreadRunner) : TaskPool {
     //TODO: think about weakref
     protected var listeners = mutableListOf<TaskPool.Listener>() // TODO: set one listener
 
-    private var _scope: CoroutineScope? = null
-    override var scope: CoroutineScope
-        get() = _scope!!
+    private var _threadRunner: ThreadRunner? = null
+    override var threadRunner: ThreadRunner
+        get() = _threadRunner!!
         set(value) {
-            _scope = value
+            _threadRunner = value
         }
 
     override var userData: Any? = null
 
     init {
-        _scope = scope
+        _threadRunner = threadRunner
     }
 
     //// Events
 
     override fun onTaskStatusChanged(task: Task, oldStatus: Task.Status, newStatus: Task.Status) {
         if (Tasks.isTaskCompleted(task)) {
-            Log.d(tag(), "going to remove task")
             removeTask(task)
         }
     }
@@ -49,7 +48,7 @@ abstract class TaskPoolBase(scope: CoroutineScope) : TaskPool {
         // TaskPool must set Waiting status on the current thread
         task.private.taskStatus = Task.Status.Waiting
 
-        scope.launch {
+        threadRunner.launch {
             addTaskOnThread(task)
         }
     }
@@ -88,8 +87,7 @@ abstract class TaskPoolBase(scope: CoroutineScope) : TaskPool {
     }
 
     override fun removeTask(task: Task) {
-        scope.launch {
-            Log.d(tag(), "will remove task")
+        threadRunner.launch {
             removeTaskOnThread(task)
         }
     }
@@ -113,7 +111,7 @@ abstract class TaskPoolBase(scope: CoroutineScope) : TaskPool {
     abstract protected fun removeTaskInternal(task: Task): Boolean
 
     override fun cancelTask(task: Task, info: Any?) {
-        scope.launch {
+        threadRunner.launch {
             cancelTaskOnThread(task, info)
         }
     }

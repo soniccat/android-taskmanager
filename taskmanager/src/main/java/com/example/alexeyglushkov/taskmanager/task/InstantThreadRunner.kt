@@ -1,5 +1,6 @@
 package com.example.alexeyglushkov.taskmanager.task
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.runBlocking
 
 class InstantThreadRunner: ThreadRunner {
@@ -10,11 +11,17 @@ class InstantThreadRunner: ThreadRunner {
         block()
     }
 
+    override fun launchSuspend(block: suspend CoroutineScope.() -> Unit) {
+        runBlocking {
+            block()
+        }
+    }
+
     override fun <T> run(block: () -> T): T {
         return block()
     }
 
-    override fun <T> runSuspend(block: suspend () -> T): T {
+    override fun <T> runSuspend(block: suspend CoroutineScope.() -> T): T {
         return runBlocking {
             block()
         }

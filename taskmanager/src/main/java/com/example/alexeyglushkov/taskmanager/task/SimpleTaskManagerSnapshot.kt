@@ -41,7 +41,7 @@ class SimpleTaskManagerSnapshot : TaskManagerSnapshot, TaskManager.Listener {
     }
 
     private fun bind(taskManager: TaskManager) {
-        taskManager.scope.launch {
+        taskManager.threadRunner.launch {
             bindOnThread(taskManager)
             HandlerTools.runOnHandlerThread(callbackHandler) { triggerOnSnapshotListeners() }
         }

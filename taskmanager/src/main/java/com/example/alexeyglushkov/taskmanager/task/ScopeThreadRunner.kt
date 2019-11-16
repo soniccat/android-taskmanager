@@ -13,6 +13,16 @@ class ScopeThreadRunner(val scope: CoroutineScope, val threadId: String): Thread
     }
 
     override fun launch(block: () -> Unit) {
+        if (isOnThread()) {
+            block()
+        } else {
+            scope.launch {
+                block()
+            }
+        }
+    }
+
+    override fun launchSuspend(block: suspend CoroutineScope.() -> Unit) {
         scope.launch {
             block()
         }
@@ -28,7 +38,7 @@ class ScopeThreadRunner(val scope: CoroutineScope, val threadId: String): Thread
         }
     }
 
-    override fun <T> runSuspend(block: suspend () -> T): T {
+    override fun <T> runSuspend(block: suspend CoroutineScope.() -> T): T {
         if (isOnThread()) {
             return runBlocking {
                 block()

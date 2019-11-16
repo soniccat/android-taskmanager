@@ -95,7 +95,7 @@ public class FeedsAdapter extends ArrayAdapter<RssFeed> {
 
         final int position = holder.position;
 
-        Task task = ImageLoader.INSTANCE.loadImage(this.taskManager.getScope(), image, Integer.toString(holder.hashCode()), new ImageLoader.LoadCallback() {
+        Task task = ImageLoader.INSTANCE.loadImage(this.taskManager.getThreadRunner(), image, Integer.toString(holder.hashCode()), new ImageLoader.LoadCallback() {
 
             @Override
             public void completed(Task task, final Image image, final Bitmap bitmap, Error error) {

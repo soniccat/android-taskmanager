@@ -3,7 +3,7 @@ package com.example.alexeyglushkov.taskmanager.task
 import androidx.annotation.WorkerThread
 import kotlinx.coroutines.CoroutineScope
 
-open class ListTaskPool(scope: CoroutineScope): TaskPoolBase(scope) {
+open class ListTaskPool(threadRunner: ThreadRunner): TaskPoolBase(threadRunner) {
     //TODO: think about a map
     protected val _tasks = mutableListOf<Task>()
 

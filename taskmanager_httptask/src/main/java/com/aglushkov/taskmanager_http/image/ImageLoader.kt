@@ -13,6 +13,7 @@ import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStream
 import com.example.alexeyglushkov.taskmanager.task.Task
 import com.example.alexeyglushkov.taskmanager.task.Task.Callback
 import com.example.alexeyglushkov.taskmanager.task.Tasks.bindOnTaskCompletion
+import com.example.alexeyglushkov.taskmanager.task.ThreadRunner
 import com.example.alexeyglushkov.tools.HandlerTools
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -22,18 +23,18 @@ import org.junit.Assert
 //TODO: need to simplify this logic and remove static methods...
 object ImageLoader {
     //TODO: write argument descriptions
-    fun loadImage(scope: CoroutineScope, image: Image, callback: LoadCallback?): Task {
-        return loadImage(scope, image, null, callback)
+    fun loadImage(threadRunner: ThreadRunner, image: Image, callback: LoadCallback?): Task {
+        return loadImage(threadRunner, image, null, callback)
     }
 
-    fun loadImage(scope: CoroutineScope, image: Image, destinationId: String?, callback: LoadCallback?): Task {
+    fun loadImage(threadRunner: ThreadRunner, image: Image, destinationId: String?, callback: LoadCallback?): Task {
         val streamReader: InputStreamDataReader<Bitmap> = ByteArrayReader(BytesBitmapConverter())
         val reader: HTTPConnectionStreamReader<Bitmap> = HTTPConnectionStreamReaderAdaptor(streamReader)
         val transportTask = createTask(image, destinationId, reader)
         val taskCallback = getTaskCallback(transportTask, image, callback)
         transportTask.taskCallback = taskCallback
 
-        scope.launch {
+        threadRunner.launch {
             // to have addTaskStatusListener called on a scope's thread
             bindOnTaskCompletion(transportTask, image)
         }

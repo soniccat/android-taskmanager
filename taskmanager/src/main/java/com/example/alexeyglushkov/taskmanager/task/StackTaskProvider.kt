@@ -9,7 +9,7 @@ import kotlinx.coroutines.CoroutineScope
  */
 open class StackTaskProvider(private val areTasksDependent: Boolean, //if enabled the top task blocks the next task until the former finishes
                              override var taskProviderId: String,
-                             scope: CoroutineScope): ListTaskPool(scope), TaskProvider, Task.StatusListener {
+                             threadRunner: ThreadRunner): ListTaskPool(threadRunner), TaskProvider, Task.StatusListener {
     override var priority: Int = 0
     private var isBlocked: Boolean = false
     override var taskFilter: TaskProvider.TaskFilter? = null

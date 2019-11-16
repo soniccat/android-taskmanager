@@ -16,7 +16,7 @@ import java.util.Comparator
 
 // A task source for TaskManager
 
-open class PriorityTaskProvider(scope: CoroutineScope, override var taskProviderId: String): TaskPoolBase(scope), TaskProvider, Task.StatusListener {
+open class PriorityTaskProvider(threadRunner: ThreadRunner, override var taskProviderId: String): TaskPoolBase(threadRunner), TaskProvider, Task.StatusListener {
     override var priority: Int = 0
     override var taskFilter: TaskProvider.TaskFilter? = null
 
@@ -132,7 +132,7 @@ open class PriorityTaskProvider(scope: CoroutineScope, override var taskProvider
     }
 
     fun updatePriorities(provider: PriorityProvider) {
-        scope.launch {
+        threadRunner.launch {
             for (i in 0 until taskQueues.size()) {
                 val queue = taskQueues.valueAt(i)
                 val tasks = taskQueues.get(taskQueues.keyAt(i))

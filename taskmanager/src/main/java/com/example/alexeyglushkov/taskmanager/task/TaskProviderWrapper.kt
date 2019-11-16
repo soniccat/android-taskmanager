@@ -18,10 +18,10 @@ open class TaskProviderWrapper(val provider: TaskProvider) : TaskProvider {
             provider.taskFilter = value
         }
 
-    override var scope: CoroutineScope
-        get() = provider.scope
+    override var threadRunner: ThreadRunner
+        get() = provider.threadRunner
         set(handler) {
-            provider.scope = handler
+            provider.threadRunner = threadRunner
         }
 
     override var taskProviderId: String

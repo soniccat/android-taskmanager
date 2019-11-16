@@ -31,18 +31,17 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         const val WaitingTaskProviderId = "WaitingTaskProviderId"
     }
 
-    private var _scope: CoroutineScope? = null
-    override var scope: CoroutineScope
-        get() = _scope!!
+    var _threadRunner: ThreadRunner = InstantThreadRunner()
+    override var threadRunner: ThreadRunner
+        get() = _threadRunner
         set(value) {
-            _scope = value
+            _threadRunner = value
 
-            loadingTasks.scope = value
+            loadingTasks.threadRunner = value
             for (provider in _taskProviders) {
-                provider.scope = value
+                provider.threadRunner = value
             }
         }
-    private lateinit var threadRunner: ScopeThreadRunner
 
     private lateinit var callbackHandler: Handler
     override var userData: Any? = null
@@ -122,7 +121,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
         callbackHandler = Handler(Looper.myLooper())
 
-        loadingTasks = ListTaskPool(scope)
+        loadingTasks = ListTaskPool(threadRunner)
         loadingTasks.addListener(this)
 
         _taskProviders = createTaskProviders()
@@ -141,8 +140,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
             scope = CoroutineScope(dispatcher + SupervisorJob())
         }
 
-        _scope = scope
-        threadRunner = ScopeThreadRunner(scope, "SimpleTaskManagerScopeTheadId")
+        _threadRunner = ScopeThreadRunner(scope, "SimpleTaskManagerScopeTheadId")
         scope.launch {
             threadRunner.setup()
         }
@@ -176,7 +174,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     private fun createWaitingTaskProvider() {
-        waitingTasks = PriorityTaskProvider(scope, WaitingTaskProviderId)
+        waitingTasks = PriorityTaskProvider(threadRunner, WaitingTaskProviderId)
         waitingTasks.addListener(this)
 
         _taskProviders.add(waitingTasks)
@@ -196,14 +194,14 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         // TaskManager must set Waiting status on the current thread
         task.private.taskStatus = Task.Status.Waiting
 
-        scope.launch {
+        threadRunner.launch {
             // task will be launched in onTaskAdded method
             waitingTasks.addTask(task)
         }
     }
 
     override fun startImmediately(task: Task) {
-        scope.launch {
+        threadRunner.launch {
             if (handleTaskLoadPolicy(task, null)) {
                 startTaskOnThread(task)
             }
@@ -211,16 +209,16 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     override fun cancel(task: Task, info: Any?) {
-        scope.launch {
+        threadRunner.launch {
             cancelTaskOnThread(task, info)
         }
     }
 
     override fun addTaskProvider(provider: TaskProvider) {
-        Assert.assertEquals(provider.scope, scope)
+        Assert.assertEquals(provider.threadRunner, threadRunner)
         Assert.assertNotNull(provider.taskProviderId)
 
-        scope.launch {
+        threadRunner.launch {
             addTaskProviderOnThread(provider)
         }
     }
@@ -240,7 +238,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     override fun setTaskProviderPriority(provider: TaskProvider, priority: Int) {
-        scope.launch {
+        threadRunner.launch {
             setTaskProviderPriorityOnThread(provider, priority)
         }
     }
@@ -278,7 +276,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     @WorkerThread
     override fun onTaskAdded(pool: TaskPool, task: Task) {
-        scope.launch {
+        threadRunner.launch {
             val isLoadingPool = pool === loadingTasks
             if (isLoadingPool) {
                 taskManagerCoordinator.onTaskStartedLoading(pool, task)
@@ -297,7 +295,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     @WorkerThread
     override fun onTaskRemoved(pool: TaskPool, task: Task) {
-        scope.launch {
+        threadRunner.launch {
             val isLoadingPool = pool === loadingTasks
             if (isLoadingPool) {
                 taskManagerCoordinator.onTaskFinishedLoading(pool, task)
@@ -310,7 +308,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     @WorkerThread
     override fun onTaskCancelled(pool: TaskPool, task: Task, info: Any?) {
-        scope.launch {
+        threadRunner.launch {
             cancelTaskOnThread(task, info)
         }
     }
@@ -383,7 +381,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     // ==
 
     override fun removeTaskProvider(provider: TaskProvider) {
-        scope.launch {
+        threadRunner.launch {
             removeTaskProviderOnThread(provider)
         }
     }
@@ -402,7 +400,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     fun setWaitingTaskProvider(provider: TaskProvider) {
-        Assert.assertEquals(provider.scope, scope)
+        Assert.assertEquals(provider.threadRunner, threadRunner)
 
         provider.taskProviderId = WaitingTaskProviderId
         addTaskProvider(provider)
@@ -498,7 +496,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         threadRunner.checkThread()
         Assert.assertTrue(Tasks.isTaskReadyToStart(task))
 
-        scope.launch {
+        threadRunner.launchSuspend {
             addLoadingTaskOnThread(task)
 
             logTask(task, "Task started")

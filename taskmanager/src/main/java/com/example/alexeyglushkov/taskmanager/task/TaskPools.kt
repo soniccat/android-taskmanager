@@ -15,7 +15,7 @@ object TaskPools {
     // TODO: I am not sure that these methods are necessary
     // maybe it's better to move them in Tools file
     fun getFilteredTasks(taskPool: TaskPool, filter: TaskFilter, completion: FilterCompletion) {
-        taskPool.scope.launch {
+        taskPool.threadRunner.launch {
             val tasks = ArrayList(taskPool.getTasks())
             HandlerTools.runOnHandlerThread(filter.handler) {
                 val filteredTasks = ArrayList<Task>()

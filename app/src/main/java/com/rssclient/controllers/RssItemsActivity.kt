@@ -70,7 +70,7 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapsho
         taskProvider = taskManager.getTaskProvider(PROVIDER_ID) as PriorityTaskProvider?
 
         if (taskProvider == null) {
-            taskProvider = PriorityTaskProvider(taskManager.scope, PROVIDER_ID)
+            taskProvider = PriorityTaskProvider(taskManager.threadRunner, PROVIDER_ID)
             taskManager.addTaskProvider(taskProvider!!)
         }
 
@@ -164,7 +164,8 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapsho
 
         val image = item.image()
         //the position is used as a part of task id to handle the same images right
-        val task = ImageLoader.loadImage(taskProvider!!.scope, image, "_" + Integer.toString(position) + "_", getLoadImageCallback(item, this))
+
+        val task = ImageLoader.loadImage(taskProvider!!.threadRunner, image, "_" + Integer.toString(position) + "_", getLoadImageCallback(item, this))
         val range = visibleRange
 
         task.taskType = position % 2 + 1
@@ -202,7 +203,7 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapsho
 
         //TODO: it should be done via api without direct access to getStreamReader
         val safeProvider = taskProvider
-        safeProvider?.scope?.launch {
+        safeProvider?.threadRunner?.launch {
             val tasks: MutableList<Task> = ArrayList()
             tasks.addAll(taskProvider!!.getTasks())
             for (t in tasks) {
