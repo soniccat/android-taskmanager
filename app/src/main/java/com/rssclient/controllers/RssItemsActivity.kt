@@ -26,20 +26,19 @@ import com.rssclient.model.RssFeed
 import com.rssclient.model.RssItem
 import com.rssclient.model.RssStorage
 import com.rssclient.model.RssStorage.RssFeedCallback
-import kotlinx.coroutines.launch
 import org.junit.Assert
 import java.lang.ref.WeakReference
 import java.net.MalformedURLException
 import java.net.URL
 
 class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapshotChangedListener, ProgressListener {
-    internal var taskProvider: PriorityTaskProvider? = null
+    lateinit internal var taskProvider: PriorityTaskProvider
     internal lateinit var taskManager: TaskManager
-    internal var listView: ListView? = null
+    lateinit internal var listView: ListView
     internal lateinit var rssStorage: RssStorage
-    internal var taskManagerView: TaskManagerView? = null
+    lateinit internal var taskManagerView: TaskManagerView
     internal lateinit var snapshot: TaskManagerSnapshot
-    internal var feed: RssFeed? = null
+    lateinit internal var feed: RssFeed
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,15 +61,18 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapsho
             url = URL(urlString)
         } catch (e: MalformedURLException) {
             e.printStackTrace()
+            throw e
         }
 
-        feed = rssStorage.getFeed(url)
+        feed = rssStorage.getFeed(url)!!
         taskManager = application.taskManager
-        taskProvider = taskManager.getTaskProvider(PROVIDER_ID) as PriorityTaskProvider?
 
-        if (taskProvider == null) {
+        val storedProvider = taskManager.getTaskProvider(PROVIDER_ID) as? PriorityTaskProvider
+        if (storedProvider == null) {
             taskProvider = PriorityTaskProvider(taskManager.threadRunner, PROVIDER_ID)
-            taskManager.addTaskProvider(taskProvider!!)
+            taskManager.addTaskProvider(taskProvider)
+        } else {
+            taskProvider = storedProvider
         }
 
         taskManagerView = findViewById<View>(R.id.task_manager_view) as TaskManagerView
@@ -79,7 +81,7 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapsho
         snapshot.addSnapshotListener(this)
 
         listView = findViewById<View>(R.id.listview) as ListView
-        listView!!.setOnScrollListener(object : OnScrollListener {
+        listView.setOnScrollListener(object : OnScrollListener {
             override fun onScrollStateChanged(view: AbsListView, scrollState: Int) {}
             override fun onScroll(view: AbsListView, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
                 val adapter = view.adapter as? RssItemsAdapter
@@ -89,54 +91,54 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapsho
             }
         })
 
-        val acitvity = this
-        val safeFeed = feed
-        if (safeFeed == null || safeFeed.items() == null || safeFeed.items().size == 0) {
-            rssStorage.loadFeed(taskManager, this, feed, RssFeedCallback { feed, error ->
-                // TODO Auto-generated method stub
-                println("loaded")
-                HandlerTools.runOnMainThread {
-                    if (error != null) {
-                        Tools.showErrorMessage(acitvity, "Rss Load Error")
-                    } else {
-                        acitvity.updateTableAdapter()
+        val activity = this
+        if (feed.items.size == 0) {
+            rssStorage.loadFeed(taskManager, this, feed, object : RssFeedCallback {
+                override fun completed(feed: RssFeed?, error: Error?) {
+                    println("loaded")
+                    HandlerTools.runOnMainThread {
+                        if (error != null) {
+                            Tools.showErrorMessage(activity, "Rss Load Error")
+                        } else {
+                            activity.updateTableAdapter()
+                        }
                     }
                 }
             })
         } else {
-            acitvity.updateTableAdapter()
+            activity.updateTableAdapter()
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(FEED_URL, feed!!.url.toString())
+        outState.putString(FEED_URL, feed.url.toString())
     }
 
     override fun onSnapshotChanged(snapshot: TaskManagerSnapshot) {
-        taskManagerView!!.showSnapshot(snapshot)
+        taskManagerView.showSnapshot(snapshot)
     }
 
     fun getViewAtPosition(pos: Int): View? {
-        val firstListItemPosition = listView!!.firstVisiblePosition
-        val lastListItemPosition = firstListItemPosition + listView!!.childCount - 1
+        val firstListItemPosition = listView.firstVisiblePosition
+        val lastListItemPosition = firstListItemPosition + listView.childCount - 1
         if (pos >= firstListItemPosition && pos <= lastListItemPosition) {
             val childIndex = pos - firstListItemPosition
-            return listView!!.getChildAt(childIndex)
+            return listView.getChildAt(childIndex)
         }
         return null
     }
 
     val visibleRange: Range<Int>
-        get() = if (listView!!.childCount == 0) {
+        get() = if (listView.childCount == 0) {
             Range(0, 0)
-        } else Range(listView!!.firstVisiblePosition, listView!!.firstVisiblePosition + listView!!.childCount - 1)
+        } else Range(listView.firstVisiblePosition, listView.firstVisiblePosition + listView.childCount - 1)
 
     internal fun updateTableAdapter() {
-        val items = ArrayList(feed!!.items())
+        val items = ArrayList(feed.items)
         val adapter = RssItemsAdapter(this, items)
         adapter.listener = this
-        listView!!.adapter = adapter
+        listView.adapter = adapter
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean { // Inflate the menu; this adds items to the action bar if it is present.
@@ -155,16 +157,17 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapsho
 
     //
     override fun loadImage(item: RssItem) {
-        val adapter = listView!!.adapter as RssItemsAdapter
+        val adapter = listView.adapter as RssItemsAdapter
         val position = adapter.values.indexOf(item)
         if (position == -1) {
             return
         }
 
         val image = item.image()
+        if (image == null) return
         //the position is used as a part of task id to handle the same images right
 
-        val task = ImageLoader.loadImage(taskProvider!!.threadRunner, image, "_" + Integer.toString(position) + "_", getLoadImageCallback(item, this))
+        val task = ImageLoader.loadImage(taskProvider.threadRunner, image, "_" + Integer.toString(position) + "_", getLoadImageCallback(item, this))
         val range = visibleRange
 
         task.taskType = position % 2 + 1
@@ -173,7 +176,7 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapsho
         task.addTaskProgressListener(this)
         task.taskProgressMinChange = 0.2f
         task.loadPolicy = Task.LoadPolicy.SkipIfAlreadyAdded
-        taskProvider!!.addTask(task)
+        taskProvider.addTask(task)
     }
 
     override fun onProgressChanged(sender: Any, info: ProgressInfo) {
@@ -193,29 +196,28 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapsho
     }
 
     fun onScroll(view: AbsListView?, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
-        if (taskProvider!!.userData is Int) {
-            val distance = Math.abs(taskProvider!!.userData as Int - firstVisibleItem)
+        if (taskProvider.userData is Int) {
+            val distance = Math.abs(taskProvider.userData as Int - firstVisibleItem)
             if (distance < 5) {
                 return
             }
         }
 
         //TODO: it should be done via api without direct access to getStreamReader
-        val safeProvider = taskProvider
-        safeProvider?.threadRunner?.launch {
+        taskProvider.threadRunner.launch {
             val tasks: MutableList<Task> = ArrayList()
-            tasks.addAll(taskProvider!!.getTasks())
+            tasks.addAll(taskProvider.getTasks())
             for (t in tasks) {
                 val taskData = t.taskUserData as Pair<Int, Image>?
-                val distance = Math.abs(taskProvider!!.userData as Int - taskData!!.first)
+                val distance = Math.abs(taskProvider.userData as Int - taskData!!.first)
                 if (distance > 30) {
-                    taskManager!!.cancel(t, null)
+                    taskManager.cancel(t, null)
                 }
             }
         }
 
-        taskProvider!!.userData = firstVisibleItem
-        taskProvider!!.updatePriorities(object : PriorityProvider {
+        taskProvider.userData = firstVisibleItem
+        taskProvider.updatePriorities(object : PriorityProvider {
             override fun getPriority(task: Task): Int {
                 Assert.assertTrue(task.taskUserData is Pair<*, *>)
                 val taskData = task.taskUserData as Pair<Int, Image>?
@@ -246,7 +248,7 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapsho
                         return
                     }
 
-                    val adapter = act.listView!!.adapter as RssItemsAdapter ?: return
+                    val adapter = act.listView.adapter as RssItemsAdapter ?: return
                     val position = adapter.values.indexOf(item)
                     if (position == -1) {
                         return
