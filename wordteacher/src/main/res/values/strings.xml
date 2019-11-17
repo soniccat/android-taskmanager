@@ -10,7 +10,5 @@
     <string name="menu_hint_play_hangman">Play hangman</string>
     <string name="menu_hint_clue">Ask for a clue</string>
 
-    <string name="title_activity_authorization">Authorization</string>
-
     <string name="list_refreshing">Refreshing…</string>
 </resources>

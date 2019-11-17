@@ -1,18 +1,17 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion project.ext.compileSdkVersion
-
     defaultConfig {
-        minSdkVersion project.ext.minSdkVersion
-        targetSdkVersion project.ext.targetSdkVersion
-        versionCode project.ext.versionCode
-        versionName project.ext.versionName
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+
+        compileSdkVersion rootProject.ext.compileSdkVersion
+        minSdkVersion rootProject.ext.minSdkVersion
     }
 
     buildTypes {
         release {
-            minifyEnabled project.ext.minifyEnabled
+            minifyEnabled rootProject.ext.minifyEnabled
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -20,19 +19,23 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.annotation:annotation:' + project.ext.annotationVersion
-    implementation 'android.arch.lifecycle:extensions:' + project.ext.archLifecycleVersion
-    implementation 'junit:junit:' + project.ext.junitVersion
-    annotationProcessor 'android.arch.lifecycle:compiler:' + rootProject.archLifecycleVersion
+
+    implementation project(':repository')
     implementation project(':service')
     implementation project(':authorization')
     implementation project(':jacksonlib')
     implementation project(':servicetaskmanager')
-    implementation project(path: ':storagemanager')
-    implementation project(path: ':streamlib')
-    implementation project(path: ':taskmanager')
-    implementation project(path: ':tools')
-    implementation 'io.reactivex.rxjava2:rxandroid:' + project.ext.rxAndroidVersion
-    implementation 'io.reactivex.rxjava2:rxjava:' + project.ext.rxJavaVersion
-    compile project(path: ':repository')
+    implementation project(':storagemanager')
+    implementation project(':streamlib')
+    implementation project(':taskmanager')
+    implementation project(':tools')
+
+    implementation 'androidx.annotation:annotation:' + rootProject.ext.annotationVersion
+    implementation 'android.arch.lifecycle:extensions:' + rootProject.ext.archLifecycleVersion
+
+    implementation 'junit:junit:' + rootProject.ext.junitVersion
+    implementation 'io.reactivex.rxjava2:rxandroid:' + rootProject.ext.rxAndroidVersion
+    implementation 'io.reactivex.rxjava2:rxjava:' + rootProject.ext.rxJavaVersion
+
+    annotationProcessor 'android.arch.lifecycle:compiler:' + rootProject.archLifecycleVersion
 }

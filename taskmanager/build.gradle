@@ -1,20 +1,20 @@
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion project.ext.compileSdkVersion
+    compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion project.ext.minSdkVersion
-        targetSdkVersion project.ext.targetSdkVersion
-        versionCode project.ext.versionCode
-        versionName project.ext.versionName
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
     }
 
     buildTypes {
         release {
-            minifyEnabled project.ext.minifyEnabled
+            minifyEnabled rootProject.ext.minifyEnabled
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
@@ -31,18 +31,18 @@ android {
 dependencies {
     implementation "androidx.core:core-ktx:1.1.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
-    implementation 'androidx.legacy:legacy-support-v4:'  + project.ext.legacySupportVersion
-    implementation 'androidx.appcompat:appcompat:' + project.ext.appCompatVersion
+    implementation 'androidx.legacy:legacy-support-v4:'  + rootProject.ext.legacySupportVersion
+    implementation 'androidx.appcompat:appcompat:' + rootProject.ext.appCompatVersion
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':testsupport')
     implementation project(':streamlib')
     implementation project(':tools')
-    implementation 'junit:junit:' + project.ext.junitVersion
-    implementation 'io.reactivex.rxjava2:rxandroid:' + project.ext.rxAndroidVersion
-    implementation 'io.reactivex.rxjava2:rxjava:' + project.ext.rxJavaVersion
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:" + project.ext.coroutinesVersion
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:" + project.ext.coroutinesVersion
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:' + project.ext.coroutinesVersion
+    implementation 'junit:junit:' + rootProject.ext.junitVersion
+    implementation 'io.reactivex.rxjava2:rxandroid:' + rootProject.ext.rxAndroidVersion
+    implementation 'io.reactivex.rxjava2:rxjava:' + rootProject.ext.rxJavaVersion
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:" + rootProject.ext.coroutinesVersion
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:" + rootProject.ext.coroutinesVersion
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:' + rootProject.ext.coroutinesVersion
     testImplementation 'androidx.test:core:1.2.0'
     testImplementation 'org.mockito:mockito-core:1.10.19'
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"

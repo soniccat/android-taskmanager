@@ -51,14 +51,6 @@
         </activity>
 
         <activity
-            android:name="com.example.alexeyglushkov.authorization.AuthorizationActivity"
-            android:label="@string/title_activity_authorization" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".main_module.view.MainActivity" />
-        </activity>
-
-        <activity
             android:name="com.dropbox.client2.android.AuthActivity"
             android:launchMode="singleTask"
             android:configChanges="orientation|keyboard">

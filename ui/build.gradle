@@ -1,13 +1,13 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion project.ext.compileSdkVersion
+    compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion project.ext.minSdkVersion
-        targetSdkVersion project.ext.targetSdkVersion
-        versionCode project.ext.versionCode
-        versionName project.ext.versionName
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -25,9 +25,9 @@ dependencies {
     androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
         exclude group: 'androidx.annotation', module: 'annotation'
     })
-    implementation 'androidx.appcompat:appcompat:' + project.ext.appCompatVersion
-    implementation 'com.google.android.material:material:' + project.ext.materialVersion
-    implementation 'androidx.cardview:cardview:' + project.ext.cardViewVersion
-    implementation 'junit:junit:' + project.ext.junitVersion
+    implementation 'androidx.appcompat:appcompat:' + rootProject.ext.appCompatVersion
+    implementation 'com.google.android.material:material:' + rootProject.ext.materialVersion
+    implementation 'androidx.cardview:cardview:' + rootProject.ext.cardViewVersion
+    implementation 'junit:junit:' + rootProject.ext.junitVersion
     implementation project(path: ':tools')
 }

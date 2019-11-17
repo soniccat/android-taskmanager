@@ -1,20 +1,20 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion project.ext.compileSdkVersion
+    compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion project.ext.minSdkVersion
-        targetSdkVersion project.ext.targetSdkVersion
-        versionCode project.ext.versionCode
-        versionName project.ext.versionName
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            minifyEnabled project.ext.minifyEnabled
+            minifyEnabled rootProject.ext.minifyEnabled
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
@@ -32,12 +32,12 @@ dependencies {
     implementation project(':streamlib')
     implementation 'com.fasterxml.jackson.core:jackson-core:2.7.3'
     implementation project(path: ':jacksonlib')
-    implementation 'androidx.annotation:annotation:' + project.ext.annotationVersion
-    implementation 'junit:junit:' + project.ext.junitVersion
+    implementation 'androidx.annotation:annotation:' + rootProject.ext.annotationVersion
+    implementation 'junit:junit:' + rootProject.ext.junitVersion
     androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
         exclude group: 'androidx.annotation', module: 'annotation'
     })
     implementation project(path: ':tools')
-    implementation 'io.reactivex.rxjava2:rxandroid:' + project.ext.rxAndroidVersion
-    implementation 'io.reactivex.rxjava2:rxjava:' + project.ext.rxJavaVersion
+    implementation 'io.reactivex.rxjava2:rxandroid:' + rootProject.ext.rxAndroidVersion
+    implementation 'io.reactivex.rxjava2:rxjava:' + rootProject.ext.rxJavaVersion
 }

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Authorization</string>
+    <string name="authorization_activity_title">Authorization</string>
 </resources>

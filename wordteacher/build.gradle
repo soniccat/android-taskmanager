@@ -4,19 +4,19 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion project.ext.compileSdkVersion
+    compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId project.ext.applicationId
-        minSdkVersion project.ext.minSdkVersion
-        targetSdkVersion project.ext.targetSdkVersion
-        versionCode project.ext.versionCode
-        versionName project.ext.versionName
+        applicationId rootProject.ext.applicationId
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
     }
 
     buildTypes {
         release {
-            minifyEnabled project.ext.minifyEnabled
+            minifyEnabled rootProject.ext.minifyEnabled
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -30,16 +30,16 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    implementation 'androidx.appcompat:appcompat:' + project.ext.appCompatVersion
-    implementation "com.google.android.material:material:" + project.ext.materialVersion
-    implementation 'androidx.recyclerview:recyclerview:' + project.ext.appRecyclerViewVersion
-    implementation 'android.arch.lifecycle:extensions:' + project.ext.archLifecycleVersion
-    implementation 'junit:junit:' + project.ext.junitVersion
-    implementation 'io.reactivex.rxjava2:rxandroid:' + project.ext.rxAndroidVersion
-    implementation 'io.reactivex.rxjava2:rxjava:' + project.ext.rxJavaVersion
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:" + project.ext.coroutinesVersion
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:" + project.ext.coroutinesVersion
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:' + project.ext.coroutinesVersion
+    implementation 'androidx.appcompat:appcompat:' + rootProject.ext.appCompatVersion
+    implementation "com.google.android.material:material:" + rootProject.ext.materialVersion
+    implementation 'androidx.recyclerview:recyclerview:' + rootProject.ext.appRecyclerViewVersion
+    implementation 'android.arch.lifecycle:extensions:' + rootProject.ext.archLifecycleVersion
+    implementation 'junit:junit:' + rootProject.ext.junitVersion
+    implementation 'io.reactivex.rxjava2:rxandroid:' + rootProject.ext.rxAndroidVersion
+    implementation 'io.reactivex.rxjava2:rxjava:' + rootProject.ext.rxJavaVersion
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:" + rootProject.ext.coroutinesVersion
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:" + rootProject.ext.coroutinesVersion
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:' + rootProject.ext.coroutinesVersion
 
     annotationProcessor 'android.arch.lifecycle:compiler:' + rootProject.archLifecycleVersion
     implementation project(path: ':quizlet_repository')

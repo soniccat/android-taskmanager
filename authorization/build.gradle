@@ -1,13 +1,13 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion project.ext.compileSdkVersion
+    compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion project.ext.minSdkVersion
-        targetSdkVersion project.ext.targetSdkVersion
-        versionCode project.ext.versionCode
-        versionName project.ext.versionName
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
     }
 
     buildTypes {
@@ -20,10 +20,10 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:' + project.ext.appCompatVersion
+    implementation 'androidx.appcompat:appcompat:' + rootProject.ext.appCompatVersion
     implementation project(path: ':tools')
     implementation project(path: ':streamlib')
-    implementation 'junit:junit:' + project.ext.junitVersion
-    implementation 'io.reactivex.rxjava2:rxandroid:' + project.ext.rxAndroidVersion
-    implementation 'io.reactivex.rxjava2:rxjava:' + project.ext.rxJavaVersion
+    implementation 'junit:junit:' + rootProject.ext.junitVersion
+    implementation 'io.reactivex.rxjava2:rxandroid:' + rootProject.ext.rxAndroidVersion
+    implementation 'io.reactivex.rxjava2:rxjava:' + rootProject.ext.rxJavaVersion
 }

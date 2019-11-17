@@ -180,6 +180,9 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
     private fun triggerStatusListeners(oldStatus: Task.Status, newStatus: Task.Status) {
         if (oldStatus != newStatus) {
             for (l in statusListeners) {
+                if (l == null) {
+                    Log.d("aa", "sth went wrong")
+                }
                 l.onTaskStatusChanged(this@TaskImpl, oldStatus, newStatus)
             }
         }

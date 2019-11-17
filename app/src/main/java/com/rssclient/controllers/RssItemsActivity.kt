@@ -16,7 +16,6 @@ import com.example.alexeyglushkov.streamlib.progress.ProgressListener
 import com.example.alexeyglushkov.taskmanager.task.*
 import com.example.alexeyglushkov.taskmanager.task.PriorityTaskProvider.PriorityProvider
 import com.example.alexeyglushkov.taskmanager.task.TaskManagerSnapshot.OnSnapshotChangedListener
-import com.example.alexeyglushkov.taskmanager.task.coordinators.LimitTaskManagerCoordinator
 import com.example.alexeyglushkov.taskmanager.ui.TaskManagerView
 import com.example.alexeyglushkov.tools.HandlerTools
 import com.example.alexeyglushkov.tools.Range

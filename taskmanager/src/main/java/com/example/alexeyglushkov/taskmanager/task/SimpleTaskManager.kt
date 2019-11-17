@@ -518,6 +518,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
             logTask(task, "Task onCompleted" + if (isCancelled) " (Cancelled)" else "")
             taskToJobMap.remove(task)
+            taskToCallbackMap[task] = null
             if (!isCancelled) {
                 handleTaskCompletionOnThread(task, false)
             }
@@ -574,7 +575,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
         if (wasStarted) {
             task.taskCallback = taskToCallbackMap[task] // return original callback
-            taskToCallbackMap[task] = null
         }
 
         // TODO: use callback scope
