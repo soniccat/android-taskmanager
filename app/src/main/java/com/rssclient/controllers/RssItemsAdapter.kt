@@ -41,9 +41,9 @@ class RssItemsAdapter(context: Context, val values: ArrayList<RssItem>) : ArrayA
         }
         val holder = convertView.tag as ViewHolder
         val item = values[position]
-        holder.text.text = position.toString() + ". " + item.title()
+        holder.text.text = position.toString() + ". " + item.title
         holder.position = position
-        if (item.image() != null) {
+        if (item.image != null) {
             holder.progressBar.visibility = View.VISIBLE
             loadImage(convertView, item)
         } else {

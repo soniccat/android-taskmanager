@@ -151,7 +151,11 @@ class RssFeed : Parcelable, Serializable, TaskListener, HttpURLConnectionProvide
     }
 
     internal fun readItem(parser: XmlPullParser): RssItem? {
-        val item = RssItem()
+        var title: String? = null
+        var link: String? = null
+        var description: String? = null
+        var image: Image? = null
+
         try {
             while (parser.next() != XmlPullParser.END_TAG) {
                 var startedTag = parser.eventType == XmlPullParser.START_TAG
@@ -159,19 +163,16 @@ class RssFeed : Parcelable, Serializable, TaskListener, HttpURLConnectionProvide
                 if (name != null) {
                     if (name == "title") {
                         parser.next()
-                        item.setTitle(parser.text)
+                        title = parser.text
                     } else if (name == "description") {
                         parser.next()
-                        item.setDescription(parser.text)
+                        description = parser.text
                     } else if (name == "link") {
                         parser.next()
-                        item.setLink(parser.text)
+                        link = parser.text
                     } else {
-                        if (item.image() == null) {
-                            val image = tryToFindImageInAttributes(parser)
-                            if (image != null) {
-                                item.setImage(image)
-                            }
+                        if (image == null) {
+                            image = tryToFindImageInAttributes(parser)
                         }
                     }
                 }
@@ -183,7 +184,12 @@ class RssFeed : Parcelable, Serializable, TaskListener, HttpURLConnectionProvide
         } catch (e: Exception) {
             return null
         }
-        return item
+
+        return if (title != null && link != null) {
+            RssItem(title, link, description, image)
+        } else {
+            null
+        }
     }
 
     internal fun tryToFindImageInAttributes(parser: XmlPullParser): Image? {

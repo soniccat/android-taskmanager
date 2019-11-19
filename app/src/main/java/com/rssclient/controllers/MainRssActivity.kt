@@ -30,30 +30,39 @@ class MainRssActivity : AppCompatActivity(), FeedsAdapterListener {
     lateinit var taskManager: TaskManager
     lateinit var rssStorage: RssStorage
     internal var listView: ListView? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val application = application as MainApplication
-        if (taskManager == null) {
+        if (!this::taskManager.isInitialized) {
             taskManager = application.taskManager
         }
-        if (rssStorage == null) {
+
+        if (!this::rssStorage.isInitialized) {
             rssStorage = application.rssStorage
             if (rssStorage.feeds.size == 0) { // TODO: update to livedata
                 loadRssStorage()
             }
         }
+
         setContentView(R.layout.activity_main_rss)
+
         val listview = findViewById<View>(R.id.listview) as ListView
         listView = listview
+
+        updateTableAdapter()
+
         val activity = this
         listview.onItemClickListener = OnItemClickListener { parent, view, position, id -> activity.showFragmentActivityAtPos(position) }
-        listView!!.setOnScrollListener(object : OnScrollListener {
+        listview.setOnScrollListener(object : OnScrollListener {
             override fun onScrollStateChanged(view: AbsListView, scrollState: Int) {}
             override fun onScroll(view: AbsListView, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
                 val adapter = listview.adapter as FeedsAdapter
                 adapter.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount)
             }
         })
+
         listview.onItemLongClickListener = OnItemLongClickListener { parent, view, position, id ->
             activity.startActionMode(object : ActionMode.Callback {
                 override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
@@ -77,7 +86,6 @@ class MainRssActivity : AppCompatActivity(), FeedsAdapterListener {
             })
             true
         }
-        updateTableAdapter()
     }
 
     override fun getViewAtPosition(pos: Int): View? {

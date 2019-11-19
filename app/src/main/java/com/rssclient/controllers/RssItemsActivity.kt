@@ -163,7 +163,7 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapsho
             return
         }
 
-        val image = item.image()
+        val image = item.image
         if (image == null) return
         //the position is used as a part of task id to handle the same images right
 
