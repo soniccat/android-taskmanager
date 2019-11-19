@@ -53,8 +53,8 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
     }
 
     private Single<List<QuizletSet>> loadSetsInternal(final ProgressListener progressListener) {
-        final Resource.State previousState = getSetsLiveData().getValue().state;
-        setState(Resource.State.Loading);
+        final Resource<List<QuizletSet>> previousState = getSetsLiveData().getValue();
+        getSetsLiveData().setValue(getSetsLiveData().getValue().toLoading());
 
         return service.loadSets(progressListener)
                 .flatMap(new Function<List<QuizletSet>, SingleSource<? extends List<QuizletSet>>>() {
@@ -67,12 +67,12 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
                 .doOnSuccess(new Consumer<List<QuizletSet>>() {
                     @Override
                     public void accept(List<QuizletSet> sets) {
-                        setState(Resource.State.Loaded, sets);
+                        getSetsLiveData().setValue(getSetsLiveData().getValue().toLoaded(sets));
                     }
                 }).doOnError(new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) {
-                        setError(previousState, throwable);
+                        getSetsLiveData().setValue(getSetsLiveData().getValue().toError(throwable, true, previousState.data(), previousState.getCanLoadNextPage()))
                     }
                 }).doOnDispose(new Action() {
                     @Override
@@ -141,7 +141,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
     private NonNullMutableLiveData<Resource<List<QuizletSet>>> getSetsLiveData() {
         NonNullMutableLiveData<Resource<List<QuizletSet>>> liveData = commandHolder.getLiveData(LOAD_SETS_COMMAND_ID);
         if (liveData == null) {
-            liveData = new NonNullMutableLiveData<>(new Resource<List<QuizletSet>>());
+            liveData = new NonNullMutableLiveData<>((Resource<List<QuizletSet>>)new Resource.Uninitialized<List<QuizletSet>>());
             commandHolder.putLiveData(LOAD_SETS_COMMAND_ID, liveData);
         }
         return liveData;

@@ -1,52 +1,40 @@
 package com.aglushkov.repository.livedata
 
-class Resource<T> {
-    enum class State {
-        Uninitialized, Restored, Loading,  // for restoring too
-        Loaded
+sealed class Resource<T>(needShowNext: Boolean) {
+    val canLoadNextPage: Boolean = needShowNext
+
+    class Uninitialized<T> : Resource<T>(false)
+    class Restored<T>(val data: T?, canLoadNext: Boolean = false) : Resource<T>(canLoadNext)
+    class Loaded<T>(val data: T, canLoadNext: Boolean = false) : Resource<T>(canLoadNext)
+    class Loading<T>(val data: T? = null, canLoadNext: Boolean = false) : Resource<T>(canLoadNext)
+    class Error<T>(val throwable: Throwable, val canTryAgain: Boolean, val data: T? = null, canLoadNext: Boolean = false) : Resource<T>(canLoadNext)
+
+    fun toRestored(data: T? = data(), canLoadNext: Boolean = this.canLoadNextPage) = Restored(data, canLoadNext)
+    @JvmOverloads fun toLoading(data: T? = data(), canLoadNext: Boolean = this.canLoadNextPage) = Loading(data, canLoadNext)
+    @JvmOverloads fun toLoaded(data: T, canLoadNext: Boolean = this.canLoadNextPage) = Loaded(data, canLoadNext)
+    @JvmOverloads fun toError(throwable: Throwable, canTryAgain: Boolean, data: T? = data(), canLoadNext: Boolean = this.canLoadNextPage) = Error(throwable, canTryAgain, data, canLoadNext)
+
+    // Getters
+
+    fun isUninitialized(): Boolean {
+        return when(this) {
+            is Uninitialized -> true
+            else -> false
+        }
     }
 
-    var state: State
-    var data: T?
-    var error: Throwable?
-
-    constructor() {
-        state = State.Uninitialized
-        data = null
-        error = null
+    fun data(): T? {
+        val data = when (this) {
+            is Restored -> data
+            is Loaded -> data
+            is Loading -> data
+            is Error -> data
+            else -> null
+        }
+        return data
     }
+}
 
-    constructor(status: State, data: T?, error: Throwable?) {
-        state = status
-        this.data = data
-        this.error = error
-    }
-
-    fun resource(newState: State): Resource<T?> {
-        return Resource(newState, data, null)
-    }
-
-    fun resource(newData: T): Resource<T> {
-        return Resource(state, newData, null)
-    }
-
-    fun resource(newState: State, newError: Throwable): Resource<T?> {
-        return Resource(newState, data, newError)
-    }
-
-    fun resource(newState: State, newData: T): Resource<T> {
-        return Resource(newState, newData, null)
-    }
-
-    fun update(newData: T): Resource<T> {
-        data = newData
-        return this
-    }
-
-    fun update(newState: State, newData: T?, newError: Throwable?): Resource<T> {
-        state = newState
-        data = newData
-        error = newError
-        return this
-    }
+fun Resource<*>?.isUninitialized(): Boolean {
+    return if (this == null) true else this.isUninitialized()
 }
