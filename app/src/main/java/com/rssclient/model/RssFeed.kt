@@ -10,6 +10,7 @@ import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler
 import com.example.alexeyglushkov.taskmanager.task.Task
 import com.example.alexeyglushkov.taskmanager.task.Task.Status
 import com.example.alexeyglushkov.taskmanager.task.Tasks.TaskListener
+import kotlinx.android.parcel.Parcelize
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.*
@@ -18,35 +19,28 @@ import java.net.MalformedURLException
 import java.net.URL
 import java.nio.charset.Charset
 
-class RssFeed : Parcelable, Serializable, TaskListener, HttpURLConnectionProvider {
+@Parcelize
+data class RssFeed(var name: String,
+                   var url: URL,
+                   var image: Image?,
+                   var items: List<RssItem> = ArrayList()) : Parcelable/*, TaskListener, HttpURLConnectionProvider*/ {
+//    companion object {
+//        private const val serialVersionUID = 7603336069987943527L
+//
+//        @JvmField
+//        val CREATOR: Creator<RssFeed> = object : Creator<RssFeed> {
+//            override fun createFromParcel(`in`: Parcel): RssFeed {
+//                return RssFeed(`in`)
+//            }
+//
+//            override fun newArray(size: Int): Array<RssFeed?> {
+//                return arrayOfNulls(size)
+//            }
+//        }
+//    }
 
-    companion object {
-        private const val serialVersionUID = 7603336069987943527L
+//    protected var processingTask: Task? = null
 
-        @JvmField
-        val CREATOR: Creator<RssFeed> = object : Creator<RssFeed> {
-            override fun createFromParcel(`in`: Parcel): RssFeed {
-                return RssFeed(`in`)
-            }
-
-            override fun newArray(size: Int): Array<RssFeed?> {
-                return arrayOfNulls(size)
-            }
-        }
-    }
-
-    internal var name: String? = null
-    internal var url: URL? = null
-    internal var loadStatus = Status.NotStarted
-    internal var image: Image? = null
-    internal var items = ArrayList<RssItem>()
-    protected var processingTask: Task? = null
-
-    constructor() {}
-    constructor(url: URL?, name: String?) : this() {
-        this.name = name
-        this.url = url
-    }
 
     fun loadStatus(): Status {
         return loadStatus

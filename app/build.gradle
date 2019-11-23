@@ -70,6 +70,10 @@ android {
         exclude 'META-INF/NOTICE'
     }
 
+    androidExtensions {
+        experimental = true
+    }
+
 //    project.afterEvaluate {
 //        project.dependencies.each { handler ->
 //            println("aaaa")
