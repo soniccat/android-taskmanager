@@ -17,18 +17,18 @@ import java.net.HttpURLConnection;
  */
 
 public class HttpTaskTransport<T> implements TaskTransport {
+    // in
     protected HttpURLConnectionProvider provider;
     protected HTTPConnectionStreamReader<T> streamReader;
-
     protected int contentLength;
-    protected int responseCode;
 
+    // out
+    protected int responseCode;
     private boolean isCancelled;
     private T data;
     private Error error;
 
     private ProgressUpdater progressUpdater;
-
     private Listener listener;
 
     public HttpTaskTransport(HttpURLConnectionProvider provider, HTTPConnectionStreamReader<T> streamReader) {
@@ -39,7 +39,6 @@ public class HttpTaskTransport<T> implements TaskTransport {
     @Override
     public String getId() {
         String id = null;
-
         if (this.provider != null && provider.getURL() != null) {
             id = (provider.getURL().toString());
         }
@@ -102,6 +101,18 @@ public class HttpTaskTransport<T> implements TaskTransport {
     @Override
     public void cancel() {
         progressUpdater = null;
+    }
+
+    @Override
+    public void clear() {
+        responseCode = 0;
+        isCancelled = false;
+        data = null;
+        error = null;
+
+        if (progressUpdater != null) {
+            progressUpdater.clear();
+        }
     }
 
     //// Setters / Getters

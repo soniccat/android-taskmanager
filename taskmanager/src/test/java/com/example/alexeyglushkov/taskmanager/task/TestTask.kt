@@ -10,7 +10,7 @@ import com.example.alexeyglushkov.taskmanager.task.Task
  */
 open class TestTask : SimpleTask() {
 
-    override fun startTask() {
+    override suspend fun startTask() {
         Log.d("com.example.alexeyglushkov.taskmanager.task.TestTask", "startTask " + taskCallback!!)
     }
 

@@ -6,8 +6,11 @@ package com.example.alexeyglushkov.streamlib.progress;
 
 // TODO: implement calling listeners depending on how much time passed
 public class ProgressUpdater implements ProgressInfo {
+    // in
     private float contentSize;
     private float progressMinChange; // from 0 to 1
+
+    // out
     private float currentValue;
     private float lastTriggeredValue;
     private boolean isCancelled;
@@ -33,7 +36,6 @@ public class ProgressUpdater implements ProgressInfo {
         currentValue += change;
 
         boolean isSignificantChange = (currentValue - lastTriggeredValue) / contentSize > progressMinChange;
-
         if (currentValue > contentSize) {
             currentValue = contentSize;
         }
@@ -84,6 +86,13 @@ public class ProgressUpdater implements ProgressInfo {
 
     public void setContentSize(float contentSize) {
         this.contentSize = contentSize;
+    }
+
+    public void clear() {
+        currentValue = 0;
+        lastTriggeredValue = 0;
+        isCancelled = false;
+        isFinished = false;
     }
 
     public interface ProgressUpdaterListener {

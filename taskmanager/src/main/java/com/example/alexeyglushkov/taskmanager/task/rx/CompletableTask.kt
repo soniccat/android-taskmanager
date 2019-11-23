@@ -12,7 +12,7 @@ import io.reactivex.disposables.Disposable
 class CompletableTask(private val completable: Completable) : TaskImpl() {
     var disposable: Disposable? = null
 
-    override fun startTask() {
+    override suspend fun startTask() {
         val finishedFlag = AtomicBoolean()
         disposable = completable.subscribe({ finishedFlag.set(true) }, { throwable ->
             private.taskError = Error(throwable)

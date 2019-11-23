@@ -60,7 +60,7 @@ class MainApplication : Application() {
 
     fun cleanCache() {
         val cleanTask: Task = object : SimpleTask() {
-            override fun startTask() {
+            override suspend fun startTask() {
                 val cleaner: StorageCleaner = SimpleStorageCleaner()
                 cleaner.clean(storage)
                 private.handleTaskCompletion()

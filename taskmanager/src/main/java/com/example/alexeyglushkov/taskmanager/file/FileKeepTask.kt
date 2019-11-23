@@ -17,7 +17,7 @@ class FileKeepTask<T>(private val fileName: String,
         this.context = context.applicationContext
     }
 
-    override fun startTask() {
+    override suspend fun startTask() {
         val name = this.fileName
         try {
             val fos = context.openFileOutput(name, Context.MODE_PRIVATE)

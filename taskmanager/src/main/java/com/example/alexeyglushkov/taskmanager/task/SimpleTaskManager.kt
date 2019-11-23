@@ -325,6 +325,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     @WorkerThread
     override fun getTask(taskId: String): Task? {
+        threadRunner.checkThread()
         return threadRunner.run {
             var task: Task? = loadingTasks.getTask(taskId)
             if (task == null) {
@@ -510,7 +511,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
             var isCancelled = false
             withContext(taskScope.coroutineContext + job) {
                 try {
-                    start(task)
+                    task.startTask()
                 } catch (e: Throwable) {
                     isCancelled = job.isCancelled
                 }
@@ -531,30 +532,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
         loadingTasks.addTask(task)
         Log.d(TAG, "loading task count " + loadingTasks.getTaskCount())
-    }
-
-    suspend fun start(task: TaskBase) {
-        return suspendCancellableCoroutine {
-            it.invokeOnCancellation {
-                if (!Tasks.isTaskCompleted(task) && !task.private.needCancelTask) {
-                    cancel(task, null) // that shouldn't happen as we cancel the job after cancelling the task
-                }
-            }
-
-            task.taskCallback = object : Task.Callback {
-                override fun onCompleted(cancelled: Boolean) {
-                    val error = task.taskError
-                    if (error != null) {
-                        it.resumeWithException(error)
-                    } else if (cancelled) {
-                        it.resumeWithException(CancellationException())
-                    } else {
-                        it.resume(Unit)
-                    }
-                }
-            }
-            task.startTask()
-        }
     }
 
     @WorkerThread

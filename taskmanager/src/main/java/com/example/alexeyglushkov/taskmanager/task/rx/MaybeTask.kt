@@ -12,7 +12,7 @@ import io.reactivex.disposables.Disposable
 class MaybeTask<T>(private val maybe: Maybe<T>) : TaskImpl() {
     var disposable: Disposable? = null
 
-    override fun startTask() {
+    override suspend fun startTask() {
         val finishedFlag = AtomicBoolean()
         disposable = maybe.subscribe({ t ->
             private.taskResult = t

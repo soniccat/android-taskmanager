@@ -70,7 +70,7 @@ class MainActivity : BaseActivity() {
 
     private fun showAuthorization() {
         val authTask: Task = object : SimpleTask() {
-            override fun startTask() {
+            override suspend fun startTask() {
                 val account = Networks.createAccount(Network.Quizlet)
                 account.authorize().subscribeOn(Schedulers.io()).subscribe(Consumer {
                     Log.d(TAG, "showAuthorization onFinished " + account.credentials.isValid)

@@ -22,7 +22,7 @@ class FileLoadTask(protected var fileName: String,
             return file.length()
         }
 
-    override fun startTask() {
+    override suspend fun startTask() {
         val name = this.fileName
 
         try {

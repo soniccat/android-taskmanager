@@ -13,6 +13,7 @@ public interface TaskTransport {
     String getId();
     void start();
     void cancel();
+    void clear();
     Listener getListener();
     void setListener(Listener listener);
     ProgressUpdater getProgressUpdater();

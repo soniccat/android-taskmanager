@@ -136,7 +136,7 @@ interface Task : TaskContainer {
     // Transfer callback from TaskManager
     //
     // Caller: TaskManager
-    fun startTask()
+    suspend fun startTask()
 
     enum class Status {
         NotStarted, //not started
