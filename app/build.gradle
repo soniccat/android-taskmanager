@@ -104,6 +104,7 @@ dependencies {
     implementation project(':quizlet_repository')
     implementation project(':streamlib')
     implementation project(':quizlet_repository')
+    implementation project(':repository')
 
     implementation 'androidx.legacy:legacy-support-v4:'  + rootProject.ext.legacySupportVersion
     implementation 'androidx.appcompat:appcompat:' + rootProject.ext.appCompatVersion
