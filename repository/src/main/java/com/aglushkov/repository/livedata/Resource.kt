@@ -33,6 +33,26 @@ sealed class Resource<T>(needShowNext: Boolean) {
         }
         return data
     }
+
+    fun copy(data: T? = this.data()): Resource<T> {
+        return when(this) {
+            is Uninitialized -> Uninitialized()
+            is Restored -> Restored(data, canLoadNextPage)
+            is Loaded -> Loaded(data!!, canLoadNextPage)
+            is Loading -> Loading(data, canLoadNextPage)
+            is Error -> Error(throwable, canTryAgain, data, canLoadNextPage)
+        }
+    }
+
+    fun <R> copyWith(data: R?): Resource<R> {
+        return when(this) {
+            is Uninitialized -> Uninitialized()
+            is Restored -> Restored(data, canLoadNextPage)
+            is Loaded -> Loaded(data!!, canLoadNextPage)
+            is Loading -> Loading(data, canLoadNextPage)
+            is Error -> Error(throwable, canTryAgain, data, canLoadNextPage)
+        }
+    }
 }
 
 fun Resource<*>?.isUninitialized(): Boolean {

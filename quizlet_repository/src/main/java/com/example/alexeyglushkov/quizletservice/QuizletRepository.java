@@ -72,12 +72,12 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
                 }).doOnError(new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) {
-                        getSetsLiveData().setValue(getSetsLiveData().getValue().toError(throwable, true, previousState.data(), previousState.getCanLoadNextPage()))
+                        getSetsLiveData().setValue(getSetsLiveData().getValue().toError(throwable, true, previousState.data(), previousState.getCanLoadNextPage()));
                     }
                 }).doOnDispose(new Action() {
                     @Override
                     public void run() {
-                        setState(previousState);
+                        getSetsLiveData().setValue(previousState);
                     }
                 });
     }
@@ -89,20 +89,20 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
     }
 
     private Single<List<QuizletSet>> restoreOrLoadInternal(final ProgressListener progressListener) {
-        final Resource.State previousState = getSetsLiveData().getValue().state;
-        setState(Resource.State.Loading);
+        final Resource previousState = getSetsLiveData().getValue();
+        getSetsLiveData().setValue(previousState.toLoading());
 
         BaseServiceTask<List<QuizletSet>> task = BaseServiceTask.fromMaybe(cache.<List<QuizletSet>>getCachedValue("quizlet_sets"));
         return service.runCommand(task)
             .doOnSuccess(new Consumer<List<QuizletSet>>() {
                 @Override
                 public void accept(List<QuizletSet> quizletSets) {
-                    setState(Resource.State.Restored, quizletSets);
+                    getSetsLiveData().setValue(getSetsLiveData().getValue().toLoaded(quizletSets));
                 }
             }).onErrorResumeNext(new Function<Throwable, SingleSource<? extends List<QuizletSet>>>() {
                 @Override
                 public SingleSource<? extends List<QuizletSet>> apply(Throwable throwable) {
-                    setState(previousState);
+                    getSetsLiveData().setValue(previousState);
                     if (service.getAccount().isAuthorized()) {
                         return loadSetsInternal(progressListener);
                     }
@@ -112,7 +112,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
             }).doOnDispose(new Action() {
                 @Override
                 public void run() throws Exception {
-                    setState(previousState);
+                    getSetsLiveData().setValue(previousState);
                 }
             });
     }
@@ -147,27 +147,11 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
         return liveData;
     }
 
-    // Setters
-
-    private void setState(Resource.State newState) {
-        getSetsLiveData().setValue(getSetsLiveData().getValue().resource(newState));
-    }
-
-    private void setState(Resource.State newState, List<QuizletSet> newSets) {
-        getSetsLiveData().setValue(getSetsLiveData().getValue().resource(newState, newSets));
-    }
-
-    private void setError(Resource.State newState, Throwable newError) {
-        getSetsLiveData().setValue(getSetsLiveData().getValue().resource(newState, newError));
-    }
-
     // Inner Classes
 
     // QuizletSet liveData to QuizletTerm liveData
     private class QuizletTermAdapter implements ResourceLiveDataProvider<List<QuizletTerm>> {
         private static final long NO_ID = -1;
-
-        private Resource<List<QuizletTerm>> aResource = new Resource<>();
         private long setId;
 
         public QuizletTermAdapter(long setId) {
@@ -176,7 +160,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
 
         public MutableLiveData<Resource<List<QuizletTerm>>> getLiveData() {
             final MediatorLiveData<Resource<List<QuizletTerm>>> mediatorLiveData = new MediatorLiveData<>();
-            mediatorLiveData.setValue(aResource);
+            mediatorLiveData.setValue(new Resource.Uninitialized<List<QuizletTerm>>());
 
             mediatorLiveData.addSource(QuizletRepository.this.getLiveData(), new Observer<Resource<List<QuizletSet>>>() {
                 @Override
@@ -189,9 +173,10 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
         }
 
         private Resource<List<QuizletTerm>> buildFinalResource(Resource<List<QuizletSet>> listResource) {
-            ArrayList<QuizletTerm> terms = new ArrayList<>();
-            if (listResource.data != null) {
-                for (QuizletSet set : listResource.data) {
+            List<QuizletTerm> terms = new ArrayList<>();
+            List<QuizletSet> data = listResource.data();
+            if (data != null) {
+                for (QuizletSet set : data) {
                     for (QuizletTerm term : set.getTerms()) {
                         long setId = term.getSetId();
                         if (this.setId == NO_ID || setId == this.setId) {
@@ -201,8 +186,7 @@ public class QuizletRepository implements ResourceLiveDataProvider<List<QuizletS
                 }
             }
 
-            aResource.update(terms);
-            return aResource;
+            return listResource.copyWith(terms);
         }
     }
 }
