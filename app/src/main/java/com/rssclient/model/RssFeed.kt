@@ -312,5 +312,9 @@ class RssFeed : Parcelable, Serializable, TaskListener, HttpURLConnectionProvide
             e.printStackTrace()
         }
         image = `in`.readObject() as Image
+
+        if (items == null) {
+            items = ArrayList<RssItem>()
+        }
     }
 }

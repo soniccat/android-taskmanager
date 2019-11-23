@@ -5,31 +5,29 @@ import com.aglushkov.taskmanager_http.loader.transport.TaskTransport
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask
 
 class TransportTask : SimpleTask, TaskTransport.Listener {
-    lateinit private var transport: TaskTransport
+    private var _transport: TaskTransport? = null
+    var transport: TaskTransport
+        get() {
+           return _transport!!
+        }
+        set(value) {
+            if (_transport != null && _transport?.listener === this) {
+                transport.listener = null
+            }
+
+            _transport = value
+            transport.listener = this
+
+            val transportId = transport.id
+            if (transportId != null) {
+                taskId = transportId
+            }
+        }
 
     constructor() : super()
 
     constructor(transport: TaskTransport) : super() {
-        setTransport(transport)
-    }
-
-    fun setTransport(transport: TaskTransport) {
-        val oldTransport = getTransport()
-        if (oldTransport != null && oldTransport.listener === this) {
-            oldTransport.listener = null
-        }
-
         this.transport = transport
-        transport.listener = this
-
-        val transportId = transport.id
-        if (transportId != null) {
-            taskId = transportId
-        }
-    }
-
-    fun getTransport(): TaskTransport? {
-        return transport
     }
 
     override suspend fun startTask() {

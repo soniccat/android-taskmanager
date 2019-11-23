@@ -9,10 +9,9 @@ import androidx.annotation.Nullable;
  */
 
 // A Service command represents an url request.
-// The command can be started only once. If you want to repeat it you should create new one or call clear before.
+// If you want to repeat a command you should call clear when it finishes and starting it again.
 
 public interface ServiceCommand<T> {
-
     // TODO: it seems these 3 methods could be not necessary (see dropbox upload command)
     HttpUrlConnectionBuilder getConnectionBuilder();
     @Nullable T getResponse();

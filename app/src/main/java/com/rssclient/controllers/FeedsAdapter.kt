@@ -31,8 +31,8 @@ class FeedsAdapter(
         var position = 0
     }
 
-    override fun getView(position: Int, convertView: View, parent: ViewGroup): View {
-        var convertView = convertView
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+        var resultView = convertView
         if (convertView == null) {
             val inflater = context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -42,18 +42,20 @@ class FeedsAdapter(
             val holder = ViewHolder()
             holder.text = textView
             holder.imageView = imageView
-            convertView = rowView
-            convertView.tag = holder
+            resultView = rowView
+            resultView.tag = holder
         }
 
-        val holder = convertView.tag as ViewHolder
+        resultView as View
+
+        val holder = resultView.tag as ViewHolder
         val feed = values[position]
         holder.text!!.text = feed.name
         holder.position = position
         if (feed.image != null) {
             loadImage(feed.image, holder)
         }
-        return convertView
+        return resultView
     }
 
     internal fun loadImage(image: Image?, holder: ViewHolder) {
