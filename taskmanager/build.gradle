@@ -29,19 +29,21 @@ android {
 }
 
 dependencies {
-    implementation "androidx.core:core-ktx:$rootProject.ext.ktx"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
-    implementation 'androidx.legacy:legacy-support-v4:'  + rootProject.ext.legacySupportVersion
-    implementation 'androidx.appcompat:appcompat:' + rootProject.ext.appCompatVersion
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':testsupport')
     implementation project(':streamlib')
     implementation project(':tools')
-    implementation 'junit:junit:' + rootProject.ext.junitVersion
-    implementation 'io.reactivex.rxjava2:rxandroid:' + rootProject.ext.rxAndroidVersion
-    implementation 'io.reactivex.rxjava2:rxjava:' + rootProject.ext.rxJavaVersion
+
+    implementation "androidx.core:core-ktx:$rootProject.ext.ktx"
+    implementation 'androidx.legacy:legacy-support-v4:'  + rootProject.ext.legacySupportVersion
+    implementation 'androidx.appcompat:appcompat:' + rootProject.ext.appCompatVersion
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:" + rootProject.ext.coroutinesVersion
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:" + rootProject.ext.coroutinesVersion
+    implementation 'io.reactivex.rxjava2:rxandroid:' + rootProject.ext.rxAndroidVersion
+    implementation 'io.reactivex.rxjava2:rxjava:' + rootProject.ext.rxJavaVersion
+    implementation 'junit:junit:' + rootProject.ext.junitVersion
+
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:' + rootProject.ext.coroutinesVersion
     testImplementation 'androidx.test:core:1.2.0'
     testImplementation 'org.mockito:mockito-core:1.10.19'
