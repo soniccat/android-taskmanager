@@ -2,6 +2,7 @@ package com.example.alexeyglushkov.taskmanager.task
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
+import kotlinx.coroutines.test.TestCoroutineScope
 import org.mockito.Mockito.`when`
 
 /**
@@ -44,4 +45,6 @@ object TestTasks {
 
         return testTask
     }
+
+    fun createTestScopeThreadRunner() = ScopeThreadRunner(TestCoroutineScope(), "RunnerTestId")
 }

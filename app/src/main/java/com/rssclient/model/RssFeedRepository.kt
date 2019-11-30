@@ -7,9 +7,9 @@ import com.aglushkov.repository.livedata.NonNullMutableLiveData
 import com.aglushkov.repository.livedata.Resource
 
 class RssFeedRepository {
-    var _feed = MutableLiveData<Resource<RssFeed>>(Resource.Uninitialized())
-    val feed: LiveData<Resource<RssFeed>>
-        get() = _feed
-
+//    var _feed = MutableLiveData<Resource<RssFeed>>(Resource.Uninitialized())
+//    val feed: LiveData<Resource<RssFeed>>
+//        get() = _feed
+//
 
 }

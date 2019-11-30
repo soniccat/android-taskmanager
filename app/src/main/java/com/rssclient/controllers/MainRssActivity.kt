@@ -53,6 +53,8 @@ class MainRssActivity : AppCompatActivity(), FeedsAdapterListener {
 
         updateTableAdapter()
 
+
+
         val activity = this
         listview.onItemClickListener = OnItemClickListener { parent, view, position, id -> activity.showFragmentActivityAtPos(position) }
         listview.setOnScrollListener(object : OnScrollListener {

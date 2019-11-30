@@ -36,7 +36,7 @@ open class PriorityTaskProviderTest {
     }
 
     protected open fun prepareTaskProvider(): TaskProvider {
-        return PriorityTaskProvider(TestCoroutineScope(), "TestId")
+        return PriorityTaskProvider(TestTasks.createTestScopeThreadRunner(), "TestId")
     }
 
     // PriorityTaskProviderTests

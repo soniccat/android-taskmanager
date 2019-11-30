@@ -8,4 +8,4 @@ import kotlinx.coroutines.CoroutineScope
 /**
  * Created by alexeyglushkov on 30.08.15.
  */
-open class TestTaskProvider(scope: CoroutineScope, id: String) : PriorityTaskProvider(scope, id)
+open class TestTaskProvider(threadRunner: ThreadRunner, id: String) : PriorityTaskProvider(threadRunner, id)

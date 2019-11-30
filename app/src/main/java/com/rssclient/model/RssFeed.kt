@@ -24,23 +24,7 @@ data class RssFeed(var name: String,
                    var url: URL,
                    var image: Image?,
                    var items: List<RssItem> = ArrayList()) : Parcelable/*, TaskListener, HttpURLConnectionProvider*/ {
-//    companion object {
-//        private const val serialVersionUID = 7603336069987943527L
-//
-//        @JvmField
-//        val CREATOR: Creator<RssFeed> = object : Creator<RssFeed> {
-//            override fun createFromParcel(`in`: Parcel): RssFeed {
-//                return RssFeed(`in`)
-//            }
-//
-//            override fun newArray(size: Int): Array<RssFeed?> {
-//                return arrayOfNulls(size)
-//            }
-//        }
-//    }
-
 //    protected var processingTask: Task? = null
-
 
     fun loadStatus(): Status {
         return loadStatus

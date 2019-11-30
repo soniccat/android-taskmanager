@@ -1,11 +1,10 @@
 package com.example.alexeyglushkov.taskmanager.task
 
-import com.nhaarman.mockitokotlin2.mock
+import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.TestCoroutineScope
 
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.`when`
 
 /**
  * Created by alexeyglushkov on 23.08.15.
@@ -22,9 +21,21 @@ class SimpleTaskManagerTest {
     fun before() {
         val coordinator: TaskManagerCoordinator = TestTaskManagerCoordinator()
         val scope = TestCoroutineScope()
-        taskManager = SimpleTaskManager(coordinator, scope, scope)
+
+        val taskScopeDispatcher = TestCoroutineDispatcher()
+        val taskScope = TestCoroutineScope(taskScopeDispatcher)
+        taskManager = SimpleTaskManager(coordinator, scope, taskScope)
         poolTestSet = TaskPoolTestSet()
         taskManagerTestSet = TaskManagerTestSet()
+        taskManagerTestSet.controller = object : TaskManagerTestSet.TaskManagerInterface {
+            override fun pauseTaskRunning() {
+                taskScopeDispatcher.pauseDispatcher()
+            }
+
+            override fun resumeTaskRunning() {
+                taskScopeDispatcher.resumeDispatcher()
+            }
+        }
 
         poolTestSet.before(taskManager)
         taskManagerTestSet.before(taskManager)

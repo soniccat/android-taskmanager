@@ -1,6 +1,8 @@
 package com.example.alexeyglushkov.taskmanager.task
 
 open class TestTaskManagerCoordinator(var canAddMoreTasks: Boolean = false): TaskManagerCoordinator {
+    override var threadRunner: ThreadRunner = InstantThreadRunner()
+
     override val taskFilter: TaskProvider.TaskFilter = object : TaskProvider.TaskFilter {
         override fun getFilteredTaskTypes(): List<Int> {
             return emptyList()

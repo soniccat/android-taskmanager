@@ -23,13 +23,13 @@ open class TaskPoolTestSet {
         // Arrange
         val handlerThread = HandlerThread("HandlerThread")
         handlerThread.start()
-        val scope = CoroutineScope(Dispatchers.Main)
+        val threadRunner = ScopeThreadRunner(CoroutineScope(Dispatchers.Main), "TestRunner3")
 
         // Act
-        taskPool.scope = scope
+        taskPool.threadRunner = threadRunner
 
         // Verify
-        assertEquals(scope, taskPool.scope)
+        assertEquals(threadRunner, taskPool.threadRunner)
     }
 
     fun addTask() {

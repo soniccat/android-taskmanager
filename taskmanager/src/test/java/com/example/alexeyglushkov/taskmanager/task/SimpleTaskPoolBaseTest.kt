@@ -13,7 +13,7 @@ class SimpleTaskPoolBaseTest : TaskPoolTestSet() {
     @Before
     @Throws(Exception::class)
     fun setUp() {
-        this@SimpleTaskPoolBaseTest.before(ListTaskPool(TestCoroutineScope()))
+        this@SimpleTaskPoolBaseTest.before(ListTaskPool(TestTasks.createTestScopeThreadRunner()))
     }
 
     @Test

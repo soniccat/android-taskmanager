@@ -11,6 +11,7 @@ import org.mockito.Mockito.`when`
  * Created by alexeyglushkov on 23.08.15.
  */
 class TaskManagerTestSet {
+    var controller: TaskManagerInterface? = null
     protected lateinit var taskManager: TaskManager
 
     fun before(taskManager: TaskManager) {
@@ -26,7 +27,6 @@ class TaskManagerTestSet {
         val taskProvider = createTaskProviderSpy("0", taskManager)
 
         // Act
-        //taskManager.maxLoadingTasks = 0
         taskManager.addTaskProvider(taskProvider)
         taskManager.addTask(task1)
         taskManager.addTask(task2)
@@ -48,7 +48,6 @@ class TaskManagerTestSet {
         val taskProvider = createTaskProviderSpy("0", taskManager)
 
         // Act
-        //taskManager.maxLoadingTasks = 0
         taskManager.addTaskProvider(taskProvider)
         taskManager.addTask(task1)
         taskManager.addTask(task2)
@@ -81,7 +80,6 @@ class TaskManagerTestSet {
         val task = TestTasks.createTaskMock("task1")
 
         // Act
-        //taskManager.maxLoadingTasks = 0
         taskManager.addTaskProvider(taskProvider1)
         taskManager.addTaskProvider(taskProvider2)
         taskProvider1.addTask(task)
@@ -180,7 +178,6 @@ class TaskManagerTestSet {
         `when`(task.canBeCancelledImmediately()).thenReturn(true)
 
         // Act
-        //taskManager.maxLoadingTasks = 0
         taskManager.addTaskProvider(taskProvider)
         taskManager.removeTaskProvider(taskProvider)
 
@@ -227,6 +224,7 @@ class TaskManagerTestSet {
     fun startImmediatelySkipPolicy() {
         // Arrange
         setCanAddMoreTasks(taskManager)
+        this.controller?.pauseTaskRunning()
         val task1 = TestTasks.createTestTaskSpy("taskId")
         val task2 = TestTasks.createTestTaskSpy("taskId")
 
@@ -251,6 +249,8 @@ class TaskManagerTestSet {
     fun startImmediatelySkipPolicyWithFinish() {
         // Arrange
         setCanAddMoreTasks(taskManager)
+        this.controller?.pauseTaskRunning()
+
         val task1 = TestTasks.createTestTaskSpy("taskId")
         val task2 = TestTasks.createTestTaskSpy("taskId")
 
@@ -266,7 +266,9 @@ class TaskManagerTestSet {
         taskManager.addListener(listener)
         taskManager.addTask(task1)
         taskManager.startImmediately(task2)
-        task1.finish()
+
+        task1.finish() // simulate task completion
+        this.controller?.resumeTaskRunning()
 
         assertEquals(Task.Status.Finished, task1.taskStatus)
         verify(listener).onTaskAdded(taskManager, task1, true)
@@ -283,6 +285,7 @@ class TaskManagerTestSet {
 
     fun startImmediatelyFinish() {
         // Arrange
+        this.controller?.pauseTaskRunning()
         val task = TestTask()
         val callback = mock<Task.Callback>()
         task.taskCallback = callback
@@ -293,6 +296,7 @@ class TaskManagerTestSet {
         taskManager.addListener(listener)
         taskManager.startImmediately(task)
         task.finish()
+        this.controller?.resumeTaskRunning()
 
         // Verify
         assertEquals(Task.Status.Finished, task.taskStatus)
@@ -347,6 +351,7 @@ class TaskManagerTestSet {
     fun addTheSameTaskWithSkipPolicy() {
         // Arrange
         setCanAddMoreTasks(taskManager)
+        this.controller?.pauseTaskRunning()
         val listener = mock<TaskManager.Listener>()
 
         val task1 = TestTasks.createTestTaskSpy("taskId")
@@ -378,6 +383,7 @@ class TaskManagerTestSet {
     fun addTheSameTaskWithCancelPolicy() {
         // Arrange
         setCanAddMoreTasks(taskManager)
+        this.controller?.pauseTaskRunning()
         val task1 = TestTasks.createTestTaskSpy("taskId")
         val task2 = TestTasks.createTestTaskSpy("taskId")
         task2.loadPolicy = Task.LoadPolicy.CancelPreviouslyAdded
@@ -401,6 +407,7 @@ class TaskManagerTestSet {
     fun taskCallbackCalled() {
         // Arrange
         setCanAddMoreTasks(taskManager)
+        this.controller?.pauseTaskRunning()
         val listener = mock<TaskManager.Listener>()
 
         val task = TestTasks.createTestTaskSpy("taskId")
@@ -412,6 +419,7 @@ class TaskManagerTestSet {
         // Act
         taskManager.addTask(task)
         task.finish()
+        this.controller?.resumeTaskRunning()
 
         // Verify
         assertEquals(Task.Status.Finished, task.taskStatus)
@@ -422,6 +430,7 @@ class TaskManagerTestSet {
     fun taskWithCancelledImmediatelyCallbackCalledAfterCancel() {
         // Arrange
         setCanAddMoreTasks(taskManager)
+        this.controller?.pauseTaskRunning()
         val listener = mock<TaskManager.Listener>()
 
         val task = TestTasks.createTestTaskSpy("taskId")
@@ -436,6 +445,7 @@ class TaskManagerTestSet {
         taskManager.addTask(task)
         taskManager.cancel(task, null)
         task.finish()
+        this.controller?.resumeTaskRunning()
 
         // Verify
         assertEquals(Task.Status.Cancelled, task.taskStatus)
@@ -542,21 +552,22 @@ class TaskManagerTestSet {
 
     fun setGetScope() {
         // Arrange
-        val scope = CoroutineScope(Dispatchers.Main)
+        val threadRunner = ScopeThreadRunner(CoroutineScope(Dispatchers.Main), "testRunner2")
         val taskProvider = createTaskProviderMock("0", taskManager)
 
         // Act
         taskManager.addTaskProvider(taskProvider)
-        taskManager.scope = scope
+        taskManager.threadRunner = threadRunner
 
         // Verify
-        verify(taskProvider).scope = scope
-        assertEquals(scope, taskManager.scope)
+        verify(taskProvider).threadRunner = threadRunner
+        assertEquals(threadRunner, taskManager.threadRunner)
     }
 
     fun addTaskFromPoolWhenCanLoad() {
         // Arrange
         setCanAddMoreTasks(taskManager)
+        this.controller?.pauseTaskRunning()
         val taskProvider = createTaskProviderMock("0", taskManager)
         val taskCallback = mock<Task.Callback>()
         val testTask = TestTasks.createTestTaskSpy("taskId")
@@ -584,7 +595,6 @@ class TaskManagerTestSet {
         `when`(taskProvider.takeTopTask()).doReturn(testTask)
 
         // Act
-        //taskManager.maxLoadingTasks = 0
         taskManager.addTaskProvider(taskProvider)
         taskManager.onTaskAdded(taskProvider, testTask)
 
@@ -602,7 +612,6 @@ class TaskManagerTestSet {
 
         // Act
         taskManager.addTaskProvider(taskProvider)
-        //taskManager.maxLoadingTasks = 0
         taskManager.onTaskCancelled(taskProvider, testTask, cancelInfo)
 
         // Verify
@@ -614,6 +623,7 @@ class TaskManagerTestSet {
     fun cancelStartedTaskFromPool() {
         // Arrange
         setCanAddMoreTasks(taskManager)
+        this.controller?.pauseTaskRunning()
         val taskProvider = createTaskProviderMock("0", taskManager)
         val taskCallback = mock<Task.Callback>()
         val testTask = TestTasks.createTestTaskSpy("taskId")
@@ -625,7 +635,6 @@ class TaskManagerTestSet {
         `when`(testTask.canBeCancelledImmediately()).thenReturn(true)
 
         // Act
-        //taskManager.maxLoadingTasks = 1
         taskManager.addTaskProvider(taskProvider)
         taskManager.onTaskAdded(taskProvider, testTask)
         taskManager.onTaskCancelled(taskProvider, testTask, cancelInfo)
@@ -643,20 +652,20 @@ class TaskManagerTestSet {
     }
 
     private fun createTaskProviderSpy(id: String, taskManager: TaskManager): TaskProvider {
-        val taskProvider = TestTaskProvider(taskManager.scope, id)
+        val taskProvider = TestTaskProvider(taskManager.threadRunner, id)
         return spy(taskProvider)
     }
 
     private fun createTaskProviderMock(id: String, taskManager: TaskManager, priority: Int = 0): TaskProvider {
         val provider = mock<TaskProvider>()
         `when`(provider.taskProviderId).thenReturn(id)
-        `when`(provider.scope).thenReturn(taskManager.scope)
+        `when`(provider.threadRunner).thenReturn(taskManager.threadRunner)
         `when`(provider.priority).thenReturn(priority)
         return provider
     }
 
     private fun createTaskProviderSpy(id: String, taskManager: TaskManager, priority: Int): TaskProvider {
-        val provider = PriorityTaskProvider(taskManager.scope, id)
+        val provider = PriorityTaskProvider(taskManager.threadRunner, id)
         provider.priority = priority
         return provider
     }
@@ -672,5 +681,10 @@ class TaskManagerTestSet {
         }
 
         return i
+    }
+
+    interface TaskManagerInterface {
+        fun pauseTaskRunning()
+        fun resumeTaskRunning()
     }
 }

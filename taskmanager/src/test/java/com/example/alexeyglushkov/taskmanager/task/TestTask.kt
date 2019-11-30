@@ -11,11 +11,11 @@ import com.example.alexeyglushkov.taskmanager.task.Task
 open class TestTask : SimpleTask() {
 
     override suspend fun startTask() {
-        Log.d("com.example.alexeyglushkov.taskmanager.task.TestTask", "startTask " + taskCallback!!)
+        Log.d("com.example.alexeyglushkov.taskmanager.task.TestTask", "startTask " + taskCallback)
     }
 
     fun finish() {
-        Log.d("com.example.alexeyglushkov.taskmanager.task.TestTask", "finish " + taskCallback!!)
+        Log.d("com.example.alexeyglushkov.taskmanager.task.TestTask", "finish " + taskCallback)
         private.handleTaskCompletion()
     }
 }
