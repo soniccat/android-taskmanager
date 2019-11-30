@@ -27,7 +27,7 @@ class SimpleTaskManagerTest {
         taskManager = SimpleTaskManager(coordinator, scope, taskScope)
         poolTestSet = TaskPoolTestSet()
         taskManagerTestSet = TaskManagerTestSet()
-        taskManagerTestSet.controller = object : TaskManagerTestSet.TaskManagerInterface {
+        taskManagerTestSet.controller = object : TaskManagerTestSet.TaskManagerController {
             override fun pauseTaskRunning() {
                 taskScopeDispatcher.pauseDispatcher()
             }

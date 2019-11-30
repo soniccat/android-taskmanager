@@ -11,7 +11,7 @@ import org.mockito.Mockito.`when`
  * Created by alexeyglushkov on 23.08.15.
  */
 class TaskManagerTestSet {
-    var controller: TaskManagerInterface? = null
+    var controller: TaskManagerController? = null
     protected lateinit var taskManager: TaskManager
 
     fun before(taskManager: TaskManager) {
@@ -683,7 +683,7 @@ class TaskManagerTestSet {
         return i
     }
 
-    interface TaskManagerInterface {
+    interface TaskManagerController {
         fun pauseTaskRunning()
         fun resumeTaskRunning()
     }
