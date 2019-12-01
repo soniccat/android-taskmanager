@@ -11,6 +11,7 @@ import io.reactivex.Single
  */
 interface Service {
     var account: Account?
+
     fun setServiceCommandProvider(provider: ServiceCommandProvider) // TODO consider just var
     fun setServiceCommandRunner(runner: ServiceCommandRunner)
     fun <T> runCommand(command: ServiceCommand<T>, canSignIn: Boolean): Single<T>

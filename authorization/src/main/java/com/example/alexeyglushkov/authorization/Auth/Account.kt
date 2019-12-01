@@ -19,7 +19,7 @@ interface Account {
     @Throws(Exception::class)
     fun store()
 
-    // Method should be called not on com.example.alexeyglushkov.wordteacher.main thread to be able show auth activity for OAuth20AuthorizerImpl
+    // Method should be called not on main thread to be able show auth activity for OAuth20AuthorizerImpl
     fun authorize(): Single<AuthCredentials>
 
     fun signCommand(command: ServiceCommand<*>)

@@ -16,6 +16,7 @@ open class SimpleService : Service {
     override var account: Account? = null
     protected var commandProvider: ServiceCommandProvider? = null
     protected var commandRunner: ServiceCommandRunner? = null
+
     // to run authorization
     private var authThread: HandlerThread? = null
 

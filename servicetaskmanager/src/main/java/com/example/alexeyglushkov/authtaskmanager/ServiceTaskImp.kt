@@ -11,13 +11,13 @@ import com.example.alexeyglushkov.taskmanager.task.TaskImpl
  */
 abstract class ServiceTaskImp<T> : BaseServiceTask<T>() {
     init {
-        setTask(object : TaskImpl() {
+        task = object : TaskImpl() {
             override suspend fun startTask() {
                 onStart()
 
                 private.handleTaskCompletion()
             }
-        })
+        }
     }
 
     abstract fun onStart()

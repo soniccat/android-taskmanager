@@ -73,7 +73,7 @@ class MainActivity : BaseActivity() {
             override suspend fun startTask() {
                 val account = Networks.createAccount(Network.Quizlet)
                 account.authorize().subscribeOn(Schedulers.io()).subscribe(Consumer {
-                    Log.d(TAG, "showAuthorization onFinished " + account.credentials.isValid)
+                    Log.d(TAG, "showAuthorization onFinished " + account.credentials!!.isValid)
                     private.handleTaskCompletion()
                 })
             }
@@ -98,7 +98,7 @@ class MainActivity : BaseActivity() {
         service = SimpleService()
         val accounts = accountStore.getAccounts(Network.Quizlet.ordinal)
         var serviceAccount: Account? = null
-        serviceAccount = if (accounts.size > 0) {
+        serviceAccount = if (accounts != null && accounts.size > 0) {
             accounts[0]
         } else {
             Networks.createAccount(Network.Quizlet)
