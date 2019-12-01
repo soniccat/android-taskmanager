@@ -14,8 +14,8 @@ class OAuthCredentials : AuthCredentials, Serializable {
     var refreshToken: String? = null
     var userId: String? = null
     var scopes = arrayOf<String>()
+
     override var expireTime: Long = 0
-        private set
 
     // AuthCredentials implementation
     override val isValid: Boolean

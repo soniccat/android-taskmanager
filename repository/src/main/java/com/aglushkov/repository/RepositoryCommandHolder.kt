@@ -16,7 +16,7 @@ import java.util.*
  */
 class RepositoryCommandHolder {
     private val liveDataIdMap = WeakHashMap<LiveData<*>, Long>()
-    private val liveDataCommandMap = WeakHashMap<LiveData<*>, RepositoryCommand<*>?>()
+    private val liveDataCommandMap = WeakHashMap<LiveData<*>, RepositoryCommand<*>>()
 
     fun <T : RepositoryCommand<*>> putCommand(cmd: T): T {
         val oldCmd = getCommand<RepositoryCommand<*>>(cmd.commandId)
@@ -29,11 +29,11 @@ class RepositoryCommandHolder {
         return cmd
     }
 
-    fun getCommand(liveData: LiveData<*>?): RepositoryCommand<*>? {
+    fun getCommand(liveData: LiveData<*>): RepositoryCommand<*>? {
         return liveDataCommandMap[liveData]
     }
 
-    fun <T : RepositoryCommand<*>?> getCommand(id: Long): T? {
+    fun <T : RepositoryCommand<*>> getCommand(id: Long): T? {
         var cmd: T? = null
         for (c in liveDataCommandMap.values) {
             if (c != null && c.commandId == id) {
@@ -43,7 +43,7 @@ class RepositoryCommandHolder {
         return cmd
     }
 
-    fun <T : LiveData<*>?> getLiveData(id: Long): T? {
+    fun <T : LiveData<*>> getLiveData(id: Long): T? {
         var result: T? = null
         for ((key, value) in liveDataIdMap) {
             if (value == id) {
@@ -60,12 +60,12 @@ class RepositoryCommandHolder {
         liveDataCommandMap[liveData] = null
     }
 
-    fun cancel(liveData: LiveData<*>?) {
+    fun cancel(liveData: LiveData<*>) {
         val cmd = getCommand(liveData)
         canceIfNeeded(cmd, liveData)
     }
 
-    private fun canceIfNeeded(cmd: RepositoryCommand<*>?, liveData: LiveData<*>?) {
+    private fun canceIfNeeded(cmd: RepositoryCommand<*>?, liveData: LiveData<*>) {
         if (cmd != null) {
             cmd.cancel()
             liveDataIdMap.remove(liveData)
