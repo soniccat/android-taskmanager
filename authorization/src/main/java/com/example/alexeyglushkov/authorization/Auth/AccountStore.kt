@@ -5,15 +5,15 @@ package com.example.alexeyglushkov.authorization.Auth
  */
 interface AccountStore {
     @Throws(Exception::class)
-    fun putAccount(account: Account?)
+    fun putAccount(account: Account)
 
     @Throws(Exception::class)
     fun getAccount(key: Int): Account?
 
     val accountCount: Int
     val maxAccountId: Int
-    val accounts: List<Account?>?
-    fun getAccounts(serviceType: Int): List<Account?>?
+    val accounts: List<Account>
+    fun getAccounts(serviceType: Int): List<Account>
     @Throws(Exception::class)
     fun removeAccount(id: Int)
 

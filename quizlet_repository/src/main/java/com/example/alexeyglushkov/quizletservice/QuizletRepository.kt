@@ -20,10 +20,7 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletSet
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener
 import io.reactivex.Single
-import io.reactivex.SingleSource
-import io.reactivex.functions.Function
 import io.reactivex.internal.functions.Functions
-import java.util.*
 import kotlin.collections.ArrayList
 
 // TODO: base class for repository with service and cache

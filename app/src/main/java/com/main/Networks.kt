@@ -78,7 +78,7 @@ object Networks {
                     .build(Foursquare2Api()) as OAuth20Authorizer
             authorizer.setServiceCommandProvider(ServiceTaskProvider())
             authorizer.setServiceCommandRunner(ServiceTaskRunner(taskManager, "authorizerId"))
-            authorizer.setWebClient(authWebClient)
+            authorizer.webClient = authWebClient
             return authorizer
         }
 
@@ -101,7 +101,7 @@ object Networks {
                     .build(QuizletApi2()) as OAuth20Authorizer
             authorizer.setServiceCommandProvider(ServiceTaskProvider())
             authorizer.setServiceCommandRunner(ServiceTaskRunner(taskManager, "authorizerId"))
-            authorizer.setWebClient(authWebClient)
+            authorizer.webClient = authWebClient
             return authorizer
         }
 

@@ -18,7 +18,7 @@ class QuizletService(account: Account,
                      commandProvider: QuizletCommandProvider,
                      commandRunner: ServiceCommandRunner) : SimpleService() {
     //// Actions
-    fun loadSets(progressListener: ProgressListener): Single<List<QuizletSet>> {
+    fun loadSets(progressListener: ProgressListener?): Single<List<QuizletSet>> {
         return authorizeIfNeeded()
                 .flatMap(object : Function<AuthCredentials, SingleSource<List<QuizletSet>>> {
                     @Throws(Exception::class)
@@ -45,7 +45,7 @@ class QuizletService(account: Account,
 //                }
 //            });
 //    }
-    private fun createSetsCommand(progressListener: ProgressListener): QuizletSetsCommand {
+    private fun createSetsCommand(progressListener: ProgressListener?): QuizletSetsCommand {
         val userId = oAuthCredentials?.userId
         checkNotNull(userId)
 

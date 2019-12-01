@@ -6,7 +6,7 @@ import io.reactivex.Single
 
 interface OAuth20Authorizer : Authorizer {
     val authorizationUrl: String
-    val webClient: OAuthWebClient?
+    var webClient: OAuthWebClient?
 
     fun retrieveAccessToken(code: String): Single<ServiceCommand<String>>
 }
