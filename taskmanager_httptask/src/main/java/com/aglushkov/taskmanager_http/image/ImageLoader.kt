@@ -50,9 +50,9 @@ object ImageLoader {
     //TODO: remove static and related logic
     private fun createTask(image: Image, destinationId: String?, reader: HTTPConnectionStreamReader<Bitmap>): TransportTask {
         val transport = HttpTaskTransport(image, reader)
-        transport.contentLength = image.getByteSize()
+        transport.contentLength = image.byteSize
         val transportTask = TransportTask(transport)
-        transportTask.loadPolicy = image.getLoadPolicy()
+        transportTask.loadPolicy = image.loadPolicy
         if (transportTask.taskId != null && destinationId != null) {
             transportTask.taskId = transportTask.taskId + destinationId
         } else if (transportTask.taskId != null) {
@@ -71,7 +71,7 @@ object ImageLoader {
                         bitmap = transportTask.taskResult as Bitmap?
                     }
                     if (image is ImageWithData) {
-                        image.setBitmap(bitmap)
+                        image.bitmap = bitmap
                     }
                     callback.completed(transportTask, image, bitmap, transportTask.taskError)
                 }
