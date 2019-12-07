@@ -62,7 +62,7 @@ class HttpUrlConnectionBuilder {
         try {
             connection = URL(completeUrl).openConnection() as HttpURLConnection
             connection.instanceFollowRedirects = followRedirects
-            connection!!.requestMethod = verb.name
+            connection.requestMethod = verb.name
             if (connectTimeout != null) {
                 connection.connectTimeout = connectTimeout!!.toInt()
             }

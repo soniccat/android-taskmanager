@@ -17,29 +17,8 @@ import io.reactivex.disposables.Disposables
 class ServiceTaskRunner(private val taskManager: TaskManager, id: String) : ServiceCommandRunner {
     private val taskProvider: TaskProvider
 
-    override fun <T : ServiceCommand<*>> run(command: T): Single<T> {
-        return Single.create { emitter ->
-            val serviceTask = command as ServiceTask<*>
-            emitter.setDisposable(Disposables.fromRunnable {
-                if (!isTaskCompleted(serviceTask.task)) {
-                    cancel(serviceTask)
-                }
-            })
-            run(serviceTask, object : Callback {
-                override fun onCompleted(error: Error?, cancelled: Boolean) {
-                    if (!emitter.isDisposed && !cancelled) {
-                        if (error != null) {
-                            emitter.onError(error)
-                        } else {
-                            emitter.onSuccess(command)
-                        }
-                    }
-                }
-            })
-        }
-    }
 
-    override fun <T : ServiceCommand<*>> run(command: T, callback: Callback) {
+    override suspend fun <R, C : ServiceCommand<R>> run(command: C): R {
         val serviceTask = command as ServiceTask<*>
         val task = serviceTask.task
         task.taskCallback = object : Task.Callback {
@@ -49,6 +28,39 @@ class ServiceTaskRunner(private val taskManager: TaskManager, id: String) : Serv
         }
         taskProvider.addTask(task)
     }
+
+//    override fun <T : ServiceCommand<*>> run(command: T): Single<T> {
+//        return Single.create { emitter ->
+//            val serviceTask = command as ServiceTask<*>
+//            emitter.setDisposable(Disposables.fromRunnable {
+//                if (!isTaskCompleted(serviceTask.task)) {
+//                    cancel(serviceTask)
+//                }
+//            })
+//            run(serviceTask, object : Callback {
+//                override fun onCompleted(error: Error?, isCancelled: Boolean) {
+//                    if (!emitter.isDisposed && !isCancelled) {
+//                        if (error != null) {
+//                            emitter.onError(error)
+//                        } else {
+//                            emitter.onSuccess(command)
+//                        }
+//                    }
+//                }
+//            })
+//        }
+//    }
+
+//    override fun <T : ServiceCommand<*>> run(command: T, callback: Callback) {
+//        val serviceTask = command as ServiceTask<*>
+//        val task = serviceTask.task
+//        task.taskCallback = object : Task.Callback {
+//            override fun onCompleted(cancelled: Boolean) {
+//                callback.onCompleted(serviceTask.commandError, cancelled)
+//            }
+//        }
+//        taskProvider.addTask(task)
+//    }
 
     override fun <T : ServiceCommand<*>> cancel(command: T) {
         val serviceTask = command as ServiceTask<*>
