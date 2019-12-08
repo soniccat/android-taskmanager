@@ -6,5 +6,5 @@ import io.reactivex.Single
  * Created by alexeyglushkov on 24.10.15.
  */
 interface OAuthWebClient {
-    fun loadUrl(url: String, callback: String): Single<String?>
+    suspend fun loadUrl(url: String, callback: String): String
 }

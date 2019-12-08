@@ -14,7 +14,7 @@ import java.util.*
  * Created by alexeyglushkov on 25.11.15.
  */
 class AuthActivityProxy : OAuthWebClient {
-    override fun loadUrl(url: String, callback: String): Single<String?> {
+    override suspend fun loadUrl(url: String, callback: String): String {
         Assert.assertNotNull(currentActivity)
         val intent = Intent(getCurrentActivity(), AuthorizationActivity::class.java)
         intent.putExtra(AuthorizationActivity.LOAD_URL, url)

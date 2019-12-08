@@ -8,6 +8,7 @@ import io.reactivex.SingleSource
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Function
 import tools.RxTools
+import java.lang.Exception
 
 /**
  * Created by alexeyglushkov on 26.11.15.
@@ -29,11 +30,11 @@ open class SimpleService : Service {
         commandRunner = runner
     }
 
-    override fun <T> runCommand(command: ServiceCommand<T>, canSignIn: Boolean): Single<T> {
-        return runCommandInternal(command, canSignIn).flatMap { cmd -> RxTools.justOrError(cmd.response) }
+    override suspend fun <T> runCommand(command: ServiceCommand<T>, canSignIn: Boolean): T {
+        return runCommandInternal(command, canSignIn)
     }
 
-    private fun <T : ServiceCommand<*>> runCommandInternal(command: T, canSignIn: Boolean): Single<T> {
+    private suspend fun <R, T : ServiceCommand<R>> runCommandInternal(command: T, canSignIn: Boolean): R {
         val account = account
         checkNotNull(account)
 
@@ -42,7 +43,7 @@ open class SimpleService : Service {
                 authorizeAndRun(command)
             } else {
                 val error: Error = AuthError(AuthError.Reason.NotAuthorized, null)
-                Single.error(error)
+                throw error
             }
         } else {
             account.signCommand(command)
@@ -50,50 +51,53 @@ open class SimpleService : Service {
         }
     }
 
-    override fun <T> runCommand(command: ServiceCommand<T>): Single<T> {
-        return runCommandInternal(command).flatMap { cmd -> RxTools.justOrError(cmd.response) }
+    override suspend fun <T> runCommand(command: ServiceCommand<T>): T {
+        return runCommandInternal(command)
     }
 
-    private fun <T : ServiceCommand<*>> runCommandInternal(command: T): Single<T> {
+    private suspend fun <R, T : ServiceCommand<R>> runCommandInternal(command: T): R {
         val commandRunner = commandRunner
         checkNotNull(commandRunner)
 
-        return commandRunner.run(command)
-                .onErrorResumeNext { throwable ->
-                    if (command.responseCode == 401) {
-                        command.clear()
-                        authorizeAndRun(command)
-                    } else {
-                        Single.error(throwable)
-                    }
-                }
-    }
-
-    fun <T : ServiceCommand<*>> authorizeAndRun(command: T): Single<T> {
-        return authorize().flatMap {
-            runCommandInternal(command, false)
+        return try {
+            commandRunner.run(command)
+        } catch (ex: Exception) {
+            if (command.responseCode == 401) {
+                command.clear()
+                authorizeAndRun(command)
+            } else {
+                throw ex
+            }
         }
     }
 
-    fun authorizeIfNeeded(): Single<AuthCredentials> {
+    suspend fun <R, T : ServiceCommand<R>> authorizeAndRun(command: T): R {
+        val response = authorize()
+        return runCommandInternal(command, false)
+    }
+
+    suspend fun authorizeIfNeeded(): AuthCredentials {
         val account = account
+        val credentials = account?.credentials
         checkNotNull(account)
 
         return if (!account.isAuthorized) {
             authorize()
+        } else if (credentials != null) {
+            credentials
         } else {
-            RxTools.justOrError(account.credentials)
+            throw Error("Empty credentials")
         }
     }
 
-    fun authorize(): Single<AuthCredentials> {
+    suspend fun authorize(): AuthCredentials {
         val account = account
         val authThread = authThread
         checkNotNull(account)
         checkNotNull(authThread)
 
         startAuthThreadIfNeeded()
-        return account.authorize().subscribeOn(AndroidSchedulers.from(authThread.looper))
+        return account.authorize()
     }
 
     private fun startAuthThreadIfNeeded() {

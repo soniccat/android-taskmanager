@@ -32,7 +32,7 @@ open class SimpleAccount(override val serviceType: Int) : Account, Serializable 
         accountStore = store
     }
 
-    override fun authorize(): Single<AuthCredentials> { //        authorizer.authorize(new Authorizer.AuthorizerCompletion() {
+    override suspend fun authorize(): AuthCredentials { //        authorizer.authorize(new Authorizer.AuthorizerCompletion() {
 //            @Override
 //            public void onFinished(AuthCredentials credentials, Authorizer.AuthError error) {
 //                if (credentials != null && error == null) {
@@ -52,15 +52,14 @@ open class SimpleAccount(override val serviceType: Int) : Account, Serializable 
         val authorizer = authorizer
         checkNotNull(authorizer)
 
-        return authorizer.authorize().flatMap(Function { authCredentials ->
-            try {
-                updateCredentials(authCredentials)
-                return@Function Single.just(authCredentials)
-            } catch (e: Exception) {
-                val error: Error = AuthError(Reason.InnerError, e)
-                return@Function Single.error(error)
-            }
-        })
+        return try {
+            val authCredentials = authorizer.authorize()
+            updateCredentials(authCredentials)
+            authCredentials
+        } catch (e: Exception) {
+            val error: Error = AuthError(Reason.InnerError, e)
+            throw error
+        }
     }
 
     @Throws(Exception::class)

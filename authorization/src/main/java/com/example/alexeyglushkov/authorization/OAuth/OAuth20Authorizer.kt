@@ -8,5 +8,5 @@ interface OAuth20Authorizer : Authorizer {
     val authorizationUrl: String
     var webClient: OAuthWebClient?
 
-    fun retrieveAccessToken(code: String): Single<ServiceCommand<String>>
+    suspend fun retrieveAccessToken(code: String): String
 }

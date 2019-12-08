@@ -7,5 +7,5 @@ import io.reactivex.Single
  */
 interface ServiceCommandRunner {
     suspend fun <R, C : ServiceCommand<R>> run(command: C): R
-    fun <T : ServiceCommand<*>> cancel(command: T)
+    fun <C : ServiceCommand<*>> cancel(command: C)
 }

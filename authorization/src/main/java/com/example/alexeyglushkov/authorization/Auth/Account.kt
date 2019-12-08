@@ -20,7 +20,7 @@ interface Account {
     fun store()
 
     // Method should be called not on main thread to be able show auth activity for OAuth20AuthorizerImpl
-    fun authorize(): Single<AuthCredentials>
+    suspend fun authorize(): AuthCredentials
 
     fun signCommand(command: ServiceCommand<*>)
 }

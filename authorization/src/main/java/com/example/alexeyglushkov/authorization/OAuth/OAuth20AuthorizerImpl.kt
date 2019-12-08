@@ -36,7 +36,7 @@ class OAuth20AuthorizerImpl(private val api: DefaultApi20,
 
 // TODO: parse code here instead of retrieveAccessToken
 // TODO: use Single<String> instead of Single<ServiceCommand<String>>
-    override fun retrieveAccessToken(code: String): Single<ServiceCommand<String>> {
+    override suspend fun retrieveAccessToken(code: String): String {
         val commandProvider = commandProvider
         val commandRunner = commandRunner
         checkNotNull(commandProvider)
@@ -46,44 +46,36 @@ class OAuth20AuthorizerImpl(private val api: DefaultApi20,
         api.fillAccessTokenConnectionBuilder(builder, config, code)
         val command = commandProvider.getServiceCommand<String>(builder, BytesStringConverter())
 
-        return commandRunner.run(command).onErrorResumeNext {
-            val err: Error = AuthError("OAuth20AuthorizerImpl authorize: Can't receive AccessToken", Reason.InnerError, it)
-            Single.error(err)
+        return try {
+            commandRunner.run(command)
+        } catch (ex: Exception) {
+            val err: Error = AuthError("OAuth20AuthorizerImpl authorize: Can't receive AccessToken", Reason.InnerError, ex)
+            throw err
         }
     }
 
-    override fun authorize(): Single<AuthCredentials> {
-        return webAuthorization().flatMap {
-            extractAccessToken(it)
-        }
+    override suspend fun authorize(): AuthCredentials {
+        val code = webAuthorization()
+        return extractAccessToken(code)
     }
 
-    private fun extractAccessToken(code: String?): Single<out AuthCredentials> {
+    private suspend fun extractAccessToken(code: String?): AuthCredentials {
         return if (code == null) {
-            Single.error(Error("OAuth20AuthorizerImpl authorize: empty code"))
+            throw Error("OAuth20AuthorizerImpl authorize: empty code")
         } else {
-            retrieveAccessToken(code).flatMap { command ->
-                val response = command.response
+            val token = retrieveAccessToken(code)
+            val authCredentials = api.createCredentials(token)
 
-                if (response != null) {
-                    val authCredentials = api.createCredentials(response)
-                    val result: Single<out AuthCredentials>
-                    result = if (authCredentials != null && authCredentials.isValid) {
-                        Single.just(authCredentials)
-                    } else {
-                        val localError = AuthError("OAuth20AuthorizerImpl authorize: Can't parse AccessToken", Reason.UnknownError, null)
-                        Single.error(localError)
-                    }
-                    return@flatMap result
-                } else {
-                    val localError = AuthError("OAuth20AuthorizerImpl authorize: Empty response", Reason.UnknownError, null)
-                    Single.error<AuthCredentials>(localError)
-                }
+            if (authCredentials.isValid) {
+                authCredentials
+            } else {
+                val localError = AuthError("OAuth20AuthorizerImpl authorize: invalid credentials", Reason.UnknownError, null)
+                throw localError
             }
         }
     }
 
-    private fun webAuthorization(): Single<String> {
+    private suspend fun webAuthorization(): String {
         val webClient = webClient
         val callback = config.callback
         checkNotNull(webClient)

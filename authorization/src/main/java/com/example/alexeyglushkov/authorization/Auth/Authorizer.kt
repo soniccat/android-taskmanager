@@ -6,7 +6,7 @@ import io.reactivex.Single
  * Created by alexeyglushkov on 31.10.15.
  */
 interface Authorizer {
-    fun authorize(): Single<AuthCredentials>
+    suspend fun authorize(): AuthCredentials
     fun signCommand(command: ServiceCommand<*>, credentials: AuthCredentials)
     fun setServiceCommandProvider(provider: ServiceCommandProvider)
     fun setServiceCommandRunner(runner: ServiceCommandRunner)

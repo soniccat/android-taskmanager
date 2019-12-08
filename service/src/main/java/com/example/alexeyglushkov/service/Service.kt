@@ -14,7 +14,7 @@ interface Service {
 
     fun setServiceCommandProvider(provider: ServiceCommandProvider) // TODO consider just var
     fun setServiceCommandRunner(runner: ServiceCommandRunner)
-    fun <T> runCommand(command: ServiceCommand<T>, canSignIn: Boolean): Single<T>
-    fun <T> runCommand(command: ServiceCommand<T>): Single<T>
+    suspend fun <T> runCommand(command: ServiceCommand<T>, canSignIn: Boolean): T
+    suspend fun <T> runCommand(command: ServiceCommand<T>): T
     fun cancel(cmd: ServiceCommand<*>)
 }

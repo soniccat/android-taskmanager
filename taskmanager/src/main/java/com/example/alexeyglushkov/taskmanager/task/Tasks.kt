@@ -19,7 +19,6 @@ import kotlin.coroutines.resumeWithException
  * Created by alexeyglushkov on 28.12.14.
  */
 object Tasks {
-
     // To automatically sync task state with your object state (isLoading for example)
     fun bindOnTaskCompletion(task: Task, listener: TaskListener) {
         task.addTaskStatusListener(object : Task.StatusListener {
@@ -44,7 +43,7 @@ object Tasks {
         return st == Task.Status.Finished || st == Task.Status.Cancelled
     }
 
-    suspend fun run(task: Task, taskPool: TaskPool): Any? {
+    suspend fun <T> run(task: Task, taskPool: TaskPool): T {
         return suspendCancellableCoroutine {
             it.invokeOnCancellation {
                 taskPool.cancelTask(task, null)
@@ -58,7 +57,7 @@ object Tasks {
                     } else if (cancelled) {
                         it.resumeWithException(CancellationException())
                     } else {
-                        it.resume(task.taskResult)
+                        it.resume(task.taskResult as T)
                     }
                 }
             }
