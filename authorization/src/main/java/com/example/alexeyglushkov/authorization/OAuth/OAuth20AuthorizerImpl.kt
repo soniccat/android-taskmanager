@@ -82,35 +82,29 @@ class OAuth20AuthorizerImpl(private val api: DefaultApi20,
         checkNotNull(callback)
 
         val url = authorizationUrl
-        return webClient.loadUrl(url, callback).flatMap {
-            val uri = Uri.parse(url)
-            var code: String? = null
-            var error: AuthError? = null
+        return try {
+            val resultUrl = webClient.loadUrl(url, callback)
+            val uri = Uri.parse(resultUrl)
+
             if (isCancelled(uri)) {
-                error = AuthError(Reason.Cancelled, null)
+                throw AuthError(Reason.Cancelled, null)
             } else {
-                code = getCode(uri)
+                val code = getCode(uri)
                 if (code == null) {
-                    error = AuthError("OAuth20AuthorizerImpl authorize: Can't parse code", Reason.UnknownError, null)
+                    throw AuthError("OAuth20AuthorizerImpl authorize: Can't parse code", Reason.UnknownError, null)
+                } else {
+                    code
                 }
             }
-
-            if (error != null) {
-                Single.error<String>(error)
-            } else {
-                Single.just<String>(code)
-            }
-        }.onErrorResumeNext({ throwable ->
-            val reason: Reason
-            reason = if (throwable is CancelError) {
+        } catch (e: java.lang.Exception) {
+            val reason = if (e is CancelError) {
                 Reason.Cancelled
             } else {
                 Reason.InnerError
             }
 
-            val authError = AuthError(reason, throwable)
-            Single.error<String>(authError)
-        })
+            throw AuthError(reason, e)
+        }
     }
 
     private fun getCode(uri: Uri): String? {
