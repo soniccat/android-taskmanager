@@ -18,15 +18,10 @@ class QuizletService(account: Account,
                      commandProvider: QuizletCommandProvider,
                      commandRunner: ServiceCommandRunner) : SimpleService() {
     //// Actions
-    fun loadSets(progressListener: ProgressListener?): Single<List<QuizletSet>> {
-        return authorizeIfNeeded()
-                .flatMap(object : Function<AuthCredentials, SingleSource<List<QuizletSet>>> {
-                    @Throws(Exception::class)
-                    override fun apply(authCredentials: AuthCredentials): SingleSource<List<QuizletSet>> {
-                        val command = createSetsCommand(progressListener)
-                        return runCommand(command, true)
-                    }
-                })
+    suspend fun loadSets(progressListener: ProgressListener?): List<QuizletSet> {
+        authorizeIfNeeded()
+        val command = createSetsCommand(progressListener)
+        return runCommand(command, true)
     }
 
     // OLD restoration approach based on command internal cache

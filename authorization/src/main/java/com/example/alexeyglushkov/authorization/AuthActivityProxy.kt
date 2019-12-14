@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import java.lang.ref.WeakReference
 
@@ -35,7 +36,7 @@ class AuthActivityProxy : OAuthWebClient {
             Companion.currentActivity = if (currentActivity != null) WeakReference(currentActivity) else null
         }
 
-        suspend fun finish(url: String?, error: Error?) {
+        fun finish(url: String?, error: Error?) = runBlocking {
             if (error != null || url == null) {
                 val resultError = if (error != null) error else IllegalArgumentException(url)
                 authResult.close(resultError)

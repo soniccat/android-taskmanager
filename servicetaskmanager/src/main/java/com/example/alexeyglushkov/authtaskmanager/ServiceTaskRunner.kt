@@ -2,12 +2,7 @@ package com.example.alexeyglushkov.authtaskmanager
 
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommand
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner
-import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner.Callback
 import com.example.alexeyglushkov.taskmanager.task.*
-import com.example.alexeyglushkov.taskmanager.task.Tasks.isTaskCompleted
-import io.reactivex.Single
-import io.reactivex.disposables.Disposables
-import kotlinx.coroutines.suspendCancellableCoroutine
 
 /**
  * Created by alexeyglushkov on 04.11.15.

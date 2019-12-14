@@ -27,7 +27,7 @@ open class HttpServiceCommand<T>(// Getters
 
     fun setCacheClient(cacheClient: Cache) {
         val transport = transportTask.transport as Transport<*>
-        transport.setCacheClient(cacheClient)
+        transport.cache = cacheClient
     }
 
     override val responseCode: Int
@@ -48,9 +48,10 @@ open class HttpServiceCommand<T>(// Getters
                         return builder.build()!!
                     }
 
-                    override fun getURL(): URL {
-                        return builder.getUrl()!!
-                    }
+                    override val url: URL
+                        get() {
+                            return builder.getUrl()!!
+                        }
                 }
             }
 

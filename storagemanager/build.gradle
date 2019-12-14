@@ -21,23 +21,23 @@ android {
             testCoverageEnabled true
         }
     }
-
-    packagingOptions {
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/NOTICE'
-    }
 }
 
 dependencies {
     implementation project(':streamlib')
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.7.3'
+    implementation project(path: ':tools')
     implementation project(path: ':jacksonlib')
+
     implementation 'androidx.annotation:annotation:' + rootProject.ext.annotationVersion
+
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.7.3'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:" + rootProject.ext.coroutinesVersion
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:" + rootProject.ext.coroutinesVersion
+    implementation 'io.reactivex.rxjava2:rxandroid:' + rootProject.ext.rxAndroidVersion
+    implementation 'io.reactivex.rxjava2:rxjava:' + rootProject.ext.rxJavaVersion
     implementation 'junit:junit:' + rootProject.ext.junitVersion
+
     androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
         exclude group: 'androidx.annotation', module: 'annotation'
     })
-    implementation project(path: ':tools')
-    implementation 'io.reactivex.rxjava2:rxandroid:' + rootProject.ext.rxAndroidVersion
-    implementation 'io.reactivex.rxjava2:rxjava:' + rootProject.ext.rxJavaVersion
 }

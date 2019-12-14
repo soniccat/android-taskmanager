@@ -29,14 +29,18 @@ class QuizletRepository(private val service: QuizletService, storage: Storage) :
     private val commandHolder = RepositoryCommandHolder()
 
     //// Actions
-    fun loadSets(progressListener: ProgressListener): RepositoryCommand<Resource<List<QuizletSet>>> {
+    suspend fun loadSets(progressListener: ProgressListener): RepositoryCommand<Resource<List<QuizletSet>>> {
         val disposable = loadSetsInternal(progressListener).subscribe(Functions.emptyConsumer<Any>(), Functions.emptyConsumer<Any>())
         return commandHolder.putCommand(DisposableRepositoryCommand(LOAD_SETS_COMMAND_ID, disposable, setsLiveData))
     }
 
-    private fun loadSetsInternal(progressListener: ProgressListener): Single<List<QuizletSet>> {
+    suspend private fun loadSetsInternal(progressListener: ProgressListener): Single<List<QuizletSet>> {
         val previousState = setsLiveData.value!!
         setsLiveData.value = setsLiveData.value!!.toLoading()
+
+        val sets = service.loadSets(progressListener)
+
+
         return service.loadSets(progressListener)
                 .flatMap { sets ->
                     val task = BaseServiceTask.fromSingle(cache.putValue("quizlet_sets", sets).toSingleDefault(sets))

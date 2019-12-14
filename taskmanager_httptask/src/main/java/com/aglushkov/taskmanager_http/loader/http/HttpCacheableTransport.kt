@@ -13,14 +13,14 @@ import java.io.ByteArrayInputStream
 open class HttpCacheableTransport<T>
     @JvmOverloads constructor(provider: HttpURLConnectionProvider,
                               handler: HTTPConnectionBytesReader<T>,
-                              var cacheClient: Cache? = null) : HttpBytesTransport<T>(provider, handler) {
+                              var cache: Cache? = null) : HttpBytesTransport<T>(provider, handler) {
     private var needStore = false
     private val cacheKey: String
         get() = provider.url.toString()
 
     override suspend fun start() {
         var isCacheLoaded = false
-        if (CacheStatus.canLoadFromCache(cacheClient)) {
+        if (CacheStatus.canLoadFromCache(cache)) {
             try {
                 isCacheLoaded = handleCacheContent()
             } catch (ex: Exception) {
@@ -28,9 +28,9 @@ open class HttpCacheableTransport<T>
                 ex.printStackTrace()
             }
         }
-        val canStartLoading = cacheClient == null || cacheClient!!.cacheMode != Cache.CacheMode.ONLY_LOAD_FROM_CACHE
+        val canStartLoading = cache == null || cache!!.cacheMode != Cache.CacheMode.ONLY_LOAD_FROM_CACHE
         if (canStartLoading && !isCacheLoaded) {
-            needStore = CacheStatus.canWriteToCache(cacheClient)
+            needStore = CacheStatus.canWriteToCache(cache)
             super.start()
         }
     }
@@ -38,7 +38,7 @@ open class HttpCacheableTransport<T>
     @Throws(Exception::class)
     private fun handleCacheContent(): Boolean {
         var isLoaded = false
-        val safeCacheClient = cacheClient
+        val safeCacheClient = cache
         if (safeCacheClient != null && applyCacheContent(safeCacheClient)) {
             isLoaded = true
         } else if (safeCacheClient != null && safeCacheClient.cacheMode == Cache.CacheMode.ONLY_LOAD_FROM_CACHE) {
@@ -66,9 +66,9 @@ open class HttpCacheableTransport<T>
 
     override fun onDataLoaded(handledData: T?) {
         super.onDataLoaded(handledData)
-        if (needStore && cacheClient != null) {
+        if (needStore && cache != null) {
             try {
-                cacheClient!!.putValue(cacheKey, byteArrayReader.byteArray)
+                cache!!.putValue(cacheKey, byteArrayReader.byteArray)
             } catch (e: Exception) {
                 Log.e(TAG, "cache.put exception")
                 e.printStackTrace()

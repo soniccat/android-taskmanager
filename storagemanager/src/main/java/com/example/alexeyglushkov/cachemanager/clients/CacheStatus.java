@@ -8,12 +8,12 @@ import androidx.annotation.Nullable;
 
 public class CacheStatus {
 
-    public static boolean canLoadFromCache(@Nullable Cache client) {
-        if (client == null) {
+    public static boolean canLoadFromCache(@Nullable Cache cache) {
+        if (cache == null) {
             return false;
         }
 
-        Cache.CacheMode cacheMode = client.getCacheMode();
+        Cache.CacheMode cacheMode = cache.getCacheMode();
         return cacheMode != Cache.CacheMode.IGNORE_CACHE &&
                 cacheMode != Cache.CacheMode.ONLY_STORE_TO_CACHE;
     }

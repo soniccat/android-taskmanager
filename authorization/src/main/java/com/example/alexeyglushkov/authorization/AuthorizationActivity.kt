@@ -80,10 +80,10 @@ class AuthorizationActivity : AppCompatActivity() /*implements OAuthWebClient*/ 
         }
     }
 
-    fun loadUrl(url: String?): Single<String> {
-        runOnUiThread { webView?.loadUrl(url) }
-        return AuthActivityProxy.getSingleAuthResult()
-    }
+//    fun loadUrl(url: String?): String {
+//        runOnUiThread { webView?.loadUrl(url) }
+//        return AuthActivityProxy.authResult()
+//    }
 
     companion object {
         private const val TAG = "AuthorizationActivity"
