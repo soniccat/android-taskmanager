@@ -30,8 +30,14 @@ import com.rssclient.controllers.MainRssActivity
 import com.rssclient.controllers.R
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : BaseActivity() {
+    private val scope = MainScope()
+
     private var service: SimpleService? = null
     private var storage: Storage? = null
     private val mainApplication: MainApplication
@@ -54,11 +60,11 @@ class MainActivity : BaseActivity() {
             } else if (position == 1) {
                 showAuthorization()
             } else if (position == 2) {
-                requestUser()
+                scope.launch { requestUser() }
             } else if (position == 3) {
                 clearCache()
             } else if (position == 4) {
-                loadSets(true)
+                scope.launch { loadSets(true) }
             }
         }
     }
@@ -72,16 +78,18 @@ class MainActivity : BaseActivity() {
         val authTask: Task = object : SimpleTask() {
             override suspend fun startTask() {
                 val account = Networks.createAccount(Network.Quizlet)
-                account.authorize().subscribeOn(Schedulers.io()).subscribe(Consumer {
-                    Log.d(TAG, "showAuthorization onFinished " + account.credentials!!.isValid)
-                    private.handleTaskCompletion()
-                })
+                val creds = withContext(Dispatchers.IO) {
+                    account.authorize()
+                }
+
+                Log.d(TAG, "showAuthorization onFinished " + creds.isValid)
+                private.handleTaskCompletion()
             }
         }
         taskManager.addTask(authTask)
     }
 
-    private fun requestUser() {
+    private suspend fun requestUser() {
         if (service == null) {
             initService()
         }
@@ -125,7 +133,7 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun loadSets(useCache: Boolean) {
+    private suspend fun loadSets(useCache: Boolean) {
         mainApplication.quizletService.loadSets(null)
     }
 

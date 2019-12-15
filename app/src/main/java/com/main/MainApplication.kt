@@ -59,10 +59,11 @@ class MainApplication : Application() {
     }
 
     fun cleanCache() {
+        val safeStorage = storage ?: return
         val cleanTask: Task = object : SimpleTask() {
             override suspend fun startTask() {
                 val cleaner: StorageCleaner = SimpleStorageCleaner()
-                cleaner.clean(storage)
+                cleaner.clean(safeStorage)
                 private.handleTaskCompletion()
             }
         }
