@@ -5,8 +5,6 @@ import com.aglushkov.taskmanager_http.image.Image
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandProvider
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder
-import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider
-import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner
 import com.example.alexeyglushkov.service.SimpleService
 import com.example.alexeyglushkov.streamlib.handlers.ByteArrayHandler
 import org.xmlpull.v1.XmlPullParser
@@ -26,9 +24,11 @@ class RssFeedService: SimpleService {
 
     suspend fun loadRss(url: String): RssFeed {
         val builder = HttpUrlConnectionBuilder().setUrl(url)
-        val command = commandProvider!!.getServiceCommand(builder, object : ByteArrayHandler<Any> {
-            override fun convert(`object`: ByteArray): Any {
-                return loadData(`object`)
+        val command = commandProvider!!.getServiceCommand(builder, object : ByteArrayHandler<RssFeed> {
+            override fun convert(`object`: ByteArray): RssFeed {
+                val feed = loadData(`object`)
+                feed.url = URL(url)
+                return feed
             }
         })
 
@@ -40,57 +40,58 @@ class RssFeedService: SimpleService {
         val str = String(data, ch)
         var reader: StringReader? = null
 
-        try {
+        return try {
             val parser = Xml.newPullParser()
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
             reader = StringReader(str)
             parser.setInput(reader)
             parser.nextTag()
-            readChannels(parser)!!
+            readRssFeed(parser)!!
         } finally {
             reader!!.close()
         }
     }
 
-    internal fun readChannels(parser: XmlPullParser): Error? {
+    internal fun readRssFeed(parser: XmlPullParser): RssFeed? {
         val name: String?
-        try {
-            parser.nextTag()
-        } catch (e: Exception) {
-            return Error("Rss channel parse error")
-        }
+        parser.nextTag()
+
         name = parser.name
         return if (name != null && parser.name == "channel") {
-            readHead(parser)
-        } else null
+            try {
+                val feed = RssFeed(name, null, null)
+                this.parseFeedData(parser, feed)
+                feed
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+                throw e
+            }
+        } else
+            null
     }
 
-    internal fun readHead(parser: XmlPullParser): Error? {
+    internal fun parseFeedData(parser: XmlPullParser, feed: RssFeed) {
         val items = mutableListOf<RssItem>()
-        return try {
-            while (parser.next() != XmlPullParser.END_TAG) {
-                val name = parser.name
-                var startedTag = parser.eventType == XmlPullParser.START_TAG
-                if (name != null) {
-                    if (name == "image") {
-                        image = readImage(parser)
-                    } else if (name == "item") {
-                        val item = readItem(parser)
-                        if (item != null) {
-                            items.add(item)
-                        }
+        while (parser.next() != XmlPullParser.END_TAG) {
+            val name = parser.name
+            var startedTag = parser.eventType == XmlPullParser.START_TAG
+            if (name != null) {
+                if (name == "image") {
+                    feed.image = this.readImage(parser)
+                } else if (name == "item") {
+                    val item = readItem(parser)
+                    if (item != null) {
+                        items.add(item)
                     }
                 }
-                if (startedTag) {
-                    skip(parser)
-                    startedTag = false
-                }
             }
-            null
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Error("Rss head parse error")
+            if (startedTag) {
+                skip(parser)
+                startedTag = false
+            }
         }
+
+        feed.items = items
     }
 
     internal fun readItem(parser: XmlPullParser): RssItem? {
@@ -146,7 +147,7 @@ class RssFeedService: SimpleService {
                 try {
                     url = URL(str)
                     image = Image()
-                    image.setUrl(url)
+                    image.url = url
                 } catch (e: MalformedURLException) {
                 }
             }
@@ -177,7 +178,7 @@ class RssFeedService: SimpleService {
                         parser.next()
                         try {
                             val url = URL(parser.text)
-                            item.setUrl(url)
+                            item.url = url
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
@@ -185,10 +186,10 @@ class RssFeedService: SimpleService {
                         item.byteSize = parser.text.toInt()
                     } else if (name == "width") {
                         parser.next()
-                        item.setWidth(parser.text.toInt())
+                        item.width = parser.text.toInt()
                     } else if (name == "height") {
                         parser.next()
-                        item.setHeight(parser.text.toInt())
+                        item.height = parser.text.toInt()
                     }
                 }
                 if (startedTag) {

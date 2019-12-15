@@ -21,7 +21,7 @@ import java.nio.charset.Charset
 
 @Parcelize
 data class RssFeed(var name: String,
-                   var url: URL,
+                   var url: URL?,
                    var image: Image?,
                    var items: List<RssItem> = ArrayList()) : Parcelable/*, TaskListener, HttpURLConnectionProvider*/ {
 //    protected var processingTask: Task? = null
@@ -49,7 +49,7 @@ data class RssFeed(var name: String,
     override fun getUrlConnection(): HttpURLConnection {
         var connection: HttpURLConnection? = null
         try {
-            connection = url!!.openConnection() as HttpURLConnection
+            connection = url.openConnection() as HttpURLConnection
         } catch (e: Exception) { // TODO Auto-generated catch block
             e.printStackTrace()
         }
