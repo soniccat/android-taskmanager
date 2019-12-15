@@ -1,4 +1,6 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -29,7 +31,7 @@ dependencies {
     implementation project(path: ':jacksonlib')
 
     implementation 'androidx.annotation:annotation:' + rootProject.ext.annotationVersion
-
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
     implementation 'com.fasterxml.jackson.core:jackson-core:2.7.3'
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:" + rootProject.ext.coroutinesVersion
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:" + rootProject.ext.coroutinesVersion

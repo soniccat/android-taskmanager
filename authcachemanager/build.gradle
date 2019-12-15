@@ -19,8 +19,9 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:' + rootProject.ext.appCompatVersion
+    implementation project(':streamlib')
     implementation project(':authorization')
     implementation project(':storagemanager')
+
+    implementation 'androidx.appcompat:appcompat:' + rootProject.ext.appCompatVersion
 }

@@ -109,7 +109,7 @@ public class CourseHolder {
         List<StorageEntry> entries = diskProvider.getEntries();
         for (StorageEntry entry : entries) {
             DiskStorageEntry diskEntry = (DiskStorageEntry) entry;
-            Course course = (Course) diskEntry.getObject();
+            Course course = (Course) diskEntry.getObj();
             courses.add(course);
         }
 

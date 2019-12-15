@@ -33,7 +33,7 @@ class ScopeThreadRunner(val scope: CoroutineScope, val threadId: String): Thread
             return block()
         } else {
             return runBlocking(scope.coroutineContext) {
-                return@runBlocking block()
+                block()
             }
         }
     }
@@ -45,7 +45,7 @@ class ScopeThreadRunner(val scope: CoroutineScope, val threadId: String): Thread
             }
         } else {
             return runBlocking(scope.coroutineContext) {
-                return@runBlocking block()
+                block()
             }
         }
     }

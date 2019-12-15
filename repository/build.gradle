@@ -29,6 +29,8 @@ dependencies {
     implementation "androidx.core:core-ktx:$rootProject.ext.ktx"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:" + rootProject.ext.coroutinesVersion
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:" + rootProject.ext.coroutinesVersion
     implementation 'io.reactivex.rxjava2:rxandroid:' + rootProject.ext.rxAndroidVersion
     implementation 'io.reactivex.rxjava2:rxjava:' + rootProject.ext.rxJavaVersion
 

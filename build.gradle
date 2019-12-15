@@ -10,7 +10,7 @@ buildscript {
         versionCode = 1
         versionName = "1.0"
 
-        kotlinVersion = "1.3.60"
+        kotlinVersion = "1.3.61"
         ktx = "1.1.0"
 
         appRecyclerViewVersion = "1.0.0"
