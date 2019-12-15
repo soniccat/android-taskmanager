@@ -14,12 +14,26 @@ import java.net.URL
 /**
  * Created by alexeyglushkov on 04.11.15.
  */
-open class HttpServiceCommand<T>(// Getters
+open class HttpServiceCommand<T>(
         override final val connectionBuilder: HttpUrlConnectionBuilder,
         handler: ByteArrayHandler<T>) : BaseServiceTask<T>() {
 
-    //// Setters / Getters
-// Setters
+    init {
+        val task = TransportTask()
+        setTaskConnectionBuilder(task, connectionBuilder)
+        task.transport = Transport(connectionBuilder, handler)
+        this.task = task
+    }
+
+    override val responseCode: Int
+        get() {
+            val transport = transportTask.transport as Transport<*>
+            return transport.responseCode
+        }
+
+    private val transportTask: TransportTask
+        get() = task as TransportTask
+
     private fun setTaskConnectionBuilder(task: Task, connectionBuilder: HttpUrlConnectionBuilder) {
         task.taskId = connectionBuilder.stringUrl
         task.loadPolicy = Task.LoadPolicy.CancelPreviouslyAdded
@@ -30,17 +44,9 @@ open class HttpServiceCommand<T>(// Getters
         transport.cache = cacheClient
     }
 
-    override val responseCode: Int
-        get() {
-            val transport = transportTask.transport as Transport<*>
-            return transport.responseCode
-        }
-
-    private val transportTask: TransportTask
-        private get() = task as TransportTask
-
     //// Classes
-    private class Transport<T>(builder: HttpUrlConnectionBuilder, handler: ByteArrayHandler<T>) : HttpCacheableTransport<T>(createProvider(builder), createStreamReader(handler)) {
+    private class Transport<T>(builder: HttpUrlConnectionBuilder, handler: ByteArrayHandler<T>)
+        : HttpCacheableTransport<T>(createProvider(builder), createStreamReader(handler)) {
         companion object {
             private fun createProvider(builder: HttpUrlConnectionBuilder): HttpURLConnectionProvider {
                 return object : HttpURLConnectionProvider {
@@ -65,12 +71,5 @@ open class HttpServiceCommand<T>(// Getters
                 }
             }
         }
-    }
-
-    init {
-        val task = TransportTask()
-        setTaskConnectionBuilder(task, connectionBuilder)
-        task.transport = Transport(connectionBuilder, handler)
-        this.task = task
     }
 }
