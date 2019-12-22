@@ -73,7 +73,7 @@ open class DiskStorage(val directory: File) : Storage {
     }
 
     @Synchronized
-    private fun getLockObject(key: String): Any? {
+    private fun getLockObject(key: String): Any {
         var lockObject = lockMap[key]
         if (lockObject == null) {
             lockObject = createLockObject(key)
@@ -162,8 +162,12 @@ open class DiskStorage(val directory: File) : Storage {
     override fun getEntry(fileName: String): StorageEntry? {
         var entry: StorageEntry? = null
         val key = getKeyName(fileName)
-        val lockObject = getLockObject(key)
-        synchronized(lockObject!!) { entry = getEntryByKey(key) }
+
+        try {
+            val lockObject = getLockObject(key)
+            synchronized(lockObject) { entry = getEntryByKey(key) }
+        } catch (ex: Exception) {
+        }
         return entry
     }
 
@@ -172,7 +176,7 @@ open class DiskStorage(val directory: File) : Storage {
         var entry: DiskStorageEntry? = null
         val file = getKeyFile(key)
         if (!file.exists()) {
-            throw FileNotFoundException("DiskStorage.getEntryByKey() exists(): file doesn't exist")
+            throw FileNotFoundException("DiskStorage.getEntryByKey() exists(): file doesn't exist ${key}")
         }
         var metadata: DiskStorageMetadata? = null
         var codec: Codec<*>? = null

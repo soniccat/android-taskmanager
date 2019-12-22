@@ -49,7 +49,7 @@ class RepositoryCommandHolder {
         if (liveData == null) {
             liveData = MutableLiveData<T>()
             if (default != null) {
-                liveData.value = default
+                liveData.postValue(default)
             }
             putLiveData(id, liveData)
         }
