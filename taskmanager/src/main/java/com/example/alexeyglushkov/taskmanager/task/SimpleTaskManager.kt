@@ -32,6 +32,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     var _threadRunner: ThreadRunner = InstantThreadRunner()
+    // TODO: try to use channel instead of a single thread
     override var threadRunner: ThreadRunner
         get() = _threadRunner
         set(value) {

@@ -9,6 +9,7 @@ import android.widget.AbsListView
 import android.widget.AbsListView.OnScrollListener
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.aglushkov.taskmanager_http.image.Image
 import com.aglushkov.taskmanager_http.image.ImageLoader
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo
@@ -23,9 +24,8 @@ import com.main.MainApplication
 import com.rssclient.controllers.RssItemsAdapter.RssItemsAdapterListener
 import com.rssclient.controllers.RssItemsAdapter.ViewHolder
 import com.rssclient.model.RssFeed
+import com.rssclient.model.RssFeedRepository
 import com.rssclient.model.RssItem
-import com.rssclient.model.RssStorage
-import com.rssclient.model.RssStorage.RssFeedCallback
 import org.junit.Assert
 import java.lang.ref.WeakReference
 import java.net.MalformedURLException
@@ -35,7 +35,7 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapsho
     lateinit internal var taskProvider: PriorityTaskProvider
     internal lateinit var taskManager: TaskManager
     lateinit internal var listView: ListView
-    internal lateinit var rssStorage: RssStorage
+    internal lateinit var rssRepository: RssFeedRepository
     lateinit internal var taskManagerView: TaskManagerView
     internal lateinit var snapshot: TaskManagerSnapshot
     lateinit internal var feed: RssFeed
@@ -47,7 +47,7 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapsho
 
         val application = application as MainApplication
         val intent = intent
-        rssStorage = application.rssStorage
+        rssRepository = application.rssRepository
 
         val urlString: String
         urlString = if (savedInstanceState == null) {
@@ -64,7 +64,7 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapsho
             throw e
         }
 
-        feed = rssStorage.getFeed(url)!!
+        feed = rssRepository.getRssFeedLiveData(url.hashCode().toLong()).value!!.data()!!
         taskManager = application.taskManager
 
         val storedProvider = taskManager.getTaskProvider(PROVIDER_ID) as? PriorityTaskProvider
@@ -93,18 +93,19 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapsho
 
         val activity = this
         if (feed.items.size == 0) {
-            rssStorage.loadFeed(taskManager, this, feed, object : RssFeedCallback {
-                override fun completed(feed: RssFeed?, error: Error?) {
-                    println("loaded")
-                    HandlerTools.runOnMainThread {
-                        if (error != null) {
-                            Tools.showErrorMessage(activity, "Rss Load Error")
-                        } else {
-                            activity.updateTableAdapter()
-                        }
-                    }
-                }
-            })
+            rssRepository.loadRssFeed(feed.url.hashCode().toLong(), null)
+//            rssRepository.loa(taskManager, this, feed, object : RssFeedCallback {
+//                override fun completed(feed: RssFeed?, error: Error?) {
+//                    println("loaded")
+//                    HandlerTools.runOnMainThread {
+//                        if (error != null) {
+//                            Tools.showErrorMessage(activity, "Rss Load Error")
+//                        } else {
+//                            activity.updateTableAdapter()
+//                        }
+//                    }
+//                }
+//            })
         } else {
             activity.updateTableAdapter()
         }

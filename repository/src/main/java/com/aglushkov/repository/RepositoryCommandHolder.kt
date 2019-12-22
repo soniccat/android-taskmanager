@@ -1,6 +1,7 @@
 package com.aglushkov.repository
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.aglushkov.repository.command.RepositoryCommand
 import java.util.*
 
@@ -41,6 +42,18 @@ class RepositoryCommandHolder {
             }
         }
         return cmd
+    }
+
+    fun <T> ensureLiveData(id: Long, default: T? = null): MutableLiveData<T> {
+        var liveData = getLiveData<MutableLiveData<T>>(id)
+        if (liveData == null) {
+            liveData = MutableLiveData<T>()
+            if (default != null) {
+                liveData.value = default
+            }
+            putLiveData(id, liveData)
+        }
+        return liveData
     }
 
     fun <T : LiveData<*>> getLiveData(id: Long): T? {

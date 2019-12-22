@@ -35,7 +35,7 @@ class QuizletRepository(private val service: QuizletService, storage: Storage) :
     }
 
     //// Actions
-    suspend fun loadSets(progressListener: ProgressListener): RepositoryCommand<Resource<List<QuizletSet>>> {
+    fun loadSets(progressListener: ProgressListener): RepositoryCommand<Resource<List<QuizletSet>>> {
         val job = scope.launch { loadSetsInternal(progressListener) }
         return commandHolder.putCommand(CancellableRepositoryCommand(LOAD_SETS_COMMAND_ID, job, setsLiveData))
     }
@@ -59,7 +59,7 @@ class QuizletRepository(private val service: QuizletService, storage: Storage) :
         }
     }
 
-    suspend fun restoreOrLoad(progressListener: ProgressListener): RepositoryCommand<Resource<List<QuizletSet>>> {
+    fun restoreOrLoad(progressListener: ProgressListener): RepositoryCommand<Resource<List<QuizletSet>>> {
         val job = scope.launch { restoreOrLoadInternal(progressListener) }
         return commandHolder.putCommand(CancellableRepositoryCommand(LOAD_SETS_COMMAND_ID, job, setsLiveData))
     }
@@ -94,7 +94,7 @@ class QuizletRepository(private val service: QuizletService, storage: Storage) :
     }
 
     //// Setters / Getters
-// Getters
+    // Getters
     override val liveData: LiveData<Resource<List<QuizletSet>>>
         get() = setsLiveData
 

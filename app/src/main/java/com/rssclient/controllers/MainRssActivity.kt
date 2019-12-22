@@ -16,19 +16,23 @@ import android.widget.AdapterView.OnItemLongClickListener
 import android.widget.EditText
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.alexeyglushkov.taskmanager.task.Task.Callback
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.whenStarted
+import com.aglushkov.repository.command.CancellableRepositoryCommand
 import com.example.alexeyglushkov.taskmanager.task.TaskManager
 import com.main.MainApplication
 import com.rssclient.controllers.FeedsAdapter.FeedsAdapterListener
-import com.rssclient.model.RssFeed
-import com.rssclient.model.RssStorage
+import com.rssclient.model.RssFeedRepository
+import kotlinx.coroutines.*
+import java.lang.Exception
 import java.net.MalformedURLException
 import java.net.URL
 
 @SuppressLint("NewApi")
 class MainRssActivity : AppCompatActivity(), FeedsAdapterListener {
     lateinit var taskManager: TaskManager
-    lateinit var rssStorage: RssStorage
+    lateinit var rssRepository: RssFeedRepository
     internal var listView: ListView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,12 +43,12 @@ class MainRssActivity : AppCompatActivity(), FeedsAdapterListener {
             taskManager = application.taskManager
         }
 
-        if (!this::rssStorage.isInitialized) {
-            rssStorage = application.rssStorage
-            if (rssStorage.feeds.size == 0) { // TODO: update to livedata
-                loadRssStorage()
+        rssRepository = application.rssRepository
+        rssRepository.getFeedsLiveData().observe(this, Observer {
+            if (it != null) {
+
             }
-        }
+        })
 
         setContentView(R.layout.activity_main_rss)
 
@@ -79,9 +83,13 @@ class MainRssActivity : AppCompatActivity(), FeedsAdapterListener {
                 }
 
                 override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
-                    if (item.itemId == R.id.action_delete_feed) {
-                        activity.deleteItemAtPos(position)
-                        mode.finish()
+                    lifecycleScope.launch {
+                        whenStarted {
+                            if (item.itemId == R.id.action_delete_feed) {
+                                activity.deleteItemAtPos(position)
+                                mode.finish()
+                            }
+                        }
                     }
                     return false
                 }
@@ -101,39 +109,18 @@ class MainRssActivity : AppCompatActivity(), FeedsAdapterListener {
     }
 
     fun showFragmentActivityAtPos(pos: Int) {
-        val feed = rssStorage.feeds[pos]
+        val feed = rssRepository.getFeedsLiveData().value?.data()?.get(pos) ?: return
+
         // Do something in response to button
         val intent = Intent(this, RssItemsActivity::class.java)
         intent.putExtra(RssItemsActivity.FEED_URL, feed.url.toString())
         startActivity(intent)
     }
 
-    internal fun showItemDialogAtPos(pos: Int) {
-        val builder = Builder(this)
-        val items = arrayOf("Delete", "Cancel")
-        val activity = this
-        builder.setTitle("Choose an action")
-        builder.setItems(items) { dialog, which ->
-            if (which == 0) {
-                activity.deleteItemAtPos(pos)
-            }
-        }
-        builder.create().show()
-    }
-
-    internal fun loadFeedAtPos(pos: Int) {
-        val feed = rssStorage.feeds[pos]
-        rssStorage.loadFeed(taskManager, this, feed, object : RssStorage.RssFeedCallback {
-            override fun completed(feed: RssFeed?, error: Error?) {
-                println("feed loaded")
-            }
-        })
-    }
-
     internal fun updateTableAdapter() {
         val listview = findViewById<View>(R.id.listview) as ListView
-        val feeds = ArrayList(rssStorage.feeds)
-        val adapter = FeedsAdapter(this, feeds, taskManager)
+        val feeds = rssRepository.getFeedsLiveData().value?.data() ?: emptyList()
+        val adapter = FeedsAdapter(this, ArrayList(feeds), taskManager)
         adapter.listener = this
         listview.adapter = adapter
     }
@@ -153,11 +140,13 @@ class MainRssActivity : AppCompatActivity(), FeedsAdapterListener {
             val activity = this
             showAlertDialog(object : ObjectCompletion<String> {
                 override fun completed(result: String) {
-                    try {
-                        val url = URL(result)
-                        activity.addRssFeed(url)
-                    } catch (e: MalformedURLException) { // TODO Auto-generated catch block
-                        e.printStackTrace()
+                    lifecycleScope.launch {
+                        try {
+                            val url = URL(result)
+                            activity.addRssFeed(url)
+                        } catch (e: MalformedURLException) { // TODO Auto-generated catch block
+                            e.printStackTrace()
+                        }
                     }
                 }
             })
@@ -182,27 +171,32 @@ class MainRssActivity : AppCompatActivity(), FeedsAdapterListener {
         dialog.show()
     }
 
-    internal fun addRssFeed(url: URL) {
-        val feed = RssFeed(url, url.toString())
+    private suspend fun addRssFeed(url: URL) {
         val activity = this
-        rssStorage.loadFeed(taskManager, this, feed, object : RssStorage.RssFeedCallback {
-            override fun completed(feed: RssFeed?, error: Error?) {
-                if (error != null) {
-                    Tools.showErrorMessage(activity, "Can't load rss")
-                } else if (feed != null) {
-                    rssStorage.addFeed(feed)
-                    activity.saveRssStorage()
-                    val adapter = activity.listView!!.adapter as FeedsAdapter
-                    adapter.add(feed)
-                }
+        try {
+            val command = rssRepository.loadRssFeed(url.hashCode().toLong(), null)
+            command as CancellableRepositoryCommand
+            command.job.join()
+
+            val feed = command.liveData.value!!.data()!!
+
+            rssRepository.addFeed(feed)
+            activity.saveRssStorage()
+            val adapter = activity.listView!!.adapter as FeedsAdapter
+            adapter.add(feed)
+
+        } catch (ex: Exception) {
+            if (ex !is CancellationException) {
+                Tools.showErrorMessage(activity, "Can't load rss")
             }
-        })
+        }
     }
 
-    internal fun deleteItemAtPos(pos: Int) {
-        val feed = rssStorage.feeds[pos]
-        rssStorage.deleteFeed(feed)
+    private suspend fun deleteItemAtPos(pos: Int) {
+        val feed = rssRepository.getFeedsLiveData().value?.data()?.get(pos) ?: return
+        rssRepository.removeFeed(feed)
         saveRssStorage()
+
         val adapter = listView!!.adapter as FeedsAdapter
         adapter.remove(feed)
     }
@@ -212,33 +206,33 @@ class MainRssActivity : AppCompatActivity(), FeedsAdapterListener {
         updateTableAdapter()
     }
 
-    internal fun loadRssStorage() {
+    private suspend fun loadRssStorage() {
         val activity = this
-        rssStorage.load(taskManager, this, object : RssStorage.RssStorageCallback {
-            override fun completed(storage: RssStorage?, error: Error?) {
-                if (error != null) {
-                    Tools.showErrorMessage(activity, "RssStore Load Error")
-                } else if (storage != null) {
-                    val feedsCount = storage.feeds.size
-                    System.out.printf("loaded %d feeds\n", feedsCount)
-                    activity.handleRssStorageLoad()
-                }
+        try {
+            rssRepository.load()
+
+            val feedsCount = rssRepository.getFeedsLiveData().value?.data()?.size ?: 0
+            System.out.printf("loaded %d feeds\n", feedsCount)
+            activity.handleRssStorageLoad()
+        } catch (ex: Exception) {
+            if (ex !is CancellationException) {
+                Tools.showErrorMessage(activity, "RssStore Load Error")
             }
-        })
+        }
     }
 
-    internal fun saveRssStorage() {
+    private suspend fun saveRssStorage() {
         val activity = this
-        rssStorage.keep(taskManager, this, object : RssStorage.RssStorageCallback {
-            override fun completed(storage: RssStorage?, error: Error?) {
-                if (error != null) {
-                    Tools.showErrorMessage(activity, "RssStore Save Error")
-                } else if (storage != null) {
-                    val feedsCount = storage.feeds.size
-                    System.out.printf("saved %d feeds\n", feedsCount)
-                    activity.handleFeedKeeped()
-                }
+        try {
+            rssRepository.save()
+
+            val feedsCount = rssRepository.getFeedsLiveData().value?.data()?.size ?: 0
+            System.out.printf("saved %d feeds\n", feedsCount)
+            activity.handleFeedKeeped()
+        } catch (ex: Exception) {
+            if (ex !is CancellationException) {
+                Tools.showErrorMessage(activity, "RssStore Save Error")
             }
-        })
+        }
     }
 }

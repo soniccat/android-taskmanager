@@ -3,6 +3,7 @@ package com.example.alexeyglushkov.cachemanager.clients
 /**
  * Created by alexeyglushkov on 03.03.18.
  */
+// TODO: think about task manager based cache
 interface Cache {
     enum class CacheMode {
         CHECK_CACHE_IF_ERROR_THEN_LOAD, IGNORE_CACHE, ONLY_LOAD_FROM_CACHE, ONLY_STORE_TO_CACHE

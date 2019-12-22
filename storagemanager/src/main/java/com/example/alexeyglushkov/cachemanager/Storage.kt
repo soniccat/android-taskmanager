@@ -5,6 +5,7 @@ package com.example.alexeyglushkov.cachemanager
  */
 // TODO: add exception throwing, create safe interface like SafeStorage with optGetValue/
 // TODO: add iterator support
+// TODO: use generics
 interface Storage {
     @Throws(Exception::class) fun put(key: String, value: Any, metadata: StorageMetadata?)
 

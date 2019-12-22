@@ -8,17 +8,20 @@ import com.example.alexeyglushkov.authorization.Auth.AccountStore
 import com.example.alexeyglushkov.authorization.Auth.ServiceCommandRunner
 import com.example.alexeyglushkov.authorization.AuthActivityProxy
 import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient
+import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner
 import com.example.alexeyglushkov.cachemanager.SimpleStorageCleaner
 import com.example.alexeyglushkov.cachemanager.Storage
 import com.example.alexeyglushkov.cachemanager.StorageCleaner
+import com.example.alexeyglushkov.cachemanager.clients.SimpleCache
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorage
 import com.example.alexeyglushkov.quizletservice.QuizletService
 import com.example.alexeyglushkov.quizletservice.tasks.QuizletServiceTaskProvider
 import com.example.alexeyglushkov.taskmanager.task.*
 import com.example.alexeyglushkov.taskmanager.task.coordinators.LimitTaskManagerCoordinator
 import com.main.Networks.Network
-import com.rssclient.model.RssStorage
+import com.rssclient.model.RssFeedRepository
+import com.rssclient.model.RssFeedService
 
 class MainApplication : Application() {
     val TAG = "MainApplication"
@@ -31,10 +34,10 @@ class MainApplication : Application() {
     lateinit var taskManager: TaskManager
         private set
 
-    lateinit var rssStorage: RssStorage
+    lateinit var rssService: RssFeedService
+    lateinit var rssRepository: RssFeedRepository
 
-    var storage: Storage? = null
-        private set
+    lateinit var storage: Storage
 
     override fun onCreate() {
         super.onCreate()
@@ -46,10 +49,11 @@ class MainApplication : Application() {
         coordinator = newCoordinator
         taskManager = SimpleTaskManager(coordinator)
 
-        rssStorage = RssStorage("RssStorage")
-
-        val cacheDir = getDir("ServiceCache", Context.MODE_PRIVATE)
+        val cacheDir = getDir("Storage", Context.MODE_PRIVATE)
         storage = DiskStorage(cacheDir)
+
+        rssService = RssFeedService(ServiceTaskProvider(), ServiceTaskRunner(taskManager, "RssFeedService"))
+        rssRepository = RssFeedRepository(rssService, storage)
 
         cleanCache()
 
@@ -59,11 +63,10 @@ class MainApplication : Application() {
     }
 
     fun cleanCache() {
-        val safeStorage = storage ?: return
         val cleanTask: Task = object : SimpleTask() {
             override suspend fun startTask() {
                 val cleaner: StorageCleaner = SimpleStorageCleaner()
-                cleaner.clean(safeStorage)
+                cleaner.clean(storage)
                 private.handleTaskCompletion()
             }
         }

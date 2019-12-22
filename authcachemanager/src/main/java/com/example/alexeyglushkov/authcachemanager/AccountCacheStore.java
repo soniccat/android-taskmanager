@@ -15,6 +15,7 @@ import java.util.List;
  * Created by alexeyglushkov on 07.11.15.
  */
 // TODO: replace extending with a var
+// TODO: think of using Storage as an argument like SimpleCache
 public class AccountCacheStore extends DiskStorage implements AccountStore {
     private boolean isLoaded = false;
     private List<Account> accounts = new ArrayList<>();
