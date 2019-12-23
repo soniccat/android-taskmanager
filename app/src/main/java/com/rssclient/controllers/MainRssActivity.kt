@@ -17,6 +17,7 @@ import android.widget.EditText
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.whenStarted
 import com.aglushkov.repository.command.CancellableRepositoryCommand
@@ -31,24 +32,14 @@ import java.net.URL
 
 @SuppressLint("NewApi")
 class MainRssActivity : AppCompatActivity(), FeedsAdapterListener {
-    lateinit var taskManager: TaskManager
-    lateinit var rssRepository: RssFeedRepository
+    private lateinit var vm: MainRssViewModel
     internal var listView: ListView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val application = application as MainApplication
-        if (!this::taskManager.isInitialized) {
-            taskManager = application.taskManager
-        }
-
-        rssRepository = application.rssRepository
-        rssRepository.getFeedsLiveData().observe(this, Observer {
-            if (it != null) {
-
-            }
-        })
+        vm = ViewModelProviders.of(this).get(MainRssViewModel::class.java)
+        observeViewModel()
 
         setContentView(R.layout.activity_main_rss)
 
@@ -56,8 +47,6 @@ class MainRssActivity : AppCompatActivity(), FeedsAdapterListener {
         listView = listview
 
         updateTableAdapter()
-
-
 
         val activity = this
         listview.onItemClickListener = OnItemClickListener { parent, view, position, id -> activity.showFragmentActivityAtPos(position) }
@@ -96,6 +85,14 @@ class MainRssActivity : AppCompatActivity(), FeedsAdapterListener {
             })
             true
         }
+    }
+
+    private fun observeViewModel() {
+        vm.feedLiveData.observe(this, Observer {
+            it?.let {
+
+            }
+        })
     }
 
     override fun getViewAtPosition(pos: Int): View? {
@@ -202,6 +199,7 @@ class MainRssActivity : AppCompatActivity(), FeedsAdapterListener {
     }
 
     internal fun handleFeedKeeped() {}
+
     internal fun handleRssStorageLoad() {
         updateTableAdapter()
     }
