@@ -14,14 +14,12 @@ class RssFeedService: SimpleService {
         setServiceCommandRunner(commandRunner)
     }
 
-    suspend fun loadRss(url: String): RssFeed {
+    suspend fun loadRss(url: URL): RssFeed {
         val builder = HttpUrlConnectionBuilder().setUrl(url)
         val command = commandProvider!!.getServiceCommand(builder, object : ByteArrayHandler<RssFeed> {
             override fun convert(`object`: ByteArray): RssFeed {
-                val parser = RssFeedXmlParser()
-                val feed = parser.parse(`object`)
-                feed.url = URL(url)
-                return feed
+                val parser = RssFeedXmlParser(url)
+                return parser.parse(`object`)
             }
         })
 

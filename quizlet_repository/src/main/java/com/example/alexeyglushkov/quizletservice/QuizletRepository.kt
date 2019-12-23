@@ -28,14 +28,14 @@ import kotlin.collections.ArrayList
 class QuizletRepository(private val service: QuizletService, storage: Storage) : ResourceLiveDataProvider<List<QuizletSet>> {
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val cache: ScopeCache
-    private val commandHolder = RepositoryCommandHolder()
+    private val commandHolder = RepositoryCommandHolder<Long>()
 
     init {
         cache = ScopeCacheAdapter(SimpleCache(storage, 0), scope)
     }
 
     //// Actions
-    fun loadSets(progressListener: ProgressListener): RepositoryCommand<Resource<List<QuizletSet>>> {
+    fun loadSets(progressListener: ProgressListener): RepositoryCommand<Resource<List<QuizletSet>>, Long> {
         val job = scope.launch { loadSetsInternal(progressListener) }
         return commandHolder.putCommand(CancellableRepositoryCommand(LOAD_SETS_COMMAND_ID, job, setsLiveData))
     }
@@ -59,7 +59,7 @@ class QuizletRepository(private val service: QuizletService, storage: Storage) :
         }
     }
 
-    fun restoreOrLoad(progressListener: ProgressListener): RepositoryCommand<Resource<List<QuizletSet>>> {
+    fun restoreOrLoad(progressListener: ProgressListener): RepositoryCommand<Resource<List<QuizletSet>>, Long> {
         val job = scope.launch { restoreOrLoadInternal(progressListener) }
         return commandHolder.putCommand(CancellableRepositoryCommand(LOAD_SETS_COMMAND_ID, job, setsLiveData))
     }

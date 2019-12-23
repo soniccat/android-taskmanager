@@ -11,7 +11,7 @@ import java.net.URL
 import java.nio.charset.Charset
 
 // TODO: rewrite this legacy
-class RssFeedXmlParser {
+class RssFeedXmlParser(val url: URL) {
     fun parse(data: ByteArray): RssFeed {
         val ch = Charset.forName("UTF-8")
         val str = String(data, ch)
@@ -36,7 +36,7 @@ class RssFeedXmlParser {
         name = parser.name
         return if (name != null && parser.name == "channel") {
             try {
-                val feed = RssFeed(name, null, null)
+                val feed = RssFeed(name, url, null)
                 this.parse(parser, feed)
                 feed
             } catch (e: java.lang.Exception) {

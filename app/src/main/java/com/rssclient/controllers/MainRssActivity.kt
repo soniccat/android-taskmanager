@@ -174,9 +174,9 @@ class MainRssActivity : AppCompatActivity(), FeedsAdapterListener {
     private suspend fun addRssFeed(url: URL) {
         val activity = this
         try {
-            val command = rssRepository.loadRssFeed(url.hashCode().toLong(), null)
-            command as CancellableRepositoryCommand
-            command.job.join()
+            val command = rssRepository.loadRssFeed(url, null)
+            command as CancellableRepositoryCommand<*, *>
+            command.join()
 
             val feed = command.liveData.value!!.data()!!
 

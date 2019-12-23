@@ -15,12 +15,12 @@ import java.util.*
     WeakHashMap is used not to retain your LiveData. Only ViewModel is allowed to retain them. That will
     release LiveData objects after leaving screens.
  */
-class RepositoryCommandHolder {
-    private val liveDataIdMap = WeakHashMap<LiveData<*>, Long>()
-    private val liveDataCommandMap = WeakHashMap<LiveData<*>, RepositoryCommand<*>>()
+class RepositoryCommandHolder<R> {
+    private val liveDataIdMap = WeakHashMap<LiveData<*>, R>()
+    private val liveDataCommandMap = WeakHashMap<LiveData<*>, RepositoryCommand<*, R>>()
 
-    fun <T : RepositoryCommand<*>> putCommand(cmd: T): T {
-        val oldCmd = getCommand<RepositoryCommand<*>>(cmd.commandId)
+    fun <T : RepositoryCommand<*, R>> putCommand(cmd: T): T {
+        val oldCmd = getCommand<RepositoryCommand<*, R>>(cmd.commandId)
         if (oldCmd != null) {
             cancel(oldCmd.liveData)
         }
@@ -30,11 +30,11 @@ class RepositoryCommandHolder {
         return cmd
     }
 
-    fun getCommand(liveData: LiveData<*>): RepositoryCommand<*>? {
+    fun getCommand(liveData: LiveData<*>): RepositoryCommand<*, R>? {
         return liveDataCommandMap[liveData]
     }
 
-    fun <T : RepositoryCommand<*>> getCommand(id: Long): T? {
+    fun <T : RepositoryCommand<*, R>> getCommand(id: R): T? {
         var cmd: T? = null
         for (c in liveDataCommandMap.values) {
             if (c != null && c.commandId == id) {
@@ -44,7 +44,7 @@ class RepositoryCommandHolder {
         return cmd
     }
 
-    fun <T> ensureLiveData(id: Long, default: T? = null): MutableLiveData<T> {
+    fun <T> ensureLiveData(id: R, default: T? = null): MutableLiveData<T> {
         var liveData = getLiveData<MutableLiveData<T>>(id)
         if (liveData == null) {
             liveData = MutableLiveData<T>()
@@ -56,7 +56,7 @@ class RepositoryCommandHolder {
         return liveData
     }
 
-    fun <T : LiveData<*>> getLiveData(id: Long): T? {
+    fun <T : LiveData<*>> getLiveData(id: R): T? {
         var result: T? = null
         for ((key, value) in liveDataIdMap) {
             if (value == id) {
@@ -67,7 +67,7 @@ class RepositoryCommandHolder {
         return result
     }
 
-    fun putLiveData(id: Long, liveData: LiveData<*>) {
+    fun putLiveData(id: R, liveData: LiveData<*>) {
         cancel(liveData)
         liveDataIdMap[liveData] = id
         liveDataCommandMap[liveData] = null
@@ -78,7 +78,7 @@ class RepositoryCommandHolder {
         canceIfNeeded(cmd, liveData)
     }
 
-    private fun canceIfNeeded(cmd: RepositoryCommand<*>?, liveData: LiveData<*>) {
+    private fun canceIfNeeded(cmd: RepositoryCommand<*, R>?, liveData: LiveData<*>) {
         if (cmd != null) {
             cmd.cancel()
             liveDataIdMap.remove(liveData)

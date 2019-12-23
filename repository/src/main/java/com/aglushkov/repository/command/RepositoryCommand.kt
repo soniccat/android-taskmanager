@@ -2,9 +2,9 @@ package com.aglushkov.repository.command
 
 import androidx.lifecycle.LiveData
 
-interface RepositoryCommand<T> {
+interface RepositoryCommand<T,R> {
     val liveData: LiveData<T>
-    val commandId: Long
+    val commandId: R
 
     fun cancel()
 }

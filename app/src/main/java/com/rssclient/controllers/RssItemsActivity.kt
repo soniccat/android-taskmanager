@@ -64,7 +64,7 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapsho
             throw e
         }
 
-        feed = rssRepository.getRssFeedLiveData(url.hashCode().toLong()).value!!.data()!!
+        feed = rssRepository.getRssFeedLiveData(url).value!!.data()!!
         taskManager = application.taskManager
 
         val storedProvider = taskManager.getTaskProvider(PROVIDER_ID) as? PriorityTaskProvider
@@ -93,7 +93,7 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapsho
 
         val activity = this
         if (feed.items.size == 0) {
-            rssRepository.loadRssFeed(feed.url.hashCode().toLong(), null)
+            rssRepository.loadRssFeed(feed.url, null)
 //            rssRepository.loa(taskManager, this, feed, object : RssFeedCallback {
 //                override fun completed(feed: RssFeed?, error: Error?) {
 //                    println("loaded")

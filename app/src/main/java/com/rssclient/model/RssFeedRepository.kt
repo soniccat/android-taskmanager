@@ -12,15 +12,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import java.net.URL
 
 class RssFeedRepository(val service: RssFeedService, storage: Storage) {
     companion object {
-        private const val LOAD_FEEDS_COMMAND: Long = 0
-        private const val LOAD_FEED_COMMAND_PREFIX: Long = 2 // it's 2 to support -1 set id
+        private const val LOAD_FEEDS_COMMAND = "LOAD_FEEDS_COMMAND"
     }
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    private val commandHolder = RepositoryCommandHolder()
+    private val commandHolder = RepositoryCommandHolder<String>()
     private val storage: ScopeStorageAdapter
 
     init {
@@ -32,26 +32,26 @@ class RssFeedRepository(val service: RssFeedService, storage: Storage) {
         return commandHolder.ensureLiveData(LOAD_FEEDS_COMMAND, Resource.Uninitialized())
     }
 
-    fun getRssFeedLiveData(setId: Long): MutableLiveData<Resource<RssFeed>> {
-        return commandHolder.ensureLiveData(LOAD_FEED_COMMAND_PREFIX + setId, Resource.Uninitialized())
+    fun getRssFeedLiveData(url: URL): MutableLiveData<Resource<RssFeed>> {
+        return commandHolder.ensureLiveData(url.toString(), Resource.Uninitialized())
     }
 
-    fun loadRssFeeds(progressListener: ProgressListener?): RepositoryCommand<Resource<List<RssFeed>>> {
+    fun loadRssFeeds(progressListener: ProgressListener?): RepositoryCommand<Resource<List<RssFeed>>, String> {
         val job = scope.launch {
             load()
         }
         return commandHolder.putCommand(CancellableRepositoryCommand(LOAD_FEEDS_COMMAND, job, getFeedsLiveData()))
     }
 
-    fun loadRssFeed(id: Long, progressListener: ProgressListener?): RepositoryCommand<Resource<RssFeed>> {
-        val liveData = getRssFeedLiveData(id)
+    fun loadRssFeed(url: URL, progressListener: ProgressListener?): RepositoryCommand<Resource<RssFeed>, String> {
+        val liveData = getRssFeedLiveData(url)
         liveData.value = Resource.Loading()
 
         val job = scope.launch {
-            val feed = service.loadRss("")
+            val feed = service.loadRss(url)
             liveData.postValue(Resource.Loaded(feed))
         }
-        return commandHolder.putCommand(CancellableRepositoryCommand(LOAD_FEED_COMMAND_PREFIX + id, job, getRssFeedLiveData(id)))
+        return commandHolder.putCommand(CancellableRepositoryCommand(url.toString(), job, getRssFeedLiveData(url)))
     }
 
     suspend fun addFeed(feed: RssFeed) {

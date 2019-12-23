@@ -45,7 +45,12 @@ class HttpUrlConnectionBuilder {
     private var connectTimeout: Long? = null
     private var readTimeout: Long? = null
 
-    fun setUrl(url: String?): HttpUrlConnectionBuilder {
+    fun setUrl(url: URL): HttpUrlConnectionBuilder {
+        stringUrl = url.toString()
+        return this
+    }
+
+    fun setUrl(url: String): HttpUrlConnectionBuilder {
         stringUrl = url
         return this
     }
