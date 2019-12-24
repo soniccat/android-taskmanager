@@ -1,4 +1,4 @@
-package com.rssclient.controllers
+package com.rssclient.vm
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

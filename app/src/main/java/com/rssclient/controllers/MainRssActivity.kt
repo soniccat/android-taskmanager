@@ -21,10 +21,8 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.whenStarted
 import com.aglushkov.repository.command.CancellableRepositoryCommand
-import com.example.alexeyglushkov.taskmanager.task.TaskManager
-import com.main.MainApplication
 import com.rssclient.controllers.FeedsAdapter.FeedsAdapterListener
-import com.rssclient.model.RssFeedRepository
+import com.rssclient.vm.MainRssViewModel
 import kotlinx.coroutines.*
 import java.lang.Exception
 import java.net.MalformedURLException
@@ -42,24 +40,27 @@ class MainRssActivity : AppCompatActivity(), FeedsAdapterListener {
         observeViewModel()
 
         setContentView(R.layout.activity_main_rss)
+        bindView()
+    }
 
-        val listview = findViewById<View>(R.id.listview) as ListView
-        listView = listview
+    private fun bindView() {
+        val listView = findViewById<View>(R.id.listview) as ListView
+        this.listView = listView
 
         updateTableAdapter()
 
-        val activity = this
-        listview.onItemClickListener = OnItemClickListener { parent, view, position, id -> activity.showFragmentActivityAtPos(position) }
-        listview.setOnScrollListener(object : OnScrollListener {
+        listView.onItemClickListener = OnItemClickListener { parent, view, position, id -> showFragmentActivityAtPos(position) }
+
+        listView.setOnScrollListener(object : OnScrollListener {
             override fun onScrollStateChanged(view: AbsListView, scrollState: Int) {}
             override fun onScroll(view: AbsListView, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
-                val adapter = listview.adapter as FeedsAdapter
+                val adapter = listView.adapter as FeedsAdapter
                 adapter.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount)
             }
         })
 
-        listview.onItemLongClickListener = OnItemLongClickListener { parent, view, position, id ->
-            activity.startActionMode(object : ActionMode.Callback {
+        listView.onItemLongClickListener = OnItemLongClickListener { parent, view, position, id ->
+            startActionMode(object : ActionMode.Callback {
                 override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
                     return false
                 }
@@ -75,7 +76,7 @@ class MainRssActivity : AppCompatActivity(), FeedsAdapterListener {
                     lifecycleScope.launch {
                         whenStarted {
                             if (item.itemId == R.id.action_delete_feed) {
-                                activity.deleteItemAtPos(position)
+                                deleteItemAtPos(position)
                                 mode.finish()
                             }
                         }
@@ -108,7 +109,6 @@ class MainRssActivity : AppCompatActivity(), FeedsAdapterListener {
     fun showFragmentActivityAtPos(pos: Int) {
         val feed = rssRepository.getFeedsLiveData().value?.data()?.get(pos) ?: return
 
-        // Do something in response to button
         val intent = Intent(this, RssItemsActivity::class.java)
         intent.putExtra(RssItemsActivity.FEED_URL, feed.url.toString())
         startActivity(intent)
@@ -127,9 +127,7 @@ class MainRssActivity : AppCompatActivity(), FeedsAdapterListener {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean { // Handle action bar item clicks here. The action bar will
-// automatically handle clicks on the Home/Up button, so long
-// as you specify a parent activity in AndroidManifest.xml.
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
         if (id == R.id.action_settings) {
             return true

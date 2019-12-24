@@ -21,7 +21,7 @@ import org.junit.Assert
 
 // Because Image doesn't store loaded data we should use ImageLoader to get the data from callback
 //TODO: need to simplify this logic and remove static methods...
-object ImageLoader {
+class ImageLoader {
     //TODO: write argument descriptions
     fun loadImage(threadRunner: ThreadRunner, image: Image, callback: LoadCallback?): Task {
         return loadImage(threadRunner, image, null, callback)
@@ -34,10 +34,10 @@ object ImageLoader {
         val taskCallback = getTaskCallback(transportTask, image, callback)
         transportTask.taskCallback = taskCallback
 
-        threadRunner.launch {
+        //threadRunner.launch {
             // to have addTaskStatusListener called on a scope's thread
             bindOnTaskCompletion(transportTask, image)
-        }
+        //}
 
         // TODO: need to check case when a task was refused by a tak provider
         // maybe it's ok to set waiting on a scope's thread, to be able to bind on that before adding
@@ -47,21 +47,22 @@ object ImageLoader {
         return transportTask
     }
 
-    //TODO: remove static and related logic
     private fun createTask(image: Image, destinationId: String?, reader: HTTPConnectionStreamReader<Bitmap>): TransportTask {
         val transport = HttpTaskTransport(image, reader)
         transport.contentLength = image.byteSize
+
         val transportTask = TransportTask(transport)
         transportTask.loadPolicy = image.loadPolicy
+
         if (transportTask.taskId != null && destinationId != null) {
             transportTask.taskId = transportTask.taskId + destinationId
         } else if (transportTask.taskId != null) {
             transportTask.taskId = transportTask.taskId + image.hashCode()
         }
+
         return transportTask
     }
 
-    //TODO: remove static and related logic
     fun getTaskCallback(transportTask: TransportTask, image: Image?, callback: LoadCallback?): Callback {
         return object : Callback {
             override fun onCompleted(cancelled: Boolean) { //ignore a cancelled result

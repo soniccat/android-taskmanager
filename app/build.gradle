@@ -112,6 +112,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.2.0-rc02'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0-rc02'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0-rc02'
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
 
     implementation 'junit:junit:' + rootProject.ext.junitVersion
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:" + rootProject.ext.coroutinesVersion

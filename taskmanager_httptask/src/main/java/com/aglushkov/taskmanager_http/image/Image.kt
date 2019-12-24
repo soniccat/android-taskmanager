@@ -18,6 +18,10 @@ import java.net.URL
 //import android.media.Image;
 //TODO: think about implementing task container and moving check of setTaskCompleted to taskmanager
 open class Image : Serializable, TaskListener, HttpURLConnectionProvider {
+    companion object {
+        private const val serialVersionUID = 2567033384508404225L
+    }
+
     private var _url: URL? = null
     override var url: URL
         get() = _url!!
@@ -26,8 +30,9 @@ open class Image : Serializable, TaskListener, HttpURLConnectionProvider {
     var width = 0
     var height = 0
     var byteSize = 0
-    protected var loadStatus: Status? = null
+
     var loadPolicy = LoadPolicy.SkipIfAlreadyAdded
+    protected var loadStatus: Status? = null
     protected var processingTask: WeakReference<Task>? = null
 
     override fun setTaskInProgress(task: Task) {
@@ -60,8 +65,10 @@ open class Image : Serializable, TaskListener, HttpURLConnectionProvider {
         } catch (e: MalformedURLException) { // TODO Auto-generated catch block
             e.printStackTrace()
         }
+
         width = `in`.readInt()
         height = `in`.readInt()
+
         val loadPolicyInt = `in`.readInt()
         loadPolicy = LoadPolicy.values()[loadPolicyInt]
     }
@@ -72,9 +79,5 @@ open class Image : Serializable, TaskListener, HttpURLConnectionProvider {
 
     override fun getUrlConnection(): HttpURLConnection {
         return url.openConnection() as HttpURLConnection
-    }
-
-    companion object {
-        private const val serialVersionUID = 2567033384508404225L
     }
 }

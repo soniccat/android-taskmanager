@@ -6,56 +6,65 @@ import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AbsListView
-import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.aglushkov.taskmanager_http.image.Image
+import com.aglushkov.taskmanager_http.image.ImageLoader
 import com.aglushkov.taskmanager_http.image.ImageLoader.LoadCallback
 import com.aglushkov.taskmanager_http.image.ImageLoader.loadImage
 import com.example.alexeyglushkov.taskmanager.task.Task
 import com.example.alexeyglushkov.taskmanager.task.TaskManager
 import com.rssclient.model.RssFeed
+import com.rssclient.vm.RssItemView
+import kotlinx.android.synthetic.main.feed_cell.view.*
 
-class FeedsAdapter(
-        context: Context,
-        private val values: ArrayList<RssFeed>,
-        private val taskManager: TaskManager) : ArrayAdapter<RssFeed>(context, R.layout.feed_cell, values) {
-    private val loadingImages: SparseArray<Image>
-    var listener: FeedsAdapterListener? = null
+class FeedsAdapter(private val taskManager: TaskManager)
+    : ListAdapter<RssItemView<*>, RecyclerView.ViewHolder>(DiffCallback) {
 
-    internal inner class ViewHolder {
-        var text: TextView? = null
-        var imageView: ImageView? = null
-        var loadingImage: Image? = null
-        var position = 0
+    companion object {
+        @JvmStatic val DiffCallback = object : DiffUtil.ItemCallback<RssItemView<*>>() {
+            override fun areItemsTheSame(oldCellInfo: RssItemView<*>, newCellInfo: RssItemView<*>): Boolean {
+                return oldCellInfo.equalsByIds(newCellInfo)
+            }
+
+            override fun areContentsTheSame(oldCellInfo: RssItemView<*>, newCellInfo: RssItemView<*>): Boolean {
+                return oldCellInfo == newCellInfo
+            }
+        }
     }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var resultView = convertView
-        if (convertView == null) {
-            val inflater = context
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            val rowView = inflater.inflate(R.layout.feed_cell, parent, false)
-            val textView = rowView.findViewById<View>(R.id.topLine) as TextView
-            val imageView = rowView.findViewById<View>(R.id.icon) as ImageView
-            val holder = ViewHolder()
-            holder.text = textView
-            holder.imageView = imageView
-            resultView = rowView
-            resultView.tag = holder
-        }
+    private val loadingImages = SparseArray<Image>()
 
-        resultView as View
+    var listener: FeedsAdapterListener? = null
 
-        val holder = resultView.tag as ViewHolder
-        val feed = values[position]
-        holder.text!!.text = feed.name
-        holder.position = position
-        if (feed.image != null) {
-            loadImage(feed.image, holder)
+    override fun getItemViewType(position: Int): Int {
+        return getItem(position).type
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when(viewType) {
+            RssItemView.RssFeedView.Type -> {
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.feed_cell, parent, false)
+                RssFeedViewHolder(view)
+            }
+            else -> throw IllegalArgumentException("FeedsAdapter.onCreateViewHolder: viewType is ${viewType}")
         }
-        return resultView
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val data = getItem(position)
+        when (data) {
+            is RssItemView.RssFeedView -> {
+                holder as RssFeedViewHolder
+
+                val item = data.firstItem()
+                holder.name?.text = item.name
+                holder.itemView.tag = item.hashCode()
+            }
+        }
     }
 
     internal fun loadImage(image: Image?, holder: ViewHolder) {
@@ -65,7 +74,7 @@ class FeedsAdapter(
             return
         }
         val position = holder.position
-        val task = loadImage(taskManager.threadRunner, image, Integer.toString(holder.hashCode()), object : LoadCallback {
+        val task = ImageLoader().loadImage(taskManager.threadRunner, image, Integer.toString(holder.hashCode()), object : LoadCallback {
             override fun completed(task: Task?, image: Image?, bitmap: Bitmap?, error: Error?) {
                 val view = listener!!.getViewAtPosition(position)
                 if (view != null) {
@@ -83,12 +92,17 @@ class FeedsAdapter(
         taskManager.addTask(task)
     }
 
-    fun onScroll(view: AbsListView?, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {}
-    interface FeedsAdapterListener {
-        fun getViewAtPosition(position: Int): View?
+    class RssFeedViewHolder(view: View): RecyclerView.ViewHolder(view) {
+        var name: TextView? = null
+        var image: ImageView? = null
+
+        init {
+            name = view.name // TODO: switch to Google bindings instead of synthetic
+            image = view.icon
+        }
     }
 
-    init {
-        loadingImages = SparseArray()
+    interface FeedsAdapterListener {
+        fun getViewAtPosition(position: Int): View?
     }
 }
