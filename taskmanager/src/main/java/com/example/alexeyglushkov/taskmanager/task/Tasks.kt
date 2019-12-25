@@ -43,6 +43,7 @@ object Tasks {
         return st == Task.Status.Finished || st == Task.Status.Cancelled
     }
 
+    // TODO: convert to TaskPool extension
     suspend fun <T> run(task: Task, taskPool: TaskPool): T {
         return suspendCancellableCoroutine {
             it.invokeOnCancellation {

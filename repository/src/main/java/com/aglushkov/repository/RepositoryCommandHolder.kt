@@ -1,5 +1,6 @@
 package com.aglushkov.repository
 
+import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.aglushkov.repository.command.RepositoryCommand
@@ -45,6 +46,8 @@ class RepositoryCommandHolder<R> {
     }
 
     fun <T> ensureLiveData(id: R, default: T? = null): MutableLiveData<T> {
+        assert(Looper.getMainLooper() == Looper.myLooper())
+
         var liveData = getLiveData<MutableLiveData<T>>(id)
         if (liveData == null) {
             liveData = MutableLiveData<T>()
@@ -75,10 +78,10 @@ class RepositoryCommandHolder<R> {
 
     fun cancel(liveData: LiveData<*>) {
         val cmd = getCommand(liveData)
-        canceIfNeeded(cmd, liveData)
+        cancelIfNeeded(cmd, liveData)
     }
 
-    private fun canceIfNeeded(cmd: RepositoryCommand<*, R>?, liveData: LiveData<*>) {
+    private fun cancelIfNeeded(cmd: RepositoryCommand<*, R>?, liveData: LiveData<*>) {
         if (cmd != null) {
             cmd.cancel()
             liveDataIdMap.remove(liveData)

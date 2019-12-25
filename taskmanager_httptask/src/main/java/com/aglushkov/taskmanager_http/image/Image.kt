@@ -80,4 +80,19 @@ open class Image : Serializable, TaskListener, HttpURLConnectionProvider {
     override fun getUrlConnection(): HttpURLConnection {
         return url.openConnection() as HttpURLConnection
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Image
+
+        if (_url != other._url) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return _url?.hashCode() ?: 0
+    }
 }

@@ -166,7 +166,7 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapsho
         if (image == null) return
         //the position is used as a part of task id to handle the same images right
 
-        val task = ImageLoader.loadImage(taskProvider.threadRunner, image, "_" + Integer.toString(position) + "_", getLoadImageCallback(item, this))
+        val task = ImageLoader().buildBitmapTask(taskProvider.threadRunner, image, "_" + Integer.toString(position) + "_"/*, getLoadImageCallback(item, this)*/)
         val range = visibleRange
 
         task.taskType = position % 2 + 1
@@ -238,34 +238,34 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapsho
         const val PROVIDER_ID = "providerID"
         const val FEED_URL = "feedURL"
 
-        fun getLoadImageCallback(item: RssItem?, activity: RssItemsActivity): ImageLoader.LoadCallback {
-            val ref = WeakReference(activity)
-            return object : ImageLoader.LoadCallback {
-                override fun completed(task: Task?, image: Image?, bitmap: Bitmap?, error: Error?) {
-                    val act = ref.get()
-                    if (act == null || act.isDestroyed || act.isFinishing) {
-                        return
-                    }
-
-                    val adapter = act.listView.adapter as RssItemsAdapter ?: return
-                    val position = adapter.values.indexOf(item)
-                    if (position == -1) {
-                        return
-                    }
-
-                    val view = act.getViewAtPosition(position)
-                    if (view != null) { // TODO: move holder access to adapter
-                        val holder = view.tag as ViewHolder
-                        if (holder.loadingImage === image) {
-                            if (bitmap != null) {
-                                holder.imageView.setImageBitmap(bitmap)
-                            }
-                            holder.loadingImage = null
-                            holder.progressBar.visibility = View.INVISIBLE
-                        }
-                    }
-                }
-            }
-        }
+//        fun getLoadImageCallback(item: RssItem?, activity: RssItemsActivity): ImageLoader.LoadCallback {
+//            val ref = WeakReference(activity)
+//            return object : ImageLoader.LoadCallback {
+//                override fun completed(task: Task?, image: Image?, bitmap: Bitmap?, error: Error?) {
+//                    val act = ref.get()
+//                    if (act == null || act.isDestroyed || act.isFinishing) {
+//                        return
+//                    }
+//
+//                    val adapter = act.listView.adapter as RssItemsAdapter ?: return
+//                    val position = adapter.values.indexOf(item)
+//                    if (position == -1) {
+//                        return
+//                    }
+//
+//                    val view = act.getViewAtPosition(position)
+//                    if (view != null) { // TODO: move holder access to adapter
+//                        val holder = view.tag as ViewHolder
+//                        if (holder.loadingImage === image) {
+//                            if (bitmap != null) {
+//                                holder.imageView.setImageBitmap(bitmap)
+//                            }
+//                            holder.loadingImage = null
+//                            holder.progressBar.visibility = View.INVISIBLE
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 }

@@ -16,6 +16,10 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -109,6 +113,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:'  + rootProject.ext.legacySupportVersion
     implementation 'androidx.appcompat:appcompat:' + rootProject.ext.appCompatVersion
     implementation 'android.arch.lifecycle:extensions:' + rootProject.ext.archLifecycleVersion
+    implementation "androidx.core:core-ktx:1.1.0"
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.2.0-rc03'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0-rc03'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0-rc03'

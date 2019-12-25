@@ -9,12 +9,11 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.*
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aglushkov.taskmanager_http.image.Image
-import com.aglushkov.taskmanager_http.image.ImageLoader
+import com.main.MainApplication
 import com.rssclient.vm.MainRssViewModel
 import com.rssclient.vm.RssItemView
 import com.rssclient.vm.showErrorDialog
@@ -31,7 +30,11 @@ class MainRssActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        vm = ViewModelProviders.of(this).get(MainRssViewModel::class.java)
+        vm = ViewModelProviders.of(this, object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return MainRssViewModel(MainApplication.instance) as T
+            }
+        }).get(MainRssViewModel::class.java)
         observeViewModel()
 
         setContentView(R.layout.activity_main_rss)
@@ -41,6 +44,8 @@ class MainRssActivity : AppCompatActivity() {
     private fun bindView() {
         val listView = findViewById<View>(R.id.list) as RecyclerView
         this.listView = listView
+
+        listView.layoutManager = LinearLayoutManager(listView.context, RecyclerView.VERTICAL, false)
 
 //        listView.onItemClickListener = OnItemClickListener { parent, view, position, id -> showFragmentActivityAtPos(position) }
 //
@@ -81,8 +86,13 @@ class MainRssActivity : AppCompatActivity() {
     private fun observeViewModel() {
         vm.feedLiveData.observe(this, Observer {
             it?.let {
-                val data = it.data()
-                ensureAdapter(data).submitList(data)
+                val data = it.data() ?: emptyList()
+                val adapter = listView?.adapter as? FeedsAdapter
+                if (adapter == null) {
+                    createAdapter(data)
+                } else {
+                    adapter.submitList(data)
+                }
             }
         })
 
@@ -103,23 +113,21 @@ class MainRssActivity : AppCompatActivity() {
 //        startActivity(intent)
     }
 
-    internal fun ensureAdapter(data: List<RssItemView<*>>?): FeedsAdapter {
+    internal fun createAdapter(data: List<RssItemView<*>>?) {
         val safeListView = listView
         if (safeListView == null) throw NullPointerException("ListView is null")
 
         var adapter = safeListView.adapter
         if (adapter == null) {
             val imageBinder = ImageBinder(object : ImageBinder.ImageLoader {
-                override fun loadImage(image: Image, params: Map<String, Any>?, completion: (bitmap: Bitmap?, error: Exception) -> Unit) {
+                override fun loadImage(image: Image, params: Map<String, Any>?, completion: (bitmap: Bitmap?, error: Exception?) -> Unit) {
                     this@MainRssActivity.vm.onLoadImageRequested(image, completion)
                 }
             })
             adapter = FeedsAdapter(imageBinder)
-            adapter.submitList(data ?: emptyList())
+            adapter.submitList(data)
             safeListView.adapter = adapter
         }
-
-        return adapter as FeedsAdapter
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean { // Inflate the menu; this adds items to the action bar if it is present.
@@ -179,7 +187,7 @@ class MainRssActivity : AppCompatActivity() {
 //        adapter.remove(feed)
     }
 
-    internal fun handleFeedKeeped() {}
+//    internal fun handleFeedKeeped() {}
 
 //    internal fun handleRssStorageLoad() {
 //        updateTableAdapter()

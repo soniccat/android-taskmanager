@@ -29,8 +29,8 @@ class RssItemsAdapter(context: Context, val values: ArrayList<RssItem>) : ArrayA
         if (convertView == null) {
             val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val rowView = inflater.inflate(R.layout.feed_cell, parent, false)
-            val textView = rowView.findViewById<View>(R.id.topLine) as TextView
-            val imageView = rowView.findViewById<View>(R.id.icon) as ImageView
+            val textView = rowView.findViewById<TextView>(R.id.name)
+            val imageView = rowView.findViewById<ImageView>(R.id.icon)
 
             val holder = ViewHolder()
             holder.text = textView

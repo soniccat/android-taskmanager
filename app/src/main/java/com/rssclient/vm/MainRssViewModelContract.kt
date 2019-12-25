@@ -15,5 +15,5 @@ interface MainRssViewModelContract {
     // Events
     fun onAddRssFeedPressed(url: URL)
     fun onLoadImageRequested(image: Image,
-                             completion: (bitmap: Bitmap?, error: java.lang.Exception) -> Unit)
+                             completion: (bitmap: Bitmap?, error: Exception?) -> Unit)
 }

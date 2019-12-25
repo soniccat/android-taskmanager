@@ -44,6 +44,6 @@ class ImageBinder(private val imageLoader: ImageLoader) {
     interface ImageLoader {
         fun loadImage(image: Image,
                       params: Map<String, Any>?,
-                      completion: (bitmap: Bitmap?, error: java.lang.Exception) -> Unit)
+                      completion: (bitmap: Bitmap?, error: Exception?) -> Unit)
     }
 }
