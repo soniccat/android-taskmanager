@@ -5,6 +5,7 @@ import com.example.alexeyglushkov.taskmanager.task.SimpleTask
 import com.example.alexeyglushkov.taskmanager.task.Task
 import com.example.alexeyglushkov.taskmanager.task.TaskBase
 import com.example.alexeyglushkov.taskmanager.task.TaskImpl
+import java.lang.Exception
 
 /**
  * Created by alexeyglushkov on 17.07.16.
@@ -26,7 +27,7 @@ abstract class ServiceTaskImp<T> : BaseServiceTask<T>() {
         task.private.taskResult = result
     }
 
-    protected fun setError(err: Error) {
+    protected fun setError(err: Exception) {
         task.private.taskError = err
     }
 }

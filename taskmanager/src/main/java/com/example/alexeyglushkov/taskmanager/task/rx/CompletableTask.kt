@@ -8,6 +8,7 @@ import org.junit.Assert
 import java.util.concurrent.atomic.AtomicBoolean
 import io.reactivex.Completable
 import io.reactivex.disposables.Disposable
+import java.lang.Exception
 
 class CompletableTask(private val completable: Completable) : TaskImpl() {
     var disposable: Disposable? = null
@@ -15,7 +16,7 @@ class CompletableTask(private val completable: Completable) : TaskImpl() {
     override suspend fun startTask() {
         val finishedFlag = AtomicBoolean()
         disposable = completable.subscribe({ finishedFlag.set(true) }, { throwable ->
-            private.taskError = Error(throwable)
+            private.taskError = Exception(throwable)
             finishedFlag.set(true)
         })
 

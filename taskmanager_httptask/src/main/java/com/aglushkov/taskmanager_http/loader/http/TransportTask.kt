@@ -50,7 +50,7 @@ class TransportTask : SimpleTask, TaskTransport.Listener {
         private.handleTaskCompletion()
     }
 
-    fun setError(error: Error) {
+    fun setError(error: Exception) {
         private.taskError = error
     }
 

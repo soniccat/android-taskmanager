@@ -35,8 +35,8 @@ open class HttpTaskTransport<T>(
     override val data: T?
         get() = _data
 
-    protected var _error: Error? = null
-    override val error: Error?
+    protected var _error: Exception? = null
+    override val error: Exception?
         get() = _error
 
 
@@ -91,7 +91,7 @@ open class HttpTaskTransport<T>(
             }
         } catch (e: Exception) {
             val errorString = getErrorString(connection)
-            val error = Error(errorString)
+            val error = Exception(errorString)
             _error = error
             Log.d("HttpLoadTask", error.toString())
         } finally {

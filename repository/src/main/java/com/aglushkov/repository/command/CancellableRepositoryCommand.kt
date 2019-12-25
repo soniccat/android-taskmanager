@@ -11,7 +11,8 @@ class CancellableRepositoryCommand<T, R>(id: R,
         job.cancel()
     }
 
-    suspend fun join() {
+    suspend fun await(): T? {
         job.join()
+        return liveData.value
     }
 }

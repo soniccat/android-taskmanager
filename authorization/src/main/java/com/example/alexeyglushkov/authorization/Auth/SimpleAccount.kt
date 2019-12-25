@@ -57,8 +57,7 @@ open class SimpleAccount(override val serviceType: Int) : Account, Serializable 
             updateCredentials(authCredentials)
             authCredentials
         } catch (e: Exception) {
-            val error: Error = AuthError(Reason.InnerError, e)
-            throw error
+            throw AuthError(Reason.InnerError, e)
         }
     }
 

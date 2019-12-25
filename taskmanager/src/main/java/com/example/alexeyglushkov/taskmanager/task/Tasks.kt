@@ -49,8 +49,11 @@ object Tasks {
                 taskPool.cancelTask(task, null)
             }
 
+            val originalCallback = task.taskCallback
             task.taskCallback = object : Task.Callback {
                 override fun onCompleted(cancelled: Boolean) {
+                    originalCallback?.onCompleted(cancelled)
+
                     val error = task.taskError
                     if (error != null) {
                         it.resumeWithException(error)

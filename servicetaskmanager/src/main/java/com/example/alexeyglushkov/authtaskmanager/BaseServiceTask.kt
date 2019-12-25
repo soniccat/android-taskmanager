@@ -1,12 +1,14 @@
 package com.example.alexeyglushkov.authtaskmanager
 
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder
+import com.example.alexeyglushkov.streamlib.progress.ProgressListener
 import com.example.alexeyglushkov.taskmanager.task.Task
 import com.example.alexeyglushkov.taskmanager.task.TaskBase
 import com.example.alexeyglushkov.taskmanager.task.rx.TasksRx
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import java.lang.Exception
 
 open class BaseServiceTask<T> : ServiceTask<T> {
     private var _task: TaskBase? = null
@@ -37,7 +39,7 @@ open class BaseServiceTask<T> : ServiceTask<T> {
             return if (result != null) result as T else null
         }
 
-    override val commandError: Error?
+    override val commandError: Exception?
         get() = task.taskError
 
     override val isCancelled: Boolean
@@ -48,6 +50,19 @@ open class BaseServiceTask<T> : ServiceTask<T> {
 
     override val responseCode: Int
         get() = 0
+
+    private var _progressListener: ProgressListener? = null
+    override var progressListener: ProgressListener?
+        get() = _progressListener
+        set(value) {
+            _progressListener?.let {
+                task.removeTaskProgressListener(it)
+            }
+            _progressListener = value
+            if (value != null) {
+                task.addTaskProgressListener(value)
+            }
+        }
 
     companion object {
         fun <T> fromSingle(single: Single<T>?): BaseServiceTask<T> {

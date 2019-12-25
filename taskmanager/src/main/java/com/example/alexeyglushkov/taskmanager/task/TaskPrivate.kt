@@ -46,7 +46,7 @@ interface TaskPrivate : Task {
     //
     // Caller: Task
     // TODO: use throwable
-    override var taskError: Error?
+    override var taskError: Exception?
 
     // TODO: need to call
     // Set Date after changing the state to Started

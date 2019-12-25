@@ -6,6 +6,7 @@ import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
+import java.lang.Exception
 import java.lang.ref.WeakReference
 
 /**
@@ -36,7 +37,7 @@ class AuthActivityProxy : OAuthWebClient {
             Companion.currentActivity = if (currentActivity != null) WeakReference(currentActivity) else null
         }
 
-        fun finish(url: String?, error: Error?) = runBlocking {
+        fun finish(url: String?, error: Exception?) = runBlocking {
             if (error != null || url == null) {
                 val resultError = if (error != null) error else IllegalArgumentException(url)
                 authResult.close(resultError)

@@ -33,7 +33,7 @@ class FileLoadTask(protected var fileName: String,
             taskResult = data
 
         } catch (e: Exception) {
-            private.taskError = Error("FileLoadTask exception: " + e.message)
+            private.taskError = Exception("FileLoadTask exception: " + e.message)
         }
 
         private.handleTaskCompletion()

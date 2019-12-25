@@ -32,7 +32,7 @@ public class DropboxAuthorizer implements Authorizer {
     @Override
     public void authorize(AuthorizerCompletion completion) {
         this.completion = completion;
-        session.startOAuth2Authentication(contextProvider.getContext());
+        session.startOAuth2Authentication(contextProvider.context);
     }
 
     // need to be called outside to finish authorization

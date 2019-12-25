@@ -13,7 +13,7 @@ interface TaskTransport {
     val id: String?
     val progressUpdater: ProgressUpdater?
     val data: Any?
-    val error: Error?
+    val error: Exception?
     val isCancelled: Boolean
 
     suspend fun start()

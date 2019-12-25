@@ -10,6 +10,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.aglushkov.taskmanager_http.image.Image
+import com.example.alexeyglushkov.ext.getDrawableCompat
 import com.rssclient.model.RssItem
 
 class RssItemsAdapter(context: Context, val values: ArrayList<RssItem>) : ArrayAdapter<RssItem>(context, R.layout.feed_cell, values) {
@@ -48,7 +49,7 @@ class RssItemsAdapter(context: Context, val values: ArrayList<RssItem>) : ArrayA
             loadImage(convertView, item)
         } else {
             holder.progressBar.visibility = View.INVISIBLE
-            holder.imageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_launcher))
+            holder.imageView.setImageDrawable(context.getDrawableCompat(R.drawable.ic_launcher))
         }
         return convertView
     }

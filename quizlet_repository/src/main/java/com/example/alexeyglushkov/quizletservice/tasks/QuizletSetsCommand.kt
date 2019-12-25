@@ -25,6 +25,7 @@ class QuizletSetsCommand(server: String, userId: String) : HttpServiceCommand<Li
             val builder = HttpUrlConnectionBuilder()
             val url = "$server/users/$userId/sets"
             builder.setUrl(url)
+
             return builder
         }
 
@@ -39,8 +40,10 @@ class QuizletSetsCommand(server: String, userId: String) : HttpServiceCommand<Li
                 md.addDeserializer(QuizletSet::class.java, QuizletSetDeserializer(QuizletSet::class.java))
                 md.addDeserializer(QuizletUser::class.java, QuizletUserDeserializer(QuizletUser::class.java))
                 md.addDeserializer(QuizletTerm::class.java, QuizletTermDeserializer(QuizletTerm::class.java))
+
                 val mapper = ObjectMapper()
                 mapper.registerModule(md)
+
                 result = mapper.readValue(bytes, Array<QuizletSet>::class.java)
             } catch (e: IOException) {
                 e.printStackTrace()

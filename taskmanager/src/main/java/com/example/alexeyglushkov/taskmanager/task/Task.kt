@@ -63,7 +63,7 @@ interface Task : TaskContainer {
     //
     // Caller: Client
     //
-    val taskError: Error?
+    val taskError: Exception?
 
     // Get the result object
     //

@@ -2,7 +2,7 @@ package com.aglushkov.taskmanager_http.loader.http
 
 import android.util.Log
 import com.example.alexeyglushkov.cachemanager.clients.Cache
-import com.example.alexeyglushkov.cachemanager.clients.Cache.CacheEmptyError
+import com.example.alexeyglushkov.cachemanager.clients.Cache.CacheEmptyException
 import com.example.alexeyglushkov.cachemanager.clients.CacheStatus
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStreamDataReaders
 import java.io.ByteArrayInputStream
@@ -42,7 +42,7 @@ open class HttpCacheableTransport<T>
         if (safeCacheClient != null && applyCacheContent(safeCacheClient)) {
             isLoaded = true
         } else if (safeCacheClient != null && safeCacheClient.cacheMode == Cache.CacheMode.ONLY_LOAD_FROM_CACHE) {
-            _error = CacheEmptyError(cacheKey, null)
+            _error = CacheEmptyException(cacheKey, null)
         }
         return isLoaded
     }

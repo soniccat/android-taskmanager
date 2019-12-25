@@ -27,6 +27,10 @@
     <string name="task_config_field_priority">Priority</string>
     <string name="task_config_field_load_policy">Load Policy</string>
 
+    <string name="ok">OK</string>
+    <string name="error_title">Error</string>
+    <string name="load_error">Can\'t load feed %s</string>
+
     <string-array name="task_config_load_policy_values">
         <item>Skip If Added"</item>
         <item>Cancel If Added</item>

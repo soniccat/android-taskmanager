@@ -49,8 +49,7 @@ class OAuth20AuthorizerImpl(private val api: DefaultApi20,
         return try {
             commandRunner.run(command)
         } catch (ex: Exception) {
-            val err: Error = AuthError("OAuth20AuthorizerImpl authorize: Can't receive AccessToken", Reason.InnerError, ex)
-            throw err
+            throw AuthError("OAuth20AuthorizerImpl authorize: Can't receive AccessToken", Reason.InnerError, ex)
         }
     }
 

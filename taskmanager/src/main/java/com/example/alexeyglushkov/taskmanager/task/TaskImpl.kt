@@ -9,6 +9,7 @@ import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater
 import com.example.alexeyglushkov.tools.HandlerTools
 
 import org.junit.Assert
+import java.lang.Exception
 
 import java.lang.ref.WeakReference
 import java.util.ArrayList
@@ -28,7 +29,7 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
     protected var isCancelled: Boolean = false // is set in subclasses when task is really cancelled
     override var taskProgressMinChange = 0.1f
 
-    override var taskError: Error? = null
+    override var taskError: Exception? = null
     override var taskResult: Any? = null
     override var taskId: String? = null
     override var loadPolicy: Task.LoadPolicy = Task.LoadPolicy.SkipIfAlreadyAdded

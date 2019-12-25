@@ -52,7 +52,7 @@ class AuthorizationActivity : AppCompatActivity() /*implements OAuthWebClient*/ 
 
             override fun onReceivedError(view: WebView, errorCode: Int, description: String, failingUrl: String) {
                 super.onReceivedError(view, errorCode, description, failingUrl)
-                val error = Error("AuthorizationActivity webView error $errorCode $description")
+                val error = Exception("AuthorizationActivity webView error $errorCode $description")
                 if (!isHandled) {
                     AuthActivityProxy.finish(null, error)
                     isHandled = true

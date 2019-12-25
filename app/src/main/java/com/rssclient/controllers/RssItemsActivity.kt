@@ -9,7 +9,6 @@ import android.widget.AbsListView
 import android.widget.AbsListView.OnScrollListener
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import com.aglushkov.taskmanager_http.image.Image
 import com.aglushkov.taskmanager_http.image.ImageLoader
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo
@@ -18,7 +17,6 @@ import com.example.alexeyglushkov.taskmanager.task.*
 import com.example.alexeyglushkov.taskmanager.task.PriorityTaskProvider.PriorityProvider
 import com.example.alexeyglushkov.taskmanager.task.TaskManagerSnapshot.OnSnapshotChangedListener
 import com.example.alexeyglushkov.taskmanager.ui.TaskManagerView
-import com.example.alexeyglushkov.tools.HandlerTools
 import com.example.alexeyglushkov.tools.Range
 import com.main.MainApplication
 import com.rssclient.controllers.RssItemsAdapter.RssItemsAdapterListener
@@ -64,7 +62,7 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapsho
             throw e
         }
 
-        feed = rssRepository.getRssFeedLiveData(url).value!!.data()!!
+        feed = rssRepository.getFeedLiveData(url).value!!.data()!!
         taskManager = application.taskManager
 
         val storedProvider = taskManager.getTaskProvider(PROVIDER_ID) as? PriorityTaskProvider

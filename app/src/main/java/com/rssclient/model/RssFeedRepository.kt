@@ -8,10 +8,8 @@ import com.aglushkov.repository.livedata.Resource
 import com.example.alexeyglushkov.cachemanager.ScopeStorageAdapter
 import com.example.alexeyglushkov.cachemanager.Storage
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import java.lang.Exception
 import java.net.URL
 
 class RssFeedRepository(val service: RssFeedService, storage: Storage) {
@@ -32,7 +30,7 @@ class RssFeedRepository(val service: RssFeedService, storage: Storage) {
         return commandHolder.ensureLiveData(LOAD_FEEDS_COMMAND, Resource.Uninitialized())
     }
 
-    fun getRssFeedLiveData(url: URL): MutableLiveData<Resource<RssFeed>> {
+    fun getFeedLiveData(url: URL): MutableLiveData<Resource<RssFeed>> {
         return commandHolder.ensureLiveData(url.toString(), Resource.Uninitialized())
     }
 
@@ -43,15 +41,24 @@ class RssFeedRepository(val service: RssFeedService, storage: Storage) {
         return commandHolder.putCommand(CancellableRepositoryCommand(LOAD_FEEDS_COMMAND, job, getFeedsLiveData()))
     }
 
-    fun loadRssFeed(url: URL, progressListener: ProgressListener?): RepositoryCommand<Resource<RssFeed>, String> {
-        val liveData = getRssFeedLiveData(url)
+    fun loadRssFeed(url: URL, progressListener: ProgressListener?): CancellableRepositoryCommand<Resource<RssFeed>, String> {
+        val liveData = getFeedLiveData(url)
+        val initialValue = liveData.value
         liveData.value = Resource.Loading()
 
         val job = scope.launch {
-            val feed = service.loadRss(url)
-            liveData.postValue(Resource.Loaded(feed))
+            try {
+                val feed = service.loadRss(url, progressListener)
+                liveData.postValue(Resource.Loaded(feed))
+            } catch (e: CancellationException) {
+                liveData.postValue(initialValue)
+                throw e
+            } catch (e: Exception) {
+                liveData.postValue(Resource.Error(e, true))
+            }
         }
-        return commandHolder.putCommand(CancellableRepositoryCommand(url.toString(), job, getRssFeedLiveData(url)))
+
+        return commandHolder.putCommand(CancellableRepositoryCommand(url.toString(), job, getFeedLiveData(url)))
     }
 
     suspend fun addFeed(feed: RssFeed) {
@@ -68,7 +75,7 @@ class RssFeedRepository(val service: RssFeedService, storage: Storage) {
         save()
     }
 
-    suspend fun load() {
+    private suspend fun load() {
         getFeedsLiveData().postValue(Resource.Loading())
         val feeds = storage.getValue("feeds") as? List<RssFeed>
         if (feeds != null) {
@@ -78,13 +85,12 @@ class RssFeedRepository(val service: RssFeedService, storage: Storage) {
         }
     }
 
-    suspend fun save() {
+    private suspend fun save() {
         storage.put("feeds", getFeeds(), null)
     }
 
     private fun getFeeds(): List<RssFeed> {
         val feedsLiveData = getFeedsLiveData()
-        val feeds = feedsLiveData.value?.data() ?: emptyList()
-        return feeds
+        return feedsLiveData.value?.data() ?: emptyList()
     }
 }

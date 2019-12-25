@@ -15,7 +15,7 @@ interface Cache {
     var cacheMode: CacheMode
 
     //// Inner classes
-    class CacheEmptyError(val cacheKey: String, throwable: Throwable?) : Error("Cache is empty", throwable) {
+    class CacheEmptyException(val cacheKey: String, throwable: Throwable?) : Exception("Cache is empty", throwable) {
         companion object {
             private const val serialVersionUID = -783104001989492147L
         }

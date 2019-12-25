@@ -7,6 +7,7 @@ import org.junit.Assert
 import java.util.concurrent.atomic.AtomicBoolean
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
+import java.lang.Exception
 
 class SingleTask<T>(private val single: Single<T>) : TaskImpl() {
     var disposable: Disposable? = null
@@ -17,7 +18,7 @@ class SingleTask<T>(private val single: Single<T>) : TaskImpl() {
             private.taskResult = t
             finishedFlag.set(true)
         }, { throwable ->
-            private.taskError = Error(throwable)
+            private.taskError = Exception(throwable)
             finishedFlag.set(true)
         })
 

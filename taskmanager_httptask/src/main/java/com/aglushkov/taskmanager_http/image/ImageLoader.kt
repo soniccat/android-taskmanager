@@ -18,6 +18,7 @@ import com.example.alexeyglushkov.tools.HandlerTools
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.junit.Assert
+import java.lang.Exception
 
 // Because Image doesn't store loaded data we should use ImageLoader to get the data from callback
 //TODO: need to simplify this logic and remove static methods...
@@ -31,7 +32,22 @@ class ImageLoader {
         val streamReader: InputStreamDataReader<Bitmap> = ByteArrayReader(BytesBitmapConverter())
         val reader: HTTPConnectionStreamReader<Bitmap> = HTTPConnectionStreamReaderAdaptor(streamReader)
         val transportTask = createTask(image, destinationId, reader)
-        val taskCallback = getTaskCallback(transportTask, image, callback)
+        val taskCallback = object : Callback {
+            override fun onCompleted(cancelled: Boolean) {
+                //ignore a cancelled result
+                if (callback != null && transportTask.taskStatus === Task.Status.Finished) {
+                    var bitmap: Bitmap? = null
+                    if (transportTask.taskResult != null) {
+                        bitmap = transportTask.taskResult as Bitmap?
+                    }
+                    if (image is ImageWithData) {
+                        image.bitmap = bitmap
+                    }
+                    callback.completed(transportTask, image, bitmap, transportTask.taskError)
+                }
+            }
+        }
+
         transportTask.taskCallback = taskCallback
 
         //threadRunner.launch {
@@ -63,24 +79,7 @@ class ImageLoader {
         return transportTask
     }
 
-    fun getTaskCallback(transportTask: TransportTask, image: Image?, callback: LoadCallback?): Callback {
-        return object : Callback {
-            override fun onCompleted(cancelled: Boolean) { //ignore a cancelled result
-                if (callback != null && transportTask.taskStatus === Task.Status.Finished) {
-                    var bitmap: Bitmap? = null
-                    if (transportTask.taskResult != null) {
-                        bitmap = transportTask.taskResult as Bitmap?
-                    }
-                    if (image is ImageWithData) {
-                        image.bitmap = bitmap
-                    }
-                    callback.completed(transportTask, image, bitmap, transportTask.taskError)
-                }
-            }
-        }
-    }
-
     interface LoadCallback {
-        fun completed(task: Task?, image: Image?, bitmap: Bitmap?, error: Error?)
+        fun completed(task: Task?, image: Image?, bitmap: Bitmap?, error: Exception?)
     }
 }

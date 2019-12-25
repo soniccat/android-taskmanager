@@ -1,6 +1,7 @@
 package com.example.alexeyglushkov.authorization.Auth
 
 import io.reactivex.Single
+import java.lang.Exception
 
 /**
  * Created by alexeyglushkov on 31.10.15.
@@ -11,7 +12,7 @@ interface Authorizer {
     fun setServiceCommandProvider(provider: ServiceCommandProvider)
     fun setServiceCommandRunner(runner: ServiceCommandRunner)
 
-    class AuthError : Error {
+    class AuthError : Exception {
         enum class Reason {
             InnerError,
             UnknownError,

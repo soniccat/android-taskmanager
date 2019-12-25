@@ -42,8 +42,7 @@ open class SimpleService : Service {
             if (canSignIn) {
                 authorizeAndRun(command)
             } else {
-                val error: Error = AuthError(AuthError.Reason.NotAuthorized, null)
-                throw error
+                throw AuthError(AuthError.Reason.NotAuthorized, null)
             }
         } else {
             account.signCommand(command)

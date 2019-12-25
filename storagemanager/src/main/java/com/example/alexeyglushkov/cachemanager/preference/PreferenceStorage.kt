@@ -64,6 +64,6 @@ class PreferenceStorage(private val name: String, private val contextProvider: C
         private get() = context.getSharedPreferences(name, Context.MODE_PRIVATE)
 
     private val context: Context
-        private get() = contextProvider.context
+        private get() = contextProvider.context!!
 
 }

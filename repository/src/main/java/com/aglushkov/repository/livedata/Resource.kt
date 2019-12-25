@@ -10,9 +10,9 @@ sealed class Resource<T>(needShowNext: Boolean) {
     class Error<T>(val throwable: Throwable, val canTryAgain: Boolean, val data: T? = null, canLoadNext: Boolean = false) : Resource<T>(canLoadNext)
 
     fun toRestored(data: T? = data(), canLoadNext: Boolean = this.canLoadNextPage) = Restored(data, canLoadNext)
-    @JvmOverloads fun toLoading(data: T? = data(), canLoadNext: Boolean = this.canLoadNextPage) = Loading(data, canLoadNext)
-    @JvmOverloads fun toLoaded(data: T, canLoadNext: Boolean = this.canLoadNextPage) = Loaded(data, canLoadNext)
-    @JvmOverloads fun toError(throwable: Throwable, canTryAgain: Boolean, data: T? = data(), canLoadNext: Boolean = this.canLoadNextPage) = Error(throwable, canTryAgain, data, canLoadNext)
+    fun toLoading(data: T? = data(), canLoadNext: Boolean = this.canLoadNextPage) = Loading(data, canLoadNext)
+    fun toLoaded(data: T, canLoadNext: Boolean = this.canLoadNextPage) = Loaded(data, canLoadNext)
+    fun toError(throwable: Throwable, canTryAgain: Boolean, data: T? = data(), canLoadNext: Boolean = this.canLoadNextPage) = Error(throwable, canTryAgain, data, canLoadNext)
 
     // Getters
 
@@ -56,5 +56,5 @@ sealed class Resource<T>(needShowNext: Boolean) {
 }
 
 fun Resource<*>?.isUninitialized(): Boolean {
-    return if (this == null) true else this.isUninitialized()
+    return this?.isUninitialized() ?: true
 }
