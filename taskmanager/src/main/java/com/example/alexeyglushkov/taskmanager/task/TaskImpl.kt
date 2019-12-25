@@ -2,6 +2,7 @@ package com.example.alexeyglushkov.taskmanager.task
 
 import android.os.Looper
 import android.util.Log
+import androidx.annotation.WorkerThread
 
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener
@@ -93,10 +94,12 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
         cancellationInfo = info
     }
 
+    @WorkerThread
     override fun addTaskStatusListener(listener: Task.StatusListener) {
         statusListeners.add(listener)
     }
 
+    @WorkerThread
     override fun removeTaskStatusListener(listener: Task.StatusListener) {
         for (i in statusListeners.indices) {
             if (statusListeners[i] === listener) {

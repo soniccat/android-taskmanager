@@ -7,7 +7,9 @@ import com.aglushkov.taskmanager_http.image.Image
 import java.lang.ref.WeakReference
 
 class ImageBinder(private val imageLoader: ImageLoader) {
-    fun bind(imageView: ImageView, image: Image?, placeholder: Drawable? = null, params: Map<String, Any>? = null) {
+    fun bind(imageView: ImageView?, image: Image?, placeholder: Drawable? = null, params: Map<String, Any>? = null) {
+        if (imageView == null) return
+
         val imageViewRef = WeakReference(imageView)
         bind(imageView, image, placeholder, params) { bitmap, _ ->
             if (bitmap != null) {
@@ -16,11 +18,12 @@ class ImageBinder(private val imageLoader: ImageLoader) {
         }
     }
 
-    fun bind(imageView: ImageView,
+    fun bind(imageView: ImageView?,
              image: Image?,
              placeholder: Drawable? = null,
              params: Map<String, Any>? = null,
              completion: (Bitmap?, Exception?) -> Unit) {
+        if (imageView == null) return
         if (image != null) {
             val imageHash: Int = image.hashCode()
             if (imageHash != imageView.tag) {
@@ -39,6 +42,11 @@ class ImageBinder(private val imageLoader: ImageLoader) {
             imageView.setImageDrawable(placeholder)
             completion(null, null)
         }
+    }
+
+    fun unbind(imageView: ImageView?) {
+        imageView?.tag = null
+        imageView?.setImageDrawable(null)
     }
 
     interface ImageLoader {

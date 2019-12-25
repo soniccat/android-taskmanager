@@ -57,6 +57,13 @@ class FeedsAdapter(private val imageBinder: ImageBinder)
         }
     }
 
+    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
+        super.onViewRecycled(holder)
+        if (holder is RssFeedViewHolder) {
+            imageBinder.unbind(holder.image)
+        }
+    }
+
     class RssFeedViewHolder(view: View): RecyclerView.ViewHolder(view) {
         var name: TextView? = null
         var image: ImageView? = null
