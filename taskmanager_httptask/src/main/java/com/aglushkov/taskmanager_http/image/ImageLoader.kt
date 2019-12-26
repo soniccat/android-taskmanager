@@ -45,10 +45,10 @@ class ImageLoader {
 
         transportTask.taskCallback = taskCallback
 
-        threadRunner.launch {
+        //threadRunner.launch {
             // to have addTaskStatusListener called on a scope's thread
             bindOnTaskCompletion(transportTask, image)
-        }
+        //}
 
         // TODO: need to check case when a task was refused by a tak provider
         // maybe it's ok to set waiting on a scope's thread, to be able to bind on that before adding

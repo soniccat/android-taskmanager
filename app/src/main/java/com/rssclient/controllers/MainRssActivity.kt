@@ -87,7 +87,7 @@ class MainRssActivity : AppCompatActivity() {
         vm.feedLiveData.observe(this, Observer {
             it?.let {
                 val data = it.data() ?: emptyList()
-                val adapter = listView?.adapter as? FeedsAdapter
+                val adapter = listView?.adapter as? RssFeedsAdapter
                 if (adapter == null) {
                     createAdapter(data)
                 } else {
@@ -124,7 +124,7 @@ class MainRssActivity : AppCompatActivity() {
                     this@MainRssActivity.vm.onLoadImageRequested(image, completion)
                 }
             })
-            adapter = FeedsAdapter(imageBinder)
+            adapter = RssFeedsAdapter(imageBinder)
             adapter.submitList(data)
             safeListView.adapter = adapter
         }

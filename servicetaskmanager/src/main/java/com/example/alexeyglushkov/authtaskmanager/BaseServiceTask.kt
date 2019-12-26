@@ -64,6 +64,7 @@ open class BaseServiceTask<T> : ServiceTask<T> {
             }
         }
 
+    // TODO: move to RX
     companion object {
         fun <T> fromSingle(single: Single<T>?): BaseServiceTask<T> {
             return BaseServiceTask(TasksRx.fromSingle(single!!))

@@ -12,7 +12,7 @@ import com.example.alexeyglushkov.ext.getDrawableCompat
 import com.rssclient.vm.RssItemView
 import kotlinx.android.synthetic.main.feed_cell.view.*
 
-class FeedsAdapter(private val imageBinder: ImageBinder)
+class RssFeedsAdapter(private val imageBinder: ImageBinder)
     : ListAdapter<RssItemView<*>, RecyclerView.ViewHolder>(DiffCallback) {
 
     companion object {

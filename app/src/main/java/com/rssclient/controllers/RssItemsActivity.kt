@@ -91,7 +91,7 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, OnSnapsho
 
         val activity = this
         if (feed.items.size == 0) {
-            rssRepository.loadRssFeed(feed.url, null)
+//            rssRepository.loadRssFeed(feed.url, null)
 //            rssRepository.loa(taskManager, this, feed, object : RssFeedCallback {
 //                override fun completed(feed: RssFeed?, error: Error?) {
 //                    println("loaded")

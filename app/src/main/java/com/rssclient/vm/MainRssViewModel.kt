@@ -60,9 +60,9 @@ class MainRssViewModel(application: MainApplication): AndroidViewModel(applicati
     // Actions
 
     private fun loadRssFeed(url: URL){
-        val cmd = rssRepository.loadRssFeed(url, null)
         viewModelScope.launch {
             try {
+                val cmd = rssRepository.loadRssFeed(url, null)
                 cmd.await()?.data()?.let {
                     rssRepository.addFeed(it)
                 }

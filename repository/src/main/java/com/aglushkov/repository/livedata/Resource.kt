@@ -1,5 +1,12 @@
 package com.aglushkov.repository.livedata
 
+import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import java.lang.Exception
+
 sealed class Resource<T>(needShowNext: Boolean) {
     val canLoadNextPage: Boolean = needShowNext
 
@@ -57,4 +64,29 @@ sealed class Resource<T>(needShowNext: Boolean) {
 
 fun Resource<*>?.isUninitialized(): Boolean {
     return this?.isUninitialized() ?: true
+}
+
+suspend fun <T> MutableLiveData<Resource<T>>.load(loader: suspend () -> T?) {
+    val initialValue = value
+    val loadingRes = value?.toLoading() ?: Resource.Loading()
+    postValue(loadingRes)
+
+    try {
+        val result = loader()
+        val newStatus: Resource<T> = if (result != null) {
+            Resource.Loaded(result)
+        } else {
+            Resource.Uninitialized()
+        }
+
+        postValue(newStatus)
+    } catch (e: CancellationException) {
+        if (value == loadingRes) {
+            postValue(initialValue)
+        }
+        throw e
+    } catch (e: Exception) {
+        val errorRes = initialValue?.toError(e, true) ?: Resource.Error(e, true)
+        postValue(errorRes)
+    }
 }
