@@ -60,7 +60,9 @@ class RssFeedRepository(val service: RssFeedService, storage: Storage) {
 //        }
 
         val job = scope.launch {
-            service.loadRss(url, progressListener)
+            liveData.load {
+                service.loadRss(url, progressListener)
+            }
         }
 
         return commandHolder.putCommand(CancellableRepositoryCommand(url.toString(), job, getFeedLiveData(url)))
@@ -81,30 +83,30 @@ class RssFeedRepository(val service: RssFeedService, storage: Storage) {
     }
 
     private suspend fun load(liveData: MutableLiveData<Resource<List<RssFeed>>>) {
-//        val initialValue = liveData.value
-//        val loadingRes = liveData.value?.toLoading() ?: Resource.Loading()
-//        liveData.postValue(loadingRes)
-//
-//        try {
-//            val feeds = storage.getValue("feeds") as? List<RssFeed>
-//            val newStatus: Resource<List<RssFeed>> = if (feeds != null) {
-//                Resource.Loaded(feeds)
-//            } else {
-//                Resource.Uninitialized()
-//            }
-//
-//            liveData.postValue(newStatus)
-//        } catch (e: CancellationException) {
-//            liveData.postValue(initialValue)
-//            throw e
-//        } catch (e: Exception) {
-//            val errorRes = initialValue?.toError(e, true) ?: Resource.Error(e, true)
-//            liveData.postValue(errorRes)
-//        }
+        val initialValue = liveData.value
+        val loadingRes = liveData.value?.toLoading() ?: Resource.Loading()
+        liveData.postValue(loadingRes)
 
-        liveData.load {
-            storage.getValue("feeds") as? List<RssFeed>
+        try {
+            val feeds = storage.getValue("feeds") as? List<RssFeed>
+            val newStatus: Resource<List<RssFeed>> = if (feeds != null) {
+                Resource.Loaded(feeds)
+            } else {
+                Resource.Uninitialized()
+            }
+
+            liveData.postValue(newStatus)
+        } catch (e: CancellationException) {
+            liveData.postValue(initialValue)
+            throw e
+        } catch (e: Exception) {
+            val errorRes = initialValue?.toError(e, true) ?: Resource.Error(e, true)
+            liveData.postValue(errorRes)
         }
+
+//        liveData.load {
+//            storage.getValue("feeds") as? List<RssFeed>
+//        }
     }
 
     private suspend fun save() {
