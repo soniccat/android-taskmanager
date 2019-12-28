@@ -145,8 +145,6 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
         this.finishDate = date
     }
 
-    //TODO: add dependencies support
-
     override fun addTaskDependency(task: Task) {
         dependencies.add(WeakReference(task))
     }

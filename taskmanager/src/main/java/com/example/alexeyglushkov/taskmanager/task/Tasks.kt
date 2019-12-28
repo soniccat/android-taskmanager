@@ -53,6 +53,7 @@ object Tasks {
             val originalCallback = task.taskCallback
             task.taskCallback = object : Task.Callback {
                 override fun onCompleted(cancelled: Boolean) {
+                    Thread.sleep(1000)
                     originalCallback?.onCompleted(cancelled)
 
                     val error = task.taskError

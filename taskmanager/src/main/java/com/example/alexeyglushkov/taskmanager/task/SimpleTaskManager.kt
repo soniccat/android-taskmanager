@@ -19,8 +19,6 @@ import java.util.Date
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.android.asCoroutineDispatcher
-import java.lang.Exception
-import kotlin.coroutines.*
 
 /**
  * Created by alexeyglushkov on 20.09.14.
@@ -271,7 +269,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     override fun onTaskConflict(pool: TaskPool, newTask: Task, oldTask: Task): Task {
         threadRunner.checkThread()
         return threadRunner.run {
-            resolveConflictTasks(newTask, oldTask)
+            resolveTaskConflict(newTask, oldTask)
         }
     }
 
@@ -423,7 +421,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
                     val t = pool.getTask(taskId)
                     if (t != null) {
                         assert(t != task)
-                        val resultTask = resolveConflictTasks(task, t)
+                        val resultTask = resolveTaskConflict(task, t)
                         if (resultTask == t) {
                             return false // quit when task fails
                         }
@@ -435,18 +433,32 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     @WorkerThread
-    private fun resolveConflictTasks(newTask: Task, oldTask: Task): Task {
-        if (newTask.loadPolicy == Task.LoadPolicy.CancelPreviouslyAdded) {
-            cancelTaskOnThread(oldTask, null)
-            return newTask
-        } else {
-            Log.d(TAG, "The task was skipped due to the Load Policy "
-                    + newTask.loadPolicy.toString()
-                    + newTask.javaClass.toString()
-                    + " " + newTask.taskId
-                    + " " + newTask.taskStatus.toString())
-            cancelTaskOnThread(newTask, null)
-            return oldTask
+    private fun resolveTaskConflict(newTask: Task, currentTask: Task): Task {
+        return when (newTask.loadPolicy) {
+            Task.LoadPolicy.AddDependencyIfAlreadyAdded -> {
+                logTask(newTask, "Conflict: wait until the current task finishes")
+                logTask(currentTask, "Conflict: the current task")
+                newTask.addTaskDependency(currentTask)
+                currentTask
+            }
+            Task.LoadPolicy.CompleWhenAlreadyAddedCompletes -> {
+                logTask(newTask, "Conflict: this task will complete with the current task")
+                logTask(currentTask, "Conflict: the current task")
+                newTask.addTaskDependency(currentTask)
+                currentTask
+            }
+            Task.LoadPolicy.CancelPreviouslyAdded -> {
+                logTask(currentTask, "Conflict: this current task is cancelled")
+                logTask(newTask, "Conflict: the new task")
+                cancelTaskOnThread(currentTask, null)
+                newTask
+            }
+            Task.LoadPolicy.SkipIfAlreadyAdded -> {
+                logTask(newTask, "Conflict: this task was skipped as there is another task already")
+                logTask(currentTask, "Conflict: another task")
+                cancelTaskOnThread(newTask, null)
+                currentTask
+            }
         }
     }
 
@@ -540,7 +552,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         if (task !is TaskBase) { assert(false); return }
         threadRunner.checkThread()
 
-        val wasStarted = task.taskStatus == Task.Status.Started
         val status = if (isCancelled) Task.Status.Cancelled else Task.Status.Finished
         if (isCancelled) {
             task.private.taskError = CancelError()
@@ -551,7 +562,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         task.private.taskStatus = status
         task.private.clearAllListeners()
 
-        if (wasStarted) {
+        taskToCallbackMap[task]?.let {
             task.taskCallback = taskToCallbackMap[task] // return original callback
         }
 
@@ -601,6 +612,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     /// Helpers
 
     private fun logTask(task: Task, prefix: String) {
-        Log.d(TAG, prefix + " " + task.javaClass.toString() + "(" + task.taskStatus + ")" + " id= " + task.taskId + " priority= " + task.taskPriority + " time " + task.taskDuration())
+        Log.d(TAG, prefix + " [" + task.javaClass.toString() + "(" + task.taskStatus + ")" + " id= " + task.taskId + " priority= " + task.taskPriority + " time " + task.taskDuration() + "]")
     }
 }

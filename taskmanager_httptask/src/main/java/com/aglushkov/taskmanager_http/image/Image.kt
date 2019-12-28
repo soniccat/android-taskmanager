@@ -31,7 +31,7 @@ open class Image : Serializable, TaskListener, HttpURLConnectionProvider {
     var height = 0
     var byteSize = 0
 
-    var loadPolicy = LoadPolicy.SkipIfAlreadyAdded
+    var loadPolicy = LoadPolicy.AddDependencyIfAlreadyAdded
     protected var loadStatus: Status? = null
     protected var processingTask: WeakReference<Task>? = null
 

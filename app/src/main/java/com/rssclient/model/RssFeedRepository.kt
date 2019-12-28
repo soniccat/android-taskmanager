@@ -84,7 +84,7 @@ class RssFeedRepository(val service: RssFeedService, storage: Storage) {
 
     private suspend fun load(liveData: MutableLiveData<Resource<List<RssFeed>>>) {
         val initialValue = liveData.value
-        val loadingRes = liveData.value?.toLoading() ?: Resource.Loading()
+        val loadingRes = Resource.Loading<List<RssFeed>>()// liveData.value?.toLoading() ?: Resource.Loading()
         liveData.postValue(loadingRes)
 
         try {

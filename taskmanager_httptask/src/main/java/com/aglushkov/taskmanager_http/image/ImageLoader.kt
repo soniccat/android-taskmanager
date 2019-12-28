@@ -24,6 +24,7 @@ class ImageLoader {
         return buildBitmapTask(threadRunner, image, null)
     }
 
+    // TODO: remove threadRunner if we don't need it
     fun buildBitmapTask(threadRunner: ThreadRunner, image: Image, destinationId: String?): Task {
         val streamReader: InputStreamDataReader<Bitmap> = ByteArrayReader(BytesBitmapConverter())
         val reader: HTTPConnectionStreamReader<Bitmap> = HTTPConnectionStreamReaderAdaptor(streamReader)
@@ -31,7 +32,7 @@ class ImageLoader {
         val taskCallback = object : Callback {
             override fun onCompleted(cancelled: Boolean) {
                 //ignore a cancelled result
-                if (transportTask.taskStatus === Task.Status.Finished) {
+                if (!cancelled) {
                     var bitmap: Bitmap? = null
                     if (transportTask.taskResult != null) {
                         bitmap = transportTask.taskResult as Bitmap?
