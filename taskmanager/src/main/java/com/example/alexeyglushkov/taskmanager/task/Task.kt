@@ -93,13 +93,6 @@ interface Task : TaskContainer {
     var taskUserData: Any?
     fun isBlocked(): Boolean
 
-    // Handy way to access private methods
-    // should be called only in TaskManager, TaskPool
-    //
-    // Caller: TaskManager
-    //
-    //val private: TaskPrivate
-
     // add/remove dependency
     //
     // Caller: Client

@@ -482,9 +482,11 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
                 if (Tasks.isTaskFinished(task)) {
                     toTask.removeTaskStatusListener(this)
 
-                    aTask as TaskBase
-                    aTask.private.taskResult = toTask.taskResult
-                    handleTaskFinishOnThread(aTask, false)
+                    if (task.taskStatus != Task.Status.Cancelled) {
+                        aTask as TaskBase
+                        aTask.private.taskResult = toTask.taskResult
+                        handleTaskFinishOnThread(aTask, false)
+                    }
                 }
             }
         })
