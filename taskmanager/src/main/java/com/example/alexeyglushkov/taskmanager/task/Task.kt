@@ -17,15 +17,9 @@ import com.example.alexeyglushkov.streamlib.progress.ProgressListener
 // All setters mustn't be called after starting the task
 
 interface Task : TaskContainer {
-    // Set the callback to handle the result.
-    // TaskManager uses this callback but calls the original
+    // Is called on TaskManager thread when a task finishes (might be in cancelled state)
     //
-    // Caller: Client, TaskManager
-    //
-    var taskCallback: Callback? // get the current callback
-
-
-    var completionCallback: Callback?
+    var finishCallback: Callback?
 
     //TODO: add custom thread callback support through set/get
 
@@ -146,7 +140,7 @@ interface Task : TaskContainer {
         Waiting, //in queue, must be set on the caller thread
         Blocked, //is waiting until all dependencies finish
         Started, //started
-        Finished, //successfully loaded
+        Completed, //successfully loaded
         Cancelled //has cancelled but still is loading or cancelled while waiting in a queue
     }
 
@@ -154,7 +148,7 @@ interface Task : TaskContainer {
         SkipIfAlreadyAdded, // don't load this task if there is another loading task with the same id
         CancelPreviouslyAdded, // cancel already added task, in this case you shouldn't do anything with cancelled task
         AddDependencyIfAlreadyAdded, // wait until the current task finishes to start this task
-        CompleWhenAlreadyAddedCompletes // immediately complete with the result of the current task
+        CompleteWhenAlreadyAddedCompletes // immediately complete with the result of the current task
     }
 
     // TODO: pass Error to get to know that the task was cancelled or an error happened

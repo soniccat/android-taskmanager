@@ -31,7 +31,7 @@ open class Image : Serializable, TaskListener, HttpURLConnectionProvider {
     var height = 0
     var byteSize = 0
 
-    var loadPolicy = LoadPolicy.AddDependencyIfAlreadyAdded
+    var loadPolicy = LoadPolicy.CompleteWhenAlreadyAddedCompletes
     protected var loadStatus: Status? = null
     protected var processingTask: WeakReference<Task>? = null
 
@@ -43,7 +43,7 @@ open class Image : Serializable, TaskListener, HttpURLConnectionProvider {
 
     override fun setTaskCompleted(task: Task) {
         if (processingTask != null && task === processingTask!!.get()) {
-            loadStatus = Status.Finished
+            loadStatus = Status.Completed
             processingTask = null
         }
         Log.d("Image--", "completed $task")

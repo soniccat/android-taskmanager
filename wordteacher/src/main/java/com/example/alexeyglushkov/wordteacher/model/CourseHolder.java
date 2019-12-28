@@ -97,8 +97,6 @@ public class CourseHolder {
                 } catch (Exception e) {
                     getPrivate().setTaskError(new Error(e));
                 }
-
-                getPrivate().handleTaskCompletion();
             }
         };
     }

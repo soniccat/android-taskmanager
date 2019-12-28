@@ -1,8 +1,6 @@
 package com.example.alexeyglushkov.taskmanager.task
 
-import android.os.Handler
 import androidx.annotation.WorkerThread
-import kotlinx.coroutines.CoroutineScope
 
 /**
  * Created by alexeyglushkov on 13.08.16.
@@ -53,7 +51,7 @@ open class StackTaskProvider(private val areTasksDependent: Boolean, //if enable
 
             task.addTaskStatusListener(object : Task.StatusListener {
                 override fun onTaskStatusChanged(task: Task, oldStatus: Task.Status, newStatus: Task.Status) {
-                    if (Tasks.isTaskCompleted(task)) {
+                    if (Tasks.isTaskFinished(task)) {
                         isBlocked = false
 
                         if (getTaskCount() > 0) {
@@ -65,7 +63,7 @@ open class StackTaskProvider(private val areTasksDependent: Boolean, //if enable
             })
         }
 
-        triggerOnTaskRemoved(task)
+        onTaskRemoved(task)
     }
 
     private fun canTakeTask(): Boolean {

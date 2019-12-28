@@ -23,7 +23,6 @@ class SingleTask<T>(private val single: Single<T>) : TaskImpl() {
         })
 
         Assert.assertTrue("SingleTask: Single must be a sync task", finishedFlag.get())
-        private.handleTaskCompletion()
     }
 
     override fun cancelTask(info: Any?) {

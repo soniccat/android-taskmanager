@@ -21,7 +21,6 @@ class CompletableTask(private val completable: Completable) : TaskImpl() {
         })
 
         Assert.assertTrue("Completable: Completable must be a sync task", finishedFlag.get())
-        private.handleTaskCompletion()
     }
 
     override fun cancelTask(info: Any?) {

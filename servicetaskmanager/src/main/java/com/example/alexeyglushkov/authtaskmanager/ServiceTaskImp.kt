@@ -15,8 +15,6 @@ abstract class ServiceTaskImp<T> : BaseServiceTask<T>() {
         task = object : TaskImpl() {
             override suspend fun startTask() {
                 onStart()
-
-                private.handleTaskCompletion()
             }
         }
     }

@@ -105,7 +105,7 @@ open class PriorityTaskProvider(threadRunner: ThreadRunner, override var taskPro
 
         val task = getTopTask(true)
         if (task != null) {
-            triggerOnTaskRemoved(task)
+            onTaskRemoved(task)
         }
 
         return task

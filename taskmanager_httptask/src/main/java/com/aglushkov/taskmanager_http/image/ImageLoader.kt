@@ -14,10 +14,9 @@ import com.example.alexeyglushkov.taskmanager.task.Task.Callback
 import com.example.alexeyglushkov.taskmanager.task.Tasks.bindOnTaskCompletion
 import com.example.alexeyglushkov.taskmanager.task.ThreadRunner
 import org.junit.Assert
-import java.lang.Exception
 
 // Because Image doesn't store loaded data we should use ImageLoader to get the data from callback
-//TODO: need to simplify this logic and remove static methods...
+// TODO: need to simplify this logic and remove static methods...
 class ImageLoader {
     //TODO: write argument descriptions
     fun buildBitmapTask(threadRunner: ThreadRunner, image: Image): Task {
@@ -29,22 +28,6 @@ class ImageLoader {
         val streamReader: InputStreamDataReader<Bitmap> = ByteArrayReader(BytesBitmapConverter())
         val reader: HTTPConnectionStreamReader<Bitmap> = HTTPConnectionStreamReaderAdaptor(streamReader)
         val transportTask = createTask(image, destinationId, reader)
-        val taskCallback = object : Callback {
-            override fun onCompleted(cancelled: Boolean) {
-                //ignore a cancelled result
-                if (!cancelled) {
-                    var bitmap: Bitmap? = null
-                    if (transportTask.taskResult != null) {
-                        bitmap = transportTask.taskResult as Bitmap?
-                    }
-                    if (image is ImageWithData) {
-                        image.bitmap = bitmap
-                    }
-                }
-            }
-        }
-
-        transportTask.taskCallback = taskCallback
 
         //threadRunner.launch {
             // to have addTaskStatusListener called on a scope's thread
@@ -63,7 +46,18 @@ class ImageLoader {
         val transport = HttpTaskTransport(image, reader)
         transport.contentLength = image.byteSize
 
-        val transportTask = TransportTask(transport)
+        val transportTask = object : TransportTask(transport) {
+            override var taskResult: Any?
+                get() = super.taskResult
+                set(value) {
+                    super.taskResult = value
+
+                    if (image is ImageWithData) {
+                        image.bitmap = value as? Bitmap
+                    }
+                }
+        }
+
         transportTask.loadPolicy = image.loadPolicy
 
         if (transportTask.taskId != null && destinationId != null) {

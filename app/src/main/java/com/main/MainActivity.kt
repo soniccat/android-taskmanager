@@ -83,7 +83,6 @@ class MainActivity : BaseActivity() {
                 }
 
                 Log.d(TAG, "showAuthorization onFinished " + creds.isValid)
-                private.handleTaskCompletion()
             }
         }
         taskManager.addTask(authTask)

@@ -20,7 +20,7 @@ import java.util.Date
  * Created by alexeyglushkov on 23.07.15.
  */
 abstract class TaskImpl : TaskBase, TaskPrivate {
-    override var taskCallback: Task.Callback? = null
+    override var finishCallback: Task.Callback? = null
     override var cancellationInfo: Any? = null
         protected set
 
@@ -31,7 +31,7 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
     override var taskProgressMinChange = 0.1f
 
     override var taskError: Exception? = null
-    override var taskResult: Any? = null
+    override var taskResult: Any? = null // TODO: use generic type
     override var taskId: String? = null
     override var loadPolicy: Task.LoadPolicy = Task.LoadPolicy.SkipIfAlreadyAdded
     override var taskPriority: Int = 0
@@ -79,7 +79,7 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
         for (task in dependencies) {
             val realTask = task.get()
             if (realTask != null) {
-                isBlocked = !Tasks.isTaskCompleted(realTask)
+                isBlocked = !Tasks.isTaskFinished(realTask)
                 if (isBlocked) {
                     break
                 }
@@ -154,7 +154,7 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
     }
 
     override fun clear() {
-        Assert.assertTrue(Tasks.isTaskCompleted(this))
+        Assert.assertTrue(Tasks.isTaskFinished(this))
 
         _taskStatus = Task.Status.NotStarted
         cancellationInfo = null
@@ -206,10 +206,6 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
 
     override fun canBeCancelledImmediately(): Boolean {
         return false
-    }
-
-    override fun handleTaskCompletion() {
-        taskCallback?.onCompleted(isCancelled)
     }
 
     private fun checkMainThread() {

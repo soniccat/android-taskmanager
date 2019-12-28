@@ -35,7 +35,5 @@ class FileLoadTask(protected var fileName: String,
         } catch (e: Exception) {
             private.taskError = Exception("FileLoadTask exception: " + e.message)
         }
-
-        private.handleTaskCompletion()
     }
 }

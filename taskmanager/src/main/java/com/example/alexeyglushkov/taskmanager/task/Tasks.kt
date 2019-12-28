@@ -2,14 +2,8 @@ package com.example.alexeyglushkov.taskmanager.task
 
 import android.util.Log
 
-import com.example.alexeyglushkov.taskmanager.task.rx.CompletableTask
-import com.example.alexeyglushkov.taskmanager.task.rx.MaybeTask
-import com.example.alexeyglushkov.taskmanager.task.rx.SingleTask
 import com.example.alexeyglushkov.tools.HandlerTools
 
-import io.reactivex.Completable
-import io.reactivex.Maybe
-import io.reactivex.Single
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
@@ -25,7 +19,7 @@ object Tasks {
             override fun onTaskStatusChanged(task: Task, oldStatus: Task.Status, newStatus: Task.Status) {
                 Log.d("Bind--", "task $task from $oldStatus to $newStatus")
 
-                if (newStatus == Task.Status.Finished || newStatus == Task.Status.Cancelled) {
+                if (newStatus == Task.Status.Completed || newStatus == Task.Status.Cancelled) {
                     HandlerTools.runOnMainThread { listener.setTaskCompleted(task) }
                 }
             }
@@ -34,13 +28,13 @@ object Tasks {
 
     fun isTaskReadyToStart(task: Task): Boolean {
         val st = task.taskStatus
-        return st != Task.Status.Started && st != Task.Status.Finished && st != Task.Status.Cancelled
+        return st != Task.Status.Started && st != Task.Status.Completed && st != Task.Status.Cancelled
     }
 
     // TODO: convert to extension
-    fun isTaskCompleted(task: Task): Boolean {
+    fun isTaskFinished(task: Task): Boolean {
         val st = task.taskStatus
-        return st == Task.Status.Finished || st == Task.Status.Cancelled
+        return st == Task.Status.Completed || st == Task.Status.Cancelled
     }
 
     // TODO: convert to TaskPool extension
@@ -50,10 +44,10 @@ object Tasks {
                 taskPool.cancelTask(task, null)
             }
 
-            val originalCallback = task.taskCallback
-            task.taskCallback = object : Task.Callback {
+            val originalCallback = task.finishCallback
+            task.finishCallback = object : Task.Callback {
                 override fun onCompleted(cancelled: Boolean) {
-                    Thread.sleep(1000)
+                    //Thread.sleep(1000)
                     originalCallback?.onCompleted(cancelled)
 
                     val error = task.taskError

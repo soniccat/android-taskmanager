@@ -3,13 +3,9 @@ package com.example.alexeyglushkov.taskmanager.task
 import android.util.Log
 import androidx.annotation.WorkerThread
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-
 /**
  * Created by alexeyglushkov on 30.12.14.
  */
-// TODO: think about abstractTaskPool without tasks list to be able to inherit code in PriorityTaskProvider
 abstract class TaskPoolBase(threadRunner: ThreadRunner) : TaskPool {
     //TODO: think about weakref
     protected var listeners = mutableListOf<TaskPool.Listener>() // TODO: set one listener
@@ -30,7 +26,7 @@ abstract class TaskPoolBase(threadRunner: ThreadRunner) : TaskPool {
     //// Events
 
     override fun onTaskStatusChanged(task: Task, oldStatus: Task.Status, newStatus: Task.Status) {
-        if (Tasks.isTaskCompleted(task)) {
+        if (Tasks.isTaskFinished(task)) {
             removeTask(task)
         }
     }
@@ -95,11 +91,16 @@ abstract class TaskPoolBase(threadRunner: ThreadRunner) : TaskPool {
     @WorkerThread
     private fun removeTaskOnThread(task: Task) {
         if (removeTaskInternal(task)) {
-            triggerOnTaskRemoved(task)
+            onTaskRemoved(task)
         }
     }
 
-    protected fun triggerOnTaskRemoved(task: Task) {
+    protected fun onTaskRemoved(task: Task) {
+        task.removeTaskStatusListener(this)
+        triggerOnTaskRemoved(task)
+    }
+
+    private fun triggerOnTaskRemoved(task: Task) {
         checkHandlerThread()
 
         for (listener in listeners) {

@@ -4,7 +4,7 @@ import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater
 import com.aglushkov.taskmanager_http.loader.transport.TaskTransport
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask
 
-class TransportTask : SimpleTask, TaskTransport.Listener {
+open class TransportTask : SimpleTask, TaskTransport.Listener {
     private var _transport: TaskTransport? = null
     var transport: TaskTransport
         get() {
@@ -46,8 +46,6 @@ class TransportTask : SimpleTask, TaskTransport.Listener {
                 taskResult = d
             }
         }
-
-        private.handleTaskCompletion()
     }
 
     fun setError(error: Exception) {

@@ -169,7 +169,7 @@ class TaskManagerTestSet {
         // Arrange
         val listener = mock<Task.Callback>()
         val task = TestTasks.createTestTaskSpy("taskId")
-        task.taskCallback = listener
+        task.finishCallback = listener
 
         val taskProvider = createTaskProviderMock("provider", taskManager)
         `when`(taskProvider.getTasks()).doReturn(listOf(task))
@@ -257,8 +257,8 @@ class TaskManagerTestSet {
         val callback1 = mock<Task.Callback>()
         val callback2 = mock<Task.Callback>()
 
-        task1.taskCallback = callback1
-        task2.taskCallback = callback2
+        task1.finishCallback = callback1
+        task2.finishCallback = callback2
 
         val listener = mock<TaskManager.Listener>()
 
@@ -270,7 +270,7 @@ class TaskManagerTestSet {
         task1.finish() // simulate task completion
         this.controller?.resumeTaskRunning()
 
-        assertEquals(Task.Status.Finished, task1.taskStatus)
+        assertEquals(Task.Status.Completed, task1.taskStatus)
         verify(listener).onTaskAdded(taskManager, task1, true)
         verify(listener).onTaskRemoved(taskManager, task1, true)
 
@@ -288,7 +288,7 @@ class TaskManagerTestSet {
         this.controller?.pauseTaskRunning()
         val task = TestTask()
         val callback = mock<Task.Callback>()
-        task.taskCallback = callback
+        task.finishCallback = callback
 
         val listener = mock<TaskManager.Listener>()
 
@@ -299,7 +299,7 @@ class TaskManagerTestSet {
         this.controller?.resumeTaskRunning()
 
         // Verify
-        assertEquals(Task.Status.Finished, task.taskStatus)
+        assertEquals(Task.Status.Completed, task.taskStatus)
         verify(listener, never()).onTaskAdded(taskManager, task, false)
         verify(listener, never()).onTaskRemoved(taskManager, task, false)
         verify(listener).onTaskAdded(taskManager, task, true)
@@ -412,7 +412,7 @@ class TaskManagerTestSet {
 
         val task = TestTasks.createTestTaskSpy("taskId")
         val callback = mock<Task.Callback>()
-        task.taskCallback = callback
+        task.finishCallback = callback
 
         taskManager.addListener(listener)
 
@@ -422,7 +422,7 @@ class TaskManagerTestSet {
         this.controller?.resumeTaskRunning()
 
         // Verify
-        assertEquals(Task.Status.Finished, task.taskStatus)
+        assertEquals(Task.Status.Completed, task.taskStatus)
         verify(listener).onTaskRemoved(taskManager, task, true)
         verify(callback).onCompleted(false)
     }
@@ -437,7 +437,7 @@ class TaskManagerTestSet {
         `when`(task.canBeCancelledImmediately()).thenReturn(true)
 
         val callback = mock<Task.Callback>()
-        task.taskCallback = callback
+        task.finishCallback = callback
 
         taskManager.addListener(listener)
 
@@ -544,7 +544,7 @@ class TaskManagerTestSet {
 
         // Act
         taskManager.addTask(testTask)
-        testTask.private.taskStatus = Task.Status.Finished
+        testTask.private.taskStatus = Task.Status.Completed
 
         // Verify
         assertEquals(0, taskManager.getTaskCount())
@@ -571,7 +571,7 @@ class TaskManagerTestSet {
         val taskProvider = createTaskProviderMock("0", taskManager)
         val taskCallback = mock<Task.Callback>()
         val testTask = TestTasks.createTestTaskSpy("taskId")
-        testTask.taskCallback = taskCallback
+        testTask.finishCallback = taskCallback
 
         `when`(taskProvider.getTopTask()).doReturn(testTask)
         `when`(taskProvider.takeTopTask()).doReturn(testTask)
@@ -589,7 +589,7 @@ class TaskManagerTestSet {
         val taskProvider = createTaskProviderMock("0", taskManager)
         val taskCallback = mock<Task.Callback>()
         val testTask = TestTasks.createTestTaskSpy("taskId")
-        testTask.taskCallback = taskCallback
+        testTask.finishCallback = taskCallback
 
         `when`(taskProvider.getTopTask()).doReturn(testTask)
         `when`(taskProvider.takeTopTask()).doReturn(testTask)
@@ -607,7 +607,7 @@ class TaskManagerTestSet {
         val taskProvider = createTaskProviderMock("0", taskManager)
         val taskCallback = mock<Task.Callback>()
         val testTask = TestTasks.createTestTaskSpy("taskId")
-        testTask.taskCallback = taskCallback
+        testTask.finishCallback = taskCallback
         val cancelInfo = "info"
 
         // Act
@@ -627,7 +627,7 @@ class TaskManagerTestSet {
         val taskProvider = createTaskProviderMock("0", taskManager)
         val taskCallback = mock<Task.Callback>()
         val testTask = TestTasks.createTestTaskSpy("taskId")
-        testTask.taskCallback = taskCallback
+        testTask.finishCallback = taskCallback
         val cancelInfo = "info"
 
         `when`(taskProvider.getTopTask()).doReturn(testTask)

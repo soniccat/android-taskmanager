@@ -24,7 +24,6 @@ class MaybeTask<T>(private val maybe: Maybe<T>) : TaskImpl() {
         }, { finishedFlag.set(true) })
 
         Assert.assertTrue("MaybeTask: Maybe must be a sync task", finishedFlag.get())
-        private.handleTaskCompletion()
     }
 
     override fun cancelTask(info: Any?) {

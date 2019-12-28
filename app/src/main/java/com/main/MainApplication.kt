@@ -67,7 +67,6 @@ class MainApplication : Application() {
             override suspend fun startTask() {
                 val cleaner: StorageCleaner = SimpleStorageCleaner()
                 cleaner.clean(storage)
-                private.handleTaskCompletion()
             }
         }
         taskManager.addTask(cleanTask)

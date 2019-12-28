@@ -27,7 +27,5 @@ class FileKeepTask<T>(private val fileName: String,
             e.printStackTrace()
             taskError = Exception("FileKeepTask exception: " + e.message)
         }
-
-        private.handleTaskCompletion()
     }
 }

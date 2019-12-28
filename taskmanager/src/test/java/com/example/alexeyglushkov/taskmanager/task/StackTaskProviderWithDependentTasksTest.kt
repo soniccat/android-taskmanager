@@ -1,12 +1,9 @@
 package com.example.alexeyglushkov.taskmanager.task
 
-import android.os.Handler
-import android.os.Looper
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
-import kotlinx.coroutines.test.TestCoroutineScope
 
 import org.junit.Before
 import org.junit.Test
@@ -52,7 +49,7 @@ class StackTaskProviderWithDependentTasksTest {
 
         // Verify
         verify(listener, never()).onTaskAdded(providerMock, testTask2)
-        testTask1.private.taskStatus = Task.Status.Finished
+        testTask1.private.taskStatus = Task.Status.Completed
 
         verify(listener).onTaskAdded(providerMock, testTask2)
         assertEquals(1, taskProvider.getTaskCount())
@@ -75,7 +72,7 @@ class StackTaskProviderWithDependentTasksTest {
         // Verify
         assertEquals(testTask1, task1)
         assertNull(task2)
-        testTask1.private.taskStatus = Task.Status.Finished
+        testTask1.private.taskStatus = Task.Status.Completed
 
         assertEquals(1, taskProvider.getTaskCount())
     }
@@ -98,7 +95,7 @@ class StackTaskProviderWithDependentTasksTest {
         // Verify
         assertEquals(testTask1, task1)
         assertNull(task2)
-        testTask1.private.taskStatus = Task.Status.Finished
+        testTask1.private.taskStatus = Task.Status.Completed
 
         assertEquals(1, taskProvider.getTaskCount())
     }

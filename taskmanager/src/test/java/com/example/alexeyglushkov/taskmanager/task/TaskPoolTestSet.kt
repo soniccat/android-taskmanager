@@ -1,6 +1,5 @@
 package com.example.alexeyglushkov.taskmanager.task
 
-import android.os.Handler
 import android.os.HandlerThread
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
@@ -237,7 +236,7 @@ open class TaskPoolTestSet {
 
         // Act
         taskPoolMock.addTask(testTask)
-        testTask.private.taskStatus = Task.Status.Finished
+        testTask.private.taskStatus = Task.Status.Completed
 
         // Verify
         assertEquals(0, taskPool.getTaskCount())

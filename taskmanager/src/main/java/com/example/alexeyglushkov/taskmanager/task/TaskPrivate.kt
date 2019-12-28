@@ -74,18 +74,11 @@ interface TaskPrivate : Task {
     //
     fun triggerProgressListeners(progressInfo: ProgressInfo)
 
-    // Call the taskCallback
-    //
-    // Caller: Task
-    //
-    //TODO: just call start callback inside
-    fun handleTaskCompletion()
-
     // To keep the result
     //
     // Caller: Task
     //
-    override var taskResult: Any?
+    override var taskResult: Any? // TODO: use generic type
 
     // To reset loaded data and states to load it again
     //

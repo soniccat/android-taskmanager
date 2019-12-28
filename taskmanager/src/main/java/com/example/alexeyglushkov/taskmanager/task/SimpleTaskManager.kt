@@ -6,6 +6,8 @@ import android.os.Looper
 
 import android.util.Log
 import androidx.annotation.WorkerThread
+import com.example.alexeyglushkov.streamlib.progress.ProgressInfo
+import com.example.alexeyglushkov.streamlib.progress.ProgressListener
 
 import com.example.alexeyglushkov.tools.CancelError
 import com.example.alexeyglushkov.tools.HandlerTools
@@ -57,7 +59,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     private lateinit var waitingTasks: TaskProvider
 
     private var taskToJobMap = HashMap<Task, Job>()
-    private var taskToCallbackMap = HashMap<Task, Task.Callback?>() // keep original callbacks
 
     private lateinit var _taskProviders: SafeList<TaskProvider>
     override val taskProviders: List<TaskProvider>
@@ -441,10 +442,12 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
                 newTask.addTaskDependency(currentTask)
                 currentTask
             }
-            Task.LoadPolicy.CompleWhenAlreadyAddedCompletes -> {
+            Task.LoadPolicy.CompleteWhenAlreadyAddedCompletes -> {
                 logTask(newTask, "Conflict: this task will complete with the current task")
                 logTask(currentTask, "Conflict: the current task")
+
                 newTask.addTaskDependency(currentTask)
+                connectTaskCompletions(newTask, currentTask)
                 currentTask
             }
             Task.LoadPolicy.CancelPreviouslyAdded -> {
@@ -460,6 +463,31 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
                 currentTask
             }
         }
+    }
+
+    // completes aTask when toTask completes with setting taskResult
+    // syncs progress state too
+    private fun connectTaskCompletions(aTask: Task, toTask: Task) {
+        toTask.addTaskProgressListener(object : ProgressListener {
+            override fun onProgressChanged(sender: Any?, progressInfo: ProgressInfo?) {
+                progressInfo?.let {
+                    aTask as TaskBase
+                    aTask.private.triggerProgressListeners(progressInfo)
+                }
+            }
+        })
+
+        toTask.addTaskStatusListener(object : Task.StatusListener {
+            override fun onTaskStatusChanged(task: Task, oldStatus: Task.Status, newStatus: Task.Status) {
+                if (Tasks.isTaskFinished(task)) {
+                    toTask.removeTaskStatusListener(this)
+
+                    aTask as TaskBase
+                    aTask.private.taskResult = toTask.taskResult
+                    handleTaskFinishOnThread(aTask, false)
+                }
+            }
+        })
     }
 
     @WorkerThread
@@ -519,7 +547,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
             val job = SupervisorJob()
             taskToJobMap.put(task, job)
-            taskToCallbackMap.put(task, task.taskCallback)
 
             var isCancelled = false
             withContext(taskScope.coroutineContext + job) {
@@ -532,9 +559,8 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
             logTask(task, "Task onCompleted" + if (isCancelled) " (Cancelled)" else "")
             taskToJobMap.remove(task)
-            taskToCallbackMap[task] = null
             if (!isCancelled) {
-                handleTaskCompletionOnThread(task, false)
+                handleTaskFinishOnThread(task, false)
             }
         }
     }
@@ -548,11 +574,11 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     @WorkerThread
-    private fun handleTaskCompletionOnThread(task: Task, isCancelled: Boolean) {
+    private fun handleTaskFinishOnThread(task: Task, isCancelled: Boolean) {
         if (task !is TaskBase) { assert(false); return }
         threadRunner.checkThread()
 
-        val status = if (isCancelled) Task.Status.Cancelled else Task.Status.Finished
+        val status = if (isCancelled) Task.Status.Cancelled else Task.Status.Completed
         if (isCancelled) {
             task.private.taskError = CancelError()
         }
@@ -562,19 +588,17 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         task.private.taskStatus = status
         task.private.clearAllListeners()
 
-        taskToCallbackMap[task]?.let {
-            task.taskCallback = taskToCallbackMap[task] // return original callback
-        }
-
         // TODO: use callback scope
-        HandlerTools.runOnHandlerThread(callbackHandler) {
-            task.taskCallback?.onCompleted(isCancelled)
+        task.finishCallback?.let { finishCallback ->
+            HandlerTools.runOnHandlerThread(callbackHandler) {
+                finishCallback.onCompleted(isCancelled)
+            }
         }
 
         //TODO: for another status like cancelled new task won't be started
         //but we cant't just call checkTasksToRunOnThread because of Task.LoadPolicy.CancelAdded
         //because we want to have new task already in waiting queue but now it isn't
-        if (status == Task.Status.Finished) {
+        if (status == Task.Status.Completed) {
             checkTasksToRunOnThread()
         }
     }
@@ -584,20 +608,20 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         if (task !is TaskBase) { assert(false); return }
         threadRunner.checkThread()
 
-        if (!task.private.needCancelTask && !Tasks.isTaskCompleted(task)) {
+        if (!task.private.needCancelTask && !Tasks.isTaskFinished(task)) {
             val st = task.taskStatus
             task.private.cancelTask(info)
 
             val job = taskToJobMap.get(task)
             val canBeCancelledImmediately = task.private.canBeCancelledImmediately()
             if (Tasks.isTaskReadyToStart(task)) {
-                handleTaskCompletionOnThread(task, true)
+                handleTaskFinishOnThread(task, true)
                 logTask(task, "Cancelled")
 
             } else if (canBeCancelledImmediately) {
                 if (st == Task.Status.Started) {
                     if (canBeCancelledImmediately) {
-                        handleTaskCompletionOnThread(task, true)
+                        handleTaskFinishOnThread(task, true)
                         logTask(task, "Immediately Cancelled")
 
                         if (job != null) {
