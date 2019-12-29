@@ -1,6 +1,5 @@
 package com.example.alexeyglushkov.taskmanager.task
 
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.TestCoroutineExceptionHandler
 import kotlinx.coroutines.test.TestCoroutineScope
@@ -60,13 +59,43 @@ class SimpleTaskManagerTest {
     }
 
     @Test
-    fun testAddTheSameTaskWithSkipPolicy() {
-        taskManagerTestSet.addTheSameTaskWithSkipPolicy()
+    fun addTaskTwiceWithSameIdWithSkipPolicyAtStart() {
+        taskManagerTestSet.addTaskTwiceWithSameIdWithSkipPolicyAtStart()
     }
 
     @Test
-    fun testAddTheSameTaskWithCancelPolicy() {
-        taskManagerTestSet.addTheSameTaskWithCancelPolicy()
+    fun addTaskTwiceWithSameIdWithSkipPolicyAtEnd() {
+        taskManagerTestSet.addTaskTwiceWithSameIdWithSkipPolicyAtEnd()
+    }
+
+    @Test
+    fun addTaskTwiceWithSameIdWithCancelPolicyAtStart() {
+        taskManagerTestSet.addTaskTwiceWithSameIdWithCancelPolicyAtStart()
+    }
+
+    @Test
+    fun addTaskTwiceWithSameIdWithCancelPolicyAtEnd() {
+        taskManagerTestSet.addTaskTwiceWithSameIdWithCancelPolicyAtEnd()
+    }
+
+    @Test
+    fun addTaskTwiceWithSameIdWithAddDependencyPolicy() {
+        taskManagerTestSet.addTaskTwiceWithSameIdWithAddDependencyPolicyAtStart()
+    }
+
+    @Test
+    fun addTaskTwiceWithSameIdWithAddDependencyPolicyAtEnd() {
+        taskManagerTestSet.addTaskTwiceWithSameIdWithAddDependencyPolicyAtEnd()
+    }
+
+    @Test
+    fun addTaskTwiceWithSameIdWithCompletePolicyAtStart() {
+        taskManagerTestSet.addTaskTwiceWithSameIdWithCompletePolicyAtStart()
+    }
+
+    @Test
+    fun addTaskTwiceWithSameIdWithCompletePolicyAtEnd() {
+        taskManagerTestSet.addTaskTwiceWithSameIdWithCompletePolicyAtEnd()
     }
 
     @Test

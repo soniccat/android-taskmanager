@@ -49,7 +49,7 @@ open class TaskPoolTestSet {
         assertTrue(taskPool.getTasks().contains(task))
     }
 
-    fun addTaskAddStatusListener() {
+    fun addTaskCallsAddStatusListener() {
         // Arrange
         val task = spy(TestTask())
 
@@ -58,6 +58,18 @@ open class TaskPoolTestSet {
 
         // Verify
         verify<Task>(task).addTaskStatusListener(taskPool)
+    }
+
+    fun removeTaskCallsRemoveTaskStatusListener() {
+        // Arrange
+        val task = spy(TestTask())
+
+        // Act
+        taskPool.addTask(task)
+        taskPool.removeTask(task)
+
+        // Verify
+        verify<Task>(task).removeTaskStatusListener(taskPool)
     }
 
     fun addStartedTask() {

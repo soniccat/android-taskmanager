@@ -1,9 +1,5 @@
 package com.example.alexeyglushkov.taskmanager.task
 
-import android.os.Handler
-import android.os.Looper
-import kotlinx.coroutines.test.TestCoroutineScope
-
 import org.junit.Before
 import org.junit.Test
 
@@ -95,8 +91,13 @@ open class StackTaskProviderTest {
     }
 
     @Test
-    fun testAddTaskAddStatusListener() {
-        poolTest.addTaskAddStatusListener()
+    fun addTaskCallsAddStatusListener() {
+        poolTest.addTaskCallsAddStatusListener()
+    }
+
+    @Test
+    fun removeTaskCallsRemoveTaskStatusListener() {
+        poolTest.removeTaskCallsRemoveTaskStatusListener()
     }
 
     @Test

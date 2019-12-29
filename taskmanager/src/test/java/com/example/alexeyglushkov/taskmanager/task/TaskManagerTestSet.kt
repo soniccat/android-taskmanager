@@ -347,7 +347,7 @@ class TaskManagerTestSet {
         assertFalse(taskManager.getTasks().contains(task))
     }
 
-    fun addTheSameTaskWithSkipPolicy() {
+    fun addTaskTwiceWithSameIdWithSkipPolicyAtStart() {
         // Arrange
         setCanAddMoreTasks(taskManager)
         this.controller?.pauseTaskRunning()
@@ -379,7 +379,30 @@ class TaskManagerTestSet {
         assertTrue(taskManager.getTasks().contains(task1))
     }
 
-    fun addTheSameTaskWithCancelPolicy() {
+    fun addTaskTwiceWithSameIdWithSkipPolicyAtEnd() {
+        // Arrange
+        setCanAddMoreTasks(taskManager)
+        this.controller?.pauseTaskRunning()
+        val listener = mock<TaskManager.Listener>()
+
+        val task1 = TestTasks.createTestTaskSpy("taskId")
+        val task2 = TestTasks.createTestTaskSpy("taskId")
+        task2.loadPolicy = Task.LoadPolicy.SkipIfAlreadyAdded
+
+        // Act
+        taskManager.addListener(listener)
+        taskManager.addTask(task1)
+        taskManager.addTask(task2)
+        controller?.resumeTaskRunning()
+
+        // Verify
+        assertEquals(Task.Status.Completed, task1.taskStatus)
+        assertEquals(Task.Status.Cancelled, task2.taskStatus)
+
+        assertEquals(taskManager.getTaskCount(), 0)
+    }
+
+    fun addTaskTwiceWithSameIdWithCancelPolicyAtStart() {
         // Arrange
         setCanAddMoreTasks(taskManager)
         this.controller?.pauseTaskRunning()
@@ -401,6 +424,118 @@ class TaskManagerTestSet {
         assertEquals(taskManager.getTaskCount(), 2)
         assertTrue(taskManager.getTasks().contains(task1))
         assertTrue(taskManager.getTasks().contains(task2))
+    }
+
+    fun addTaskTwiceWithSameIdWithCancelPolicyAtEnd() {
+        // Arrange
+        setCanAddMoreTasks(taskManager)
+        this.controller?.pauseTaskRunning()
+        val task1 = TestTasks.createTestTaskSpy("taskId")
+        `when`(task1.canBeCancelledImmediately()).thenReturn(true)
+
+        val task2 = TestTasks.createTestTaskSpy("taskId")
+        task2.loadPolicy = Task.LoadPolicy.CancelPreviouslyAdded
+
+        // Act
+        taskManager.addTask(task1)
+        taskManager.addTask(task2)
+        controller?.resumeTaskRunning()
+
+        // Verify
+        assertEquals(Task.Status.Cancelled, task1.taskStatus)
+        assertEquals(Task.Status.Completed, task2.taskStatus)
+
+        assertEquals(taskManager.getTaskCount(), 0)
+    }
+
+    fun addTaskTwiceWithSameIdWithAddDependencyPolicyAtStart() {
+        // Arrange
+        setCanAddMoreTasks(taskManager)
+        this.controller?.pauseTaskRunning()
+        val task1 = TestTasks.createTestTaskSpy("taskId")
+        val task2 = TestTasks.createTestTaskSpy("taskId")
+        task2.loadPolicy = Task.LoadPolicy.AddDependencyIfAlreadyAdded
+
+        // Act
+        taskManager.addTask(task1)
+        taskManager.addTask(task2)
+
+        // Verify
+        assertEquals(Task.Status.Started, task1.taskStatus)
+        assertFalse(task1.private.needCancelTask)
+
+        assertEquals(Task.Status.Waiting, task2.taskStatus)
+        assertFalse(task2.private.needCancelTask)
+        verify(task2).addTaskDependency(task1)
+
+        assertEquals(taskManager.getTaskCount(), 2)
+        assertTrue(taskManager.getTasks().contains(task1))
+        assertTrue(taskManager.getTasks().contains(task2))
+    }
+
+    fun addTaskTwiceWithSameIdWithAddDependencyPolicyAtEnd() {
+        // Arrange
+        setCanAddMoreTasks(taskManager)
+        this.controller?.pauseTaskRunning()
+        val task1 = TestTasks.createTestTaskSpy("taskId")
+        val task2 = TestTasks.createTestTaskSpy("taskId")
+        task2.loadPolicy = Task.LoadPolicy.AddDependencyIfAlreadyAdded
+
+        // Act
+        taskManager.addTask(task1)
+        taskManager.addTask(task2)
+        this.controller?.resumeTaskRunning()
+
+        // Verify
+        assertEquals(Task.Status.Completed, task1.taskStatus)
+        assertEquals(Task.Status.Completed, task2.taskStatus)
+
+        assertEquals(taskManager.getTaskCount(), 0)
+    }
+
+    fun addTaskTwiceWithSameIdWithCompletePolicyAtStart() {
+        // Arrange
+        setCanAddMoreTasks(taskManager)
+        this.controller?.pauseTaskRunning()
+        val task1 = TestTasks.createTestTaskSpy("taskId")
+        val task2 = TestTasks.createTestTaskSpy("taskId")
+        task2.loadPolicy = Task.LoadPolicy.CompleteWhenAlreadyAddedCompletes
+
+        // Act
+        taskManager.addTask(task1)
+        taskManager.addTask(task2)
+
+        // Verify
+        assertEquals(Task.Status.Started, task1.taskStatus)
+        assertFalse(task1.private.needCancelTask)
+
+        assertEquals(Task.Status.Waiting, task2.taskStatus)
+        assertFalse(task2.private.needCancelTask)
+        verify(task2).addTaskDependency(task1)
+
+        assertEquals(taskManager.getTaskCount(), 2)
+        assertTrue(taskManager.getTasks().contains(task1))
+        assertTrue(taskManager.getTasks().contains(task2))
+    }
+
+    fun addTaskTwiceWithSameIdWithCompletePolicyAtEnd() {
+        // Arrange
+        setCanAddMoreTasks(taskManager)
+        this.controller?.pauseTaskRunning()
+        val task1 = TestTasks.createTestTaskSpy("taskId")
+        val task2 = TestTasks.createTestTaskSpy("taskId")
+        task2.loadPolicy = Task.LoadPolicy.CompleteWhenAlreadyAddedCompletes
+
+        // Act
+        taskManager.addTask(task1)
+        taskManager.addTask(task2)
+        controller?.resumeTaskRunning()
+
+        // Verify
+        assertEquals(Task.Status.Completed, task1.taskStatus)
+        assertEquals(Task.Status.Completed, task2.taskStatus)
+
+        assertEquals(taskManager.getTaskCount(), 0)
     }
 
     fun taskCallbackCalled() {

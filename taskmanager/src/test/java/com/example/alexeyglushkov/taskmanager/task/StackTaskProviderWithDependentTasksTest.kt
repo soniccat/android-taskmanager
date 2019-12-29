@@ -155,8 +155,13 @@ class StackTaskProviderWithDependentTasksTest {
     }
 
     @Test
-    fun testAddTaskAddStatusListener() {
-        poolTest.addTaskAddStatusListener()
+    fun addTaskCallsAddStatusListener() {
+        poolTest.addTaskCallsAddStatusListener()
+    }
+
+    @Test
+    fun removeTaskCallsRemoveTaskStatusListener() {
+        poolTest.removeTaskCallsRemoveTaskStatusListener()
     }
 
     @Test

@@ -1,15 +1,10 @@
 package com.example.alexeyglushkov.taskmanager.task
 
-import android.os.Handler
-import android.os.Looper
 import com.nhaarman.mockitokotlin2.mock
-import kotlinx.coroutines.test.TestCoroutineScope
 
 import org.junit.Before
 import org.junit.Test
 import org.junit.Assert.*
-
-import java.util.Arrays
 
 /**
  * Created by alexeyglushkov on 09.08.15.
@@ -164,8 +159,13 @@ open class PriorityTaskProviderTest {
     }
 
     @Test
-    fun testAddTaskAddStatusListener() {
-        poolTestSet.addTaskAddStatusListener()
+    fun addTaskCallsAddStatusListener() {
+        poolTestSet.addTaskCallsAddStatusListener()
+    }
+
+    @Test
+    fun removeTaskCallsRemoveTaskStatusListener() {
+        poolTestSet.removeTaskCallsRemoveTaskStatusListener()
     }
 
     @Test

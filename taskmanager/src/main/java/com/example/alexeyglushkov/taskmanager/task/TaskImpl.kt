@@ -110,8 +110,6 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
     }
 
     override fun addTaskProgressListener(listener: ProgressListener) {
-        checkMainThread()
-
         progressListeners.add(WeakReference(listener))
     }
 

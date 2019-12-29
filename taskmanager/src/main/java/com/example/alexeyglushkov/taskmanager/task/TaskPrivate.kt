@@ -14,7 +14,7 @@ import java.util.Date
 interface TaskPrivate : Task {
     val needCancelTask: Boolean
 
-    // Get dependencies
+    // List of tasks which should be finished before starting this task
     //
     // Caller: TaskManager
     //
