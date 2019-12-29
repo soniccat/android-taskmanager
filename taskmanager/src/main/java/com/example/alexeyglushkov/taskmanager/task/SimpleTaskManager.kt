@@ -435,6 +435,8 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     @WorkerThread
     private fun resolveTaskConflict(newTask: Task, currentTask: Task): Task {
+        threadRunner.checkThread()
+
         return when (newTask.loadPolicy) {
             Task.LoadPolicy.AddDependencyIfAlreadyAdded -> {
                 logTask(newTask, "Conflict: wait until the current task finishes")
@@ -467,6 +469,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     // completes aTask when toTask completes with setting taskResult
     // syncs progress state too
+    @WorkerThread
     private fun connectTaskCompletions(aTask: Task, toTask: Task) {
         toTask.addTaskProgressListener(object : ProgressListener {
             override fun onProgressChanged(sender: Any?, progressInfo: ProgressInfo?) {

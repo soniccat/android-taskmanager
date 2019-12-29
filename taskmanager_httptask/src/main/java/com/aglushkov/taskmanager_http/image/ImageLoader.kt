@@ -34,7 +34,7 @@ class ImageLoader {
             bindOnTaskCompletion(transportTask, image)
         //}
 
-        // TODO: need to check case when a task was refused by a tak provider
+        // TODO: need to check case when a task was refused by a task provider
         // maybe it's ok to set waiting on a scope's thread, to be able to bind on that before adding
         // and handle it in bindOnTaskCompletion listener
         Assert.assertEquals(Looper.myLooper(), Looper.getMainLooper())

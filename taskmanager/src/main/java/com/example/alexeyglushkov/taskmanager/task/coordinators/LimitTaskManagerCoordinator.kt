@@ -114,6 +114,7 @@ class LimitTaskManagerCoordinator(maxLoadingTasks: Int): TaskManagerCoordinator 
     fun removeListener(listener: Listener) {
         listeners.removeValue(listener)
     }
+
     fun addListener(listener: Listener) {
         listeners.add(WeakReference(listener))
     }

@@ -101,7 +101,7 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
 
     @WorkerThread
     override fun removeTaskStatusListener(listener: Task.StatusListener) {
-        for (i in statusListeners.indices) {
+        for (i in 0 until statusListeners.size) {
             if (statusListeners[i] === listener) {
                 statusListeners.removeAt(i)
                 break
@@ -129,6 +129,7 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
         }
     }
 
+    @WorkerThread
     override fun clearAllListeners() {
         statusListeners.clear()
 
@@ -179,6 +180,7 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
         })
     }
 
+    @WorkerThread
     private fun triggerStatusListeners(oldStatus: Task.Status, newStatus: Task.Status) {
         if (oldStatus != newStatus) {
             for (l in statusListeners) {

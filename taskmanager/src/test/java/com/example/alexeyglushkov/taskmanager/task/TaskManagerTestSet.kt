@@ -206,8 +206,8 @@ class TaskManagerTestSet {
 
     fun startImmediately() {
         // Arrange
-        val task = TestTasks.createTaskMock()
-        val taskPrivate = task.private
+        this.controller?.pauseTaskRunning()
+        val task = TestTask()
         val listener = mock<TaskManager.Listener>()
 
         // Act
@@ -215,7 +215,7 @@ class TaskManagerTestSet {
         taskManager.startImmediately(task)
 
         // Verify
-        verify(taskPrivate).taskStatus = Task.Status.Started
+        assertEquals(Task.Status.Started, task.taskStatus)
         verify(listener, never()).onTaskAdded(taskManager, task, false)
         verify(listener, never()).onTaskRemoved(taskManager, task, false)
         verify(listener).onTaskAdded(taskManager, task, true)
@@ -311,16 +311,17 @@ class TaskManagerTestSet {
     fun addTask() {
         // Arrange
         setCanAddMoreTasks(taskManager)
-        val task = TestTasks.createTaskMock()
+        controller?.pauseTaskRunning()
+        val task = TestTask()
         val listener = mock<TaskManager.Listener>()
-        val taskPrivate = task.private
 
         // Act
         taskManager.addListener(listener)
         taskManager.addTask(task)
 
         // Verify
-        verify(taskPrivate, atLeast(1)).taskStatus = Task.Status.Waiting
+        assertEquals(Task.Status.Started, task.taskStatus)
+        //verify(taskPrivate, atLeast(1)).taskStatus = Task.Status.Completed
         verify(listener).onTaskAdded(taskManager, task, false)
         verify(listener).onTaskAdded(taskManager, task, true)
 
@@ -332,14 +333,13 @@ class TaskManagerTestSet {
         // Arrange
         val task = TestTasks.createTaskMock(null, Task.Status.Started)
         val listener = mock<TaskManager.Listener>()
-        val taskPrivate = task.private
 
         // Act
         taskManager.addListener(listener)
         taskManager.addTask(task)
 
         // Verify
-        verify(taskPrivate, never()).taskStatus = Task.Status.Waiting
+        assertEquals(Task.Status.Started, task.taskStatus)
         verify(task, never()).addTaskStatusListener(taskManager)
         verify(listener, never()).onTaskAdded(taskManager, task, true)
         verify(listener, never()).onTaskAdded(taskManager, task, false)
@@ -540,11 +540,11 @@ class TaskManagerTestSet {
 
     fun checkTaskRemovingAfterFinishing() {
         // Arrange
+        setCanAddMoreTasks(taskManager)
         val testTask = TestTask()
 
         // Act
         taskManager.addTask(testTask)
-        testTask.private.taskStatus = Task.Status.Completed
 
         // Verify
         assertEquals(0, taskManager.getTaskCount())
@@ -647,6 +647,7 @@ class TaskManagerTestSet {
 
     // Tools
 
+    // Simulate the situation when a task coordinator allows running more tasks
     private fun setCanAddMoreTasks(taskManager: TaskManager) {
         (taskManager.taskManagerCoordinator as TestTaskManagerCoordinator).canAddMoreTasks = true
     }
@@ -684,7 +685,7 @@ class TaskManagerTestSet {
     }
 
     interface TaskManagerController {
-        fun pauseTaskRunning()
+        fun pauseTaskRunning() // Simulate the situation when a task is started and is executing
         fun resumeTaskRunning()
     }
 }
