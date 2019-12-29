@@ -78,24 +78,13 @@ class MainRssViewModel(application: MainApplication): AndroidViewModel(applicati
 
     private fun loadRssFeed(url: URL) {
         viewModelScope.launch {
-            var feed: RssFeed? = null
             try {
                 val cmd = rssRepository.loadRssFeed(url, null)
-                feed = cmd.await()?.data()
+                cmd.await()?.data()
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 postError(R.string.load_error)
-            }
-
-            try {
-                feed?.let {
-                    rssRepository.addFeed(it)
-                }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                postError(R.string.save_error)
             }
         }
     }

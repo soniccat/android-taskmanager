@@ -49,7 +49,9 @@ class RssFeedRepository(val service: RssFeedService, storage: Storage) {
         val liveData = getFeedLiveData(url)
         val job = scope.launch {
             liveData.load {
-                service.loadRss(url, progressListener)
+                val feed = service.loadRss(url, progressListener)
+                addFeed(feed)
+                feed
             }
         }
 
