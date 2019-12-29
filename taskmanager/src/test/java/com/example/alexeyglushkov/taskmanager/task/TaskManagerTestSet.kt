@@ -267,7 +267,6 @@ class TaskManagerTestSet {
         taskManager.addTask(task1)
         taskManager.startImmediately(task2)
 
-        task1.finish() // simulate task completion
         this.controller?.resumeTaskRunning()
 
         assertEquals(Task.Status.Completed, task1.taskStatus)

@@ -142,6 +142,7 @@ interface Task : TaskContainer {
         CancelPreviouslyAdded, // cancel already added task, in this case you shouldn't do anything with cancelled task
         AddDependencyIfAlreadyAdded, // wait until the current task finishes to start this task
         CompleteWhenAlreadyAddedCompletes // immediately complete with the result of the current task
+        // TODO: add JustLoad policy which works like no id is set
     }
 
     // TODO: pass Error to get to know that the task was cancelled or an error happened

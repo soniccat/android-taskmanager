@@ -44,7 +44,7 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
         protected set
 
     // listeners are cleared in a TaskManager after task finishing or cancelling
-    protected var statusListeners = ArrayList<Task.StatusListener>()
+    protected var statusListeners = mutableListOf<Task.StatusListener>()
     protected var progressListeners = WeakRefList<ProgressListener>()
 
     protected var _taskStatus: Task.Status = Task.Status.NotStarted
@@ -54,7 +54,7 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
             val oldStatus = this.taskStatus
             _taskStatus = value
 
-            Log.d("TaskImpl", "setTaskStatus " + value + " " + taskId + " " + Thread.currentThread()) //TODO: CRASH: get concurrent access crash in triggerStatusListeners
+            Log.d("TaskImpl", "setTaskStatus " + value + " " + taskId + " " + Thread.currentThread())
             triggerStatusListeners(oldStatus, this.taskStatus)
         }
 
@@ -183,10 +183,8 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
     @WorkerThread
     private fun triggerStatusListeners(oldStatus: Task.Status, newStatus: Task.Status) {
         if (oldStatus != newStatus) {
-            for (l in statusListeners) {
-                if (l == null) {
-                    Log.d("aa", "sth went wrong")
-                }
+            val listeners = statusListeners.toList() // create a copy as the statusListeners might be modified in onTaskStatusChanged
+            for (l in listeners) {
                 l.onTaskStatusChanged(this@TaskImpl, oldStatus, newStatus)
             }
         }

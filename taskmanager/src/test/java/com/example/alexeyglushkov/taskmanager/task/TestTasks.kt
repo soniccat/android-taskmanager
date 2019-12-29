@@ -40,6 +40,7 @@ object TestTasks {
         testTask.taskId = id
         testTask.taskPriority = priority
         testTask.taskType = type
+        testTask.loadPolicy = Task.LoadPolicy.SkipIfAlreadyAdded
 
         `when`(testTask.private).thenReturn(testTask)
 

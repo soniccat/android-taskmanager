@@ -1,6 +1,8 @@
 package com.example.alexeyglushkov.taskmanager.task
 
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.TestCoroutineExceptionHandler
 import kotlinx.coroutines.test.TestCoroutineScope
 
 import org.junit.Before
@@ -20,7 +22,8 @@ class SimpleTaskManagerTest {
     @Throws(Exception::class)
     fun before() {
         val coordinator: TaskManagerCoordinator = TestTaskManagerCoordinator()
-        val scope = TestCoroutineScope()
+        val exceptionHandler = TestCoroutineExceptionHandler()
+        val scope = TestCoroutineScope(exceptionHandler)
 
         val taskScopeDispatcher = TestCoroutineDispatcher()
         val taskScope = TestCoroutineScope(taskScopeDispatcher)
