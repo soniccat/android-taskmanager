@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.alexeyglushkov.ext.getDrawableCompat
+import com.rssclient.model.RssFeed
 import com.rssclient.vm.RssItemView
 import kotlinx.android.synthetic.main.feed_cell.view.*
 
@@ -26,6 +27,8 @@ class RssFeedsAdapter(private val imageBinder: ImageBinder)
             }
         }
     }
+
+    var listener: Listener? = null
 
     override fun getItemViewType(position: Int): Int {
         return getItem(position).type
@@ -50,6 +53,10 @@ class RssFeedsAdapter(private val imageBinder: ImageBinder)
                 val item = data.firstItem()
                 holder.name?.text = item.name
                 holder.itemView.tag = item.hashCode()
+                holder.itemView.setOnLongClickListener {
+                    listener?.onLongPressed(item)
+                    return@setOnLongClickListener true
+                }
 
                 val placeholder = holder.itemView.context.getDrawableCompat(R.drawable.ic_launcher)
                 imageBinder.bind(holder.image!!, item.image, placeholder)
@@ -72,5 +79,9 @@ class RssFeedsAdapter(private val imageBinder: ImageBinder)
             name = view.name // TODO: switch to Google bindings instead of synthetic
             image = view.icon
         }
+    }
+
+    interface Listener {
+        fun onLongPressed(feed: RssFeed)
     }
 }

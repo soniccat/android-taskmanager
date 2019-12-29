@@ -2,48 +2,48 @@ package com.example.alexeyglushkov.cachemanager
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
 
 class ScopeStorageAdapter(private val storage: Storage, private val scope: CoroutineScope) : ScopeStorage {
     override suspend fun put(key: String, value: Any, metadata: StorageMetadata?) {
-        scope.async {
+        withContext(scope.coroutineContext) {
             storage.put(key, value, metadata)
-        }.await()
+        }
     }
 
     override suspend fun getValue(key: String): Any? {
-        return scope.async {
+        return withContext(scope.coroutineContext) {
             storage.getValue(key)
-        }.await()
+        }
     }
 
     override suspend fun getMetadata(key: String): StorageMetadata? {
-        return scope.async {
+        return withContext(scope.coroutineContext) {
             storage.getMetadata(key)
-        }.await()
+        }
     }
 
     override suspend fun remove(key: String) {
-        scope.async {
+        withContext(scope.coroutineContext) {
             storage.remove(key)
-        }.await()
+        }
     }
 
     override suspend fun getEntry(key: String): StorageEntry? {
-        return scope.async {
+        return withContext(scope.coroutineContext) {
             storage.getEntry(key)
-        }.await()
+        }
     }
 
     override suspend fun getEntries(): List<StorageEntry> {
-        return scope.async {
+        return withContext(scope.coroutineContext) {
             storage.getEntries()
-        }.await()
+        }
     }
 
     override suspend fun removeAll() {
-        scope.async {
+        withContext(scope.coroutineContext) {
             storage.removeAll()
-        }.await()
+        }
     }
-
 }

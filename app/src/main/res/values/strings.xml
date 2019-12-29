@@ -30,6 +30,7 @@
     <string name="ok">OK</string>
     <string name="error_title">Error</string>
     <string name="load_error">Can\'t load feed %s</string>
+    <string name="save_error">Save error</string>
 
     <string-array name="task_config_load_policy_values">
         <item>Skip If Added"</item>

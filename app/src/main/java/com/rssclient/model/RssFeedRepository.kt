@@ -10,6 +10,7 @@ import com.example.alexeyglushkov.cachemanager.ScopeStorageAdapter
 import com.example.alexeyglushkov.cachemanager.Storage
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener
 import kotlinx.coroutines.*
+import java.lang.RuntimeException
 import java.net.URL
 
 class RssFeedRepository(val service: RssFeedService, storage: Storage) {
@@ -57,20 +58,24 @@ class RssFeedRepository(val service: RssFeedService, storage: Storage) {
 
     suspend fun addFeed(feed: RssFeed) {
         val feeds = getFeeds()
-        val newFeeds = feeds + feed
-        getFeedsLiveData().value = Resource.Loaded(newFeeds)
-        save()
+        withContext(scope.coroutineContext) {
+            val newFeeds = feeds + feed
+            save(newFeeds)
+            getFeedsLiveData().postValue(Resource.Loaded(newFeeds))
+        }
     }
 
     suspend fun removeFeed(feed: RssFeed) {
         val feeds = getFeeds()
-        val newFeeds = feeds.filter { it != feed }
-        getFeedsLiveData().value = Resource.Loaded(newFeeds)
-        save()
+        withContext(scope.coroutineContext) {
+            val newFeeds = feeds.filter { it != feed }
+            save(newFeeds)
+            getFeedsLiveData().postValue(Resource.Loaded(newFeeds))
+        }
     }
 
-    private suspend fun save() {
-        storage.put("feeds", getFeeds(), null)
+    private suspend fun save(feeds: List<RssFeed>) {
+        storage.put("feeds", feeds, null)
     }
 
     private fun getFeeds(): List<RssFeed> {

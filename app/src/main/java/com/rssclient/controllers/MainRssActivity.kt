@@ -9,12 +9,15 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ActionMode
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aglushkov.taskmanager_http.image.Image
 import com.main.MainApplication
+import com.rssclient.model.RssFeed
 import com.rssclient.vm.MainRssViewModel
+import com.rssclient.vm.MainRssViewModelContract
 import com.rssclient.vm.RssItemView
 import com.rssclient.vm.showErrorDialog
 import kotlinx.coroutines.*
@@ -46,36 +49,6 @@ class MainRssActivity : AppCompatActivity() {
         this.listView = listView
 
         listView.layoutManager = LinearLayoutManager(listView.context, RecyclerView.VERTICAL, false)
-
-//        listView.onItemClickListener = OnItemClickListener { parent, view, position, id -> showFragmentActivityAtPos(position) }
-//
-//        listView.onItemLongClickListener = OnItemLongClickListener { parent, view, position, id ->
-//            startActionMode(object : ActionMode.Callback {
-//                override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
-//                    return false
-//                }
-//
-//                override fun onDestroyActionMode(mode: ActionMode) {}
-//                override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-//                    val inflater = mode.menuInflater
-//                    inflater.inflate(R.menu.action_menu, menu)
-//                    return true
-//                }
-//
-//                override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
-//                    lifecycleScope.launch {
-//                        whenStarted {
-//                            if (item.itemId == R.id.action_delete_feed) {
-//                                deleteItemAtPos(position)
-//                                mode.finish()
-//                            }
-//                        }
-//                    }
-//                    return false
-//                }
-//            })
-//            true
-//        }
     }
 
     override fun onDestroy() {
@@ -96,12 +69,25 @@ class MainRssActivity : AppCompatActivity() {
             }
         })
 
+        vm.eventLiveData.observe(this, Observer { event ->
+            event?.take()?.let {
+                handleEvent(event)
+            }
+        })
+
         vm.errorLiveData.observe(this, Observer { error ->
-            if (error == null || error.isHandled) return@Observer
-            error.take()?.let { event ->
+            error?.take()?.let { event ->
                 showErrorDialog(error)
             }
         })
+    }
+
+    private fun handleEvent(event: MainRssViewModelContract.Event) {
+        when (event) {
+            is MainRssViewModelContract.Event.ShowActionMode -> {
+                this.startActionMode(event.feed)
+            }
+        }
     }
 
     fun showFragmentActivityAtPos(pos: Int) {
@@ -124,13 +110,21 @@ class MainRssActivity : AppCompatActivity() {
                     this@MainRssActivity.vm.onLoadImageRequested(image, completion)
                 }
             })
-            adapter = RssFeedsAdapter(imageBinder)
+
+            adapter = RssFeedsAdapter(imageBinder).apply {
+                listener = object : RssFeedsAdapter.Listener {
+                    override fun onLongPressed(feed: RssFeed) {
+                        this@MainRssActivity.vm.onRssFeedLongPressed(feed)
+                    }
+                }
+            }
+
             adapter.submitList(data)
             safeListView.adapter = adapter
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean { // Inflate the menu; this adds items to the action bar if it is present.
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
         return true
     }
@@ -158,68 +152,53 @@ class MainRssActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    internal fun showAlertDialog(completion: ObjectCompletion<String>) {
+    private fun startActionMode(feed: RssFeed) {
+        startSupportActionMode(object : ActionMode.Callback {
+            override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+                return false
+            }
+
+            override fun onDestroyActionMode(mode: ActionMode) {}
+            override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+                val inflater = mode.menuInflater
+                inflater.inflate(R.menu.action_menu, menu)
+                return true
+            }
+
+            override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+                if (item.itemId == R.id.action_delete_feed) {
+                    deleteFeed(feed)
+                    mode.finish()
+                    return true
+                }
+                return false
+            }
+        })
+    }
+
+    private fun showAlertDialog(completion: ObjectCompletion<String>) {
         val builder = Builder(this)
         builder.setMessage("Type a feed url")
+
         val textView = EditText(this)
         textView.setText("https://www.lenta.ru/rss")
+
         builder.setView(textView)
         builder.setPositiveButton("Ok") { dialog, which ->
             println("Ok pressed")
             val string = textView.text.toString()
             completion.completed(string)
         }
+
         builder.setNegativeButton("Cancel") { dialog, which -> println("Cancel pressed") }
-        val dialog: Dialog = builder.create()
-        dialog.show()
+        builder.create().show()
     }
 
     private fun addRssFeed(url: URL) {
         vm.onAddRssFeedPressed(url)
     }
 
-    private suspend fun deleteItemAtPos(pos: Int) {
-//        val feed = rssRepository.getFeedsLiveData().value?.data()?.get(pos) ?: return
-//        rssRepository.removeFeed(feed)
-//        saveRssStorage()
-//
-//        val adapter = listView!!.adapter as FeedsAdapter
-//        adapter.remove(feed)
+    private fun deleteFeed(feed: RssFeed) {
+        vm.onRssFeedDelete(feed)
     }
-
-//    internal fun handleFeedKeeped() {}
-
-//    internal fun handleRssStorageLoad() {
-//        updateTableAdapter()
-//    }
-
-//    private suspend fun loadRssStorage() {
-//        val activity = this
-//        try {
-//            rssRepository.load()
-//
-//            val feedsCount = rssRepository.getFeedsLiveData().value?.data()?.size ?: 0
-//            System.out.printf("loaded %d feeds\n", feedsCount)
-//            activity.handleRssStorageLoad()
-//        } catch (ex: Exception) {
-//            if (ex !is CancellationException) {
-//                Tools.showErrorMessage(activity, "RssStore Load Error")
-//            }
-//        }
-//    }
-
-//    private suspend fun saveRssStorage() {
-//        val activity = this
-//        try {
-//            rssRepository.save()
-//
-//            val feedsCount = rssRepository.getFeedsLiveData().value?.data()?.size ?: 0
-//            System.out.printf("saved %d feeds\n", feedsCount)
-//            activity.handleFeedKeeped()
-//        } catch (ex: Exception) {
-//            if (ex !is CancellationException) {
-//                Tools.showErrorMessage(activity, "RssStore Save Error")
-//            }
-//        }
-//    }
 }

@@ -2,6 +2,7 @@ package com.rssclient.vm
 
 import android.app.Application
 import android.graphics.Bitmap
+import androidx.annotation.StringRes
 import androidx.lifecycle.*
 import com.aglushkov.repository.livedata.Resource
 import com.aglushkov.taskmanager_http.image.Image
@@ -26,8 +27,8 @@ class MainRssViewModel(application: MainApplication): AndroidViewModel(applicati
             it.copyWith(convertedData)
         }
 
+    override val eventLiveData = MutableLiveData<MainRssViewModelContract.Event>()
     override val errorLiveData = MutableLiveData<ErrorViewModelContract.Error>()
-
 
     init {
         rssRepository.loadRssFeeds(null)
@@ -41,6 +42,22 @@ class MainRssViewModel(application: MainApplication): AndroidViewModel(applicati
 
     override fun onAddRssFeedPressed(url: URL) {
         loadRssFeed(url)
+    }
+
+    override fun onRssFeedLongPressed(feed: RssFeed) {
+        eventLiveData.value = MainRssViewModelContract.Event.ShowActionMode(feed)
+    }
+
+    override fun onRssFeedDelete(feed: RssFeed) {
+        viewModelScope.launch {
+            try {
+                rssRepository.removeFeed(feed)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                postError(R.string.save_error)
+            }
+        }
     }
 
     override fun onLoadImageRequested(image: Image, completion: (bitmap: Bitmap?, error: Exception?) -> Unit) {
@@ -59,23 +76,36 @@ class MainRssViewModel(application: MainApplication): AndroidViewModel(applicati
 
     // Actions
 
-    private fun loadRssFeed(url: URL){
+    private fun loadRssFeed(url: URL) {
         viewModelScope.launch {
+            var feed: RssFeed? = null
             try {
                 val cmd = rssRepository.loadRssFeed(url, null)
-                cmd.await()?.data()?.let {
+                feed = cmd.await()?.data()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                postError(R.string.load_error)
+            }
+
+            try {
+                feed?.let {
                     rssRepository.addFeed(it)
                 }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                val descr = getApplication<Application>().getResString(R.string.load_error)
-                val ok = getApplication<Application>().getResString(R.string.ok)
-                errorLiveData.postValue(ErrorViewModelContract.Error(null,
-                        descr,
-                        ErrorViewModelContract.ErrorAction(ok, {}),
-                        null))
+                postError(R.string.save_error)
             }
         }
+    }
+
+    private fun postError(@StringRes descriptionRes: Int) {
+        val descr = getApplication<Application>().getResString(descriptionRes)
+        val ok = getApplication<Application>().getResString(R.string.ok)
+        errorLiveData.postValue(ErrorViewModelContract.Error(null,
+                descr,
+                ErrorViewModelContract.ErrorAction(ok, {}),
+                null))
     }
 }
