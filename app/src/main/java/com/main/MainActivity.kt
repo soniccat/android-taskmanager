@@ -26,10 +26,8 @@ import com.example.alexeyglushkov.taskmanager.task.SimpleTask
 import com.example.alexeyglushkov.taskmanager.task.Task
 import com.example.alexeyglushkov.taskmanager.task.TaskManager
 import com.main.Networks.Network
-import com.rssclient.controllers.MainRssActivity
+import com.rssclient.rssfeed.view.MainRssActivity
 import com.rssclient.controllers.R
-import io.reactivex.functions.Consumer
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch

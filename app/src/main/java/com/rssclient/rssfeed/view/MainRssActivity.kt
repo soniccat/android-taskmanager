@@ -1,4 +1,4 @@
-package com.rssclient.controllers
+package com.rssclient.rssfeed.view
 
 import android.app.AlertDialog.Builder
 import android.content.Intent
@@ -14,10 +14,14 @@ import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aglushkov.taskmanager_http.image.Image
+import com.aglushkov.taskmanager_http.image.ImageBinder
 import com.main.MainApplication
+import com.rssclient.controllers.ObjectCompletion
+import com.rssclient.controllers.R
+import com.rssclient.controllers.RssItemsActivity
 import com.rssclient.model.RssFeed
-import com.rssclient.vm.MainRssViewModel
-import com.rssclient.vm.MainRssViewModelContract
+import com.rssclient.rssfeed.vm.MainRssViewModel
+import com.rssclient.rssfeed.vm.MainRssViewModelContract
 import com.rssclient.vm.RssItemView
 import com.rssclient.vm.showErrorDialog
 import java.lang.Exception
@@ -116,8 +120,8 @@ class MainRssActivity : AppCompatActivity() {
             }
         })
 
-        val adapter = RssFeedsAdapter(imageBinder).apply {
-            listener = object : RssFeedsAdapter.Listener {
+        val feedBinder = RssFeedBinder(imageBinder).apply {
+            listener = object : RssFeedBinder.Listener {
                 override fun onClick(feed: RssFeed) {
                     this@MainRssActivity.vm.onRssFeedPressed(feed)
                 }
@@ -128,7 +132,9 @@ class MainRssActivity : AppCompatActivity() {
             }
         }
 
+        val adapter = RssFeedsAdapter(feedBinder)
         adapter.submitList(data)
+
         safeListView.adapter = adapter
     }
 

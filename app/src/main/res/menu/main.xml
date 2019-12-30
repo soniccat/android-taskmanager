@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.rssclient.controllers.MainRssActivity">
+    tools:context="com.rssclient.controllers.com.rssclient.rssfeed.view.MainRssActivity">
 
     <item
         android:id="@+id/action_settings"

@@ -441,13 +441,14 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
             Task.LoadPolicy.AddDependencyIfAlreadyAdded -> {
                 logTask(newTask, "Conflict: wait until the current task finishes")
                 logTask(currentTask, "Conflict: the current task")
+                // TODO: need to resolve the case when we already have a waiting task
                 newTask.addTaskDependency(currentTask)
                 currentTask
             }
             Task.LoadPolicy.CompleteWhenAlreadyAddedCompletes -> {
                 logTask(newTask, "Conflict: this task will complete with the current task")
                 logTask(currentTask, "Conflict: the current task")
-
+                // TODO: need to resolve the case when we already have a waiting task
                 newTask.addTaskDependency(currentTask)
                 connectTaskCompletions(newTask, currentTask)
                 currentTask

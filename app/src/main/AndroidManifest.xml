@@ -31,7 +31,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainRssActivity"
+            android:name="com.rssclient.rssfeed.view.MainRssActivity"
             android:label="@string/rss_name" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -40,10 +40,10 @@
         <activity
             android:name=".RssItemsActivity"
             android:label="@string/title_activity_rss_items"
-            android:parentActivityName=".MainRssActivity" >
+            android:parentActivityName="com.rssclient.rssfeed.view.MainRssActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.rssclient.controllers.MainRssActivity" />
+                android:value="com.rssclient.controllers.com.rssclient.rssfeed.view.MainRssActivity" />
         </activity>
         <activity
             android:name="com.playground_legacy.PlaygroundActivity"

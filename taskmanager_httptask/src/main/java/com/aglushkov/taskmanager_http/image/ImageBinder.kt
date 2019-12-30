@@ -1,9 +1,8 @@
-package com.rssclient.controllers
+package com.aglushkov.taskmanager_http.image
 
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
-import com.aglushkov.taskmanager_http.image.Image
 import java.lang.ref.WeakReference
 
 class ImageBinder(private val imageLoader: ImageLoader) {
@@ -44,7 +43,7 @@ class ImageBinder(private val imageLoader: ImageLoader) {
         }
     }
 
-    fun unbind(imageView: ImageView?) {
+    fun clear(imageView: ImageView?) {
         imageView?.tag = null
         imageView?.setImageDrawable(null)
     }

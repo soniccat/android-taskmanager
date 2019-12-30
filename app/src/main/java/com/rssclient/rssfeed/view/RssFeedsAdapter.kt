@@ -1,4 +1,4 @@
-package com.rssclient.controllers
+package com.rssclient.rssfeed.view
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,12 +8,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.alexeyglushkov.ext.getDrawableCompat
-import com.rssclient.model.RssFeed
+import com.rssclient.controllers.R
 import com.rssclient.vm.RssItemView
 import kotlinx.android.synthetic.main.feed_cell.view.*
 
-class RssFeedsAdapter(private val imageBinder: ImageBinder)
+class RssFeedsAdapter(private val feedBinder: RssFeedBinder)
     : ListAdapter<RssItemView<*>, RecyclerView.ViewHolder>(DiffCallback) {
 
     companion object {
@@ -27,8 +26,6 @@ class RssFeedsAdapter(private val imageBinder: ImageBinder)
             }
         }
     }
-
-    var listener: Listener? = null
 
     override fun getItemViewType(position: Int): Int {
         return getItem(position).type
@@ -50,20 +47,8 @@ class RssFeedsAdapter(private val imageBinder: ImageBinder)
             is RssItemView.RssFeedView -> {
                 holder as RssFeedViewHolder
 
-                val item = data.firstItem()
-                holder.name?.text = item.name
-                holder.itemView.tag = item.hashCode()
-
-                holder.itemView.setOnClickListener {
-                    listener?.onClick(item)
-                }
-                holder.itemView.setOnLongClickListener {
-                    listener?.onLongPressed(item)
-                    return@setOnLongClickListener true
-                }
-
-                val placeholder = holder.itemView.context.getDrawableCompat(R.drawable.ic_launcher)
-                imageBinder.bind(holder.image!!, item.image, placeholder)
+                val feed = data.firstItem()
+                feedBinder.bind(feed, holder)
             }
         }
     }
@@ -71,7 +56,7 @@ class RssFeedsAdapter(private val imageBinder: ImageBinder)
     override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
         super.onViewRecycled(holder)
         if (holder is RssFeedViewHolder) {
-            imageBinder.unbind(holder.image)
+            feedBinder.clear(holder)
         }
     }
 
@@ -83,10 +68,5 @@ class RssFeedsAdapter(private val imageBinder: ImageBinder)
             name = view.name // TODO: switch to Google bindings instead of synthetic
             image = view.icon
         }
-    }
-
-    interface Listener {
-        fun onClick(feed: RssFeed)
-        fun onLongPressed(feed: RssFeed)
     }
 }

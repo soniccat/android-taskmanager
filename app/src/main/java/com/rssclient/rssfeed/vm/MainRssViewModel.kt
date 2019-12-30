@@ -1,4 +1,4 @@
-package com.rssclient.vm
+package com.rssclient.rssfeed.vm
 
 import android.app.Application
 import android.graphics.Bitmap
@@ -16,6 +16,8 @@ import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.net.URL
 import com.rssclient.controllers.R
+import com.rssclient.vm.ErrorViewModelContract
+import com.rssclient.vm.RssItemView
 
 class MainRssViewModel(application: MainApplication): AndroidViewModel(application), MainRssViewModelContract {
     private var taskManager = application.taskManager

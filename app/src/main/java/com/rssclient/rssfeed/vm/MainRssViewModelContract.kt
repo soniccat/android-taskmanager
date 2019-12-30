@@ -1,10 +1,12 @@
-package com.rssclient.vm
+package com.rssclient.rssfeed.vm
 
 import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
 import com.aglushkov.repository.livedata.Resource
 import com.aglushkov.taskmanager_http.image.Image
 import com.rssclient.model.RssFeed
+import com.rssclient.vm.ErrorViewModelContract
+import com.rssclient.vm.RssItemView
 import java.net.URL
 
 interface MainRssViewModelContract {

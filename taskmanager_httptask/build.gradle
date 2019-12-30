@@ -22,16 +22,15 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation project(':taskmanager')
     implementation project(':storagemanager')
     implementation project(':streamlib')
     implementation project(':tools')
+
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:" + rootProject.ext.coroutinesVersion
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:" + rootProject.ext.coroutinesVersion
-
     implementation 'junit:junit:' + rootProject.ext.junitVersion
+
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
