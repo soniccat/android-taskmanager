@@ -10,6 +10,7 @@ import java.net.URL
 interface MainRssViewModelContract {
     sealed class Event: com.rssclient.vm.Event() {
         class ShowActionMode(val feed: RssFeed): Event()
+        class OpenRssFeed(val feed: RssFeed): Event()
     }
 
     // LiveData
@@ -21,6 +22,7 @@ interface MainRssViewModelContract {
     fun onAddRssFeedPressed(url: URL)
     fun onRssFeedLongPressed(feed: RssFeed)
     fun onRssFeedDelete(feed: RssFeed)
+    fun onRssFeedPressed(feed: RssFeed)
     fun onLoadImageRequested(image: Image,
                              completion: (bitmap: Bitmap?, error: Exception?) -> Unit)
 }

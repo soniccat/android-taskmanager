@@ -53,6 +53,10 @@ class RssFeedsAdapter(private val imageBinder: ImageBinder)
                 val item = data.firstItem()
                 holder.name?.text = item.name
                 holder.itemView.tag = item.hashCode()
+
+                holder.itemView.setOnClickListener {
+                    listener?.onClick(item)
+                }
                 holder.itemView.setOnLongClickListener {
                     listener?.onLongPressed(item)
                     return@setOnLongClickListener true
@@ -82,6 +86,7 @@ class RssFeedsAdapter(private val imageBinder: ImageBinder)
     }
 
     interface Listener {
+        fun onClick(feed: RssFeed)
         fun onLongPressed(feed: RssFeed)
     }
 }

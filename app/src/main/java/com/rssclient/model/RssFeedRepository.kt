@@ -10,7 +10,6 @@ import com.example.alexeyglushkov.cachemanager.ScopeStorageAdapter
 import com.example.alexeyglushkov.cachemanager.Storage
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener
 import kotlinx.coroutines.*
-import java.lang.RuntimeException
 import java.net.URL
 
 class RssFeedRepository(val service: RssFeedService, storage: Storage) {

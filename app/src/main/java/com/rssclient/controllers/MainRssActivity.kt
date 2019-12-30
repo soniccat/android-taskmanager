@@ -1,7 +1,7 @@
 package com.rssclient.controllers
 
 import android.app.AlertDialog.Builder
-import android.app.Dialog
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.Menu
@@ -20,15 +20,15 @@ import com.rssclient.vm.MainRssViewModel
 import com.rssclient.vm.MainRssViewModelContract
 import com.rssclient.vm.RssItemView
 import com.rssclient.vm.showErrorDialog
-import kotlinx.coroutines.*
 import java.lang.Exception
 import java.lang.NullPointerException
-import java.net.MalformedURLException
 import java.net.URL
 
 class MainRssActivity : AppCompatActivity() {
     private lateinit var vm: MainRssViewModel
     internal var listView: RecyclerView? = null
+
+    // Events
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,84 +44,9 @@ class MainRssActivity : AppCompatActivity() {
         bindView()
     }
 
-    private fun bindView() {
-        val listView = findViewById<View>(R.id.list) as RecyclerView
-        this.listView = listView
-
-        listView.layoutManager = LinearLayoutManager(listView.context, RecyclerView.VERTICAL, false)
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         this.listView = null
-    }
-
-    private fun observeViewModel() {
-        vm.feedLiveData.observe(this, Observer {
-            it?.let {
-                val data = it.data() ?: emptyList()
-                val adapter = listView?.adapter as? RssFeedsAdapter
-                if (adapter == null) {
-                    createAdapter(data)
-                } else {
-                    adapter.submitList(data)
-                }
-            }
-        })
-
-        vm.eventLiveData.observe(this, Observer { event ->
-            event?.take()?.let {
-                handleEvent(event)
-            }
-        })
-
-        vm.errorLiveData.observe(this, Observer { error ->
-            error?.take()?.let { event ->
-                showErrorDialog(error)
-            }
-        })
-    }
-
-    private fun handleEvent(event: MainRssViewModelContract.Event) {
-        when (event) {
-            is MainRssViewModelContract.Event.ShowActionMode -> {
-                this.startActionMode(event.feed)
-            }
-        }
-    }
-
-    fun showFragmentActivityAtPos(pos: Int) {
-        // TODO:
-//        val feed = rssRepository.getFeedsLiveData().value?.data()?.get(pos) ?: return
-//
-//        val intent = Intent(this, RssItemsActivity::class.java)
-//        intent.putExtra(RssItemsActivity.FEED_URL, feed.url.toString())
-//        startActivity(intent)
-    }
-
-    internal fun createAdapter(data: List<RssItemView<*>>?) {
-        val safeListView = listView
-        if (safeListView == null) throw NullPointerException("ListView is null")
-
-        var adapter = safeListView.adapter
-        if (adapter == null) {
-            val imageBinder = ImageBinder(object : ImageBinder.ImageLoader {
-                override fun loadImage(image: Image, params: Map<String, Any>?, completion: (bitmap: Bitmap?, error: Exception?) -> Unit) {
-                    this@MainRssActivity.vm.onLoadImageRequested(image, completion)
-                }
-            })
-
-            adapter = RssFeedsAdapter(imageBinder).apply {
-                listener = object : RssFeedsAdapter.Listener {
-                    override fun onLongPressed(feed: RssFeed) {
-                        this@MainRssActivity.vm.onRssFeedLongPressed(feed)
-                    }
-                }
-            }
-
-            adapter.submitList(data)
-            safeListView.adapter = adapter
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -138,18 +63,98 @@ class MainRssActivity : AppCompatActivity() {
             showAlertDialog(object : ObjectCompletion<String> {
                 override fun completed(result: String) {
                     val url = URL(result)
-                    lifecycleScope.launch {
-                        try {
-                            activity.addRssFeed(url)
-                        } catch (e: MalformedURLException) { // TODO Auto-generated catch block
-                            e.printStackTrace()
-                        }
-                    }
+                    activity.addRssFeed(url)
                 }
             })
             return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    // Actions
+
+    private fun bindView() {
+        val listView = findViewById<View>(R.id.list) as RecyclerView
+        this.listView = listView
+
+        listView.layoutManager = LinearLayoutManager(listView.context, RecyclerView.VERTICAL, false)
+    }
+
+    private fun observeViewModel() {
+        vm.feedLiveData.observe(this, Observer {
+            it?.let {
+                val data = it.data() ?: emptyList()
+                val adapter = listView?.adapter as? RssFeedsAdapter
+                if (adapter == null) {
+                    createAdapter(data)
+                } else {
+                    adapter.submitList(data)
+                }
+            }
+        })
+
+        vm.eventLiveData.observe(this, Observer { event ->
+            event?.take()?.let { _ ->
+                handleEvent(event)
+            }
+        })
+
+        vm.errorLiveData.observe(this, Observer { error ->
+            error?.take()?.let { _ ->
+                showErrorDialog(error)
+            }
+        })
+    }
+
+    internal fun createAdapter(data: List<RssItemView<*>>?) {
+        val safeListView = listView
+        if (safeListView == null) throw NullPointerException("ListView is null")
+
+        val imageBinder = ImageBinder(object : ImageBinder.ImageLoader {
+            override fun loadImage(image: Image, params: Map<String, Any>?, completion: (bitmap: Bitmap?, error: Exception?) -> Unit) {
+                this@MainRssActivity.vm.onLoadImageRequested(image, completion)
+            }
+        })
+
+        val adapter = RssFeedsAdapter(imageBinder).apply {
+            listener = object : RssFeedsAdapter.Listener {
+                override fun onClick(feed: RssFeed) {
+                    this@MainRssActivity.vm.onRssFeedPressed(feed)
+                }
+
+                override fun onLongPressed(feed: RssFeed) {
+                    this@MainRssActivity.vm.onRssFeedLongPressed(feed)
+                }
+            }
+        }
+
+        adapter.submitList(data)
+        safeListView.adapter = adapter
+    }
+
+    private fun handleEvent(event: MainRssViewModelContract.Event) {
+        when (event) {
+            is MainRssViewModelContract.Event.ShowActionMode -> {
+                this.startActionMode(event.feed)
+            }
+            is MainRssViewModelContract.Event.OpenRssFeed -> {
+                openRssFeed(event.feed)
+            }
+        }
+    }
+
+    private fun openRssFeed(feed: RssFeed) {
+        val intent = Intent(this, RssItemsActivity::class.java)
+        intent.putExtra(RssItemsActivity.FEED_URL, feed.url.toString())
+        startActivity(intent)
+    }
+
+    private fun addRssFeed(url: URL) {
+        vm.onAddRssFeedPressed(url)
+    }
+
+    private fun deleteFeed(feed: RssFeed) {
+        vm.onRssFeedDelete(feed)
     }
 
     private fun startActionMode(feed: RssFeed) {
@@ -192,13 +197,5 @@ class MainRssActivity : AppCompatActivity() {
 
         builder.setNegativeButton("Cancel") { dialog, which -> println("Cancel pressed") }
         builder.create().show()
-    }
-
-    private fun addRssFeed(url: URL) {
-        vm.onAddRssFeedPressed(url)
-    }
-
-    private fun deleteFeed(feed: RssFeed) {
-        vm.onRssFeedDelete(feed)
     }
 }

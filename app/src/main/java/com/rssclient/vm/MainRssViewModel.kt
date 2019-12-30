@@ -60,6 +60,10 @@ class MainRssViewModel(application: MainApplication): AndroidViewModel(applicati
         }
     }
 
+    override fun onRssFeedPressed(feed: RssFeed) {
+        eventLiveData.value = MainRssViewModelContract.Event.OpenRssFeed(feed)
+    }
+
     override fun onLoadImageRequested(image: Image, completion: (bitmap: Bitmap?, error: Exception?) -> Unit) {
         val task = ImageLoader().buildBitmapTask(taskManager.threadRunner, image)
         viewModelScope.launch {
