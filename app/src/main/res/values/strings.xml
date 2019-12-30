@@ -27,7 +27,7 @@
     <string name="task_config_field_priority">Priority</string>
     <string name="task_config_field_load_policy">Load Policy</string>
 
-    <string name="ok">OK</string>
+    <string name="add_feed_descripton">Type a feed url</string>
     <string name="error_title">Error</string>
     <string name="load_error">Can\'t load feed %s</string>
     <string name="save_error">Save error</string>

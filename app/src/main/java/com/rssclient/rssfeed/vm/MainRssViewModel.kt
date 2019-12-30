@@ -25,7 +25,7 @@ class MainRssViewModel(application: MainApplication): AndroidViewModel(applicati
 
     override val feedLiveData: LiveData<Resource<List<RssItemView<*>>>>
         get() = rssRepository.getFeedsLiveData().map {
-            val convertedData: List<RssItemView<*>> = it.data()?.map { RssItemView.RssFeedView(it) } ?: emptyList()
+            val convertedData: List<RssItemView<*>> = it.data()?.map { feed -> RssItemView.RssFeedView(feed) } ?: emptyList()
             it.copyWith(convertedData)
         }
 
@@ -97,10 +97,10 @@ class MainRssViewModel(application: MainApplication): AndroidViewModel(applicati
 
     private fun postError(@StringRes descriptionRes: Int) {
         val descr = getApplication<Application>().getResString(descriptionRes)
-        val ok = getApplication<Application>().getResString(R.string.ok)
+        val ok = getApplication<Application>().getResString(android.R.string.ok)
         errorLiveData.postValue(ErrorViewModelContract.Error(null,
                 descr,
-                ErrorViewModelContract.ErrorAction(ok, {}),
+                ErrorViewModelContract.ErrorAction(ok) {},
                 null))
     }
 }

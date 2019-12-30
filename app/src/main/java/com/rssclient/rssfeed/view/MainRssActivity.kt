@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.aglushkov.taskmanager_http.image.Image
 import com.aglushkov.taskmanager_http.image.ImageBinder
 import com.main.MainApplication
-import com.rssclient.controllers.ObjectCompletion
 import com.rssclient.controllers.R
 import com.rssclient.controllers.RssItemsActivity
 import com.rssclient.model.RssFeed
@@ -28,6 +27,7 @@ import java.lang.Exception
 import java.lang.NullPointerException
 import java.net.URL
 
+// TODO: add loader, try again option on error
 class MainRssActivity : AppCompatActivity() {
     private lateinit var vm: MainRssViewModel
     internal var listView: RecyclerView? = null
@@ -60,16 +60,14 @@ class MainRssActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
-        if (id == R.id.action_settings) {
-            return true
-        } else if (id == R.id.add_feed) {
-            val activity = this
-            showAlertDialog(object : ObjectCompletion<String> {
-                override fun completed(result: String) {
+        if (id == R.id.add_feed) {
+            showTextDialog { result ->
+                try {
                     val url = URL(result)
-                    activity.addRssFeed(url)
+                    addRssFeed(url)
+                } catch (ex: Exception) {
                 }
-            })
+            }
             return true
         }
         return super.onOptionsItemSelected(item)
@@ -110,9 +108,8 @@ class MainRssActivity : AppCompatActivity() {
         })
     }
 
-    internal fun createAdapter(data: List<RssItemView<*>>?) {
-        val safeListView = listView
-        if (safeListView == null) throw NullPointerException("ListView is null")
+    private fun createAdapter(data: List<RssItemView<*>>?) {
+        val safeListView = listView ?: throw NullPointerException("ListView is null")
 
         val imageBinder = ImageBinder(object : ImageBinder.ImageLoader {
             override fun loadImage(image: Image, params: Map<String, Any>?, completion: (bitmap: Bitmap?, error: Exception?) -> Unit) {
@@ -187,21 +184,22 @@ class MainRssActivity : AppCompatActivity() {
         })
     }
 
-    private fun showAlertDialog(completion: ObjectCompletion<String>) {
+    private fun showTextDialog(onSelected: (String) -> Unit) {
         val builder = Builder(this)
-        builder.setMessage("Type a feed url")
+        builder.setMessage(R.string.add_feed_descripton)
 
         val textView = EditText(this)
         textView.setText("https://www.lenta.ru/rss")
 
         builder.setView(textView)
-        builder.setPositiveButton("Ok") { dialog, which ->
-            println("Ok pressed")
+        builder.setPositiveButton(android.R.string.ok) { _, _ ->
             val string = textView.text.toString()
-            completion.completed(string)
+            onSelected(string)
         }
 
-        builder.setNegativeButton("Cancel") { dialog, which -> println("Cancel pressed") }
+        android.R.string.cancel
+        builder.setNegativeButton(android.R.string.cancel, null)
+
         builder.create().show()
     }
 }
