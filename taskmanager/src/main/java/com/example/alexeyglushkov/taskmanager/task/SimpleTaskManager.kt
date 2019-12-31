@@ -60,6 +60,8 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     private var taskToJobMap = HashMap<Task, Job>()
 
+    // TODO: check out how we can avoid using SafeList or another solution
+    // TODO: think about weakref
     private lateinit var _taskProviders: SafeList<TaskProvider>
     override val taskProviders: List<TaskProvider>
          get() {

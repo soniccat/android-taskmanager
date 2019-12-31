@@ -25,13 +25,13 @@ object Networks {
     const val CALLBACK_URL = "http://gaolife.blogspot.ru"
 
     val authWebClient: OAuthWebClient
-        get() = MainApplication.Companion.instance.authWebClient
+        get() = MainApplication.instance.authWebClient
 
     val taskManager: TaskManager
-        get() = MainApplication.Companion.instance.taskManager
+        get() = MainApplication.instance.taskManager
 
     val accountStore: AccountStore
-        get() = MainApplication.Companion.instance.accountStore
+        get() = MainApplication.instance.accountStore
 
     fun getAccount(serviceType: Int): Account {
         Assert.assertNotNull("accountStore must exists", accountStore)
@@ -107,11 +107,5 @@ object Networks {
 
     enum class Network {
         None, Foursquare, Quizlet;
-
-        companion object {
-            fun fromInt(i: Int): Network {
-                return values()[i]
-            }
-        }
     }
 }

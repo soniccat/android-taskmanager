@@ -1,6 +1,8 @@
 package com.rssclient.rssfeed.vm
 
+import android.content.Intent
 import android.graphics.Bitmap
+import android.os.Bundle
 import androidx.lifecycle.LiveData
 import com.aglushkov.repository.livedata.Resource
 import com.aglushkov.taskmanager_http.image.Image
@@ -12,7 +14,7 @@ import java.net.URL
 interface MainRssViewModelContract {
     sealed class Event: com.rssclient.vm.Event() {
         class ShowActionMode(val feed: RssFeed): Event()
-        class OpenRssFeed(val feed: RssFeed): Event()
+        class OpenRssFeed(val extras: Bundle): Event()
     }
 
     // LiveData

@@ -8,7 +8,6 @@ import androidx.collection.SparseArrayCompat
  * Created by alexeyglushkov on 23.08.15.
  */
 interface TaskManagerSnapshot {
-
     val loadingTasksCount: Int
     val waitingTasksCount: Int
     val maxQueueSize: Int

@@ -1,4 +1,4 @@
-package com.rssclient.controllers
+package com.rssclient.rssfeeditems.view
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,9 +8,9 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import com.aglushkov.taskmanager_http.image.Image
 import com.example.alexeyglushkov.ext.getDrawableCompat
+import com.rssclient.controllers.R
 import com.rssclient.model.RssItem
 
 class RssItemsAdapter(context: Context, val values: ArrayList<RssItem>) : ArrayAdapter<RssItem>(context, R.layout.feed_cell, values) {

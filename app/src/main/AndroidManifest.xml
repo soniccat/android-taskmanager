@@ -38,7 +38,7 @@
                 android:value="com.main.MainActivity" />
         </activity>
         <activity
-            android:name=".RssItemsActivity"
+            android:name="com.rssclient.rssfeeditems.view.RssItemsActivity"
             android:label="@string/title_activity_rss_items"
             android:parentActivityName="com.rssclient.rssfeed.view.MainRssActivity" >
             <meta-data

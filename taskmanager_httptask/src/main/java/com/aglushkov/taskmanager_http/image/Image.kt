@@ -17,6 +17,7 @@ import java.net.URL
 
 //import android.media.Image;
 //TODO: think about implementing task container and moving check of setTaskCompleted to taskmanager
+//TODO: clean this class: remove writeObject/readObject, TaskListener
 open class Image : Serializable, TaskListener, HttpURLConnectionProvider {
     companion object {
         private const val serialVersionUID = 2567033384508404225L

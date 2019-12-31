@@ -13,11 +13,12 @@ import androidx.appcompat.view.ActionMode
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.aglushkov.repository.livedata.Resource
 import com.aglushkov.taskmanager_http.image.Image
 import com.aglushkov.taskmanager_http.image.ImageBinder
 import com.main.MainApplication
 import com.rssclient.controllers.R
-import com.rssclient.controllers.RssItemsActivity
+import com.rssclient.rssfeeditems.view.RssItemsActivity
 import com.rssclient.model.RssFeed
 import com.rssclient.rssfeed.vm.MainRssViewModel
 import com.rssclient.rssfeed.vm.MainRssViewModelContract
@@ -29,8 +30,8 @@ import java.net.URL
 
 // TODO: add loader, try again option on error
 class MainRssActivity : AppCompatActivity() {
-    private lateinit var vm: MainRssViewModel
-    internal var listView: RecyclerView? = null
+    private lateinit var vm: MainRssViewModelContract
+    private var listView: RecyclerView? = null
 
     // Events
 
@@ -85,13 +86,7 @@ class MainRssActivity : AppCompatActivity() {
     private fun observeViewModel() {
         vm.feedLiveData.observe(this, Observer {
             it?.let {
-                val data = it.data() ?: emptyList()
-                val adapter = listView?.adapter as? RssFeedsAdapter
-                if (adapter == null) {
-                    createAdapter(data)
-                } else {
-                    adapter.submitList(data)
-                }
+                handleDataChange(it)
             }
         })
 
@@ -106,6 +101,28 @@ class MainRssActivity : AppCompatActivity() {
                 showErrorDialog(error)
             }
         })
+    }
+
+    private fun handleDataChange(it: Resource<List<RssItemView<*>>>) {
+        val data = it.data()
+        showData(data)
+
+        if (data.isNullOrEmpty()) {
+            if (data is Resource.Loading<*>) {
+                // TODO: show loading
+            } else if (data is Resource.Error<*>) {
+                // TODO: show error
+            }
+        }
+    }
+
+    private fun showData(data: List<RssItemView<*>>?) {
+        val adapter = listView?.adapter as? RssFeedsAdapter
+        if (adapter == null) {
+            createAdapter(data)
+        } else {
+            adapter.submitList(data)
+        }
     }
 
     private fun createAdapter(data: List<RssItemView<*>>?) {
@@ -141,14 +158,14 @@ class MainRssActivity : AppCompatActivity() {
                 this.startActionMode(event.feed)
             }
             is MainRssViewModelContract.Event.OpenRssFeed -> {
-                openRssFeed(event.feed)
+                openRssFeed(event.extras)
             }
         }
     }
 
-    private fun openRssFeed(feed: RssFeed) {
+    private fun openRssFeed(extras: Bundle) {
         val intent = Intent(this, RssItemsActivity::class.java)
-        intent.putExtra(RssItemsActivity.FEED_URL, feed.url.toString())
+        intent.putExtras(extras)
         startActivity(intent)
     }
 

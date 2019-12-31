@@ -2,6 +2,7 @@ package com.rssclient.rssfeed.vm
 
 import android.app.Application
 import android.graphics.Bitmap
+import android.os.Bundle
 import androidx.annotation.StringRes
 import androidx.lifecycle.*
 import com.aglushkov.repository.livedata.Resource
@@ -16,6 +17,7 @@ import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.net.URL
 import com.rssclient.controllers.R
+import com.rssclient.rssfeeditems.vm.RssItemsViewModel
 import com.rssclient.vm.ErrorViewModelContract
 import com.rssclient.vm.RssItemView
 
@@ -34,10 +36,6 @@ class MainRssViewModel(application: MainApplication): AndroidViewModel(applicati
 
     init {
         rssRepository.loadRssFeeds(null)
-    }
-
-    fun getFeedLiveData(url: URL): LiveData<Resource<RssFeed>> {
-        return rssRepository.getFeedLiveData(url)
     }
 
     // Events
@@ -63,7 +61,10 @@ class MainRssViewModel(application: MainApplication): AndroidViewModel(applicati
     }
 
     override fun onRssFeedPressed(feed: RssFeed) {
-        eventLiveData.value = MainRssViewModelContract.Event.OpenRssFeed(feed)
+        val extras = Bundle()
+        extras.putParcelable(RssItemsViewModel.FeedKey, feed)
+
+        eventLiveData.value = MainRssViewModelContract.Event.OpenRssFeed(extras)
     }
 
     override fun onLoadImageRequested(image: Image, completion: (bitmap: Bitmap?, error: Exception?) -> Unit) {
@@ -85,8 +86,7 @@ class MainRssViewModel(application: MainApplication): AndroidViewModel(applicati
     private fun loadRssFeed(url: URL) {
         viewModelScope.launch {
             try {
-                val cmd = rssRepository.loadRssFeed(url, null)
-                cmd.await()?.data()
+                rssRepository.addRssFeed(url, null)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {

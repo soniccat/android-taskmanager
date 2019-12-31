@@ -44,12 +44,19 @@ class RssFeedRepository(val service: RssFeedService, storage: Storage) {
         return commandHolder.putCommand(CancellableRepositoryCommand(LOAD_FEEDS_COMMAND, job, liveData))
     }
 
+
+    suspend fun addRssFeed(url: URL, progressListener: ProgressListener?) {
+        val command = loadRssFeed(url, progressListener)
+        command.await()?.data()?.let {
+            addFeed(it)
+        }
+    }
+
     fun loadRssFeed(url: URL, progressListener: ProgressListener?): CancellableRepositoryCommand<Resource<RssFeed>, String> {
         val liveData = getFeedLiveData(url)
         val job = scope.launch {
             liveData.load {
                 val feed = service.loadRss(url, progressListener)
-                addFeed(feed)
                 feed
             }
         }
