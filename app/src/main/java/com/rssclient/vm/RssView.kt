@@ -1,15 +1,16 @@
 package com.rssclient.vm
 
 import com.rssclient.model.RssFeed
+import com.rssclient.model.RssItem
 import java.util.*
 
-sealed class RssItemView<T> {
+sealed class RssView<T> {
     var type = 0
     var items = listOf<T>()
 
     fun firstItem(): T = items.first()
 
-    abstract fun equalsByIds(item: RssItemView<*>): Boolean
+    abstract fun equalsByIds(item: RssView<*>): Boolean
 
     constructor(item: T, type: Int) {
         this.items = Collections.singletonList(item)
@@ -25,7 +26,7 @@ sealed class RssItemView<T> {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as RssItemView<*>
+        other as RssView<*>
 
         if (type != other.type) return false
         if (items != other.items) return false
@@ -39,13 +40,23 @@ sealed class RssItemView<T> {
         return result
     }
 
-    class RssFeedView(feed: RssFeed): RssItemView<RssFeed>(feed, Type) {
+    class RssFeedView(feed: RssFeed): RssView<RssFeed>(feed, Type) {
         companion object {
             const val Type = 1
         }
 
-        override fun equalsByIds(item: RssItemView<*>): Boolean {
+        override fun equalsByIds(item: RssView<*>): Boolean {
             return type == item.type && item is RssFeedView && firstItem().url == item.firstItem().url
+        }
+    }
+
+    class RssItemView(item: RssItem): RssView<RssItem>(item, Type) {
+        companion object {
+            const val Type = 2
+        }
+
+        override fun equalsByIds(item: RssView<*>): Boolean {
+            return type == item.type && item is RssItemView && firstItem().link == item.firstItem().link
         }
     }
 }

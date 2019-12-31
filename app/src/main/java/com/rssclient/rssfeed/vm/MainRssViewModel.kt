@@ -19,15 +19,15 @@ import java.net.URL
 import com.rssclient.controllers.R
 import com.rssclient.rssfeeditems.vm.RssItemsViewModel
 import com.rssclient.vm.ErrorViewModelContract
-import com.rssclient.vm.RssItemView
+import com.rssclient.vm.RssView
 
 class MainRssViewModel(application: MainApplication): AndroidViewModel(application), MainRssViewModelContract {
     private var taskManager = application.taskManager
     private var rssRepository = application.rssRepository
 
-    override val feedLiveData: LiveData<Resource<List<RssItemView<*>>>>
+    override val feedLiveData: LiveData<Resource<List<RssView<*>>>>
         get() = rssRepository.getFeedsLiveData().map {
-            val convertedData: List<RssItemView<*>> = it.data()?.map { feed -> RssItemView.RssFeedView(feed) } ?: emptyList()
+            val convertedData: List<RssView<*>> = it.data()?.map { feed -> RssView.RssFeedView(feed) } ?: emptyList()
             it.copyWith(convertedData)
         }
 

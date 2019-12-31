@@ -63,13 +63,13 @@ fun Resource<*>?.isUninitialized(): Boolean {
     return this?.isUninitialized() ?: true
 }
 
-// TODO: think how to replace postValue to just value =
+// TODO: !!! think how to replace postValue to just value =
 // now we have too check value == initialValue || .value == loadingRes to understand if we are in the same load action
 // but it might not work, it's better to use .value = and check only value == loadingRes
 suspend fun <T> MutableLiveData<Resource<T>>.load(loader: suspend () -> T?) {
     val initialValue = value
     val loadingRes = value?.toLoading() ?: Resource.Loading()
-    postValue(loadingRes)
+    value = loadingRes
 
     try {
         val result = loader()
@@ -79,16 +79,16 @@ suspend fun <T> MutableLiveData<Resource<T>>.load(loader: suspend () -> T?) {
             Resource.Uninitialized()
         }
 
-        postValue(newStatus)
+        value = newStatus
     } catch (e: CancellationException) {
-        if (value == initialValue || value == loadingRes) {
-            postValue(initialValue)
+        if (value == loadingRes) {
+            value = initialValue
         }
         throw e
     } catch (e: Exception) {
-        if (value == initialValue || value == loadingRes) {
+        if (value == loadingRes) {
             val errorRes = initialValue?.toError(e, true) ?: Resource.Error(e, true)
-            postValue(errorRes)
+            value = errorRes
         }
     }
 }

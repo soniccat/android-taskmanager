@@ -9,19 +9,19 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.rssclient.controllers.R
-import com.rssclient.vm.RssItemView
+import com.rssclient.vm.RssView
 import kotlinx.android.synthetic.main.feed_cell.view.*
 
 class RssFeedsAdapter(private val feedBinder: RssFeedBinder)
-    : ListAdapter<RssItemView<*>, RecyclerView.ViewHolder>(DiffCallback) {
+    : ListAdapter<RssView<*>, RecyclerView.ViewHolder>(DiffCallback) {
 
     companion object {
-        @JvmStatic val DiffCallback = object : DiffUtil.ItemCallback<RssItemView<*>>() {
-            override fun areItemsTheSame(oldCellInfo: RssItemView<*>, newCellInfo: RssItemView<*>): Boolean {
+        @JvmStatic val DiffCallback = object : DiffUtil.ItemCallback<RssView<*>>() {
+            override fun areItemsTheSame(oldCellInfo: RssView<*>, newCellInfo: RssView<*>): Boolean {
                 return oldCellInfo.equalsByIds(newCellInfo)
             }
 
-            override fun areContentsTheSame(oldCellInfo: RssItemView<*>, newCellInfo: RssItemView<*>): Boolean {
+            override fun areContentsTheSame(oldCellInfo: RssView<*>, newCellInfo: RssView<*>): Boolean {
                 return oldCellInfo == newCellInfo
             }
         }
@@ -33,7 +33,7 @@ class RssFeedsAdapter(private val feedBinder: RssFeedBinder)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when(viewType) {
-            RssItemView.RssFeedView.Type -> {
+            RssView.RssFeedView.Type -> {
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.feed_cell, parent, false)
                 RssFeedViewHolder(view)
             }
@@ -44,7 +44,7 @@ class RssFeedsAdapter(private val feedBinder: RssFeedBinder)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val data = getItem(position)
         when (data) {
-            is RssItemView.RssFeedView -> {
+            is RssView.RssFeedView -> {
                 holder as RssFeedViewHolder
 
                 val feed = data.firstItem()

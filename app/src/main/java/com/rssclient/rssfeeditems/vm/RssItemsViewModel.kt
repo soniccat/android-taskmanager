@@ -1,21 +1,29 @@
 package com.rssclient.rssfeeditems.vm
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.aglushkov.repository.livedata.Resource
+import com.aglushkov.taskmanager_http.image.Image
+import com.example.alexeyglushkov.streamlib.progress.ProgressInfo
+import com.example.alexeyglushkov.streamlib.progress.ProgressListener
 import com.example.alexeyglushkov.taskmanager.task.PriorityTaskProvider
 import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManagerSnapshot
 import com.example.alexeyglushkov.taskmanager.task.TaskManagerSnapshot
 import com.main.MainApplication
 import com.rssclient.model.RssFeed
 import com.rssclient.model.RssItem
+import com.rssclient.vm.RssView
 import java.lang.NullPointerException
 
 class RssItemsViewModel(application: MainApplication, val args: Bundle):
-        AndroidViewModel(application), RssItemsViewModelContract, TaskManagerSnapshot.OnSnapshotChangedListener {
+        AndroidViewModel(application),
+        RssItemsViewModelContract,
+        ProgressListener,
+        TaskManagerSnapshot.OnSnapshotChangedListener {
     companion object {
         val FeedKey = "FeedKey"
         val TaskProviderId = "ImageTaskProvider"
@@ -26,7 +34,7 @@ class RssItemsViewModel(application: MainApplication, val args: Bundle):
     private var taskProvider: PriorityTaskProvider
     private var snapshot: TaskManagerSnapshot
 
-    override val rssItems = MutableLiveData<Resource<RssItem>>()
+    override val rssItems = MutableLiveData<Resource<RssView<*>>>()
     override val taskManagerSnapshot = MutableLiveData<TaskManagerSnapshot>()
 
     init {
@@ -52,5 +60,17 @@ class RssItemsViewModel(application: MainApplication, val args: Bundle):
 
     override fun onSnapshotChanged(snapshot: TaskManagerSnapshot) {
         taskManagerSnapshot.value = snapshot
+    }
+
+    override fun onRssItemPressed(rssItem: RssItem) {
+
+    }
+
+    override fun onLoadImageRequested(image: Image, completion: (bitmap: Bitmap?, error: Exception?) -> Unit) {
+
+    }
+
+    override fun onProgressChanged(sender: Any?, progressInfo: ProgressInfo?) {
+        // TODO: implement
     }
 }

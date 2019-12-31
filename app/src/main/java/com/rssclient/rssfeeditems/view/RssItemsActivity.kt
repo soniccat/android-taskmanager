@@ -1,5 +1,6 @@
 package com.rssclient.rssfeeditems.view
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -12,29 +13,26 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import com.aglushkov.repository.livedata.Resource
 import com.aglushkov.taskmanager_http.image.Image
-import com.aglushkov.taskmanager_http.image.ImageLoader
-import com.example.alexeyglushkov.streamlib.progress.ProgressInfo
+import com.aglushkov.taskmanager_http.image.ImageBinder
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener
-import com.example.alexeyglushkov.taskmanager.task.*
-import com.example.alexeyglushkov.taskmanager.task.PriorityTaskProvider.PriorityProvider
 import com.example.alexeyglushkov.taskmanager.ui.TaskManagerView
 import com.example.alexeyglushkov.tools.Range
 import com.main.MainApplication
 import com.rssclient.controllers.R
-import com.rssclient.rssfeeditems.view.RssItemsAdapter.RssItemsAdapterListener
-import com.rssclient.rssfeeditems.view.RssItemsAdapter.ViewHolder
 import com.rssclient.model.RssFeed
-import com.rssclient.model.RssFeedRepository
 import com.rssclient.model.RssItem
-import com.rssclient.rssfeed.vm.MainRssViewModel
+import com.rssclient.rssfeed.view.RssFeedBinder
+import com.rssclient.rssfeed.view.RssFeedsAdapter
+import com.rssclient.rssfeeditems.view.RssItemsAdapter.RssItemsAdapterListener
 import com.rssclient.rssfeeditems.vm.RssItemsViewModel
 import com.rssclient.rssfeeditems.vm.RssItemsViewModelContract
-import org.junit.Assert
-import java.net.MalformedURLException
-import java.net.URL
+import com.rssclient.vm.RssView
+import java.lang.Exception
+import java.lang.NullPointerException
 
-class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, ProgressListener {
+class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener {
     private lateinit var vm: RssItemsViewModelContract
     private var listView: ListView? = null
     private var taskManagerView: TaskManagerView? = null
@@ -44,7 +42,7 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, ProgressL
 
         vm = ViewModelProviders.of(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return RssItemsViewModel(MainApplication.instance, intent.extras) as T
+                return RssItemsViewModel(MainApplication.instance, intent.extras!!) as T
             }
         }).get(RssItemsViewModel::class.java)
         observeViewModel()
@@ -98,7 +96,7 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, ProgressL
     private fun observeViewModel() {
         vm.rssItems.observe(this, Observer {
             if (it == null) return@Observer
-
+            handleDataChange(it)
         })
 
         vm.taskManagerSnapshot.observe(this, Observer {
@@ -107,15 +105,60 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, ProgressL
         })
     }
 
-    fun getViewAtPosition(pos: Int): View? {
-        val firstListItemPosition = listView.firstVisiblePosition
-        val lastListItemPosition = firstListItemPosition + listView.childCount - 1
-        if (pos >= firstListItemPosition && pos <= lastListItemPosition) {
-            val childIndex = pos - firstListItemPosition
-            return listView.getChildAt(childIndex)
+    private fun handleDataChange(it: Resource<List<RssView<*>>>) {
+        val data = it.data()
+        showData(data)
+
+        if (data.isNullOrEmpty()) {
+            if (data is Resource.Loading<*>) {
+                // TODO: show loading
+            } else if (data is Resource.Error<*>) {
+                // TODO: show error
+            }
         }
-        return null
     }
+
+    private fun showData(data: List<RssView<*>>?) {
+        val adapter = listView?.adapter as? RssFeedsAdapter
+        if (adapter == null) {
+            createAdapter(data)
+        } else {
+            adapter.submitList(data)
+        }
+    }
+
+    private fun createAdapter(data: List<RssView<*>>?) {
+        val safeListView = listView ?: throw NullPointerException("ListView is null")
+
+        val imageBinder = ImageBinder(object : ImageBinder.ImageLoader {
+            override fun loadImage(image: Image, params: Map<String, Any>?, completion: (bitmap: Bitmap?, error: Exception?) -> Unit) {
+                this@RssItemsActivity.vm.onLoadImageRequested(image, completion)
+            }
+        })
+
+        val feedBinder = RssItemBinder(imageBinder).apply {
+            listener = object : RssItemBinder.Listener {
+                override fun onClick(item: RssItem) {
+                    this@RssItemsActivity.vm.onRssItemPressed(item)
+                }
+            }
+        }
+
+        val adapter = RssFeedsAdapter(feedBinder)
+        adapter.submitList(data)
+
+        safeListView.adapter = adapter
+    }
+
+//    fun getViewAtPosition(pos: Int): View? {
+//        val firstListItemPosition = listView.firstVisiblePosition
+//        val lastListItemPosition = firstListItemPosition + listView.childCount - 1
+//        if (pos >= firstListItemPosition && pos <= lastListItemPosition) {
+//            val childIndex = pos - firstListItemPosition
+//            return listView.getChildAt(childIndex)
+//        }
+//        return null
+//    }
 
     fun getVisibleRange(): Range<Int> {
         val safeListView = listView
@@ -126,12 +169,12 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, ProgressL
         }
     }
 
-    internal fun updateTableAdapter() {
-        val items = ArrayList(feed.items)
-        val adapter = RssItemsAdapter(this, items)
-        adapter.listener = this
-        listView.adapter = adapter
-    }
+//    internal fun updateTableAdapter() {
+//        val items = ArrayList(feed.items)
+//        val adapter = RssItemsAdapter(this, items)
+//        adapter.listener = this
+//        listView.adapter = adapter
+//    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean { // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.rss_items, menu)
@@ -227,8 +270,7 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, ProgressL
 //        return 100 - delta
 //    }
 
-    companion object {
-
+//    companion object {
 //        fun getLoadImageCallback(item: RssItem?, activity: RssItemsActivity): ImageLoader.LoadCallback {
 //            val ref = WeakReference(activity)
 //            return object : ImageLoader.LoadCallback {
@@ -258,5 +300,5 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener, ProgressL
 //                }
 //            }
 //        }
-    }
+//    }
 }

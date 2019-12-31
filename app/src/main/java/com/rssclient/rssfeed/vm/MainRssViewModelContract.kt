@@ -1,6 +1,5 @@
 package com.rssclient.rssfeed.vm
 
-import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.lifecycle.LiveData
@@ -8,7 +7,7 @@ import com.aglushkov.repository.livedata.Resource
 import com.aglushkov.taskmanager_http.image.Image
 import com.rssclient.model.RssFeed
 import com.rssclient.vm.ErrorViewModelContract
-import com.rssclient.vm.RssItemView
+import com.rssclient.vm.RssView
 import java.net.URL
 
 interface MainRssViewModelContract {
@@ -18,7 +17,7 @@ interface MainRssViewModelContract {
     }
 
     // LiveData
-    val feedLiveData: LiveData<Resource<List<RssItemView<*>>>>
+    val feedLiveData: LiveData<Resource<List<RssView<*>>>>
     val eventLiveData: LiveData<Event>
     val errorLiveData: LiveData<ErrorViewModelContract.Error>
 
