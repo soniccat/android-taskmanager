@@ -34,6 +34,10 @@ class RssFeedRepository(val service: RssFeedService, storage: Storage) {
         return commandHolder.ensureLiveData(url.toString(), Resource.Uninitialized())
     }
 
+    fun getImageProgressLiveData(tag: String): MutableLiveData<Float> {
+        return commandHolder.ensureLiveData(tag, 0.0f)
+    }
+
     fun loadRssFeeds(progressListener: ProgressListener?): RepositoryCommand<Resource<List<RssFeed>>, String> {
         val liveData = getFeedsLiveData()
         val job = liveData.load(scope) {
@@ -42,7 +46,6 @@ class RssFeedRepository(val service: RssFeedService, storage: Storage) {
 
         return commandHolder.putCommand(CancellableRepositoryCommand(LOAD_FEEDS_COMMAND, job, liveData))
     }
-
 
     suspend fun addRssFeed(url: URL, progressListener: ProgressListener?) {
         val command = loadRssFeed(url, progressListener)

@@ -64,6 +64,10 @@ class RssItemsViewModel(application: MainApplication, val args: Bundle):
         return args.getParcelable(FeedKey)
     }
 
+    override fun getImageProgressLiveData(tag: Int): MutableLiveData<Float> {
+        return rssRepository.getImageProgressLiveData(tag.toString())
+    }
+
     override fun onSnapshotChanged(snapshot: TaskManagerSnapshot) {
         taskManagerSnapshot.value = snapshot
     }
@@ -81,7 +85,7 @@ class RssItemsViewModel(application: MainApplication, val args: Bundle):
                 "_" + Integer.toString(position))
         task.taskType = position % 2 + 1
         task.taskPriority = getTaskPriority(position, range.lower, range.upper - range.lower + 1)
-        task.taskUserData = Pair(position, imageInfo.image)
+        task.taskUserData = imageInfo.tag
         task.addTaskProgressListener(this)
         task.taskProgressMinChange = 0.2f
         task.loadPolicy = Task.LoadPolicy.CompleteWhenAlreadyAddedCompletes
@@ -109,17 +113,20 @@ class RssItemsViewModel(application: MainApplication, val args: Bundle):
 
     override fun onProgressChanged(sender: Any?, progressInfo: ProgressInfo) {
         val task = sender as Task
+        val imageTag = task.taskUserData as Int
 
-        val taskData = task.taskUserData as Pair<Int, Image>?
-        val view = getViewAtPosition(taskData!!.first)
+        val liveData = getImageProgressLiveData(imageTag)
+        liveData.postValue(progressInfo.normalizedValue)
 
-        if (view != null) { // TODO: move holder access to adapter
-            val holder = view.tag as ViewHolder
-            if (holder.loadingImage === taskData.second) {
-                holder.progressBar.progress = (progressInfo.normalizedValue * 100.0f).toInt()
-                //Log.d("imageprogress","progress " + newValue);
-            } else { //Log.d("imageprogress","loadingImage is different");
-            }
-        }
+//        val view = getViewAtPosition(taskData!!.first)
+//
+//        if (view != null) { // TODO: move holder access to adapter
+//            val holder = view.tag as ViewHolder
+//            if (holder.loadingImage === taskData.second) {
+//                holder.progressBar.progress = (progressInfo.normalizedValue * 100.0f).toInt()
+//                //Log.d("imageprogress","progress " + newValue);
+//            } else { //Log.d("imageprogress","loadingImage is different");
+//            }
+//        }
     }
 }

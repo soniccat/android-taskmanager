@@ -48,7 +48,9 @@ class RssItemsAdapter(private val itemBinder: RssItemBinder)
 
     class RssItemsViewHolder(view: View): RecyclerView.ViewHolder(view) {
         var name = view.name
-        var image: ImageView? = view.icon
+        var image: ImageView = view.icon
         var progressBar = view.progress
+
+        var progressTag: Int = 0
     }
 }

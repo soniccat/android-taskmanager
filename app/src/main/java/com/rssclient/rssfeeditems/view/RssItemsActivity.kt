@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.AbsListView
 import android.widget.AbsListView.OnScrollListener
 import android.widget.ListView
+import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
@@ -27,6 +28,7 @@ import com.rssclient.rssfeed.view.RssFeedsAdapter
 import com.rssclient.rssfeeditems.vm.RssItemsViewModel
 import com.rssclient.rssfeeditems.vm.RssItemsViewModelContract
 import com.rssclient.vm.RssView
+import kotlinx.android.synthetic.main.settings_text_field.view.*
 import java.lang.Exception
 import java.lang.NullPointerException
 
@@ -116,8 +118,10 @@ class RssItemsActivity : AppCompatActivity() {
             override fun loadImage(image: Image, params: Map<String, Any>, completion: (bitmap: Bitmap?, error: Exception?) -> Unit) {
                 recyclerView?.let { view ->
                     val cell = params[RssItemBinder.CellViewKey] as View
+                    val imageTag = params[RssItemBinder.ImageTag] as Int
+
                     val position = view.getChildAdapterPosition(cell)
-                    val imageInfo = RssItemsViewModelContract.ImageInfo(image, position, getVisibleRange())
+                    val imageInfo = RssItemsViewModelContract.ImageInfo(image, imageTag, position, getVisibleRange())
 
                     this@RssItemsActivity.vm.onLoadImageRequested(imageInfo, completion)
                 }
@@ -128,6 +132,16 @@ class RssItemsActivity : AppCompatActivity() {
             listener = object : RssItemBinder.Listener {
                 override fun onClick(item: RssItem) {
                     this@RssItemsActivity.vm.onRssItemPressed(item)
+                }
+
+                override fun bindImageProgress(progressBar: ProgressBar, tag: Int) {
+                    vm.getImageProgressLiveData(tag).observe(this@RssItemsActivity, Observer {
+                        progressBar.progress = (it * 100.0f).toInt()
+                    })
+                }
+
+                override fun unbindImageProgress(tag: Int) {
+                    vm.getImageProgressLiveData(tag).removeObservers(this@RssItemsActivity)
                 }
             }
         }
