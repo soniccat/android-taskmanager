@@ -13,28 +13,26 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.aglushkov.repository.livedata.Resource
 import com.aglushkov.taskmanager_http.image.Image
 import com.aglushkov.taskmanager_http.image.ImageBinder
-import com.example.alexeyglushkov.streamlib.progress.ProgressListener
 import com.example.alexeyglushkov.taskmanager.ui.TaskManagerView
 import com.example.alexeyglushkov.tools.Range
 import com.main.MainApplication
 import com.rssclient.controllers.R
-import com.rssclient.model.RssFeed
 import com.rssclient.model.RssItem
-import com.rssclient.rssfeed.view.RssFeedBinder
 import com.rssclient.rssfeed.view.RssFeedsAdapter
-import com.rssclient.rssfeeditems.view.RssItemsAdapter.RssItemsAdapterListener
 import com.rssclient.rssfeeditems.vm.RssItemsViewModel
 import com.rssclient.rssfeeditems.vm.RssItemsViewModelContract
 import com.rssclient.vm.RssView
 import java.lang.Exception
 import java.lang.NullPointerException
 
-class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener {
+class RssItemsActivity : AppCompatActivity() {
     private lateinit var vm: RssItemsViewModelContract
-    private var listView: ListView? = null
+    private var recyclerView: RecyclerView? = null
     private var taskManagerView: TaskManagerView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,45 +47,29 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener {
 
         setContentView(R.layout.activity_rss_items)
         bindView()
-
-        val activity = this
-        if (feed.items.size == 0) {
-//            rssRepository.loadRssFeed(feed.url, null)
-//            rssRepository.loa(taskManager, this, feed, object : RssFeedCallback {
-//                override fun completed(feed: RssFeed?, error: Error?) {
-//                    println("loaded")
-//                    HandlerTools.runOnMainThread {
-//                        if (error != null) {
-//                            Tools.showErrorMessage(activity, "Rss Load Error")
-//                        } else {
-//                            activity.updateTableAdapter()
-//                        }
-//                    }
-//                }
-//            })
-        } else {
-            activity.updateTableAdapter()
-        }
     }
 
     private fun bindView() {
         taskManagerView = findViewById<View>(R.id.task_manager_view) as TaskManagerView
-        listView = findViewById<View>(R.id.listview) as ListView
+        val recyclerView = findViewById<View>(R.id.list) as RecyclerView
+        this.recyclerView = recyclerView
 
-        listView?.setOnScrollListener(object : OnScrollListener {
-            override fun onScrollStateChanged(view: AbsListView, scrollState: Int) {}
-            override fun onScroll(view: AbsListView, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
-                val adapter = view.adapter as? RssItemsAdapter
-                if (adapter != null) {
-                    this@RssItemsActivity.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount)
-                }
-            }
-        })
+        recyclerView.layoutManager = LinearLayoutManager(recyclerView.context, RecyclerView.VERTICAL, false)
+
+//        recyclerView.setOnScrollListener(object : OnScrollListener {
+//            override fun onScrollStateChanged(view: AbsListView, scrollState: Int) {}
+//            override fun onScroll(view: AbsListView, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
+//                val adapter = view.adapter as? RssItemsAdapter
+//                if (adapter != null) {
+//                    this@RssItemsActivity.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount)
+//                }
+//            }
+//        })
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        listView = null
+        recyclerView = null
         taskManagerView = null
     }
 
@@ -119,7 +101,7 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener {
     }
 
     private fun showData(data: List<RssView<*>>?) {
-        val adapter = listView?.adapter as? RssFeedsAdapter
+        val adapter = recyclerView?.adapter as? RssFeedsAdapter
         if (adapter == null) {
             createAdapter(data)
         } else {
@@ -128,7 +110,7 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener {
     }
 
     private fun createAdapter(data: List<RssView<*>>?) {
-        val safeListView = listView ?: throw NullPointerException("ListView is null")
+        val safeListView = recyclerView ?: throw NullPointerException("ListView is null")
 
         val imageBinder = ImageBinder(object : ImageBinder.ImageLoader {
             override fun loadImage(image: Image, params: Map<String, Any>?, completion: (bitmap: Bitmap?, error: Exception?) -> Unit) {
@@ -136,7 +118,7 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener {
             }
         })
 
-        val feedBinder = RssItemBinder(imageBinder).apply {
+        val itemBinder = RssItemBinder(imageBinder).apply {
             listener = object : RssItemBinder.Listener {
                 override fun onClick(item: RssItem) {
                     this@RssItemsActivity.vm.onRssItemPressed(item)
@@ -144,7 +126,7 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener {
             }
         }
 
-        val adapter = RssFeedsAdapter(feedBinder)
+        val adapter = RssItemsAdapter(itemBinder)
         adapter.submitList(data)
 
         safeListView.adapter = adapter
@@ -160,14 +142,14 @@ class RssItemsActivity : AppCompatActivity(), RssItemsAdapterListener {
 //        return null
 //    }
 
-    fun getVisibleRange(): Range<Int> {
-        val safeListView = listView
-        return if (safeListView == null || safeListView.childCount == 0) {
-            Range(0, 0)
-        } else {
-            Range(safeListView.firstVisiblePosition, safeListView.firstVisiblePosition + safeListView.childCount - 1)
-        }
-    }
+//    fun getVisibleRange(): Range<Int> {
+//        val safeListView = recyclerView
+//        return if (safeListView == null || safeListView.childCount == 0) {
+//            Range(0, 0)
+//        } else {
+//            Range(safeListView.firstVisiblePosition, safeListView.firstVisiblePosition + safeListView.childCount - 1)
+//        }
+//    }
 
 //    internal fun updateTableAdapter() {
 //        val items = ArrayList(feed.items)

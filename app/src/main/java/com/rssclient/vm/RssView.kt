@@ -1,5 +1,6 @@
 package com.rssclient.vm
 
+import androidx.recyclerview.widget.DiffUtil
 import com.rssclient.model.RssFeed
 import com.rssclient.model.RssItem
 import java.util.*
@@ -22,6 +23,26 @@ sealed class RssView<T> {
         this.type = type
     }
 
+    class RssFeedView(feed: RssFeed): RssView<RssFeed>(feed, Type) {
+        companion object {
+            const val Type = 1
+        }
+
+        override fun equalsByIds(item: RssView<*>): Boolean {
+            return type == item.type && item is RssFeedView && firstItem().url == item.firstItem().url
+        }
+    }
+
+    class RssItemView(item: RssItem): RssView<RssItem>(item, Type) {
+        companion object {
+            const val Type = 2
+        }
+
+        override fun equalsByIds(item: RssView<*>): Boolean {
+            return type == item.type && item is RssItemView && firstItem().link == item.firstItem().link
+        }
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -40,23 +61,16 @@ sealed class RssView<T> {
         return result
     }
 
-    class RssFeedView(feed: RssFeed): RssView<RssFeed>(feed, Type) {
-        companion object {
-            const val Type = 1
-        }
+    companion object {
+        // ListAdapter diff callback
+        @JvmStatic val DiffCallback = object : DiffUtil.ItemCallback<RssView<*>>() {
+            override fun areItemsTheSame(oldCellInfo: RssView<*>, newCellInfo: RssView<*>): Boolean {
+                return oldCellInfo.equalsByIds(newCellInfo)
+            }
 
-        override fun equalsByIds(item: RssView<*>): Boolean {
-            return type == item.type && item is RssFeedView && firstItem().url == item.firstItem().url
-        }
-    }
-
-    class RssItemView(item: RssItem): RssView<RssItem>(item, Type) {
-        companion object {
-            const val Type = 2
-        }
-
-        override fun equalsByIds(item: RssView<*>): Boolean {
-            return type == item.type && item is RssItemView && firstItem().link == item.firstItem().link
+            override fun areContentsTheSame(oldCellInfo: RssView<*>, newCellInfo: RssView<*>): Boolean {
+                return oldCellInfo == newCellInfo
+            }
         }
     }
 }

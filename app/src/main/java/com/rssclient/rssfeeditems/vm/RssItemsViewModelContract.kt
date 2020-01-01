@@ -11,7 +11,7 @@ import com.rssclient.vm.RssView
 
 interface RssItemsViewModelContract {
     // LiveData
-    val rssItems: LiveData<Resource<RssView<*>>>
+    val rssItems: LiveData<Resource<List<RssView<*>>>>
     val taskManagerSnapshot: LiveData<TaskManagerSnapshot>
 
     // Events

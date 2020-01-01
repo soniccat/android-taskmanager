@@ -4,6 +4,8 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.aglushkov.repository.command.RepositoryCommand
+import java.lang.Exception
+import java.lang.RuntimeException
 import java.util.*
 
 /*
@@ -46,13 +48,19 @@ class RepositoryCommandHolder<R> {
     }
 
     fun <T> ensureLiveData(id: R, default: T? = null): MutableLiveData<T> {
-        assert(Looper.getMainLooper() == Looper.myLooper())
-
         var liveData = getLiveData<MutableLiveData<T>>(id)
         if (liveData == null) {
+            if (Looper.myLooper() != Looper.getMainLooper()) {
+                throw RuntimeException(
+                    """
+                    New LiveData should be created only on the main thread. 
+                    Consider calling this method in advance.
+                    """.trimIndent())
+            }
+
             liveData = MutableLiveData<T>()
             if (default != null) {
-                liveData.postValue(default)
+                liveData.value = default
             }
             putLiveData(id, liveData)
         }

@@ -13,19 +13,7 @@ import com.rssclient.vm.RssView
 import kotlinx.android.synthetic.main.feed_cell.view.*
 
 class RssFeedsAdapter(private val feedBinder: RssFeedBinder)
-    : ListAdapter<RssView<*>, RecyclerView.ViewHolder>(DiffCallback) {
-
-    companion object {
-        @JvmStatic val DiffCallback = object : DiffUtil.ItemCallback<RssView<*>>() {
-            override fun areItemsTheSame(oldCellInfo: RssView<*>, newCellInfo: RssView<*>): Boolean {
-                return oldCellInfo.equalsByIds(newCellInfo)
-            }
-
-            override fun areContentsTheSame(oldCellInfo: RssView<*>, newCellInfo: RssView<*>): Boolean {
-                return oldCellInfo == newCellInfo
-            }
-        }
-    }
+    : ListAdapter<RssView<*>, RecyclerView.ViewHolder>(RssView.DiffCallback) {
 
     override fun getItemViewType(position: Int): Int {
         return getItem(position).type

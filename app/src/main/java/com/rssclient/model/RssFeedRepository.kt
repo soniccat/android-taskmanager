@@ -36,11 +36,10 @@ class RssFeedRepository(val service: RssFeedService, storage: Storage) {
 
     fun loadRssFeeds(progressListener: ProgressListener?): RepositoryCommand<Resource<List<RssFeed>>, String> {
         val liveData = getFeedsLiveData()
-        val job = scope.launch {
-            liveData.load {
-                storage.getValue("feeds") as? List<RssFeed>
-            }
+        val job = liveData.load(scope) {
+            storage.getValue("feeds") as? List<RssFeed>
         }
+
         return commandHolder.putCommand(CancellableRepositoryCommand(LOAD_FEEDS_COMMAND, job, liveData))
     }
 
@@ -54,11 +53,8 @@ class RssFeedRepository(val service: RssFeedService, storage: Storage) {
 
     fun loadRssFeed(url: URL, progressListener: ProgressListener?): CancellableRepositoryCommand<Resource<RssFeed>, String> {
         val liveData = getFeedLiveData(url)
-        val job = scope.launch {
-            liveData.load {
-                val feed = service.loadRss(url, progressListener)
-                feed
-            }
+        val job = liveData.load(scope) {
+            service.loadRss(url, progressListener)
         }
 
         return commandHolder.putCommand(CancellableRepositoryCommand(url.toString(), job, getFeedLiveData(url)))

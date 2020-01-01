@@ -63,32 +63,34 @@ fun Resource<*>?.isUninitialized(): Boolean {
     return this?.isUninitialized() ?: true
 }
 
-// TODO: !!! think how to replace postValue to just value =
-// now we have too check value == initialValue || .value == loadingRes to understand if we are in the same load action
-// but it might not work, it's better to use .value = and check only value == loadingRes
-suspend fun <T> MutableLiveData<Resource<T>>.load(loader: suspend () -> T?) {
+fun <T> MutableLiveData<Resource<T>>.load(scope: CoroutineScope,
+                                          loader: suspend () -> T?): Job {
     val initialValue = value
     val loadingRes = value?.toLoading() ?: Resource.Loading()
     value = loadingRes
 
-    try {
-        val result = loader()
-        val newStatus: Resource<T> = if (result != null) {
-            Resource.Loaded(result)
-        } else {
-            Resource.Uninitialized()
-        }
+    return scope.launch {
+        try {
+            val result = loader()
+            val newStatus: Resource<T> = if (result != null) {
+                Resource.Loaded(result)
+            } else {
+                Resource.Uninitialized()
+            }
 
-        value = newStatus
-    } catch (e: CancellationException) {
-        if (value == loadingRes) {
-            value = initialValue
-        }
-        throw e
-    } catch (e: Exception) {
-        if (value == loadingRes) {
-            val errorRes = initialValue?.toError(e, true) ?: Resource.Error(e, true)
-            value = errorRes
+            if (value == loadingRes) {
+                postValue(newStatus)
+            }
+        } catch (e: CancellationException) {
+            if (value == loadingRes) {
+                value = initialValue
+            }
+            throw e
+        } catch (e: Exception) {
+            if (value == loadingRes) {
+                val errorRes = initialValue?.toError(e, true) ?: Resource.Error(e, true)
+                value = errorRes
+            }
         }
     }
 }

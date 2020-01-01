@@ -27,7 +27,8 @@ class MainRssViewModel(application: MainApplication): AndroidViewModel(applicati
 
     override val feedLiveData: LiveData<Resource<List<RssView<*>>>>
         get() = rssRepository.getFeedsLiveData().map {
-            val convertedData: List<RssView<*>> = it.data()?.map { feed -> RssView.RssFeedView(feed) } ?: emptyList()
+            val feeds = it.data() ?: emptyList()
+            val convertedData: List<RssView<*>> = feeds.map { feed -> RssView.RssFeedView(feed) }
             it.copyWith(convertedData)
         }
 

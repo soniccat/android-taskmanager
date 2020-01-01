@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
 import com.aglushkov.repository.livedata.Resource
 import com.aglushkov.taskmanager_http.image.Image
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo
@@ -24,6 +25,7 @@ class RssItemsViewModel(application: MainApplication, val args: Bundle):
         RssItemsViewModelContract,
         ProgressListener,
         TaskManagerSnapshot.OnSnapshotChangedListener {
+
     companion object {
         val FeedKey = "FeedKey"
         val TaskProviderId = "ImageTaskProvider"
@@ -34,7 +36,13 @@ class RssItemsViewModel(application: MainApplication, val args: Bundle):
     private var taskProvider: PriorityTaskProvider
     private var snapshot: TaskManagerSnapshot
 
-    override val rssItems = MutableLiveData<Resource<RssView<*>>>()
+    override val rssItems: LiveData<Resource<List<RssView<*>>>>
+        get() = rssRepository.getFeedLiveData(getRootFeed()!!.url).map {
+            val items = it.data()?.items ?: emptyList()
+            val convertedData: List<RssView<*>> = items.map { item -> RssView.RssItemView(item) }
+            it.copyWith(convertedData)
+        }
+
     override val taskManagerSnapshot = MutableLiveData<TaskManagerSnapshot>()
 
     init {

@@ -28,10 +28,11 @@ import java.lang.Exception
 import java.lang.NullPointerException
 import java.net.URL
 
-// TODO: add loader, try again option on error
+// TODO: add initial loader, try again option on error
+// TODO: integrate stack module or navigation
 class MainRssActivity : AppCompatActivity() {
     private lateinit var vm: MainRssViewModelContract
-    private var listView: RecyclerView? = null
+    private var recyclerView: RecyclerView? = null
 
     // Events
 
@@ -51,7 +52,7 @@ class MainRssActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        this.listView = null
+        this.recyclerView = null
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -77,10 +78,10 @@ class MainRssActivity : AppCompatActivity() {
     // Actions
 
     private fun bindView() {
-        val listView = findViewById<View>(R.id.list) as RecyclerView
-        this.listView = listView
+        val recyclerView = findViewById<View>(R.id.list) as RecyclerView
+        this.recyclerView = recyclerView
 
-        listView.layoutManager = LinearLayoutManager(listView.context, RecyclerView.VERTICAL, false)
+        recyclerView.layoutManager = LinearLayoutManager(recyclerView.context, RecyclerView.VERTICAL, false)
     }
 
     private fun observeViewModel() {
@@ -117,7 +118,7 @@ class MainRssActivity : AppCompatActivity() {
     }
 
     private fun showData(data: List<RssView<*>>?) {
-        val adapter = listView?.adapter as? RssFeedsAdapter
+        val adapter = recyclerView?.adapter as? RssFeedsAdapter
         if (adapter == null) {
             createAdapter(data)
         } else {
@@ -126,7 +127,7 @@ class MainRssActivity : AppCompatActivity() {
     }
 
     private fun createAdapter(data: List<RssView<*>>?) {
-        val safeListView = listView ?: throw NullPointerException("ListView is null")
+        val safeListView = recyclerView ?: throw NullPointerException("ListView is null")
 
         val imageBinder = ImageBinder(object : ImageBinder.ImageLoader {
             override fun loadImage(image: Image, params: Map<String, Any>?, completion: (bitmap: Bitmap?, error: Exception?) -> Unit) {

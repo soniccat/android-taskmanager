@@ -1,73 +1,54 @@
 package com.rssclient.rssfeeditems.view
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
-import com.aglushkov.taskmanager_http.image.Image
-import com.example.alexeyglushkov.ext.getDrawableCompat
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.rssclient.controllers.R
-import com.rssclient.model.RssItem
+import com.rssclient.vm.RssView
+import kotlinx.android.synthetic.main.feed_cell.view.*
 
-class RssItemsAdapter(context: Context, val values: ArrayList<RssItem>) : ArrayAdapter<RssItem>(context, R.layout.feed_cell, values) {
-    var listener: RssItemsAdapterListener? = null
+class RssItemsAdapter(private val itemBinder: RssItemBinder)
+    : ListAdapter<RssView<*>, RecyclerView.ViewHolder>(RssView.DiffCallback) {
 
-    internal inner class ViewHolder {
-        lateinit var text: TextView
-        lateinit var imageView: ImageView
-        var loadingImage: Image? = null
-        lateinit var progressBar: ProgressBar
-        var position = 0
+    override fun getItemViewType(position: Int): Int {
+        return getItem(position).type
     }
 
-    override fun getView(position: Int, convertView: View, parent: ViewGroup): View {
-        var convertView = convertView
-        if (convertView == null) {
-            val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            val rowView = inflater.inflate(R.layout.feed_cell, parent, false)
-            val textView = rowView.findViewById<TextView>(R.id.name)
-            val imageView = rowView.findViewById<ImageView>(R.id.icon)
-
-            val holder = ViewHolder()
-            holder.text = textView
-            holder.imageView = imageView
-            holder.progressBar = rowView.findViewById<View>(R.id.progress) as ProgressBar
-            holder.progressBar.isIndeterminate = false
-            convertView = rowView
-            convertView.tag = holder
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when(viewType) {
+            RssView.RssItemView.Type -> {
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.feed_cell, parent, false)
+                RssItemsViewHolder(view)
+            }
+            else -> throw IllegalArgumentException("FeedsAdapter.onCreateViewHolder: viewType is ${viewType}")
         }
-        val holder = convertView.tag as ViewHolder
-        val item = values[position]
-        holder.text.text = position.toString() + ". " + item.title
-        holder.position = position
-        if (item.image != null) {
-            holder.progressBar.visibility = View.VISIBLE
-            loadImage(convertView, item)
-        } else {
-            holder.progressBar.visibility = View.INVISIBLE
-            holder.imageView.setImageDrawable(context.getDrawableCompat(R.drawable.ic_launcher))
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val data = getItem(position)
+        when (data) {
+            is RssView.RssItemView -> {
+                holder as RssItemsViewHolder
+
+                val feed = data.firstItem()
+                itemBinder.bind(feed, holder)
+            }
         }
-        return convertView
     }
 
-    protected fun loadImage(convertView: View, item: RssItem) {
-        val holder = convertView.tag as ViewHolder
-        holder.imageView.setImageDrawable(null)
-        holder.loadingImage = item.image
-        if (item.image == null) {
-            return
+    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
+        super.onViewRecycled(holder)
+        if (holder is RssItemsViewHolder) {
+            itemBinder.clear(holder)
         }
-        val position = holder.position
-        holder.progressBar.progress = 0
-        listener?.loadImage(item)
     }
 
-    interface RssItemsAdapterListener {
-        fun loadImage(item: RssItem)
+    class RssItemsViewHolder(view: View): RecyclerView.ViewHolder(view) {
+        var name = view.name
+        var image: ImageView? = view.icon
+        var progressBar = view.progress
     }
-
 }
