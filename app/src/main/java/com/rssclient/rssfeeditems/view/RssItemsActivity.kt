@@ -113,8 +113,14 @@ class RssItemsActivity : AppCompatActivity() {
         val safeListView = recyclerView ?: throw NullPointerException("ListView is null")
 
         val imageBinder = ImageBinder(object : ImageBinder.ImageLoader {
-            override fun loadImage(image: Image, params: Map<String, Any>?, completion: (bitmap: Bitmap?, error: Exception?) -> Unit) {
-                this@RssItemsActivity.vm.onLoadImageRequested(image, completion)
+            override fun loadImage(image: Image, params: Map<String, Any>, completion: (bitmap: Bitmap?, error: Exception?) -> Unit) {
+                recyclerView?.let { view ->
+                    val cell = params[RssItemBinder.CellViewKey] as View
+                    val position = view.getChildAdapterPosition(cell)
+                    val imageInfo = RssItemsViewModelContract.ImageInfo(image, position, getVisibleRange())
+
+                    this@RssItemsActivity.vm.onLoadImageRequested(imageInfo, completion)
+                }
             }
         })
 
@@ -142,30 +148,26 @@ class RssItemsActivity : AppCompatActivity() {
 //        return null
 //    }
 
-//    fun getVisibleRange(): Range<Int> {
-//        val safeListView = recyclerView
-//        return if (safeListView == null || safeListView.childCount == 0) {
-//            Range(0, 0)
-//        } else {
-//            Range(safeListView.firstVisiblePosition, safeListView.firstVisiblePosition + safeListView.childCount - 1)
-//        }
-//    }
+    fun getVisibleRange(): Range<Int> {
+        val safeListView = recyclerView
+        return if (safeListView == null || safeListView.childCount == 0) {
+            Range(0, 0)
+        } else {
+            val layout = safeListView.layoutManager as LinearLayoutManager
+            Range(layout.findFirstVisibleItemPosition(), layout.findLastVisibleItemPosition())
+        }
+    }
 
-//    internal fun updateTableAdapter() {
-//        val items = ArrayList(feed.items)
-//        val adapter = RssItemsAdapter(this, items)
-//        adapter.listener = this
-//        listView.adapter = adapter
-//    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean { // Inflate the menu; this adds items to the action bar if it is present.
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.rss_items, menu)
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean { // Handle action bar item clicks here. The action bar will
-// automatically handle clicks on the Home/Up button, so long
-// as you specify a parent activity in AndroidManifest.xml.
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
         val id = item.itemId
         return if (id == R.id.action_settings) {
             true
@@ -243,14 +245,7 @@ class RssItemsActivity : AppCompatActivity() {
 //            }
 //        })
 //    }
-//
-//    private fun getTaskPriority(taskPosition: Int, firstVisibleItem: Int, visibleItemCount: Int): Int { //for a test purpose we start load images from the center of the list view
-//        var delta = Math.abs(firstVisibleItem + visibleItemCount / 2 - taskPosition)
-//        if (delta > 100) {
-//            delta = 100
-//        }
-//        return 100 - delta
-//    }
+
 
 //    companion object {
 //        fun getLoadImageCallback(item: RssItem?, activity: RssItemsActivity): ImageLoader.LoadCallback {

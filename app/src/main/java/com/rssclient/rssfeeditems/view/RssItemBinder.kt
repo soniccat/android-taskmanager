@@ -7,17 +7,20 @@ import com.rssclient.controllers.R
 import com.rssclient.model.RssItem
 
 class RssItemBinder(val imageBinder: ImageBinder) {
+    companion object {
+        val CellViewKey = "CellViewKey"
+    }
+
     var listener: Listener? = null
 
     fun bind(item: RssItem, holder: RssItemsAdapter.RssItemsViewHolder) {
         holder.name?.text = item.title
-
         holder.itemView.setOnClickListener {
             listener?.onClick(item)
         }
 
         val placeholder = holder.itemView.context.getDrawableCompat(R.drawable.ic_launcher)
-        imageBinder.bind(holder.image!!, item.image, placeholder)
+        imageBinder.bind(holder.image!!, item.image, placeholder, mapOf( CellViewKey to holder.itemView))
         holder.progressBar.visibility = if (holder.image != null) View.VISIBLE else View.INVISIBLE
     }
 

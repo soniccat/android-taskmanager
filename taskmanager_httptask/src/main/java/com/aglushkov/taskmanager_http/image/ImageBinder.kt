@@ -6,7 +6,7 @@ import android.widget.ImageView
 import java.lang.ref.WeakReference
 
 class ImageBinder(private val imageLoader: ImageLoader) {
-    fun bind(imageView: ImageView?, image: Image?, placeholder: Drawable? = null, params: Map<String, Any>? = null) {
+    fun bind(imageView: ImageView?, image: Image?, placeholder: Drawable? = null, params: Map<String, Any> = emptyMap()) {
         if (imageView == null) return
 
         val imageViewRef = WeakReference(imageView)
@@ -19,8 +19,8 @@ class ImageBinder(private val imageLoader: ImageLoader) {
 
     fun bind(imageView: ImageView?,
              image: Image?,
-             placeholder: Drawable? = null,
-             params: Map<String, Any>? = null,
+             placeholder: Drawable?,
+             params: Map<String, Any>,
              completion: (Bitmap?, Exception?) -> Unit) {
         if (imageView == null) return
         if (image != null) {
@@ -50,7 +50,7 @@ class ImageBinder(private val imageLoader: ImageLoader) {
 
     interface ImageLoader {
         fun loadImage(image: Image,
-                      params: Map<String, Any>?,
+                      params: Map<String, Any>,
                       completion: (bitmap: Bitmap?, error: Exception?) -> Unit)
     }
 }
