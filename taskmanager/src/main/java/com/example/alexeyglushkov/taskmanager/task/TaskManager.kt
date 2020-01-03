@@ -40,5 +40,6 @@ interface TaskManager : TaskPool, TaskPool.Listener {
         // add additional flag showing that a task added to a loading or waiting queue
         fun onTaskAdded(pool: TaskPool, task: Task, isLoadingQueue: Boolean)
         fun onTaskRemoved(pool: TaskPool, task: Task, isLoadingQueue: Boolean)
+        fun onTaskStatusChanged(task: Task, oldStatus: Task.Status)
     }
 }

@@ -194,7 +194,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
         // TODO: actually I think that problem of adding the same task is not important
         // TaskManager must set Waiting status on the current thread
-        task.private.taskStatus = Task.Status.Waiting
+        setTaskStatus(task, Task.Status.Waiting)
 
         threadRunner.launch {
             // task will be launched in onTaskAdded method
@@ -390,6 +390,15 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         }
     }
 
+    @WorkerThread
+    private fun triggerOnTaskStatusChangedOnThread(task: Task, oldStatus: Task.Status) {
+        threadRunner.checkThread()
+
+        for (listener in listeners) {
+            listener.get()?.onTaskStatusChanged(task, oldStatus)
+        }
+    }
+
     // ==
 
     override fun removeTaskProvider(provider: TaskProvider) {
@@ -520,8 +529,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
                         handleTaskFinishOnThread(newTask, false)
                     } else {
-                        newTask as TaskBase
-                        newTask.private.taskStatus = Task.Status.Waiting
+                        setTaskStatus(newTask, Task.Status.Waiting)
                     }
                 }
             }
@@ -530,9 +538,18 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     @WorkerThread
     private fun addTaskDependency(newTask: Task, currentTask: Task) {
-        newTask as TaskBase
-        newTask.private.taskStatus = Task.Status.Blocked
+        setTaskStatus(newTask, Task.Status.Blocked)
         newTask.addTaskDependency(currentTask)
+    }
+
+    private fun setTaskStatus(task: Task, status: Task.Status) {
+        val oldStatus = task.taskStatus
+        task as TaskBase
+        task.private.taskStatus = status
+
+        threadRunner.launch {
+            triggerOnTaskStatusChangedOnThread(task, oldStatus)
+        }
     }
 
     @WorkerThread
@@ -594,7 +611,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         addLoadingTaskOnThread(task)
 
         logTask(task, "Task started")
-        task.private.taskStatus = Task.Status.Started
+        setTaskStatus(task, Task.Status.Started)
         task.private.setTaskStartDate(Date())
 
         val job = SupervisorJob()
@@ -644,7 +661,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
         // the task will be removed from the provider automatically
         logTask(task, "finished")
-        task.private.taskStatus = status
+        setTaskStatus(task, status)
         task.private.clearAllListeners()
 
         // TODO: use callback scope

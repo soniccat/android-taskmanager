@@ -233,4 +233,21 @@ class SimpleTaskManagerSnapshot : TaskManagerSnapshot, TaskManager.Listener {
             }
         }
     }
+
+    override fun onTaskStatusChanged(task: Task, oldStatus: Task.Status) {
+        HandlerTools.runOnHandlerThread(callbackHandler) {
+            if (task.taskStatus == Task.Status.Blocked) {
+                updateBlockingTaskInfo(task.taskType, true)
+                if (oldStatus == Task.Status.Waiting) {
+                    updateWaitingTaskInfo(task.taskType, false)
+                }
+
+            } else if (oldStatus == Task.Status.Blocked) {
+                updateBlockingTaskInfo(task.taskType, false)
+                if (oldStatus == Task.Status.Waiting) {
+                    updateWaitingTaskInfo(task.taskType, true)
+                }
+            }
+        }
+    }
 }
