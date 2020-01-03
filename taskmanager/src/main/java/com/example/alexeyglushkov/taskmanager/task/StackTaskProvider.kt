@@ -76,8 +76,9 @@ open class StackTaskProvider(private val areTasksDependent: Boolean, //if enable
             val task = _tasks[i]
             val taskFilter = taskFilter
             val isFiltered = taskFilter != null && taskFilter.isFiltered(task)
+            val isBlocked = Tasks.isTaskBlocked(task)
 
-            if (!task.isBlocked() && !isFiltered) {
+            if (!isBlocked && !isFiltered) {
                 result = i
                 break
             }

@@ -1,5 +1,6 @@
 package com.rssclient.rssfeeditems.view
 
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,6 +33,7 @@ class RssItemsAdapter(private val itemBinder: RssItemBinder)
         when (data) {
             is RssView.RssItemView -> {
                 holder as RssItemsViewHolder
+                holder.bindPosition = position
 
                 val feed = data.firstItem()
                 itemBinder.bind(feed, holder)
@@ -51,6 +53,17 @@ class RssItemsAdapter(private val itemBinder: RssItemBinder)
         var image: ImageView = view.icon
         var progressBar = view.progress
 
-        var progressTag: Int = 0
+        var bindPosition: Int = -1
+        var progressTag: String = ""
+
+        fun showProgress(progress: Float) {
+            progressBar.progress = (progress * 100.0f).toInt()
+        }
+
+        fun showImage(anImg: Drawable?) {
+            image.setImageDrawable(anImg)
+            image.visibility = View.VISIBLE
+            progressBar.visibility = View.INVISIBLE
+        }
     }
 }

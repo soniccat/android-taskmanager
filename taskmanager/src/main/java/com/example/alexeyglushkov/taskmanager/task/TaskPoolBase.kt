@@ -35,7 +35,6 @@ abstract class TaskPoolBase(threadRunner: ThreadRunner) : TaskPool {
 
     override fun addTask(task: Task) {
         if (task !is TaskBase) { assert(false); return }
-
         if (!Tasks.isTaskReadyToStart(task)) {
             Log.d(tag(), "Can't put task " + task.javaClass.toString() + " because it has been added " + task.taskStatus.toString())
             return
@@ -54,8 +53,6 @@ abstract class TaskPoolBase(threadRunner: ThreadRunner) : TaskPool {
         if (task !is TaskBase) { assert(false); return }
         checkHandlerThread()
 
-        task.addTaskStatusListener(this)
-
         var resultTask = task
         val taskId = task.taskId
         if (taskId != null) {
@@ -67,6 +64,7 @@ abstract class TaskPoolBase(threadRunner: ThreadRunner) : TaskPool {
         }
 
         if (resultTask == task) {
+            task.addTaskStatusListener(this)
             addTaskInternal(task)
             triggerOnTaskAdded(task)
         }

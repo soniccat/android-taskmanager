@@ -4,9 +4,6 @@ import androidx.annotation.WorkerThread
 
 import androidx.collection.SparseArrayCompat
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-
 import java.util.ArrayList
 import java.util.Comparator
 
@@ -116,11 +113,12 @@ open class PriorityTaskProvider(threadRunner: ThreadRunner, override var taskPro
         var topTask: Task? = null
         val iterator = queue.iterator()
         while (iterator.hasNext()) {
-            topTask = iterator.next()
-
+            val aTask = iterator.next()
             val taskFilter = taskFilter
-            val isFiltered = taskFilter != null && taskFilter.isFiltered(topTask)
-            if (!isFiltered && !topTask.isBlocked()) {
+            val isFiltered = taskFilter != null && taskFilter.isFiltered(aTask)
+
+            if (!isFiltered && !Tasks.isTaskBlocked(aTask)) {
+                topTask = aTask
                 if (needPoll) {
                     iterator.remove()
                 }

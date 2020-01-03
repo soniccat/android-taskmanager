@@ -37,7 +37,7 @@ open class Image : Serializable, TaskListener, HttpURLConnectionProvider {
     protected var processingTask: WeakReference<Task>? = null
 
     override fun setTaskInProgress(task: Task) {
-        Log.d("Image--", "start $task")
+        //Log.d("Image--", "start $task")
         processingTask = WeakReference(task)
         loadStatus = Status.Started
     }
@@ -47,7 +47,7 @@ open class Image : Serializable, TaskListener, HttpURLConnectionProvider {
             loadStatus = Status.Completed
             processingTask = null
         }
-        Log.d("Image--", "completed $task")
+        //Log.d("Image--", "completed $task")
     }
 
     @Throws(IOException::class)

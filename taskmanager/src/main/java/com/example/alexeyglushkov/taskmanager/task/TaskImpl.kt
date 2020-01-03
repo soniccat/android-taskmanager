@@ -51,7 +51,9 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
     override var taskStatus: Task.Status
         get() = _taskStatus
         set(value) {
-            val oldStatus = this.taskStatus
+            Tasks.logTask("TaskImpl", this, "setTaskStatus " + value + " from " + _taskStatus)
+
+            val oldStatus = _taskStatus
             _taskStatus = value
 
             Log.d("TaskImpl", "setTaskStatus " + value + " " + taskId + " " + Thread.currentThread())
@@ -74,7 +76,7 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
         return -1
     }
 
-    override fun isBlocked(): Boolean {
+    override fun hasActiveDependencies(): Boolean {
         var isBlocked = false
         for (task in dependencies) {
             val realTask = task.get()

@@ -11,13 +11,17 @@ import com.rssclient.model.RssItem
 import com.rssclient.vm.RssView
 
 interface RssItemsViewModelContract {
-    data class ImageInfo(val image: Image, val tag: Any, val position: Int, val visibleRange: Range<Int>)
+    data class ImageInfo(val image: Image,
+                         val imageTag: String, // hash code of image.url instead of passing image
+                         val position: Int,
+                         val visibleRange: Range<Int>)
 
     // LiveData
     val rssItems: LiveData<Resource<List<RssView<*>>>>
     val taskManagerSnapshot: LiveData<TaskManagerSnapshot>
 
-    fun getImageProgressLiveData(tag: Int): MutableLiveData<Float>
+    fun getImageProgressLiveData(imageTag: String): MutableLiveData<Float>
+    fun resetImageProgress(imageTag: String)
 
     // Events
     fun onRssItemPressed(rssItem: RssItem)

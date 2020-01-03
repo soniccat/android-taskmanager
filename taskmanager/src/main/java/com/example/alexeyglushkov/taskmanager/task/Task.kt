@@ -91,7 +91,7 @@ interface Task : TaskContainer {
     // Caller: Client
     //
     var taskUserData: Any?
-    fun isBlocked(): Boolean
+    fun hasActiveDependencies(): Boolean
 
     // add/remove dependency
     //

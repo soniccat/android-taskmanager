@@ -1,7 +1,6 @@
 package com.example.alexeyglushkov.taskmanager.task
 
 import android.util.Log
-
 import com.example.alexeyglushkov.tools.HandlerTools
 
 import kotlinx.coroutines.CancellationException
@@ -17,9 +16,9 @@ object Tasks {
     fun bindOnTaskCompletion(task: Task, listener: TaskListener) {
         task.addTaskStatusListener(object : Task.StatusListener {
             override fun onTaskStatusChanged(task: Task, oldStatus: Task.Status, newStatus: Task.Status) {
-                Log.d("Bind--", "task $task from $oldStatus to $newStatus")
+                //Log.d("Bind--", "task $task from $oldStatus to $newStatus")
 
-                if (newStatus == Task.Status.Completed || newStatus == Task.Status.Cancelled) {
+                if (isTaskFinished(task)) {
                     HandlerTools.runOnMainThread { listener.setTaskCompleted(task) }
                 }
             }
@@ -28,7 +27,12 @@ object Tasks {
 
     fun isTaskReadyToStart(task: Task): Boolean {
         val st = task.taskStatus
-        return st != Task.Status.Started && st != Task.Status.Completed && st != Task.Status.Cancelled
+        return st == Task.Status.NotStarted ||
+                st == Task.Status.Waiting
+    }
+
+    fun isTaskBlocked(task: Task): Boolean {
+        return task.taskStatus == Task.Status.Blocked
     }
 
     // TODO: convert to extension
@@ -62,6 +66,10 @@ object Tasks {
             }
             taskPool.addTask(task)
         }
+    }
+
+    fun logTask(tag: String, task: Task, prefix: String) {
+        Log.d(tag, prefix + " [" + task.javaClass.toString() + "(" + task.taskStatus + ")" + " id= " + task.taskId + " priority= " + task.taskPriority + " type= " + task.taskType + " time " + task.taskDuration() + "] " + task)
     }
 
     // TODO: think about a better name

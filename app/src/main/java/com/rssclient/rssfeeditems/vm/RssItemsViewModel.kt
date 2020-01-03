@@ -1,11 +1,9 @@
 package com.rssclient.rssfeeditems.vm
 
-import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.lifecycle.*
 import com.aglushkov.repository.livedata.Resource
-import com.aglushkov.taskmanager_http.image.Image
 import com.aglushkov.taskmanager_http.image.ImageLoader
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener
@@ -64,8 +62,12 @@ class RssItemsViewModel(application: MainApplication, val args: Bundle):
         return args.getParcelable(FeedKey)
     }
 
-    override fun getImageProgressLiveData(tag: Int): MutableLiveData<Float> {
-        return rssRepository.getImageProgressLiveData(tag.toString())
+    override fun getImageProgressLiveData(imageTag: String): MutableLiveData<Float> {
+        return rssRepository.getImageProgressLiveData(imageTag)
+    }
+
+    override fun resetImageProgress(imageTag: String) {
+        getImageProgressLiveData(imageTag).value = 0.0f
     }
 
     override fun onSnapshotChanged(snapshot: TaskManagerSnapshot) {
@@ -85,7 +87,7 @@ class RssItemsViewModel(application: MainApplication, val args: Bundle):
                 "_" + Integer.toString(position))
         task.taskType = position % 2 + 1
         task.taskPriority = getTaskPriority(position, range.lower, range.upper - range.lower + 1)
-        task.taskUserData = imageInfo.tag
+        task.taskUserData = imageInfo.imageTag
         task.addTaskProgressListener(this)
         task.taskProgressMinChange = 0.2f
         task.loadPolicy = Task.LoadPolicy.CompleteWhenAlreadyAddedCompletes
@@ -113,7 +115,7 @@ class RssItemsViewModel(application: MainApplication, val args: Bundle):
 
     override fun onProgressChanged(sender: Any?, progressInfo: ProgressInfo) {
         val task = sender as Task
-        val imageTag = task.taskUserData as Int
+        val imageTag = task.taskUserData as String
 
         val liveData = getImageProgressLiveData(imageTag)
         liveData.postValue(progressInfo.normalizedValue)
