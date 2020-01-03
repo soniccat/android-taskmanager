@@ -77,12 +77,30 @@ class TaskProviderTestSet {
         assertEquals("b", task!!.taskId)
     }
 
-    fun getTopTaskWithBlockedTask() {
-
+    fun getTopTaskWithDependantTask() {
         // Arrange
         val dTask = TestTasks.createTestTaskSpy("d", 0)
         val blockedTask = TestTasks.createTestTaskSpy("e", 0)
         blockedTask.addTaskDependency(dTask)
+
+        // Act
+        taskProvider.addTask(blockedTask)
+        taskProvider.addTask(dTask)
+        taskProvider.addTask(TestTasks.createTestTaskSpy("a", 0))
+        taskProvider.addTask(TestTasks.createTestTaskSpy("b", 0))
+        taskProvider.addTask(TestTasks.createTestTaskSpy("c", 0))
+
+        val task = taskProvider.getTopTask()
+
+        // Verify
+        assertEquals("d", task!!.taskId)
+    }
+
+    fun getTopTaskWithBlockedTask() {
+        // Arrange
+        val dTask = TestTasks.createTestTaskSpy("d", 0)
+        val blockedTask = TestTasks.createTestTaskSpy("e", 0)
+        `when`(blockedTask.taskStatus).thenReturn(Task.Status.Blocked)
 
         // Act
         taskProvider.addTask(blockedTask)
@@ -126,12 +144,31 @@ class TaskProviderTestSet {
         assertEquals(null, taskProvider.getTask("b"))
     }
 
-    fun takeTopTaskWithBlockedTask() {
-
+    fun takeTopTaskWithDependantTask() {
         // Arrange
         val dTask = TestTasks.createTestTaskSpy("d", 0)
         val blockedTask = TestTasks.createTestTaskSpy("e", 0)
         blockedTask.addTaskDependency(dTask)
+
+        // Act
+        taskProvider.addTask(blockedTask)
+        taskProvider.addTask(dTask)
+        taskProvider.addTask(TestTasks.createTestTaskSpy("a", 0))
+        taskProvider.addTask(TestTasks.createTestTaskSpy("b", 0))
+        taskProvider.addTask(TestTasks.createTestTaskSpy("c", 0))
+
+        val task = taskProvider.takeTopTask()
+
+        // Verify
+        assertEquals("d", task!!.taskId)
+        assertNull(taskProvider.getTask("d"))
+    }
+
+    fun takeTopTaskWithBlockedTask() {
+        // Arrange
+        val dTask = TestTasks.createTestTaskSpy("d", 0)
+        val blockedTask = TestTasks.createTestTaskSpy("e", 0)
+        `when`(blockedTask.taskStatus).thenReturn(Task.Status.Blocked)
 
         // Act
         taskProvider.addTask(blockedTask)

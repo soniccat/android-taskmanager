@@ -39,12 +39,22 @@ open class StackTaskProviderTest {
     // ProviderTests
 
     @Test
-    fun testGetTopTaskWithBlockedTask() {
+    fun getTopTaskWithDependantTask() {
+        providerTest.getTopTaskWithDependantTask()
+    }
+
+    @Test
+    fun getTopTaskWithBlockedTask() {
         providerTest.getTopTaskWithBlockedTask()
     }
 
     @Test
-    fun testTakeTopTaskWithBlockedTask() {
+    fun takeTopTaskWithDependantTask() {
+        providerTest.takeTopTaskWithDependantTask()
+    }
+
+    @Test
+    fun takeTopTaskWithBlockedTask() {
         providerTest.takeTopTaskWithBlockedTask()
     }
 
