@@ -130,7 +130,7 @@ class MainRssActivity : AppCompatActivity() {
         val safeListView = recyclerView ?: throw NullPointerException("ListView is null")
 
         val imageBinder = ImageBinder(object : ImageBinder.ImageLoader {
-            override fun loadImage(image: Image, params: Map<String, Any>?, completion: (bitmap: Bitmap?, error: Exception?) -> Unit) {
+            override fun loadImage(image: Image, params: Map<String, Any>, completion: (bitmap: Bitmap?, error: Exception?) -> Unit) {
                 this@MainRssActivity.vm.onLoadImageRequested(image, completion)
             }
         })

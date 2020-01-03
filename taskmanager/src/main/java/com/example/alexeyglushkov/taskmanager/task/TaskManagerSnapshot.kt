@@ -10,10 +10,12 @@ import androidx.collection.SparseArrayCompat
 interface TaskManagerSnapshot {
     val loadingTasksCount: Int
     val waitingTasksCount: Int
+    val blockedTasksCount: Int
     val maxQueueSize: Int
     val loadingLimits: SparseArrayCompat<Float>
     val usedLoadingSpace: SparseArrayCompat<Int>
     val waitingTaskInfo: SparseArrayCompat<Int>
+    val blockedTaskInfo: SparseArrayCompat<Int>
 
     fun startSnapshotRecording(taskManager: TaskManager)
     fun stopSnapshotRecording()

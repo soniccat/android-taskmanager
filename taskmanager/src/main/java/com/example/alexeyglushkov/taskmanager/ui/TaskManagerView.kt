@@ -26,6 +26,7 @@ class TaskManagerView : LinearLayout {
     private lateinit var barView: TaskBarView
     private lateinit var loadingTasks: TextView
     private lateinit var waitingTasks: TextView
+    private lateinit var blockedTasks: TextView
     private var colors = mutableListOf<Int>()
     private var allTypes = listOf<Int>()
 
@@ -43,6 +44,7 @@ class TaskManagerView : LinearLayout {
         barView = findViewById(R.id.bar)
         loadingTasks = findViewById(R.id.loading)
         waitingTasks = findViewById(R.id.waiting)
+        blockedTasks = findViewById(R.id.blocked)
     }
 
     fun showSnapshot(snapshot: TaskManagerSnapshot) {
@@ -51,6 +53,7 @@ class TaskManagerView : LinearLayout {
         updateAllTypesArray()
         updateLoadingTasks()
         updateWaitingTasks()
+        updateBlockedTasks()
         updateBar()
     }
 
@@ -74,14 +77,29 @@ class TaskManagerView : LinearLayout {
         str.append("Waiting: ")
         str.append(snapshot.waitingTasksCount.toString() + " ")
 
-        val loadingTaskInfo = snapshot.waitingTaskInfo
+        val waitingTaskInfo = snapshot.waitingTaskInfo
         var count: Int
         for (type in allTypes) {
-            count = loadingTaskInfo.get(type, 0)
+            count = waitingTaskInfo.get(type, 0)
             str.append("$count ")
         }
 
         waitingTasks.text = str
+    }
+
+    internal fun updateBlockedTasks() {
+        val str = StringBuilder()
+        str.append("Blocked: ")
+        str.append(snapshot.blockedTasksCount.toString() + " ")
+
+        val blockedTaskInfo = snapshot.blockedTaskInfo
+        var count: Int
+        for (type in allTypes) {
+            count = blockedTaskInfo.get(type, 0)
+            str.append("$count ")
+        }
+
+        blockedTasks.text = str
     }
 
     internal fun updateBar() {

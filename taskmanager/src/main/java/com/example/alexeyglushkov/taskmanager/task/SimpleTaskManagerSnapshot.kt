@@ -23,6 +23,8 @@ class SimpleTaskManagerSnapshot : TaskManagerSnapshot, TaskManager.Listener {
         private set
     override var waitingTasksCount: Int = 0
         private set
+    override var blockedTasksCount: Int = 0
+        private set
     override var maxQueueSize: Int = 0
         private set
     override var loadingLimits = SparseArrayCompat<Float>()
@@ -30,6 +32,8 @@ class SimpleTaskManagerSnapshot : TaskManagerSnapshot, TaskManager.Listener {
     override var usedLoadingSpace = SparseArrayCompat<Int>()
         private set
     override var waitingTaskInfo = SparseArrayCompat<Int>()
+        private set
+    override var blockedTaskInfo = SparseArrayCompat<Int>()
         private set
 
     private var needUpdateSnapshot: Boolean = false
@@ -60,13 +64,19 @@ class SimpleTaskManagerSnapshot : TaskManagerSnapshot, TaskManager.Listener {
         loadingTasksCount = taskManager.getLoadingTaskCount()
 
         waitingTaskInfo = SparseArrayCompat()
-        for (taskProvider in taskManager.taskProviders) {
-            waitingTasksCount += taskProvider.getTaskCount()
+        blockedTaskInfo = SparseArrayCompat()
 
+        for (taskProvider in taskManager.taskProviders) {
             for (task in taskProvider.getTasks()) {
-                var count = waitingTaskInfo.get(task.taskType, 0)
-                ++count
-                waitingTaskInfo.put(task.taskType, count)
+                if (task.taskStatus == Task.Status.Blocked) {
+                    blockedTasksCount += 1
+                    val blockedCount = blockedTaskInfo.get(task.taskType, 0)
+                    blockedTaskInfo.put(task.taskType, blockedCount + 1)
+                } else {
+                    waitingTasksCount += 1
+                    val count = waitingTaskInfo.get(task.taskType, 0)
+                    waitingTaskInfo.put(task.taskType, count + 1)
+                }
             }
         }
 
@@ -134,6 +144,28 @@ class SimpleTaskManagerSnapshot : TaskManagerSnapshot, TaskManager.Listener {
         }
 
         waitingTaskInfo.put(taskType, count)
+        triggerOnSnapshotListeners()
+    }
+
+    private fun updateBlockingTaskInfo(taskType: Int, add: Boolean) {
+        var count = blockedTaskInfo.get(taskType, 0)
+        if (add) {
+            ++blockedTasksCount
+            ++count
+        } else {
+            --blockedTasksCount
+            --count
+
+            if (count < 0) {
+                count = 0
+            }
+
+            if (blockedTasksCount < 0) {
+                blockedTasksCount = 0
+            }
+        }
+
+        blockedTaskInfo.put(taskType, count)
         triggerOnSnapshotListeners()
     }
 
