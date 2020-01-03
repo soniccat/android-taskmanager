@@ -6,7 +6,6 @@ import android.os.Looper
 
 import android.util.Log
 import androidx.annotation.WorkerThread
-import com.example.alexeyglushkov.streamlib.progress.ProgressInfo
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener
 
 import com.example.alexeyglushkov.tools.CancelError
@@ -131,15 +130,14 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     private fun initScope(inScope: CoroutineScope?) {
-        val scope: CoroutineScope
-        if (inScope != null) {
-            scope = inScope
+        val scope = if (inScope != null) {
+            inScope
         } else {
             val localHandlerThread = HandlerThread("SimpleTaskManager Thread")
             localHandlerThread.start()
             val handler = Handler(localHandlerThread.looper)
             val dispatcher = handler.asCoroutineDispatcher("SimpleTaskManager handler dispatcher")
-            scope = CoroutineScope(dispatcher + SupervisorJob())
+            CoroutineScope(dispatcher + SupervisorJob())
         }
 
         _threadRunner = ScopeThreadRunner(scope, "SimpleTaskManagerScopeTheadId")
@@ -154,11 +152,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     private fun initTaskSope(inScope: CoroutineScope?) {
-        if (inScope != null) {
-            taskScope = inScope
-        } else {
-            taskScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-        }
+        taskScope = inScope ?: CoroutineScope(Dispatchers.IO + SupervisorJob())
     }
 
     private fun createTaskProviders(): SafeList<TaskProvider> {
@@ -271,9 +265,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     @WorkerThread
     override fun onTaskConflict(pool: TaskPool, newTask: Task, oldTask: Task): Task {
         threadRunner.checkThread()
-        if (pool == loadingTasks) {
-            logTask(newTask, "omg")
-        }
         Assert.assertTrue(pool != loadingTasks)
 
         return threadRunner.run {
@@ -289,11 +280,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
                 taskManagerCoordinator.onTaskStartedLoading(pool, task)
             }
 
-            if (isLoadingPool && Tasks.isTaskBlocked(task)) {
-                logTask(task, "omg")
-            }
-
-            logTask(task, "onTaskAdded " + isLoadingPool)
+            logTask(task, "onTaskAdded $isLoadingPool")
             triggerOnTaskAddedOnThread(task, isLoadingPool)
 
             if (!isLoadingPool) {
@@ -312,7 +299,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
                 taskManagerCoordinator.onTaskFinishedLoading(pool, task)
             }
 
-            logTask(task, "onTaskRemoved " + isLoadingPool)
+            logTask(task, "onTaskRemoved $isLoadingPool")
             triggerOnTaskRemovedOnThread(task, isLoadingPool)
         }
     }
@@ -466,16 +453,12 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     private fun resolveTaskConflict(newTask: Task, currentTask: Task): Task {
         threadRunner.checkThread()
 
-        if (Tasks.isTaskBlocked(newTask)) {
-            Log.d("a", "omg")
-        }
-
         return when (newTask.loadPolicy) {
             Task.LoadPolicy.AddDependencyIfAlreadyAdded -> {
                 logTask(newTask, "Conflict: wait until the current task finishes")
                 logTask(currentTask, "Conflict: the current task")
-                // TODO: need to resolve the case when we already have a waiting task
-                addTaskDependency(newTask, currentTask)
+                // TODO: we need to call addTaskDependency for all other tasks with this id or probably create a list to store all such dependant tasks
+                newTask.addTaskDependency(currentTask)
                 newTask
             }
             Task.LoadPolicy.CompleteWhenAlreadyAddedCompletes -> {
@@ -503,14 +486,12 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     // syncs progress state too
     @WorkerThread
     private fun connectTaskCompletions(newTask: Task, currentTask: Task) {
-        addTaskDependency(newTask, currentTask)
+        addTaskBlockedDependency(newTask, currentTask)
 
-        currentTask.addTaskProgressListener(object : ProgressListener {
-            override fun onProgressChanged(sender: Any?, progressInfo: ProgressInfo?) {
-                progressInfo?.let {
-                    newTask as TaskBase
-                    newTask.private.triggerProgressListeners(progressInfo)
-                }
+        currentTask.addTaskProgressListener(ProgressListener { _, progressInfo ->
+            progressInfo?.let {
+                newTask as TaskBase
+                newTask.private.triggerProgressListeners(progressInfo)
             }
         })
 
@@ -522,11 +503,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
                     if (task.taskStatus != Task.Status.Cancelled) {
                         newTask as TaskBase
                         newTask.private.taskResult = currentTask.taskResult
-
-                        if (loadingTasks.getTasks().contains(newTask) /*|| !Tasks.isTaskReadyToStart(task)*/) {
-                            logTask(newTask, "omg")
-                        }
-
                         handleTaskFinishOnThread(newTask, false)
                     } else {
                         setTaskStatus(newTask, Task.Status.Waiting)
@@ -537,7 +513,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     @WorkerThread
-    private fun addTaskDependency(newTask: Task, currentTask: Task) {
+    private fun addTaskBlockedDependency(newTask: Task, currentTask: Task) {
         setTaskStatus(newTask, Task.Status.Blocked)
         newTask.addTaskDependency(currentTask)
     }
@@ -575,7 +551,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         var topPriorityTask: Task? = null
         var topPriority = -1
 
-        var i = 0
         for (provider in _taskProviders) {
             val t = provider.getTopTask()
             if (t != null && t.taskPriority > topPriority) {
@@ -583,17 +558,13 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
                 topPriority = t.taskPriority
                 topTaskProvider = provider
             }
-
-            ++i
         }
 
-        if (topTaskProvider != null && topPriorityTask != null) {
-            topPriorityTask = topTaskProvider.takeTopTask()
+        return if (topTaskProvider != null && topPriorityTask != null) {
+            topTaskProvider.takeTopTask()
         } else {
-            topPriorityTask = null
+            null
         }
-
-        return topPriorityTask
     }
 
     @WorkerThread
@@ -602,12 +573,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         threadRunner.checkThread()
         Assert.assertTrue(Tasks.isTaskReadyToStart(task))
 
-        task.taskId?.let { taskId ->
-            if (loadingTasks.getTask(taskId) != null) {
-                logTask(task, "omg")
-            }
-        }
-
         addLoadingTaskOnThread(task)
 
         logTask(task, "Task started")
@@ -615,7 +580,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         task.private.setTaskStartDate(Date())
 
         val job = SupervisorJob()
-        taskToJobMap.put(task, job)
+        taskToJobMap[task] = job
 
         var isCancelled = false
         withContext(taskScope.coroutineContext + job) {
@@ -636,15 +601,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     @WorkerThread
     private fun addLoadingTaskOnThread(task: Task) {
         threadRunner.checkThread()
-
-        if (loadingTasks.getTasks().contains(task)) {
-            logTask(task, "omg")
-        }
-
-        if (Tasks.isTaskBlocked(task)) {
-            logTask(task, "omg")
-        }
-
         loadingTasks.addTask(task)
         Log.d(TAG, "loading task count " + loadingTasks.getTaskCount())
     }
@@ -688,7 +644,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
             val st = task.taskStatus
             task.private.cancelTask(info)
 
-            val job = taskToJobMap.get(task)
             val canBeCancelledImmediately = task.private.canBeCancelledImmediately()
             if (Tasks.isTaskReadyToStart(task)) {
                 handleTaskFinishOnThread(task, true)
@@ -700,9 +655,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
                         handleTaskFinishOnThread(task, true)
                         logTask(task, "Immediately Cancelled")
 
-                        if (job != null) {
-                            job.cancel()
-                        }
+                        taskToJobMap[task]?.cancel()
                     } // else wait until the task handles needCancelTask
                 } // else ignore, the callback is already called
             }

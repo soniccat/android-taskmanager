@@ -407,6 +407,8 @@ class TaskManagerTestSet {
         setCanAddMoreTasks(taskManager)
         this.controller?.pauseTaskRunning()
         val task1 = TestTasks.createTestTaskSpy("taskId")
+        `when`(task1.canBeCancelledImmediately()).thenReturn(true)
+
         val task2 = TestTasks.createTestTaskSpy("taskId")
         task2.loadPolicy = Task.LoadPolicy.CancelPreviouslyAdded
 
@@ -415,14 +417,13 @@ class TaskManagerTestSet {
         taskManager.addTask(task2)
 
         // Verify
-        assertEquals(Task.Status.Started, task1.taskStatus)
+        assertEquals(Task.Status.Cancelled, task1.taskStatus)
         assertTrue(task1.private.needCancelTask)
 
         assertEquals(Task.Status.Started, task2.taskStatus)
         assertFalse(task2.private.needCancelTask)
 
-        assertEquals(taskManager.getTaskCount(), 2)
-        assertTrue(taskManager.getTasks().contains(task1))
+        assertEquals(1, taskManager.getTaskCount())
         assertTrue(taskManager.getTasks().contains(task2))
     }
 
@@ -445,7 +446,7 @@ class TaskManagerTestSet {
         assertEquals(Task.Status.Cancelled, task1.taskStatus)
         assertEquals(Task.Status.Completed, task2.taskStatus)
 
-        assertEquals(taskManager.getTaskCount(), 0)
+        assertEquals(0, taskManager.getTaskCount())
     }
 
     fun addTaskTwiceWithSameIdWithAddDependencyPolicyAtStart() {
@@ -468,7 +469,7 @@ class TaskManagerTestSet {
         assertFalse(task2.private.needCancelTask)
         verify(task2).addTaskDependency(task1)
 
-        assertEquals(taskManager.getTaskCount(), 2)
+        assertEquals(2, taskManager.getTaskCount())
         assertTrue(taskManager.getTasks().contains(task1))
         assertTrue(taskManager.getTasks().contains(task2))
     }
@@ -490,7 +491,7 @@ class TaskManagerTestSet {
         assertEquals(Task.Status.Completed, task1.taskStatus)
         assertEquals(Task.Status.Completed, task2.taskStatus)
 
-        assertEquals(taskManager.getTaskCount(), 0)
+        assertEquals(0, taskManager.getTaskCount())
     }
 
     fun addTaskTwiceWithSameIdWithCompletePolicyAtStart() {
@@ -509,11 +510,11 @@ class TaskManagerTestSet {
         assertEquals(Task.Status.Started, task1.taskStatus)
         assertFalse(task1.private.needCancelTask)
 
-        assertEquals(Task.Status.Waiting, task2.taskStatus)
+        assertEquals(Task.Status.Blocked, task2.taskStatus)
         assertFalse(task2.private.needCancelTask)
         verify(task2).addTaskDependency(task1)
 
-        assertEquals(taskManager.getTaskCount(), 2)
+        assertEquals(2, taskManager.getTaskCount())
         assertTrue(taskManager.getTasks().contains(task1))
         assertTrue(taskManager.getTasks().contains(task2))
     }
@@ -535,7 +536,7 @@ class TaskManagerTestSet {
         assertEquals(Task.Status.Completed, task1.taskStatus)
         assertEquals(Task.Status.Completed, task2.taskStatus)
 
-        assertEquals(taskManager.getTaskCount(), 0)
+        assertEquals(0, taskManager.getTaskCount())
     }
 
     fun taskCallbackCalled() {

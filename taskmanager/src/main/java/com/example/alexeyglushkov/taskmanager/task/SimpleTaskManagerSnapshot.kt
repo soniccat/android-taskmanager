@@ -17,8 +17,6 @@ import java.lang.ref.WeakReference
 class SimpleTaskManagerSnapshot : TaskManagerSnapshot, TaskManager.Listener {
     private val callbackHandler: Handler
 
-    // public
-
     override var loadingTasksCount: Int = 0
         private set
     override var waitingTasksCount: Int = 0
@@ -58,7 +56,7 @@ class SimpleTaskManagerSnapshot : TaskManagerSnapshot, TaskManager.Listener {
         if (aCoordinator is LimitTaskManagerCoordinator) {
             coordinator = aCoordinator
         } else {
-            throw IllegalArgumentException("LimitTaskManagerCoordinator is expected in taskManager.taskManagerCoordinator")
+            throw IllegalArgumentException("LimitTaskManagerCoordinator is required in taskManager.taskManagerCoordinator")
         }
 
         loadingTasksCount = taskManager.getLoadingTaskCount()

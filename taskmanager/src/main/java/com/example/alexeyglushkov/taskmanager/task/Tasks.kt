@@ -32,7 +32,7 @@ object Tasks {
     }
 
     fun isTaskBlocked(task: Task): Boolean {
-        return task.taskStatus == Task.Status.Blocked
+        return task.taskStatus == Task.Status.Blocked || task.hasActiveDependencies()
     }
 
     // TODO: convert to extension
