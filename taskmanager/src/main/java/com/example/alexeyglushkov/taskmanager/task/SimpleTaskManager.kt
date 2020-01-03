@@ -203,7 +203,7 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     override fun startImmediately(task: Task) {
-        threadRunner.launch {
+        threadRunner.launchSuspend {
             if (handleTaskLoadPolicy(task, null)) {
                 startTaskOnThread(task)
             }
@@ -271,6 +271,11 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     @WorkerThread
     override fun onTaskConflict(pool: TaskPool, newTask: Task, oldTask: Task): Task {
         threadRunner.checkThread()
+        if (pool == loadingTasks) {
+            logTask(newTask, "omg")
+        }
+        Assert.assertTrue(pool != loadingTasks)
+
         return threadRunner.run {
             resolveTaskConflict(newTask, oldTask)
         }
@@ -456,17 +461,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
             Log.d("a", "omg")
         }
 
-        var found = false
-        for (provider in _taskProviders) {
-            if (provider.getTasks().contains(newTask)) {
-                found = true
-            }
-        }
-
-        if (!found) {
-            Log.d("a", "omg")
-        }
-
         return when (newTask.loadPolicy) {
             Task.LoadPolicy.AddDependencyIfAlreadyAdded -> {
                 logTask(newTask, "Conflict: wait until the current task finishes")
@@ -522,7 +516,6 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
                         if (loadingTasks.getTasks().contains(newTask) /*|| !Tasks.isTaskReadyToStart(task)*/) {
                             logTask(newTask, "omg")
-                            Log.d("a", "omg")
                         }
 
                         handleTaskFinishOnThread(newTask, false)
@@ -545,13 +538,14 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     @WorkerThread
     private fun checkTasksToRunOnThread() {
         threadRunner.checkThread()
+        threadRunner.launchSuspend {
+            if (taskManagerCoordinator.canAddMoreTasks()) {
+                val task = takeTaskToRunOnThread()
 
-        if (taskManagerCoordinator.canAddMoreTasks()) {
-            val task = takeTaskToRunOnThread()
-
-            if (task != null) {
-                logTask(task, "Have taken task")
-                startTaskOnThread(task)
+                if (task != null) {
+                    logTask(task, "Have taken task")
+                    startTaskOnThread(task)
+                }
             }
         }
     }
@@ -586,43 +580,39 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
     }
 
     @WorkerThread
-    private fun startTaskOnThread(task: Task) {
+    private suspend fun startTaskOnThread(task: Task) {
         if (task !is TaskBase) { assert(false); return }
         threadRunner.checkThread()
         Assert.assertTrue(Tasks.isTaskReadyToStart(task))
-        Assert.assertNull(taskToJobMap[task])
-        Assert.assertFalse(loadingTasks.getTasks().contains(task))
 
-        threadRunner.launchSuspend {
-            task.taskId?.let { taskId ->
-                if (loadingTasks.getTask(taskId) != null) {
-                    logTask(task, "omg")
-                }
+        task.taskId?.let { taskId ->
+            if (loadingTasks.getTask(taskId) != null) {
+                logTask(task, "omg")
             }
+        }
 
-            addLoadingTaskOnThread(task)
+        addLoadingTaskOnThread(task)
 
-            logTask(task, "Task started")
-            task.private.taskStatus = Task.Status.Started
-            task.private.setTaskStartDate(Date())
+        logTask(task, "Task started")
+        task.private.taskStatus = Task.Status.Started
+        task.private.setTaskStartDate(Date())
 
-            val job = SupervisorJob()
-            taskToJobMap.put(task, job)
+        val job = SupervisorJob()
+        taskToJobMap.put(task, job)
 
-            var isCancelled = false
-            withContext(taskScope.coroutineContext + job) {
-                try {
-                    task.startTask()
-                } catch (e: Throwable) {
-                    isCancelled = job.isCancelled
-                }
+        var isCancelled = false
+        withContext(taskScope.coroutineContext + job) {
+            try {
+                task.startTask()
+            } catch (e: Throwable) {
+                isCancelled = job.isCancelled
             }
+        }
 
-            logTask(task, "Task onCompleted" + if (isCancelled) " (Cancelled)" else "")
-            taskToJobMap.remove(task)
-            if (!isCancelled) {
-                handleTaskFinishOnThread(task, false)
-            }
+        logTask(task, "Task onCompleted" + if (isCancelled) " (Cancelled)" else "")
+        taskToJobMap.remove(task)
+        if (!isCancelled) {
+            handleTaskFinishOnThread(task, false)
         }
     }
 
