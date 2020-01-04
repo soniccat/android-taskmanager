@@ -1,7 +1,6 @@
 package com.aglushkov.taskmanager_http.image
 
 import com.aglushkov.taskmanager_http.loader.http.HttpURLConnectionProvider
-import com.example.alexeyglushkov.taskmanager.task.Task.LoadPolicy
 import java.io.IOException
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
@@ -24,14 +23,11 @@ open class Image : Serializable, HttpURLConnectionProvider {
     var height = 0
     var byteSize = 0
 
-    var loadPolicy = LoadPolicy.CompleteWhenAlreadyAddedCompletes
-
     @Throws(IOException::class)
     private fun writeObject(out: ObjectOutputStream) {
         out.writeUTF(url.toString())
         out.writeInt(width)
         out.writeInt(height)
-        out.writeInt(loadPolicy.ordinal)
     }
 
     @Throws(IOException::class, ClassNotFoundException::class)
@@ -40,9 +36,6 @@ open class Image : Serializable, HttpURLConnectionProvider {
         url = URL(urlString)
         width = `in`.readInt()
         height = `in`.readInt()
-
-        val loadPolicyInt = `in`.readInt()
-        loadPolicy = LoadPolicy.values()[loadPolicyInt]
     }
 
     override fun equals(other: Any?): Boolean {

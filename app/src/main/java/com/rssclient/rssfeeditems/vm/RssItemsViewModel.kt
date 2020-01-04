@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.lifecycle.*
 import com.aglushkov.repository.livedata.Resource
-import com.aglushkov.taskmanager_http.image.ImageLoader
+import com.aglushkov.taskmanager_http.image.ImageTask
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener
 import com.example.alexeyglushkov.taskmanager.task.*
@@ -82,8 +82,7 @@ class RssItemsViewModel(application: MainApplication, val args: Bundle):
         val range = imageInfo.visibleRange
         val position = imageInfo.position
 
-        val task = ImageLoader().createTask(imageInfo.image,
-                "_" + Integer.toString(position))
+        val task = ImageTask(imageInfo.image)
         task.taskType = position % 2 + 1
         task.taskPriority = getTaskPriority(position, range.lower, range.upper - range.lower + 1)
         task.taskUserData = imageInfo.imageTag

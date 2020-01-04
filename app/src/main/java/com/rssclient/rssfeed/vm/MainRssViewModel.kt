@@ -7,7 +7,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.*
 import com.aglushkov.repository.livedata.Resource
 import com.aglushkov.taskmanager_http.image.Image
-import com.aglushkov.taskmanager_http.image.ImageLoader
+import com.aglushkov.taskmanager_http.image.ImageTask
 import com.example.alexeyglushkov.ktx.getResString
 import com.example.alexeyglushkov.taskmanager.task.Tasks
 import com.main.MainApplication
@@ -69,7 +69,7 @@ class MainRssViewModel(application: MainApplication): AndroidViewModel(applicati
     }
 
     override fun onLoadImageRequested(image: Image, completion: (bitmap: Bitmap?, error: Exception?) -> Unit) {
-        val task = ImageLoader().createTask(image)
+        val task = ImageTask(image)
         viewModelScope.launch {
             try {
                 val bitmap = Tasks.run<Bitmap>(task, taskManager)
