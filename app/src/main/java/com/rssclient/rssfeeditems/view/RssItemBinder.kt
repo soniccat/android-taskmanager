@@ -3,7 +3,7 @@ package com.rssclient.rssfeeditems.view
 import android.graphics.drawable.BitmapDrawable
 import android.view.View
 import com.aglushkov.taskmanager_http.image.ImageBinder
-import com.example.alexeyglushkov.ext.getDrawableCompat
+import com.example.alexeyglushkov.ktx.getDrawableCompat
 import com.rssclient.controllers.R
 import com.rssclient.model.RssItem
 

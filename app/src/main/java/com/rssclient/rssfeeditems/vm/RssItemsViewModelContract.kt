@@ -8,7 +8,7 @@ import com.aglushkov.taskmanager_http.image.Image
 import com.example.alexeyglushkov.taskmanager.task.TaskManagerSnapshot
 import com.example.alexeyglushkov.tools.Range
 import com.rssclient.model.RssItem
-import com.rssclient.vm.RssView
+import com.rssclient.vm.RssViewItem
 
 interface RssItemsViewModelContract {
     data class ImageInfo(val image: Image,
@@ -17,7 +17,7 @@ interface RssItemsViewModelContract {
                          val visibleRange: Range<Int>)
 
     // LiveData
-    val rssItems: LiveData<Resource<List<RssView<*>>>>
+    val rssItems: LiveData<Resource<List<RssViewItem<*>>>>
     val taskManagerSnapshot: LiveData<TaskManagerSnapshot>
 
     fun getImageProgressLiveData(imageTag: String): MutableLiveData<Float>

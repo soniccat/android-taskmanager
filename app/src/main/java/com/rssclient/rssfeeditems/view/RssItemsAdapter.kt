@@ -1,18 +1,20 @@
 package com.rssclient.rssfeeditems.view
 
 import android.graphics.drawable.Drawable
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.view.get
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.alexeyglushkov.ktx.getLayoutInflater
 import com.rssclient.controllers.R
-import com.rssclient.vm.RssView
+import com.rssclient.controllers.databinding.FeedCellBinding
+import com.rssclient.vm.RssViewItem
 import kotlinx.android.synthetic.main.feed_cell.view.*
 
 class RssItemsAdapter(private val itemBinder: RssItemBinder)
-    : ListAdapter<RssView<*>, RecyclerView.ViewHolder>(RssView.DiffCallback) {
+    : ListAdapter<RssViewItem<*>, RecyclerView.ViewHolder>(RssViewItem.DiffCallback) {
 
     override fun getItemViewType(position: Int): Int {
         return getItem(position).type
@@ -20,9 +22,9 @@ class RssItemsAdapter(private val itemBinder: RssItemBinder)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when(viewType) {
-            RssView.RssItemView.Type -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.feed_cell, parent, false)
-                RssItemsViewHolder(view)
+            RssViewItem.RssItemViewItem.Type -> {
+                val binding = FeedCellBinding.inflate(parent.getLayoutInflater(), parent, false)
+                RssItemsViewHolder(binding)
             }
             else -> throw IllegalArgumentException("FeedsAdapter.onCreateViewHolder: viewType is ${viewType}")
         }
@@ -31,7 +33,7 @@ class RssItemsAdapter(private val itemBinder: RssItemBinder)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val data = getItem(position)
         when (data) {
-            is RssView.RssItemView -> {
+            is RssViewItem.RssItemViewItem -> {
                 holder as RssItemsViewHolder
                 holder.bindPosition = position
 
@@ -48,10 +50,10 @@ class RssItemsAdapter(private val itemBinder: RssItemBinder)
         }
     }
 
-    class RssItemsViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        var name = view.name
-        var image: ImageView = view.icon
-        var progressBar = view.progress
+    class RssItemsViewHolder(binding: FeedCellBinding): RecyclerView.ViewHolder(binding.root) {
+        var name = binding.name
+        var image = binding.icon
+        var progressBar = binding.progress
 
         var bindPosition: Int = -1
         var progressTag: String = ""

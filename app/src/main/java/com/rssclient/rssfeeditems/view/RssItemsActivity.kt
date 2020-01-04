@@ -23,7 +23,7 @@ import com.rssclient.model.RssItem
 import com.rssclient.rssfeed.view.RssFeedsAdapter
 import com.rssclient.rssfeeditems.vm.RssItemsViewModel
 import com.rssclient.rssfeeditems.vm.RssItemsViewModelContract
-import com.rssclient.vm.RssView
+import com.rssclient.vm.RssViewItem
 import java.lang.Exception
 import java.lang.NullPointerException
 
@@ -84,7 +84,7 @@ class RssItemsActivity : AppCompatActivity() {
         })
     }
 
-    private fun handleDataChange(it: Resource<List<RssView<*>>>) {
+    private fun handleDataChange(it: Resource<List<RssViewItem<*>>>) {
         val data = it.data()
         showData(data)
 
@@ -97,7 +97,7 @@ class RssItemsActivity : AppCompatActivity() {
         }
     }
 
-    private fun showData(data: List<RssView<*>>?) {
+    private fun showData(data: List<RssViewItem<*>>?) {
         val adapter = recyclerView?.adapter as? RssFeedsAdapter
         if (adapter == null) {
             createAdapter(data)
@@ -106,7 +106,7 @@ class RssItemsActivity : AppCompatActivity() {
         }
     }
 
-    private fun createAdapter(data: List<RssView<*>>?) {
+    private fun createAdapter(data: List<RssViewItem<*>>?) {
         val safeListView = recyclerView ?: throw NullPointerException("ListView is null")
 
         val imageBinder = ImageBinder(object : ImageBinder.ImageLoader {

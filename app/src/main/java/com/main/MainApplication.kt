@@ -23,6 +23,7 @@ import com.main.Networks.Network
 import com.rssclient.model.RssFeedRepository
 import com.rssclient.model.RssFeedService
 
+// TODO: use Dagger
 class MainApplication : Application() {
     val TAG = "MainApplication"
 

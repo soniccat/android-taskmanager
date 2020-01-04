@@ -11,7 +11,7 @@ import com.example.alexeyglushkov.taskmanager.task.*
 import com.main.MainApplication
 import com.rssclient.model.RssFeed
 import com.rssclient.model.RssItem
-import com.rssclient.vm.RssView
+import com.rssclient.vm.RssViewItem
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import java.lang.NullPointerException
@@ -32,10 +32,10 @@ class RssItemsViewModel(application: MainApplication, val args: Bundle):
     private var taskProvider: PriorityTaskProvider
     private var snapshot: TaskManagerSnapshot
 
-    override val rssItems: LiveData<Resource<List<RssView<*>>>>
+    override val rssItems: LiveData<Resource<List<RssViewItem<*>>>>
         get() = rssRepository.getFeedLiveData(getRootFeed()!!.url).map {
             val items = it.data()?.items ?: emptyList()
-            val convertedData: List<RssView<*>> = items.map { item -> RssView.RssItemView(item) }
+            val convertedData: List<RssViewItem<*>> = items.map { item -> RssViewItem.RssItemViewItem(item) }
             it.copyWith(convertedData)
         }
 
@@ -82,8 +82,7 @@ class RssItemsViewModel(application: MainApplication, val args: Bundle):
         val range = imageInfo.visibleRange
         val position = imageInfo.position
 
-        val task = ImageLoader().buildBitmapTask(taskProvider.threadRunner,
-                imageInfo.image,
+        val task = ImageLoader().createTask(imageInfo.image,
                 "_" + Integer.toString(position))
         task.taskType = position % 2 + 1
         task.taskPriority = getTaskPriority(position, range.lower, range.upper - range.lower + 1)

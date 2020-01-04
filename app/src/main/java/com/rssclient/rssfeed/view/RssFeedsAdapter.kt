@@ -1,19 +1,14 @@
 package com.rssclient.rssfeed.view
 
-import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.rssclient.controllers.R
-import com.rssclient.vm.RssView
-import kotlinx.android.synthetic.main.feed_cell.view.*
+import com.example.alexeyglushkov.ktx.getLayoutInflater
+import com.rssclient.controllers.databinding.FeedCellBinding
+import com.rssclient.vm.RssViewItem
 
 class RssFeedsAdapter(private val feedBinder: RssFeedBinder)
-    : ListAdapter<RssView<*>, RecyclerView.ViewHolder>(RssView.DiffCallback) {
+    : ListAdapter<RssViewItem<*>, RecyclerView.ViewHolder>(RssViewItem.DiffCallback) {
 
     override fun getItemViewType(position: Int): Int {
         return getItem(position).type
@@ -21,18 +16,17 @@ class RssFeedsAdapter(private val feedBinder: RssFeedBinder)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when(viewType) {
-            RssView.RssFeedView.Type -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.feed_cell, parent, false)
-                RssFeedViewHolder(view)
+            RssViewItem.RssFeedViewItem.Type -> {
+                val binding = FeedCellBinding.inflate(parent.getLayoutInflater(), parent, false)
+                RssFeedViewHolder(binding)
             }
-            else -> throw IllegalArgumentException("FeedsAdapter.onCreateViewHolder: viewType is ${viewType}")
+            else -> throw IllegalArgumentException("FeedsAdapter.onCreateViewHolder: viewType is $viewType")
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val data = getItem(position)
-        when (data) {
-            is RssView.RssFeedView -> {
+        when (val data = getItem(position)) {
+            is RssViewItem.RssFeedViewItem -> {
                 holder as RssFeedViewHolder
 
                 val feed = data.firstItem()
@@ -48,13 +42,8 @@ class RssFeedsAdapter(private val feedBinder: RssFeedBinder)
         }
     }
 
-    class RssFeedViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        var name: TextView? = null
-        var image: ImageView? = null
-
-        init {
-            name = view.name // TODO: switch to Google bindings instead of synthetic
-            image = view.icon
-        }
+    class RssFeedViewHolder(binding: FeedCellBinding): RecyclerView.ViewHolder(binding.root) {
+        val name = binding.name
+        val image = binding.icon
     }
 }

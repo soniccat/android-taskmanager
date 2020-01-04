@@ -5,7 +5,7 @@
     android:padding="4dp">
 
     <FrameLayout
-        android:id="@+id/image"
+        android:id="@+id/iconContainer"
         android:layout_width="40dp"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
@@ -48,7 +48,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:layout_alignWithParentIfMissing="true"
-        android:layout_toRightOf="@id/image"
+        android:layout_toRightOf="@id/iconContainer"
         android:gravity="top"
         android:textSize="16sp" />
 

@@ -6,12 +6,9 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.ArrayAdapter
-import android.widget.ListView
 import com.example.alexeyglushkov.authorization.Auth.Account
-import com.example.alexeyglushkov.authorization.Auth.AccountStore
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder
 import com.example.alexeyglushkov.authtaskmanager.HttpServiceCommand
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider
@@ -24,35 +21,36 @@ import com.example.alexeyglushkov.service.SimpleService
 import com.example.alexeyglushkov.streamlib.convertors.BytesStringConverter
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask
 import com.example.alexeyglushkov.taskmanager.task.Task
-import com.example.alexeyglushkov.taskmanager.task.TaskManager
 import com.main.Networks.Network
-import com.rssclient.rssfeed.view.MainRssActivity
 import com.rssclient.controllers.R
+import com.rssclient.controllers.databinding.ActivityMainBinding
+import com.rssclient.rssfeed.view.MainRssActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+
 class MainActivity : BaseActivity() {
     private val scope = MainScope()
+    private lateinit var binding: ActivityMainBinding
 
     private var service: SimpleService? = null
     private var storage: Storage? = null
-    private val mainApplication: MainApplication
-        private get() = application as MainApplication
 
-    val taskManager: TaskManager
-        get() = mainApplication.taskManager
-
-    val accountStore: AccountStore
-        get() = mainApplication.accountStore
+    private val mainApplication = MainApplication.instance
+    val taskManager = mainApplication.taskManager
+    val accountStore = mainApplication.accountStore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        val listView = findViewById<View>(R.id.list) as ListView
+
+        binding = ActivityMainBinding.inflate(layoutInflater);
+        setContentView(binding.root)
+
+        val listView = binding.list
         listView.adapter = ArrayAdapter(this, android.R.layout.activity_list_item, android.R.id.text1, arrayOf("Rss Client", "Authorization", "Run Request", "Clear cache", "Load Sets"))
-        listView.onItemClickListener = OnItemClickListener { parent, view, position, id ->
+        listView.onItemClickListener = OnItemClickListener { _, _, position, _ ->
             if (position == 0) {
                 showRssClient()
             } else if (position == 1) {
@@ -101,13 +99,14 @@ class MainActivity : BaseActivity() {
 
     private fun initService() {
         service = SimpleService()
+
         val accounts = accountStore.getAccounts(Network.Quizlet.ordinal)
-        var serviceAccount: Account? = null
-        serviceAccount = if (accounts != null && accounts.size > 0) {
+        val serviceAccount = if (accounts.size > 0) {
             accounts[0]
         } else {
             Networks.createAccount(Network.Quizlet)
         }
+
         service!!.account = serviceAccount
         // TODO: we need the solution for id
         service!!.setServiceCommandProvider(ServiceTaskProvider())
@@ -116,7 +115,7 @@ class MainActivity : BaseActivity() {
     }
 
     private val serviceCache: Storage
-        private get() {
+        get() {
             val cacheDir = getDir("ServiceCache", Context.MODE_PRIVATE)
             return DiskStorage(cacheDir)
         }

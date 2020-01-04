@@ -18,11 +18,13 @@ import com.aglushkov.taskmanager_http.image.Image
 import com.aglushkov.taskmanager_http.image.ImageBinder
 import com.main.MainApplication
 import com.rssclient.controllers.R
+import com.rssclient.controllers.databinding.ActivityMainBinding
+import com.rssclient.controllers.databinding.ActivityMainRssBinding
 import com.rssclient.rssfeeditems.view.RssItemsActivity
 import com.rssclient.model.RssFeed
 import com.rssclient.rssfeed.vm.MainRssViewModel
 import com.rssclient.rssfeed.vm.MainRssViewModelContract
-import com.rssclient.vm.RssView
+import com.rssclient.vm.RssViewItem
 import com.rssclient.vm.showErrorDialog
 import java.lang.Exception
 import java.lang.NullPointerException
@@ -32,10 +34,9 @@ import java.net.URL
 // TODO: integrate stack module or navigation
 class MainRssActivity : AppCompatActivity() {
     private lateinit var vm: MainRssViewModelContract
-    private var recyclerView: RecyclerView? = null
+    private lateinit var binding: ActivityMainRssBinding
 
     // Events
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -46,13 +47,9 @@ class MainRssActivity : AppCompatActivity() {
         }).get(MainRssViewModel::class.java)
         observeViewModel()
 
-        setContentView(R.layout.activity_main_rss)
+        binding = ActivityMainRssBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         bindView()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        this.recyclerView = null
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -76,12 +73,8 @@ class MainRssActivity : AppCompatActivity() {
     }
 
     // Actions
-
     private fun bindView() {
-        val recyclerView = findViewById<View>(R.id.list) as RecyclerView
-        this.recyclerView = recyclerView
-
-        recyclerView.layoutManager = LinearLayoutManager(recyclerView.context, RecyclerView.VERTICAL, false)
+        binding.list.layoutManager = LinearLayoutManager(binding.list.context, RecyclerView.VERTICAL, false)
     }
 
     private fun observeViewModel() {
@@ -104,7 +97,7 @@ class MainRssActivity : AppCompatActivity() {
         })
     }
 
-    private fun handleDataChange(it: Resource<List<RssView<*>>>) {
+    private fun handleDataChange(it: Resource<List<RssViewItem<*>>>) {
         val data = it.data()
         showData(data)
 
@@ -117,8 +110,8 @@ class MainRssActivity : AppCompatActivity() {
         }
     }
 
-    private fun showData(data: List<RssView<*>>?) {
-        val adapter = recyclerView?.adapter as? RssFeedsAdapter
+    private fun showData(data: List<RssViewItem<*>>?) {
+        val adapter = binding.list.adapter as? RssFeedsAdapter
         if (adapter == null) {
             createAdapter(data)
         } else {
@@ -126,8 +119,8 @@ class MainRssActivity : AppCompatActivity() {
         }
     }
 
-    private fun createAdapter(data: List<RssView<*>>?) {
-        val safeListView = recyclerView ?: throw NullPointerException("ListView is null")
+    private fun createAdapter(data: List<RssViewItem<*>>?) {
+        val safeListView = binding.list ?: throw NullPointerException("ListView is null")
 
         val imageBinder = ImageBinder(object : ImageBinder.ImageLoader {
             override fun loadImage(image: Image, params: Map<String, Any>, completion: (bitmap: Bitmap?, error: Exception?) -> Unit) {

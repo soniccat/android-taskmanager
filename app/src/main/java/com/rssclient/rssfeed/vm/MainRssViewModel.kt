@@ -8,7 +8,7 @@ import androidx.lifecycle.*
 import com.aglushkov.repository.livedata.Resource
 import com.aglushkov.taskmanager_http.image.Image
 import com.aglushkov.taskmanager_http.image.ImageLoader
-import com.example.alexeyglushkov.ext.getResString
+import com.example.alexeyglushkov.ktx.getResString
 import com.example.alexeyglushkov.taskmanager.task.Tasks
 import com.main.MainApplication
 import com.rssclient.model.RssFeed
@@ -19,16 +19,16 @@ import java.net.URL
 import com.rssclient.controllers.R
 import com.rssclient.rssfeeditems.vm.RssItemsViewModel
 import com.rssclient.vm.ErrorViewModelContract
-import com.rssclient.vm.RssView
+import com.rssclient.vm.RssViewItem
 
 class MainRssViewModel(application: MainApplication): AndroidViewModel(application), MainRssViewModelContract {
     private var taskManager = application.taskManager
     private var rssRepository = application.rssRepository
 
-    override val feedLiveData: LiveData<Resource<List<RssView<*>>>>
+    override val feedLiveData: LiveData<Resource<List<RssViewItem<*>>>>
         get() = rssRepository.getFeedsLiveData().map {
             val feeds = it.data() ?: emptyList()
-            val convertedData: List<RssView<*>> = feeds.map { feed -> RssView.RssFeedView(feed) }
+            val convertedData: List<RssViewItem<*>> = feeds.map { feed -> RssViewItem.RssFeedViewItem(feed) }
             it.copyWith(convertedData)
         }
 
@@ -69,7 +69,7 @@ class MainRssViewModel(application: MainApplication): AndroidViewModel(applicati
     }
 
     override fun onLoadImageRequested(image: Image, completion: (bitmap: Bitmap?, error: Exception?) -> Unit) {
-        val task = ImageLoader().buildBitmapTask(taskManager.threadRunner, image)
+        val task = ImageLoader().createTask(image)
         viewModelScope.launch {
             try {
                 val bitmap = Tasks.run<Bitmap>(task, taskManager)

@@ -7,7 +7,7 @@ import com.aglushkov.repository.livedata.Resource
 import com.aglushkov.taskmanager_http.image.Image
 import com.rssclient.model.RssFeed
 import com.rssclient.vm.ErrorViewModelContract
-import com.rssclient.vm.RssView
+import com.rssclient.vm.RssViewItem
 import java.net.URL
 
 interface MainRssViewModelContract {
@@ -17,7 +17,7 @@ interface MainRssViewModelContract {
     }
 
     // LiveData
-    val feedLiveData: LiveData<Resource<List<RssView<*>>>>
+    val feedLiveData: LiveData<Resource<List<RssViewItem<*>>>>
     val eventLiveData: LiveData<Event>
     val errorLiveData: LiveData<ErrorViewModelContract.Error>
 

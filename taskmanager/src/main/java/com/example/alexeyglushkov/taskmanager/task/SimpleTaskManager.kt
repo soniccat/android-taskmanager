@@ -659,6 +659,9 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
                     } // else wait until the task handles needCancelTask
                 } // else ignore, the callback is already called
             }
+            // TODO: support taskToJobMap[task]?.cancel() call in else block here
+            // TODO: as we support coroutines now we can do that
+            // TODO: but it seems we need to call job.join to wait until a task coroutine catches cancellation
         }
     }
 
