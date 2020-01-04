@@ -8,7 +8,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.ArrayAdapter
-import com.example.alexeyglushkov.authorization.Auth.Account
 import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder
 import com.example.alexeyglushkov.authtaskmanager.HttpServiceCommand
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider
@@ -19,8 +18,8 @@ import com.example.alexeyglushkov.cachemanager.clients.SimpleCache
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorage
 import com.example.alexeyglushkov.service.SimpleService
 import com.example.alexeyglushkov.streamlib.convertors.BytesStringConverter
-import com.example.alexeyglushkov.taskmanager.task.SimpleTask
 import com.example.alexeyglushkov.taskmanager.task.Task
+import com.example.alexeyglushkov.taskmanager.task.TaskImpl
 import com.main.Networks.Network
 import com.rssclient.controllers.R
 import com.rssclient.controllers.databinding.ActivityMainBinding
@@ -71,7 +70,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun showAuthorization() {
-        val authTask: Task = object : SimpleTask() {
+        val authTask: Task = object : TaskImpl() {
             override suspend fun startTask() {
                 val account = Networks.createAccount(Network.Quizlet)
                 val creds = withContext(Dispatchers.IO) {

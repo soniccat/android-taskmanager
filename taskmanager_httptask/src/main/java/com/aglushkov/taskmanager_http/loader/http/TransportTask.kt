@@ -2,9 +2,9 @@ package com.aglushkov.taskmanager_http.loader.http
 
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater
 import com.aglushkov.taskmanager_http.loader.transport.TaskTransport
-import com.example.alexeyglushkov.taskmanager.task.SimpleTask
+import com.example.alexeyglushkov.taskmanager.task.TaskImpl
 
-open class TransportTask : SimpleTask, TaskTransport.Listener {
+open class TransportTask : TaskImpl, TaskTransport.Listener {
     private var _transport: TaskTransport? = null
     var transport: TaskTransport
         get() {

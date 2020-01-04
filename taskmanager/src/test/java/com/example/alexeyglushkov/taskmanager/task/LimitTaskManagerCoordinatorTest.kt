@@ -1,6 +1,7 @@
 package com.example.alexeyglushkov.taskmanager.task
 
-import com.example.alexeyglushkov.taskmanager.task.coordinators.LimitTaskManagerCoordinator
+import com.example.alexeyglushkov.taskmanager.coordinators.LimitTaskManagerCoordinator
+import com.example.alexeyglushkov.taskmanager.runners.ScopeThreadRunner
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import kotlinx.coroutines.test.TestCoroutineScope

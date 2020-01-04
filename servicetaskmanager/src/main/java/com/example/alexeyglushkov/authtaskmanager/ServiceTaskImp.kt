@@ -1,9 +1,5 @@
 package com.example.alexeyglushkov.authtaskmanager
 
-import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnectionBuilder
-import com.example.alexeyglushkov.taskmanager.task.SimpleTask
-import com.example.alexeyglushkov.taskmanager.task.Task
-import com.example.alexeyglushkov.taskmanager.task.TaskBase
 import com.example.alexeyglushkov.taskmanager.task.TaskImpl
 import java.lang.Exception
 

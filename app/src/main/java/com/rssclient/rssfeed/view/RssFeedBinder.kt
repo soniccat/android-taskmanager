@@ -1,7 +1,7 @@
 package com.rssclient.rssfeed.view
 
 import com.aglushkov.taskmanager_http.image.ImageBinder
-import com.example.alexeyglushkov.ktx.getDrawableCompat
+import com.example.alexeyglushkov.ext.getDrawableCompat
 import com.rssclient.controllers.R
 import com.rssclient.model.RssFeed
 

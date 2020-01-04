@@ -1,5 +1,9 @@
 package com.example.alexeyglushkov.taskmanager.task
 
+import com.example.alexeyglushkov.taskmanager.TaskManager
+import com.example.alexeyglushkov.taskmanager.providers.PriorityTaskProvider
+import com.example.alexeyglushkov.taskmanager.providers.TaskProvider
+import com.example.alexeyglushkov.taskmanager.runners.ScopeThreadRunner
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

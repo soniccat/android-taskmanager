@@ -8,8 +8,8 @@ import androidx.lifecycle.*
 import com.aglushkov.repository.livedata.Resource
 import com.aglushkov.taskmanager_http.image.Image
 import com.aglushkov.taskmanager_http.image.ImageTask
-import com.example.alexeyglushkov.ktx.getResString
-import com.example.alexeyglushkov.taskmanager.task.Tasks
+import com.example.alexeyglushkov.ext.getResString
+import com.example.alexeyglushkov.taskmanager.pool.start
 import com.main.MainApplication
 import com.rssclient.model.RssFeed
 import kotlinx.coroutines.CancellationException
@@ -72,7 +72,7 @@ class MainRssViewModel(application: MainApplication): AndroidViewModel(applicati
         val task = ImageTask(image)
         viewModelScope.launch {
             try {
-                val bitmap = Tasks.run<Bitmap>(task, taskManager)
+                val bitmap = taskManager.start<Bitmap>(task)
                 completion(bitmap, null)
             } catch (e: CancellationException) {
                 throw e

@@ -2,6 +2,7 @@ package com.example.alexeyglushkov.taskmanager.task
 
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater
+import com.example.alexeyglushkov.taskmanager.tools.WeakRefList
 
 import java.util.Date
 

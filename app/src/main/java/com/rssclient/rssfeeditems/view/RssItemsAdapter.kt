@@ -3,12 +3,9 @@ package com.rssclient.rssfeeditems.view
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import androidx.core.view.get
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.alexeyglushkov.ktx.getLayoutInflater
-import com.rssclient.controllers.R
+import com.example.alexeyglushkov.ext.getLayoutInflater
 import com.rssclient.controllers.databinding.FeedCellBinding
 import com.rssclient.vm.RssViewItem
 import kotlinx.android.synthetic.main.feed_cell.view.*

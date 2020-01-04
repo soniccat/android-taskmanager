@@ -7,13 +7,13 @@ import androidx.annotation.WorkerThread
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener
 import com.example.alexeyglushkov.streamlib.progress.ProgressUpdater
+import com.example.alexeyglushkov.taskmanager.tools.WeakRefList
 import com.example.alexeyglushkov.tools.HandlerTools
 
 import org.junit.Assert
 import java.lang.Exception
 
 import java.lang.ref.WeakReference
-import java.util.ArrayList
 import java.util.Date
 
 /**
@@ -51,7 +51,7 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
     override var taskStatus: Task.Status
         get() = _taskStatus
         set(value) {
-            Tasks.logTask("TaskImpl", this, "setTaskStatus " + value + " from " + _taskStatus)
+            log("TaskImpl", "setTaskStatus " + value + " from " + _taskStatus)
 
             val oldStatus = _taskStatus
             _taskStatus = value
@@ -81,7 +81,7 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
         for (task in dependencies) {
             val realTask = task.get()
             if (realTask != null) {
-                isBlocked = !Tasks.isTaskFinished(realTask)
+                isBlocked = !realTask.isFinished()
                 if (isBlocked) {
                     break
                 }
@@ -155,7 +155,7 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
     }
 
     override fun clear() {
-        Assert.assertTrue(Tasks.isTaskFinished(this))
+        Assert.assertTrue(isFinished())
 
         _taskStatus = Task.Status.NotStarted
         cancellationInfo = null

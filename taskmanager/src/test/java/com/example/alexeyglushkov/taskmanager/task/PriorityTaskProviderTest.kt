@@ -1,5 +1,8 @@
 package com.example.alexeyglushkov.taskmanager.task
 
+import com.example.alexeyglushkov.taskmanager.pool.TaskPool
+import com.example.alexeyglushkov.taskmanager.providers.PriorityTaskProvider
+import com.example.alexeyglushkov.taskmanager.providers.TaskProvider
 import com.nhaarman.mockitokotlin2.mock
 
 import org.junit.Before

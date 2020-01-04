@@ -1,5 +1,8 @@
 package com.example.alexeyglushkov.taskmanager.task
 
+import com.example.alexeyglushkov.taskmanager.SimpleTaskManager
+import com.example.alexeyglushkov.taskmanager.TaskManager
+import com.example.alexeyglushkov.taskmanager.coordinators.TaskManagerCoordinator
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.TestCoroutineExceptionHandler
 import kotlinx.coroutines.test.TestCoroutineScope

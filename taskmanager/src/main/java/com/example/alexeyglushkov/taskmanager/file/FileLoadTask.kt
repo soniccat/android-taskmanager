@@ -5,11 +5,11 @@ import android.content.Context
 
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStreamDataReader
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStreamDataReaders
-import com.example.alexeyglushkov.taskmanager.task.SimpleTask
+import com.example.alexeyglushkov.taskmanager.task.TaskImpl
 
 class FileLoadTask(protected var fileName: String,
                    protected var reader: InputStreamDataReader<*>,
-                   context: Context) : SimpleTask() {
+                   context: Context) : TaskImpl() {
     val context: Context
 
     init {

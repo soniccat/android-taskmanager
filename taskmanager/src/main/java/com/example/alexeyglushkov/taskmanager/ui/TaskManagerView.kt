@@ -3,18 +3,13 @@ package com.example.alexeyglushkov.taskmanager.ui
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
-import android.util.SparseArray
-import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 
-import androidx.collection.SparseArrayCompat
-
 import com.example.alexeyglushkov.taskmanager.R
-import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManagerSnapshot
-import com.example.alexeyglushkov.taskmanager.task.TaskManagerSnapshot
+import com.example.alexeyglushkov.taskmanager.snapshot.SimpleTaskManagerSnapshot
+import com.example.alexeyglushkov.taskmanager.snapshot.TaskManagerSnapshot
 
-import java.util.ArrayList
 import java.util.Arrays
 import java.util.HashSet
 

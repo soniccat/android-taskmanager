@@ -1,10 +1,10 @@
 package com.example.alexeyglushkov.taskmanager.task
 
+import com.example.alexeyglushkov.taskmanager.pool.TaskPool
+import com.example.alexeyglushkov.taskmanager.providers.TaskProvider
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
-
-import java.util.Arrays
 
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertNull

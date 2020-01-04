@@ -1,5 +1,6 @@
 package com.example.alexeyglushkov.taskmanager.task
 
+import com.example.alexeyglushkov.taskmanager.runners.ScopeThreadRunner
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.spy
 import kotlinx.coroutines.test.TestCoroutineScope

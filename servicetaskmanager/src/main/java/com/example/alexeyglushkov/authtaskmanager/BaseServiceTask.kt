@@ -4,7 +4,7 @@ import com.example.alexeyglushkov.authorization.requestbuilder.HttpUrlConnection
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener
 import com.example.alexeyglushkov.taskmanager.task.Task
 import com.example.alexeyglushkov.taskmanager.task.TaskBase
-import com.example.alexeyglushkov.taskmanager.task.rx.TasksRx
+import com.example.alexeyglushkov.taskmanager.rx.TasksRx
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single

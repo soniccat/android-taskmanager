@@ -1,6 +1,6 @@
 package com.example.alexeyglushkov.taskmanager.task
 
-import kotlinx.coroutines.test.TestCoroutineScope
+import com.example.alexeyglushkov.taskmanager.pool.ListTaskPool
 
 import org.junit.Before
 import org.junit.Test

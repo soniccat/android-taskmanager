@@ -14,7 +14,7 @@ import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient
 import com.example.alexeyglushkov.cachemanager.SimpleStorageCleaner
 import com.example.alexeyglushkov.cachemanager.Storage
 import com.example.alexeyglushkov.quizletservice.QuizletRepository
-import com.example.alexeyglushkov.taskmanager.task.TaskManager
+import com.example.alexeyglushkov.taskmanager.TaskManager
 import com.example.alexeyglushkov.tools.ContextProvider
 import com.example.alexeyglushkov.authorization.AuthActivityProxy
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder

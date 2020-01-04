@@ -19,9 +19,9 @@ import com.example.alexeyglushkov.quizletservice.QuizletRepository
 import com.example.alexeyglushkov.quizletservice.QuizletService
 import com.example.alexeyglushkov.quizletservice.auth.QuizletApi2
 import com.example.alexeyglushkov.quizletservice.tasks.QuizletServiceTaskProvider
-import com.example.alexeyglushkov.taskmanager.task.SimpleTaskManager
-import com.example.alexeyglushkov.taskmanager.task.StackTaskProvider
-import com.example.alexeyglushkov.taskmanager.task.TaskManager
+import com.example.alexeyglushkov.taskmanager.SimpleTaskManager
+import com.example.alexeyglushkov.taskmanager.providers.StackTaskProvider
+import com.example.alexeyglushkov.taskmanager.TaskManager
 import com.example.alexeyglushkov.authorization.AuthActivityProxy
 import com.example.alexeyglushkov.wordteacher.model.CourseHolder
 

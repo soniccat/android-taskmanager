@@ -1,17 +1,7 @@
 package com.example.alexeyglushkov.wordteacher.main
 
-import com.example.alexeyglushkov.authorization.Api.Foursquare2Api
-import com.example.alexeyglushkov.quizletservice.auth.QuizletApi2
 import com.example.alexeyglushkov.authorization.Auth.Account
 import com.example.alexeyglushkov.authorization.Auth.AccountStore
-import com.example.alexeyglushkov.authorization.Auth.Authorizer
-import com.example.alexeyglushkov.authorization.Auth.SimpleAccount
-import com.example.alexeyglushkov.authorization.OAuth.OAuth20Authorizer
-import com.example.alexeyglushkov.authorization.OAuth.OAuthAuthorizerBuilder
-import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient
-import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider
-import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner
-import com.example.alexeyglushkov.taskmanager.task.TaskManager
 
 import org.junit.Assert
 import java.lang.RuntimeException

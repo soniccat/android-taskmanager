@@ -11,10 +11,8 @@ import com.example.alexeyglushkov.authorization.OAuth.OAuthWebClient
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskProvider
 import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner
 import com.example.alexeyglushkov.quizletservice.auth.QuizletApi2
-import com.example.alexeyglushkov.taskmanager.task.TaskManager
-import com.main.Networks.Network
+import com.example.alexeyglushkov.taskmanager.TaskManager
 import org.junit.Assert
-import java.lang.RuntimeException
 
 /**
  * Created by alexeyglushkov on 25.11.15.

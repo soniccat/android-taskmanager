@@ -1,5 +1,7 @@
 package com.example.alexeyglushkov.taskmanager.task
 
+import com.example.alexeyglushkov.taskmanager.providers.StackTaskProvider
+import com.example.alexeyglushkov.taskmanager.providers.TaskProvider
 import org.junit.Before
 import org.junit.Test
 

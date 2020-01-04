@@ -19,7 +19,7 @@ import com.example.alexeyglushkov.quizletservice.entities.QuizletSet;
 import com.example.alexeyglushkov.quizletservice.entities.QuizletTerm;
 import com.example.alexeyglushkov.tools.CancelError;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
-import com.example.alexeyglushkov.taskmanager.task.TaskManager;
+import com.example.alexeyglushkov.taskmanager.TaskManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;

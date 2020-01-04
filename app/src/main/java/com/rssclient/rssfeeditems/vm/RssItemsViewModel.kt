@@ -7,7 +7,11 @@ import com.aglushkov.repository.livedata.Resource
 import com.aglushkov.taskmanager_http.image.ImageTask
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener
+import com.example.alexeyglushkov.taskmanager.pool.start
 import com.example.alexeyglushkov.taskmanager.task.*
+import com.example.alexeyglushkov.taskmanager.providers.PriorityTaskProvider
+import com.example.alexeyglushkov.taskmanager.snapshot.SimpleTaskManagerSnapshot
+import com.example.alexeyglushkov.taskmanager.snapshot.TaskManagerSnapshot
 import com.main.MainApplication
 import com.rssclient.model.RssFeed
 import com.rssclient.model.RssItem
@@ -92,7 +96,7 @@ class RssItemsViewModel(application: MainApplication, val args: Bundle):
 
         viewModelScope.launch {
             try {
-                val bitmap = Tasks.run<Bitmap>(task, taskProvider)
+                val bitmap = taskProvider.start<Bitmap>(task)
                 completion(bitmap, null)
             } catch (e: CancellationException) {
                 throw e

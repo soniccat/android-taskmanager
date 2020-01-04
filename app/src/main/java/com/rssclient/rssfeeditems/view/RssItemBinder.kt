@@ -3,7 +3,7 @@ package com.rssclient.rssfeeditems.view
 import android.graphics.drawable.BitmapDrawable
 import android.view.View
 import com.aglushkov.taskmanager_http.image.ImageBinder
-import com.example.alexeyglushkov.ktx.getDrawableCompat
+import com.example.alexeyglushkov.ext.getDrawableCompat
 import com.rssclient.controllers.R
 import com.rssclient.model.RssItem
 
@@ -16,7 +16,7 @@ class RssItemBinder(val imageBinder: ImageBinder) {
     var listener: Listener? = null
 
     fun bind(item: RssItem, holder: RssItemsAdapter.RssItemsViewHolder) {
-        holder.name?.text = item.title
+        holder.name.text = item.title
         holder.itemView.setOnClickListener {
             listener?.onClick(item)
         }
@@ -25,7 +25,7 @@ class RssItemBinder(val imageBinder: ImageBinder) {
         val imageView = holder.image
 
         val imageTag = image?.hashCode().toString()
-        holder.progressTag = imageTag.toString()
+        holder.progressTag = imageTag
 
         val defaultImage = imageView.context.getDrawableCompat(R.drawable.ic_launcher)
         imageBinder.bind(imageView,

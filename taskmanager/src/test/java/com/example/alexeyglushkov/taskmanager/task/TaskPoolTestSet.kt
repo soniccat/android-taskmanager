@@ -1,6 +1,8 @@
 package com.example.alexeyglushkov.taskmanager.task
 
 import android.os.HandlerThread
+import com.example.alexeyglushkov.taskmanager.pool.TaskPool
+import com.example.alexeyglushkov.taskmanager.runners.ScopeThreadRunner
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.spy

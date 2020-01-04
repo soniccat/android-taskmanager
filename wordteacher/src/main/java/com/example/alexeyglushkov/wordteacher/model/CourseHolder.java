@@ -15,11 +15,9 @@ import com.example.alexeyglushkov.cachemanager.disk.DiskStorage;
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener;
 import com.example.alexeyglushkov.taskmanager.task.SimpleTask;
 import com.example.alexeyglushkov.taskmanager.task.Task;
-import com.example.alexeyglushkov.taskmanager.task.TaskPool;
-import com.example.alexeyglushkov.taskmanager.task.TaskProvider;
+import com.example.alexeyglushkov.taskmanager.task.TaskImpl;
+import com.example.alexeyglushkov.taskmanager.providers.TaskProvider;
 import com.example.alexeyglushkov.taskmanager.task.Tasks;
-
-import org.junit.Assert;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -86,7 +84,7 @@ public class CourseHolder {
     }
 
     private Task createLoadCoursesTask(final ProgressListener progressListener) {
-        return new SimpleTask() {
+        return new TaskImpl() {
             @Override
             public void startTask() {
                 ArrayList<Course> courses = null;

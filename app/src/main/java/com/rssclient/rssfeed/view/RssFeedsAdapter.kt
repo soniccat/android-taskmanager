@@ -3,7 +3,7 @@ package com.rssclient.rssfeed.view
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.alexeyglushkov.ktx.getLayoutInflater
+import com.example.alexeyglushkov.ext.getLayoutInflater
 import com.rssclient.controllers.databinding.FeedCellBinding
 import com.rssclient.vm.RssViewItem
 

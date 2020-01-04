@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.aglushkov.repository.livedata.Resource
 import com.aglushkov.taskmanager_http.image.Image
-import com.example.alexeyglushkov.taskmanager.task.TaskManagerSnapshot
+import com.example.alexeyglushkov.taskmanager.snapshot.TaskManagerSnapshot
 import com.example.alexeyglushkov.tools.Range
 import com.rssclient.model.RssItem
 import com.rssclient.vm.RssViewItem

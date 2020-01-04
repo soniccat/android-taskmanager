@@ -13,12 +13,14 @@ import com.example.alexeyglushkov.authtaskmanager.ServiceTaskRunner
 import com.example.alexeyglushkov.cachemanager.SimpleStorageCleaner
 import com.example.alexeyglushkov.cachemanager.Storage
 import com.example.alexeyglushkov.cachemanager.StorageCleaner
-import com.example.alexeyglushkov.cachemanager.clients.SimpleCache
 import com.example.alexeyglushkov.cachemanager.disk.DiskStorage
 import com.example.alexeyglushkov.quizletservice.QuizletService
 import com.example.alexeyglushkov.quizletservice.tasks.QuizletServiceTaskProvider
+import com.example.alexeyglushkov.taskmanager.SimpleTaskManager
+import com.example.alexeyglushkov.taskmanager.TaskManager
 import com.example.alexeyglushkov.taskmanager.task.*
-import com.example.alexeyglushkov.taskmanager.task.coordinators.LimitTaskManagerCoordinator
+import com.example.alexeyglushkov.taskmanager.coordinators.LimitTaskManagerCoordinator
+import com.example.alexeyglushkov.taskmanager.coordinators.TaskManagerCoordinator
 import com.main.Networks.Network
 import com.rssclient.model.RssFeedRepository
 import com.rssclient.model.RssFeedService
@@ -64,7 +66,7 @@ class MainApplication : Application() {
     }
 
     fun cleanCache() {
-        val cleanTask: Task = object : SimpleTask() {
+        val cleanTask: Task = object : TaskImpl() {
             override suspend fun startTask() {
                 val cleaner: StorageCleaner = SimpleStorageCleaner()
                 cleaner.clean(storage)
