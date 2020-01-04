@@ -25,7 +25,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:indeterminate="false"
-            android:max="100" />
+            android:max="100"
+            android:visibility="invisible"/>
     </FrameLayout>
 
     <TextView

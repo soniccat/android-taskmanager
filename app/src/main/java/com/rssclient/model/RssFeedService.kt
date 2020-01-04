@@ -9,7 +9,6 @@ import com.example.alexeyglushkov.streamlib.progress.ProgressListener
 import java.net.URL
 
 class RssFeedService: SimpleService {
-    //// Initialization
     constructor(commandProvider: ServiceCommandProvider, commandRunner: ServiceCommandRunner): super() {
         setServiceCommandProvider(commandProvider)
         setServiceCommandRunner(commandRunner)
