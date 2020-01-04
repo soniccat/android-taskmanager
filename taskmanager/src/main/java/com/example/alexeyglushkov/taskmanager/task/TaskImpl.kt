@@ -37,21 +37,21 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
     override var taskPriority: Int = 0
     override var taskType: Int = 0
 
-    protected var startDate: Date? = null
-    protected var finishDate: Date? = null
+    private var startDate: Date? = null
+    private var finishDate: Date? = null
 
     override var dependencies: WeakRefList<Task> = WeakRefList()
         protected set
 
     // listeners are cleared in a TaskManager after task finishing or cancelling
-    protected var statusListeners = mutableListOf<Task.StatusListener>()
-    protected var progressListeners = WeakRefList<ProgressListener>()
+    private var statusListeners = mutableListOf<Task.StatusListener>()
+    private var progressListeners = WeakRefList<ProgressListener>()
 
-    protected var _taskStatus: Task.Status = Task.Status.NotStarted
+    private var _taskStatus: Task.Status = Task.Status.NotStarted
     override var taskStatus: Task.Status
         get() = _taskStatus
         set(value) {
-            log("TaskImpl", "setTaskStatus " + value + " from " + _taskStatus)
+            log("TaskImpl", "setTaskStatus $value from $_taskStatus")
 
             val oldStatus = _taskStatus
             _taskStatus = value
@@ -70,7 +70,7 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
         val startDate = startDate
         if (startDate != null) {
             val finishDate = finishDate
-            val finishTime = if (finishDate == null) Date().time else finishDate.time
+            val finishTime = finishDate?.time ?: Date().time
             return finishTime - startDate.time
         }
         return -1
