@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.lifecycle.*
 import com.aglushkov.repository.livedata.Resource
+import com.aglushkov.taskmanager_http.image.Image
 import com.aglushkov.taskmanager_http.image.ImageTask
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener
@@ -12,13 +13,16 @@ import com.example.alexeyglushkov.taskmanager.task.*
 import com.example.alexeyglushkov.taskmanager.providers.PriorityTaskProvider
 import com.example.alexeyglushkov.taskmanager.snapshot.SimpleTaskManagerSnapshot
 import com.example.alexeyglushkov.taskmanager.snapshot.TaskManagerSnapshot
+import com.example.alexeyglushkov.tools.Range
 import com.main.MainApplication
 import com.rssclient.model.RssFeed
 import com.rssclient.model.RssItem
 import com.rssclient.vm.RssViewItem
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
+import org.junit.Assert
 import java.lang.NullPointerException
+import kotlin.math.abs
 
 class RssItemsViewModel(application: MainApplication, val args: Bundle):
         AndroidViewModel(application),
@@ -70,7 +74,7 @@ class RssItemsViewModel(application: MainApplication, val args: Bundle):
         return rssRepository.getImageProgressLiveData(imageTag)
     }
 
-    override fun resetImageProgress(imageTag: String) {
+    private fun resetImageProgress(imageTag: String) {
         getImageProgressLiveData(imageTag).value = 0.0f
     }
 
@@ -79,30 +83,70 @@ class RssItemsViewModel(application: MainApplication, val args: Bundle):
     }
 
     override fun onRssItemPressed(rssItem: RssItem) {
-
     }
 
     override fun onLoadImageRequested(imageInfo: RssItemsViewModelContract.ImageInfo, completion: (bitmap: Bitmap?, error: Exception?) -> Unit) {
-        val range = imageInfo.visibleRange
-        val position = imageInfo.position
+        resetImageProgress(imageInfo.imageTag)
 
-        val task = ImageTask(imageInfo.image)
-        task.taskType = position % 2 + 1
-        task.taskPriority = getTaskPriority(position, range.lower, range.upper - range.lower + 1)
-        task.taskUserData = imageInfo.imageTag
-        task.addTaskProgressListener(this)
-        task.taskProgressMinChange = 0.2f
-        task.loadPolicy = Task.LoadPolicy.CompleteWhenAlreadyAddedCompletes
-
+        val imageTask = createImageTask(imageInfo)
         viewModelScope.launch {
             try {
-                val bitmap = taskProvider.start<Bitmap>(task)
+                val bitmap = taskProvider.start<Bitmap>(imageTask)
                 completion(bitmap, null)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 completion(null, e)
             }
+        }
+    }
+
+    override fun onProgressChanged(sender: Any?, progressInfo: ProgressInfo) {
+        if (sender is RssImageTask) {
+            val liveData = getImageProgressLiveData(sender.imageTag)
+            liveData.postValue(progressInfo.normalizedValue)
+        }
+    }
+
+    override fun onScrolled(visibleRange: Range<Int>) {
+        if (taskProvider.userData is Int) {
+            val distance = Math.abs(taskProvider.userData as Int - visibleRange.lower)
+            if (distance < 5) {
+                return
+            }
+        }
+
+        //TODO: it should be done via api without direct access to getStreamReader
+        taskProvider.threadRunner.launch {
+            val tasks: MutableList<Task> = ArrayList()
+            tasks.addAll(taskProvider.getTasks())
+            for (task in tasks) {
+                if (task is RssImageTask) {
+                    val distance = abs(taskProvider.userData as Int - task.position)
+                    if (distance > 30) {
+                        taskManager.cancel(task, null)
+                    }
+                }
+            }
+        }
+
+        taskProvider.userData = visibleRange.lower
+        taskProvider.updatePriorities(object : PriorityTaskProvider.PriorityProvider {
+            override fun getPriority(task: Task): Int {
+                return if (task is RssImageTask) {
+                    getTaskPriority(task.position, visibleRange.lower, visibleRange.length)
+                } else {
+                    task.taskPriority
+                }
+            }
+        })
+    }
+
+    private fun createImageTask(imageInfo: RssItemsViewModelContract.ImageInfo): ImageTask {
+        return RssImageTask(imageInfo).apply {
+            val range = imageInfo.visibleRange
+            taskPriority = getTaskPriority(position, range.lower, range.length)
+            addTaskProgressListener(this@RssItemsViewModel)
         }
     }
 
@@ -115,22 +159,14 @@ class RssItemsViewModel(application: MainApplication, val args: Bundle):
         return 100 - delta
     }
 
-    override fun onProgressChanged(sender: Any?, progressInfo: ProgressInfo) {
-        val task = sender as Task
-        val imageTag = task.taskUserData as String
+    private class RssImageTask(imageInfo: RssItemsViewModelContract.ImageInfo): ImageTask(imageInfo.image) {
+        var position = imageInfo.position
+        var imageTag = imageInfo.imageTag
 
-        val liveData = getImageProgressLiveData(imageTag)
-        liveData.postValue(progressInfo.normalizedValue)
-
-//        val view = getViewAtPosition(taskData!!.first)
-//
-//        if (view != null) { // TODO: move holder access to adapter
-//            val holder = view.tag as ViewHolder
-//            if (holder.loadingImage === taskData.second) {
-//                holder.progressBar.progress = (progressInfo.normalizedValue * 100.0f).toInt()
-//                //Log.d("imageprogress","progress " + newValue);
-//            } else { //Log.d("imageprogress","loadingImage is different");
-//            }
-//        }
+        init {
+            task.taskType = position % 2 + 1
+            task.taskProgressMinChange = 0.2f
+            task.loadPolicy = Task.LoadPolicy.CompleteWhenAlreadyAddedCompletes
+        }
     }
 }

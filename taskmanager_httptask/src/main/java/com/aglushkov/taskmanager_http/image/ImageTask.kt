@@ -10,7 +10,7 @@ import com.example.alexeyglushkov.streamlib.data_readers_and_writers.ByteArrayRe
 import com.example.alexeyglushkov.streamlib.data_readers_and_writers.InputStreamDataReader
 import com.example.alexeyglushkov.taskmanager.task.Task
 
-class ImageTask(val image: Image, destinationId: String? = null): TransportTask(
+open class ImageTask(val image: Image, destinationId: String? = null): TransportTask(
         HttpTaskTransport(image,
                     HTTPConnectionStreamReaderAdaptor(
                             ByteArrayReader(BytesBitmapConverter())

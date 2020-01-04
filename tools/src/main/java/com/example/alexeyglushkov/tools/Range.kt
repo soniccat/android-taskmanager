@@ -15,6 +15,8 @@
  */
 package com.example.alexeyglushkov.tools
 
+import java.lang.UnsupportedOperationException
+
 /**
  * Immutable class for describing the range of two numeric values.
  *
@@ -34,7 +36,14 @@ package com.example.alexeyglushkov.tools
  * stored must also be immutable. If mutable objects are stored here, then the range
  * effectively becomes mutable.
  */
-class Range<T : Comparable<T>?>(lower: T, upper: T) {
+class Range<T : Comparable<T>>(lower: T, upper: T) {
+    val length: T
+        get() {
+            if (upper is Int && lower is Int) return (upper - lower + 1) as T
+            if (upper is Long && lower is Long) return (upper - lower + 1) as T
+            if (upper is Double && lower is Double) return (upper - lower + 1) as T
+            throw UnsupportedOperationException("Not a number")
+        }
 
     /**
      * Checks if the `value` is within the bounds of this range.
@@ -316,14 +325,11 @@ class Range<T : Comparable<T>?>(lower: T, upper: T) {
          *
          * @throws NullPointerException if `lower` or `upper` is `null`
          */
-        fun <T : Comparable<T>?> create(lower: T, upper: T): Range<T> {
+        fun <T : Comparable<T>> create(lower: T, upper: T): Range<T> {
             return Range(lower, upper)
         }
 
         fun <T> hashCodeGeneric(vararg array: T): Int {
-            if (array == null) {
-                return 0
-            }
             var h = 1
             for (o in array) {
                 h = (h shl 5) - h xor (o?.hashCode() ?: 0)
@@ -350,6 +356,6 @@ class Range<T : Comparable<T>?>(lower: T, upper: T) {
     init {
         this.lower = checkNotNull(lower, "lower must not be null")
         this.upper = checkNotNull(upper, "upper must not be null")
-        require(lower!!.compareTo(upper) <= 0) { "lower must be less than or equal to upper" }
+        require(lower <= upper) { "lower must be less than or equal to upper" }
     }
 }

@@ -21,10 +21,10 @@ interface RssItemsViewModelContract {
     val taskManagerSnapshot: LiveData<TaskManagerSnapshot>
 
     fun getImageProgressLiveData(imageTag: String): MutableLiveData<Float>
-    fun resetImageProgress(imageTag: String)
 
     // Events
     fun onRssItemPressed(rssItem: RssItem)
+    fun onScrolled(visibleRange: Range<Int>)
     fun onLoadImageRequested(imageInfo: ImageInfo,
                              completion: (bitmap: Bitmap?, error: Exception?) -> Unit)
 }
