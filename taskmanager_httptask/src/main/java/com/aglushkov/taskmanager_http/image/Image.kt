@@ -8,7 +8,6 @@ import java.io.Serializable
 import java.net.HttpURLConnection
 import java.net.URL
 
-//TODO: clean this class: remove writeObject/readObject
 open class Image : Serializable, HttpURLConnectionProvider {
     companion object {
         private const val serialVersionUID = 2567033384508404225L
