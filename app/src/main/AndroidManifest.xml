@@ -23,7 +23,8 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="com.main.MainActivity"
-            android:label="@string/title_activity_main" >
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppActivityTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -43,15 +44,7 @@
             android:parentActivityName="com.rssclient.rssfeed.view.MainRssActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.rssclient.controllers.com.rssclient.rssfeed.view.MainRssActivity" />
-        </activity>
-        <activity
-            android:name="com.playground_legacy.PlaygroundActivity"
-            android:label="@string/title_activity_playground"
-            android:parentActivityName="com.main.MainActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.main.MainActivity" />
+                android:value="com.rssclient.rssfeed.view.MainRssActivity" />
         </activity>
     </application>
 

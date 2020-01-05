@@ -60,8 +60,12 @@ dependencies {
     implementation project(':ui')
 
     implementation "androidx.appcompat:appcompat:$rootProject.ext.appCompatVersion"
+    implementation "com.google.android.material:material:$rootProject.ext.materialVersion"
+    implementation "androidx.fragment:fragment:$rootProject.ext.fragments"
+    implementation "androidx.fragment:fragment-ktx:$rootProject.ext.fragments"
     implementation "androidx.lifecycle:lifecycle-extensions:$rootProject.ext.lifecycleVersion"
     implementation "androidx.recyclerview:recyclerview:$rootProject.ext.appRecyclerViewVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$coordinatorLayout"
     implementation "androidx.core:core-ktx:$rootProject.ext.ktxCore"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$ktxLifecycleRuntime"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$ktxLifecycleViewModel"

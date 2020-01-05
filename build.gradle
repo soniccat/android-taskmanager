@@ -17,6 +17,8 @@ buildscript {
         ktxLifecycleViewModel = "2.2.0-rc03"
         ktxLifecycleLivedata = "2.2.0-rc03"
 
+        fragments = "1.2.0-rc04"
+        coordinatorLayout = "1.1.0"
         appRecyclerViewVersion = "1.1.0"
         cardViewVersion = "1.0.0"
         materialVersion = "1.0.0"
