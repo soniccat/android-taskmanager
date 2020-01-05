@@ -1,15 +1,15 @@
 package com.rssclient.rssfeed.view
 
 import android.app.AlertDialog.Builder
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,8 +18,7 @@ import com.aglushkov.taskmanager_http.image.Image
 import com.aglushkov.taskmanager_http.image.ImageBinder
 import com.main.MainApplication
 import com.rssclient.controllers.R
-import com.rssclient.controllers.databinding.ActivityMainBinding
-import com.rssclient.controllers.databinding.ActivityMainRssBinding
+import com.rssclient.controllers.databinding.FragmentRssMainBinding
 import com.rssclient.rssfeeditems.view.RssItemsActivity
 import com.rssclient.model.RssFeed
 import com.rssclient.rssfeed.vm.MainRssViewModel
@@ -32,9 +31,9 @@ import java.net.URL
 
 // TODO: add initial loader, try again option on error
 // TODO: integrate stack module or navigation
-class MainRssActivity : AppCompatActivity() {
+class RssMainFragment : Fragment() {
     private lateinit var vm: MainRssViewModelContract
-    private lateinit var binding: ActivityMainRssBinding
+    private var binding: FragmentRssMainBinding? = null
 
     // Events
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,15 +45,21 @@ class MainRssActivity : AppCompatActivity() {
             }
         }).get(MainRssViewModel::class.java)
         observeViewModel()
+    }
 
-        binding = ActivityMainRssBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = FragmentRssMainBinding.inflate(inflater, container, false)
+        return binding!!.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         bindView()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main, menu)
-        return true
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding = null
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -74,7 +79,14 @@ class MainRssActivity : AppCompatActivity() {
 
     // Actions
     private fun bindView() {
-        binding.list.layoutManager = LinearLayoutManager(binding.list.context, RecyclerView.VERTICAL, false)
+        binding!!.toolbar.apply {
+            inflateMenu(R.menu.main)
+            setOnMenuItemClickListener {
+                onOptionsItemSelected(it)
+            }
+        }
+
+        binding!!.list.layoutManager = LinearLayoutManager(binding!!.list.context, RecyclerView.VERTICAL, false)
     }
 
     private fun observeViewModel() {
@@ -92,7 +104,7 @@ class MainRssActivity : AppCompatActivity() {
 
         vm.errorLiveData.observe(this, Observer { error ->
             error?.take()?.let { _ ->
-                showErrorDialog(error)
+                activity?.showErrorDialog(error)
             }
         })
     }
@@ -111,7 +123,7 @@ class MainRssActivity : AppCompatActivity() {
     }
 
     private fun showData(data: List<RssViewItem<*>>?) {
-        val adapter = binding.list.adapter as? RssFeedsAdapter
+        val adapter = binding!!.list.adapter as? RssFeedsAdapter
         if (adapter == null) {
             createAdapter(data)
         } else {
@@ -120,22 +132,22 @@ class MainRssActivity : AppCompatActivity() {
     }
 
     private fun createAdapter(data: List<RssViewItem<*>>?) {
-        val safeListView = binding.list ?: throw NullPointerException("ListView is null")
+        val safeListView = binding!!.list ?: throw NullPointerException("ListView is null")
 
         val imageBinder = ImageBinder(object : ImageBinder.ImageLoader {
             override fun loadImage(image: Image, params: Map<String, Any>, completion: (bitmap: Bitmap?, error: Exception?) -> Unit) {
-                this@MainRssActivity.vm.onLoadImageRequested(image, completion)
+                this@RssMainFragment.vm.onLoadImageRequested(image, completion)
             }
         })
 
         val feedBinder = RssFeedBinder(imageBinder).apply {
             listener = object : RssFeedBinder.Listener {
                 override fun onClick(feed: RssFeed) {
-                    this@MainRssActivity.vm.onRssFeedPressed(feed)
+                    this@RssMainFragment.vm.onRssFeedPressed(feed)
                 }
 
                 override fun onLongPressed(feed: RssFeed) {
-                    this@MainRssActivity.vm.onRssFeedLongPressed(feed)
+                    this@RssMainFragment.vm.onRssFeedLongPressed(feed)
                 }
             }
         }
@@ -152,13 +164,13 @@ class MainRssActivity : AppCompatActivity() {
                 this.startActionMode(event.feed)
             }
             is MainRssViewModelContract.Event.OpenRssFeed -> {
-                openRssFeed(event.extras)
+                openRssFeed(event.extras, activity!!)
             }
         }
     }
 
-    private fun openRssFeed(extras: Bundle) {
-        val intent = Intent(this, RssItemsActivity::class.java)
+    private fun openRssFeed(extras: Bundle, context: Context) {
+        val intent = Intent(context, RssItemsActivity::class.java)
         intent.putExtras(extras)
         startActivity(intent)
     }
@@ -172,7 +184,7 @@ class MainRssActivity : AppCompatActivity() {
     }
 
     private fun startActionMode(feed: RssFeed) {
-        startSupportActionMode(object : ActionMode.Callback {
+        (activity as AppCompatActivity).startSupportActionMode(object : ActionMode.Callback {
             override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
                 return false
             }
@@ -196,10 +208,11 @@ class MainRssActivity : AppCompatActivity() {
     }
 
     private fun showTextDialog(onSelected: (String) -> Unit) {
-        val builder = Builder(this)
+        val context = activity ?: return
+        val builder = Builder(context)
         builder.setMessage(R.string.add_feed_descripton)
 
-        val textView = EditText(this)
+        val textView = EditText(context)
         textView.setText("https://www.lenta.ru/rss")
 
         builder.setView(textView)

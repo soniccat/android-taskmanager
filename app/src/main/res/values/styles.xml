@@ -18,6 +18,30 @@
     </style>
 
     <style name="AppActivityTheme" parent="Theme.AppCompat.Light.NoActionBar">
+<!--        <item name="android:colorPrimary">@android:color/holo_blue_light</item>-->
+<!--        <item name="colorPrimary">@android:color/holo_blue_light</item>-->
+<!--        <item name="android:textColorPrimary">@android:color/white</item>-->
+<!--        <item name="android:colorBackground">@android:color/holo_blue_light</item>-->
+
+        <item name="actionBarPopupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="actionBarWidgetTheme">@null</item>
+        <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="toolbarStyle">@style/AppActivityTheme.Toolbar</item>
+        <item name="android:toolbarStyle">@style/AppActivityTheme.Toolbar</item>
+
+        <!-- Panel attributes -->
+        <item name="listChoiceBackgroundIndicator">@drawable/abc_list_selector_holo_dark</item>
+
+        <item name="colorPrimaryDark">@color/primary_dark_material_dark</item>
+        <item name="colorPrimary">@color/primary_material_dark</item>
+    </style>
+
+    <style name="AppActivityTheme.Toolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="titleTextAppearance">@style/TextAppearance</item>
+    </style>
+
+    <style name="TextAppearance" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
 </resources>

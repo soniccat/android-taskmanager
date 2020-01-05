@@ -22,9 +22,8 @@ import com.example.alexeyglushkov.taskmanager.task.Task
 import com.example.alexeyglushkov.taskmanager.task.TaskImpl
 import com.main.Networks.Network
 import com.rssclient.controllers.R
-import com.rssclient.controllers.databinding.ActivityMainBinding
 import com.rssclient.controllers.databinding.FragmentLauncherBinding
-import com.rssclient.rssfeed.view.MainRssActivity
+import com.rssclient.rssfeed.view.RssMainFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -42,6 +41,8 @@ class LauncherFragment : Fragment() {
     val taskManager = mainApplication.taskManager
     val accountStore = mainApplication.accountStore
 
+    var listener: Listener? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentLauncherBinding.inflate(inflater, container, false)
         return binding!!.root
@@ -55,11 +56,18 @@ class LauncherFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding!!.toolbar.apply {
+            inflateMenu(R.menu.menu_main)
+            setOnMenuItemClickListener {
+                onOptionsItemSelected(it)
+            }
+        }
+
         val listView = binding!!.list
         listView.adapter = ArrayAdapter(view.context, android.R.layout.activity_list_item, android.R.id.text1, arrayOf("Rss Client", "Authorization", "Run Request", "Clear cache", "Load Sets"))
         listView.onItemClickListener = OnItemClickListener { _, _, position, _ ->
             if (position == 0) {
-                showRssClient(view.context)
+                showRssClient()
             } else if (position == 1) {
                 showAuthorization()
             } else if (position == 2) {
@@ -72,9 +80,8 @@ class LauncherFragment : Fragment() {
         }
     }
 
-    private fun showRssClient(context: Context) {
-        val intent = Intent(context, MainRssActivity::class.java)
-        startActivity(intent)
+    private fun showRssClient() {
+        listener?.onOpenRssPressed()
     }
 
     private fun showAuthorization() {
@@ -140,10 +147,6 @@ class LauncherFragment : Fragment() {
         mainApplication.quizletService.loadSets(null)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_main, menu)
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
         return if (id == R.id.action_settings) {
@@ -153,5 +156,9 @@ class LauncherFragment : Fragment() {
 
     companion object {
         private const val TAG = "LauncherFragment"
+    }
+
+    interface Listener {
+        fun onOpenRssPressed()
     }
 }
