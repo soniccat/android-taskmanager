@@ -31,7 +31,7 @@ dependencies {
     implementation project(':tools')
 
     implementation 'androidx.annotation:annotation:' + rootProject.ext.annotationVersion
-    implementation 'android.arch.lifecycle:extensions:' + rootProject.ext.archLifecycleVersion
+    implementation 'androidx.lifecycle:lifecycle-extensions:' + rootProject.ext.lifecycleVersion
 
     implementation 'junit:junit:' + rootProject.ext.junitVersion
     implementation 'io.reactivex.rxjava2:rxandroid:' + rootProject.ext.rxAndroidVersion
@@ -40,5 +40,5 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:" + rootProject.ext.coroutinesVersion
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:" + rootProject.ext.coroutinesVersion
 
-    annotationProcessor 'android.arch.lifecycle:compiler:' + rootProject.archLifecycleVersion
+    annotationProcessor 'androidx.lifecycle:lifecycle-extensions:' + rootProject.lifecycleVersion
 }

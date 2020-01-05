@@ -33,7 +33,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:' + rootProject.ext.appCompatVersion
     implementation "com.google.android.material:material:" + rootProject.ext.materialVersion
     implementation 'androidx.recyclerview:recyclerview:' + rootProject.ext.appRecyclerViewVersion
-    implementation 'android.arch.lifecycle:extensions:' + rootProject.ext.archLifecycleVersion
+    implementation 'androidx.lifecycle:lifecycle-extensions:' + rootProject.ext.lifecycleVersion
     implementation 'junit:junit:' + rootProject.ext.junitVersion
     implementation 'io.reactivex.rxjava2:rxandroid:' + rootProject.ext.rxAndroidVersion
     implementation 'io.reactivex.rxjava2:rxjava:' + rootProject.ext.rxJavaVersion
@@ -41,19 +41,19 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:" + rootProject.ext.coroutinesVersion
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:' + rootProject.ext.coroutinesVersion
 
-    annotationProcessor 'android.arch.lifecycle:compiler:' + rootProject.archLifecycleVersion
-    implementation project(path: ':quizlet_repository')
-    implementation project(path: ':authcachemanager')
+    annotationProcessor 'androidx.lifecycle:lifecycle-compiler:' + rootProject.lifecycleVersion
+    implementation project(':quizlet_repository')
+    implementation project(':authcachemanager')
     //implementation project(path: ':dropboxservice')
-    implementation project(path: ':ui')
-    implementation project(path: ':taskmanager')
-    implementation project(path: ':servicetaskmanager')
-    implementation project(path: ':service')
-    implementation project(path: ':jacksonlib')
-    implementation project(path: ':authorization')
-    implementation project(path: ':streamlib')
-    implementation project(path: ':storagemanager')
-    implementation project(path: ':tools')
+    implementation project(':ui')
+    implementation project(':taskmanager')
+    implementation project(':servicetaskmanager')
+    implementation project(':service')
+    implementation project(':jacksonlib')
+    implementation project(':authorization')
+    implementation project(':streamlib')
+    implementation project(':storagemanager')
+    implementation project(':tools')
 
     implementation 'com.google.dagger:dagger:2.17'
     kapt 'com.google.dagger:dagger-compiler:2.17'

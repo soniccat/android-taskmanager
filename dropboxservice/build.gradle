@@ -24,11 +24,11 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:' + rootProject.ext.appCompatVersion
     api files('libs/dropbox-android-sdk-1.6.3.jar')
     implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
-    implementation project(path: ':service')
-    implementation project(path: ':authorization')
-    implementation project(path: ':taskmanager')
-    implementation project(path: ':servicetaskmanager')
-    implementation project(path: ':streamlib')
-    implementation project(path: ':tools')
-    implementation project(path: ':storagemanager')
+    implementation project(':service')
+    implementation project(':authorization')
+    implementation project(':taskmanager')
+    implementation project(':servicetaskmanager')
+    implementation project(':streamlib')
+    implementation project(':tools')
+    implementation project(':storagemanager')
 }

@@ -11,15 +11,20 @@ buildscript {
         versionName = "1.0"
 
         kotlinVersion = "1.3.61"
-        ktx = "1.1.0"
 
-        appRecyclerViewVersion = "1.0.0"
+        ktxCore = "1.1.0"
+        ktxLifecycleRuntime = "2.2.0-rc03"
+        ktxLifecycleViewModel = "2.2.0-rc03"
+        ktxLifecycleLivedata = "2.2.0-rc03"
+
+        appRecyclerViewVersion = "1.1.0"
         cardViewVersion = "1.0.0"
         materialVersion = "1.0.0"
         legacySupportVersion = "1.0.0"
         appCompatVersion = "1.1.0"
-        archLifecycleVersion = "2.0.0-rc01"
+        lifecycleVersion = "2.1.0"
         coroutinesVersion = "1.3.2"
+        mockitoCore = "1.10.19"
 
         junitVersion="4.12"
         rxAndroidVersion = "2.1.0"

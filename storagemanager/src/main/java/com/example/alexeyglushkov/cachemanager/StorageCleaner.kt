@@ -6,6 +6,7 @@ import io.reactivex.Completable
 /**
  * Created by alexeyglushkov on 10.10.15.
  */
+// TODO: add coroutine support
 interface StorageCleaner {
     fun setProgressInfo(info: ProgressUpdater?)
     fun clean(storage: Storage): Completable
