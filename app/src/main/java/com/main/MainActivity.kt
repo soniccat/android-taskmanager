@@ -3,6 +3,7 @@ package com.main
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
+import com.rssclient.controllers.R
 import com.rssclient.controllers.databinding.ActivityMainBinding
 import com.rssclient.rssfeed.view.RssMainFragment
 
@@ -14,6 +15,7 @@ class MainActivity: BaseActivity(), LauncherFragment.Listener {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        window.decorView.background = null
 
         supportFragmentManager.fragmentFactory = object : FragmentFactory() {
             override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
@@ -49,6 +51,7 @@ class MainActivity: BaseActivity(), LauncherFragment.Listener {
         val fragment = supportFragmentManager.fragmentFactory.instantiate(classLoader, RssMainFragment::class.java.name)
         supportFragmentManager.beginTransaction()
                 .setReorderingAllowed(true)
+                .setCustomAnimations(R.anim.slide_from_right, R.anim.fake, R.anim.fake, R.anim.slide_to_right)
                 .replace(binding.fragmentContainerView.id, fragment, "rssMain")
                 .addToBackStack("rssMain")
                 .commitAllowingStateLoss()

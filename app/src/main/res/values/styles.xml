@@ -17,20 +17,16 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
-    <style name="AppActivityTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppActivityTheme" parent="Theme.AppCompat.Light">
+        <item name="colorPrimaryDark">@android:color/black</item>
+        <item name="colorPrimary">@android:color/black</item>
 
-        <!-- Took from Base.Theme.AppCompat.Light.DarkActionBar -->
-        <item name="actionBarPopupTheme">@style/ThemeOverlay.AppCompat.Light</item>
-        <item name="actionBarWidgetTheme">@null</item>
-        <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <!-- Hide ActionBar -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        <!-- Dark Toolbar -->
         <item name="toolbarStyle">@style/AppActivityTheme.Toolbar</item>
-        <item name="android:toolbarStyle">@style/AppActivityTheme.Toolbar</item>
-
-        <!-- Panel attributes -->
-<!--        <item name="listChoiceBackgroundIndicator">@drawable/abc_list_selector_holo_dark</item>-->
-
-        <item name="colorPrimaryDark">@color/primary_dark_material_dark</item>
-        <item name="colorPrimary">@color/primary_material_dark</item>
         <item name="android:colorControlNormal">@android:color/white</item>
         <item name="colorControlNormal">@android:color/white</item>
     </style>
