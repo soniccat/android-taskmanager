@@ -20,25 +20,16 @@ import java.util.Date
  * Created by alexeyglushkov on 23.07.15.
  */
 abstract class TaskImpl : TaskBase, TaskPrivate {
-    override var finishCallback: Task.Callback? = null
-    override var cancellationInfo: Any? = null
+    // Input
+    final override var taskId: String? = null
+    final override var loadPolicy: Task.LoadPolicy = Task.LoadPolicy.SkipIfAlreadyAdded
+    final override var taskPriority: Int = 0
+    final override var taskType: Int = 0
+    final override var taskUserData: Any? = null
+    final override var finishCallback: Task.Callback? = null
+    final override var cancellationInfo: Any? = null
         protected set
-
-    override var taskUserData: Any? = null
-    override var needCancelTask: Boolean = false
-        protected set
-    protected var isCancelled: Boolean = false // is set in subclasses when task is really cancelled
-    override var taskProgressMinChange = 0.1f
-
-    override var taskError: Exception? = null
-    override var taskResult: Any? = null // TODO: use generic type
-    override var taskId: String? = null
-    override var loadPolicy: Task.LoadPolicy = Task.LoadPolicy.SkipIfAlreadyAdded
-    override var taskPriority: Int = 0
-    override var taskType: Int = 0
-
-    private var startDate: Date? = null
-    private var finishDate: Date? = null
+    final override var taskProgressMinChange = 0.1f
 
     override var dependencies: WeakRefList<Task> = WeakRefList()
         protected set
@@ -46,6 +37,15 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
     // listeners are cleared in a TaskManager after task finishing or cancelling
     private var statusListeners = mutableListOf<Task.StatusListener>()
     private var progressListeners = WeakRefList<ProgressListener>()
+
+    // Output
+    override var taskResult: Any? = null // TODO: use generic type
+    override var taskError: Exception? = null
+    override var needCancelTask: Boolean = false
+        protected set
+    protected var isCancelled: Boolean = false // is set in subclasses when task is really cancelled
+    private var startDate: Date? = null
+    private var finishDate: Date? = null
 
     private var _taskStatus: Task.Status = Task.Status.NotStarted
     override var taskStatus: Task.Status
