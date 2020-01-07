@@ -368,13 +368,11 @@ class TaskManagerTestSet {
 
         // Verify
         assertEquals(Task.Status.Started, task1.taskStatus)
-        verify<Task>(task1, atLeastOnce()).taskId
         verify(listener).onTaskAdded(taskManager, task1, true)
         verify(listener).onTaskRemoved(taskManager, task1, false)
         verify(listener).onTaskAdded(taskManager, task1, false)
 
         assertEquals(Task.Status.Cancelled, task2.taskStatus)
-        verify<Task>(task2, atLeastOnce()).taskId
         verify(listener).onTaskAdded(taskManager, task2, false)
         verify(listener, never()).onTaskAdded(taskManager, task2, true)
         verify(listener).onTaskRemoved(taskManager, task2, false)
@@ -738,7 +736,7 @@ class TaskManagerTestSet {
         taskManager.onTaskAdded(taskProvider, testTask)
 
         // Verify
-        assertTrue(Tasks.isTaskReadyToStart(testTask))
+        assertTrue(testTask.isReadyToStart())
     }
 
     fun cancelWaitingTaskFromPool() {

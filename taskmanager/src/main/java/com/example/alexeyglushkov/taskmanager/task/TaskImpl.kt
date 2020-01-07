@@ -31,7 +31,7 @@ abstract class TaskImpl : TaskBase, TaskPrivate {
         protected set
     final override var taskProgressMinChange = 0.1f
 
-    override var dependencies: WeakRefList<Task> = WeakRefList()
+    final override var dependencies: WeakRefList<Task> = WeakRefList()
         protected set
 
     // listeners are cleared in a TaskManager after task finishing or cancelling
