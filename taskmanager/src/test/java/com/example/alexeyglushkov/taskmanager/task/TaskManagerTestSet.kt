@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 
 import org.junit.Assert.*
 import org.mockito.Mockito.`when`
+import java.lang.Exception
 
 /**
  * Created by alexeyglushkov on 23.08.15.
@@ -311,7 +312,24 @@ class TaskManagerTestSet {
         assertEquals(0, taskManager.getTaskCount())
     }
 
-    fun addTask() {
+    fun addTaskSetTaskToWaiting() {
+        // Arrange
+        val task = TestTask()
+        val listener = mock<TaskManager.Listener>()
+
+        // Act
+        taskManager.addListener(listener)
+        taskManager.addTask(task)
+
+        // Verify
+        assertEquals(Task.Status.Waiting, task.taskStatus)
+        verify(listener).onTaskAdded(taskManager, task, false)
+
+        assertEquals(taskManager.getTaskCount(), 1)
+        assertTrue(taskManager.getTasks().contains(task))
+    }
+
+    fun addTaskStartsTask() {
         // Arrange
         setCanAddMoreTasks(taskManager)
         controller?.pauseTaskRunning()
@@ -539,6 +557,18 @@ class TaskManagerTestSet {
         assertEquals(Task.Status.Completed, task2.taskStatus)
 
         assertEquals(0, taskManager.getTaskCount())
+    }
+
+    fun addTaskTwiceWithTheSameTask() {
+        // Arrange
+        val task = TestTasks.createTestTaskSpy("taskId")
+
+        // Act
+        taskManager.addTask(task)
+        taskManager.addTask(task)
+
+        // Assert
+        assertEquals(1, taskManager.getTaskCount())
     }
 
     fun taskCallbackCalled() {

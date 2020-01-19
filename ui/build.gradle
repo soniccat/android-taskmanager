@@ -26,6 +26,9 @@ dependencies {
         exclude group: 'androidx.annotation', module: 'annotation'
     })
     implementation 'androidx.appcompat:appcompat:' + rootProject.ext.appCompatVersion
+    implementation "androidx.fragment:fragment:$rootProject.ext.fragments"
+    implementation "androidx.fragment:fragment-ktx:$rootProject.ext.fragments"
+
     implementation 'com.google.android.material:material:' + rootProject.ext.materialVersion
     implementation 'androidx.cardview:cardview:' + rootProject.ext.cardViewVersion
     implementation 'junit:junit:' + rootProject.ext.junitVersion

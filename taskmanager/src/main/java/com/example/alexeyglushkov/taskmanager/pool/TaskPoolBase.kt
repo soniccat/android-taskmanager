@@ -40,13 +40,6 @@ abstract class TaskPoolBase(threadRunner: ThreadRunner) : TaskPool {
 
     override fun addTask(task: Task) {
         if (task !is TaskBase) { assert(false); return }
-        if (!task.isReadyToStart()) {
-            Log.d(tag(), "Can't put task " + task.javaClass.toString() + " because it has been added " + task.taskStatus.toString())
-            return
-        }
-
-        // TaskPool must set Waiting status on the current thread
-        task.private.taskStatus = Task.Status.Waiting
 
         threadRunner.launch {
             addTaskOnThread(task)

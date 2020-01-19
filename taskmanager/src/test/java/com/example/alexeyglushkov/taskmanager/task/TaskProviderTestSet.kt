@@ -4,10 +4,12 @@ import com.example.alexeyglushkov.taskmanager.pool.TaskPool
 import com.example.alexeyglushkov.taskmanager.providers.TaskProvider
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
+import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertNull
+import org.junit.Assert
 import org.mockito.Mockito.`when`
 
 /**
@@ -35,6 +37,40 @@ class TaskProviderTestSet {
 
         // Verify
         assertEquals(12, taskProvider.priority)
+    }
+
+    fun addStartedTask() {
+        // Arrange
+        val task = TestTasks.createTaskMock(null, Task.Status.Started)
+        val taskPrivate = task.private
+        val listener = mock<TaskPool.Listener>()
+
+        // Act
+        taskProvider.addListener(listener)
+        taskProvider.addTask(task)
+
+        // Verify
+        verify(taskPrivate, never()).taskStatus = Task.Status.Waiting
+        verify(task, never()).addTaskStatusListener(taskProvider)
+        verify(listener, never()).onTaskAdded(taskProvider, task)
+
+        Assert.assertEquals(taskProvider.getTaskCount(), 0)
+        Assert.assertFalse(taskProvider.getTasks().contains(task))
+    }
+
+    fun changeTaskStatus() {
+        // Arrange
+        val testTask = TestTask()
+        val taskPoolMock = spy(taskProvider)
+
+        // Act
+        taskPoolMock.addTask(testTask)
+        testTask.private.taskStatus = Task.Status.Started
+
+        // Verify
+        verify(taskPoolMock).onTaskStatusChanged(testTask, Task.Status.Waiting, Task.Status.Started)
+
+        Assert.assertEquals(1, taskProvider.getTaskCount())
     }
 
     fun getTopTaskWithoutFilter() {

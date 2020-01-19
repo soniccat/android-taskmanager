@@ -22,7 +22,7 @@ open class TaskProviderWrapper(val provider: TaskProvider) : TaskProvider {
     override var threadRunner: ThreadRunner
         get() = provider.threadRunner
         set(handler) {
-            provider.threadRunner = threadRunner
+            provider.threadRunner = handler
         }
 
     override var taskProviderId: String

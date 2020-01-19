@@ -140,6 +140,16 @@ open class PriorityTaskProviderTest {
     }
 
     @Test
+    fun addStartedTask() {
+        providerTest.addStartedTask()
+    }
+
+    @Test
+    fun testChangeTaskStatus() {
+        providerTest.changeTaskStatus()
+    }
+
+    @Test
     fun testGetTopTaskWithoutFilter() {
         providerTest.getTopTaskWithoutFilter()
     }
@@ -179,11 +189,6 @@ open class PriorityTaskProviderTest {
     @Test
     fun removeTaskCallsRemoveTaskStatusListener() {
         poolTestSet.removeTaskCallsRemoveTaskStatusListener()
-    }
-
-    @Test
-    fun testAddStartedTask() {
-        poolTestSet.addStartedTask()
     }
 
     @Test
@@ -229,11 +234,6 @@ open class PriorityTaskProviderTest {
     @Test
     fun testRemoveStateListener() {
         poolTestSet.removeStateListener()
-    }
-
-    @Test
-    fun testChangeTaskStatus() {
-        poolTestSet.changeTaskStatus()
     }
 
     @Test

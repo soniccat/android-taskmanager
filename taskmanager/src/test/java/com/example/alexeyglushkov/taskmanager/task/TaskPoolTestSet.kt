@@ -44,7 +44,6 @@ open class TaskPoolTestSet {
         taskPool.addTask(task)
 
         // Verify
-        verify(taskPrivate).taskStatus = Task.Status.Waiting
         verify(listener).onTaskAdded(taskPool, task)
 
         assertEquals(taskPool.getTaskCount(), 1)
@@ -72,25 +71,6 @@ open class TaskPoolTestSet {
 
         // Verify
         verify<Task>(task).removeTaskStatusListener(taskPool)
-    }
-
-    fun addStartedTask() {
-        // Arrange
-        val task = TestTasks.createTaskMock(null, Task.Status.Started)
-        val taskPrivate = task.private
-        val listener = mock<TaskPool.Listener>()
-
-        // Act
-        taskPool.addListener(listener)
-        taskPool.addTask(task)
-
-        // Verify
-        verify(taskPrivate, never()).taskStatus = Task.Status.Waiting
-        verify(task, never()).addTaskStatusListener(taskPool)
-        verify(listener, never()).onTaskAdded(taskPool, task)
-
-        assertEquals(taskPool.getTaskCount(), 0)
-        assertFalse(taskPool.getTasks().contains(task))
     }
 
     fun removeTask() {
@@ -226,21 +206,6 @@ open class TaskPoolTestSet {
         // Verify
         verify(listener1, never()).onTaskAdded(taskPool, task)
         verify(listener2, never()).onTaskAdded(taskPool, task)
-    }
-
-    fun changeTaskStatus() {
-        // Arrange
-        val testTask = TestTask()
-        val taskPoolMock = spy(taskPool)
-
-        // Act
-        taskPoolMock.addTask(testTask)
-        testTask.private.taskStatus = Task.Status.Started
-
-        // Verify
-        verify(taskPoolMock).onTaskStatusChanged(testTask, Task.Status.Waiting, Task.Status.Started)
-
-        assertEquals(1, taskPool.getTaskCount())
     }
 
     fun checkTaskRemovingAfterFinishing() {

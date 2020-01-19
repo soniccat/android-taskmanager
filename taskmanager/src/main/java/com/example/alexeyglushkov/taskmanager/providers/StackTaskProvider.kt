@@ -15,6 +15,12 @@ open class StackTaskProvider(private val areTasksDependent: Boolean, //if enable
     private var isBlocked: Boolean = false
     override var taskFilter: TaskProvider.TaskFilter? = null
 
+    override fun addTask(task: Task) {
+        if (TaskProviders.addTaskCheck(task as TaskBase, tag())) {
+            super.addTask(task)
+        }
+    }
+
     override fun triggerOnTaskAdded(task: Task) {
         if (!isBlocked) {
             super.triggerOnTaskAdded(task)

@@ -25,6 +25,12 @@ open class PriorityTaskProvider(threadRunner: ThreadRunner, override var taskPro
     // TODO: try to use PriorityBlockingQueue
     private val taskQueues: SparseArrayCompat<SortedList<Task>> = SparseArrayCompat()
 
+    override fun addTask(task: Task) {
+        if (TaskProviders.addTaskCheck(task as TaskBase, tag())) {
+            super.addTask(task)
+        }
+    }
+
     @WorkerThread
     override fun getTaskCount(): Int {
         checkHandlerThread()

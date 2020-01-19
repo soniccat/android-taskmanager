@@ -15,7 +15,6 @@ import org.junit.Test
  */
 
 class SimpleTaskManagerTest {
-
     private lateinit var poolTestSet: TaskPoolTestSet
     private lateinit var taskManagerTestSet: TaskManagerTestSet
     private lateinit var taskManager: TaskManager
@@ -52,8 +51,13 @@ class SimpleTaskManagerTest {
     }
 
     @Test
+    fun testAddTaskSetTaskToWaiting() {
+        taskManagerTestSet.addTaskSetTaskToWaiting()
+    }
+
+    @Test
     fun testAddTask() {
-        taskManagerTestSet.addTask()
+        taskManagerTestSet.addTaskStartsTask()
     }
 
     @Test
@@ -99,6 +103,11 @@ class SimpleTaskManagerTest {
     @Test
     fun addTaskTwiceWithSameIdWithCompletePolicyAtEnd() {
         taskManagerTestSet.addTaskTwiceWithSameIdWithCompletePolicyAtEnd()
+    }
+
+    @Test
+    fun addTaskTwiceWithTheSameTask() {
+        taskManagerTestSet.addTaskTwiceWithTheSameTask()
     }
 
     @Test

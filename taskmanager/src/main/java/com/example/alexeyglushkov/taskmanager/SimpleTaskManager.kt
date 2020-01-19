@@ -12,6 +12,7 @@ import com.example.alexeyglushkov.taskmanager.pool.ListTaskPool
 import com.example.alexeyglushkov.taskmanager.pool.TaskPool
 import com.example.alexeyglushkov.taskmanager.providers.PriorityTaskProvider
 import com.example.alexeyglushkov.taskmanager.providers.TaskProvider
+import com.example.alexeyglushkov.taskmanager.providers.TaskProviders
 import com.example.alexeyglushkov.taskmanager.runners.InstantThreadRunner
 import com.example.alexeyglushkov.taskmanager.runners.ScopeThreadRunner
 import com.example.alexeyglushkov.taskmanager.runners.ThreadRunner
@@ -188,21 +189,11 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
 
     override fun addTask(task: Task) {
         if (task !is TaskBase) { assert(false); return }
-
-        // TODO: think how to handle adding two same task
-        // Assert.assertEquals(task.getTaskStatus(), Task.Status.NotStarted);
-        if (!task.isReadyToStart()) {
-            Log.d(TAG, "addTask: Can't add task " + task.javaClass.toString() + " because it has been added " + task.taskStatus.toString())
-            return
-        }
-
-        // TODO: actually I think that problem of adding the same task is not important
-        // TaskManager must set Waiting status on the current thread
-        setTaskStatus(task, Task.Status.Waiting)
-
-        threadRunner.launch {
-            // task will be launched in onTaskAdded method
-            waitingTasks.addTask(task)
+        if (TaskProviders.addTaskCheck(task, TAG)) {
+            threadRunner.launch {
+                // task will be launched in onTaskAdded method
+                waitingTasks.addTask(task)
+            }
         }
     }
 
@@ -583,11 +574,10 @@ open class SimpleTaskManager : TaskManager, TaskPool.Listener {
         threadRunner.checkThread()
         Assert.assertTrue(task.isReadyToStart())
 
-        addLoadingTaskOnThread(task)
-
         logTask(task, "Task started")
         setTaskStatus(task, Task.Status.Started)
         task.private.setTaskStartDate(Date())
+        addLoadingTaskOnThread(task)
 
         val job = SupervisorJob()
         taskToJobMap[task] = job

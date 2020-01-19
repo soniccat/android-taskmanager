@@ -71,6 +71,16 @@ open class StackTaskProviderTest {
     }
 
     @Test
+    fun addStartedTask() {
+        providerTest.addStartedTask()
+    }
+
+    @Test
+    fun testChangeTaskStatus() {
+        providerTest.changeTaskStatus()
+    }
+
+    @Test
     fun testGetTopTaskWithoutFilter() {
         providerTest.getTopTaskWithoutFilter()
     }
@@ -110,11 +120,6 @@ open class StackTaskProviderTest {
     @Test
     fun removeTaskCallsRemoveTaskStatusListener() {
         poolTest.removeTaskCallsRemoveTaskStatusListener()
-    }
-
-    @Test
-    fun testAddStartedTask() {
-        poolTest.addStartedTask()
     }
 
     @Test
@@ -160,11 +165,6 @@ open class StackTaskProviderTest {
     @Test
     fun testRemoveStateListener() {
         poolTest.removeStateListener()
-    }
-
-    @Test
-    fun testChangeTaskStatus() {
-        poolTest.changeTaskStatus()
     }
 
     @Test

@@ -16,9 +16,8 @@ interface TaskManager : TaskPool, TaskPool.Listener {
     fun getLoadingTaskCount(): Int
     val taskProviders: List<TaskProvider> //always sorted by priority
 
-    // Task Running
-    // Put a task, the same task can't be putted twice to the TaskManager
-    // TODO: handle this situation well
+    // tries to start a task ignoring TaskManagerCoordinator and without putting a task in any task provider
+    // but task.loadPolicy will be taken into account anyway
     fun startImmediately(task: Task)
     fun cancel(task: Task, info: Any?)
 

@@ -27,11 +27,6 @@ class SimpleTaskPoolBaseTest : TaskPoolTestSet() {
     }
 
     @Test
-    fun testAddStartedTask() {
-        this@SimpleTaskPoolBaseTest.addStartedTask()
-    }
-
-    @Test
     fun testRemoveTask() {
         this@SimpleTaskPoolBaseTest.removeTask()
     }
@@ -74,11 +69,6 @@ class SimpleTaskPoolBaseTest : TaskPoolTestSet() {
     @Test
     fun testRemoveStateListener() {
         this@SimpleTaskPoolBaseTest.removeStateListener()
-    }
-
-    @Test
-    fun testChangeTaskStatus() {
-        this@SimpleTaskPoolBaseTest.changeTaskStatus()
     }
 
     @Test
