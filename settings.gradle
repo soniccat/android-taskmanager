@@ -1,3 +1,4 @@
+include ':app_wordteacher'
 include ':app_demo',
         ':app_wordteacher_old',
 
