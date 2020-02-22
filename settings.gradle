@@ -1,18 +1,31 @@
 include ':app_demo',
-        ':taskmanager',
-        ':storagemanager',
-        ':testsupport',
-        ':streamlib',
-        ':scribeauthorization',
-        ':authorization',
-        ':servicetaskmanager',
-        ':authcachemanager',
-        ':service',
-        ':quizlet_repository',
-        ':jacksonlib',
-        ':wordteacher',
-        ':dropboxservice',
-        ':tools',
+        ':app_wordteacher_old',
+
         ':ui',
+
+        // Repositories
+        ':quizlet_repository',
         ':repository',
-        ':taskmanager_httptask'
+        ':dropboxservice',
+
+        // Service Layer
+        ':servicetaskmanager',
+        ':service',
+
+        // Authorization
+        ':authorization',
+        ':authcachemanager',
+        ':storagemanager',
+
+        // Task Management
+        ':taskmanager_httptask',
+        ':taskmanager',
+
+        // General Stuff
+        ':streamlib',
+        ':tools',
+        ':testsupport',
+
+        // 3rd-parties
+        ':jacksonlib',
+        ':scribeauthorization'
