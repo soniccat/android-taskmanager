@@ -3,6 +3,8 @@ package com.aglushkov.wordteacher
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import com.aglushkov.wordteacher.apiproviders.google.service.GoogleService
+import com.aglushkov.wordteacher.apiproviders.google.service.create
 import com.aglushkov.wordteacher.apiproviders.owlbot.service.OwlBotService
 import com.aglushkov.wordteacher.apiproviders.owlbot.service.create
 import com.aglushkov.wordteacher.apiproviders.wordlink.service.WordLinkService
@@ -24,6 +26,7 @@ class MainActivity : AppCompatActivity() {
         val service = OwlBotService.create(this)
         val wordLinkService = WordLinkService.create(this)
         val yandexService = YandexService.create(this)
+        val googleService = GoogleService.create()
         testScope.launch {
             //val response = service.definitions("owl")
             //Log.d("owlbot", "response : $response")
@@ -37,8 +40,11 @@ class MainActivity : AppCompatActivity() {
 //                    true)
 //            Log.d("wordlink", "response : $response")
 
-            val response = yandexService.definitions("owl", "en-en", "en", 4)
-            Log.d("yandex", "response : $response")
+//            val response = yandexService.definitions("owl", "en-en", "en", 4)
+//            Log.d("yandex", "response : $response")
+
+            val response = googleService.definitions("hello", "en")
+            Log.d("google", "response : $response")
         }
     }
 }
