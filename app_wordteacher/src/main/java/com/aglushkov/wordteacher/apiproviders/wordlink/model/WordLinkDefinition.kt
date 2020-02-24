@@ -7,11 +7,12 @@ import android.os.Parcelable
 
 @Parcelize
 data class WordLinkDefinition(
+        @SerializedName("id") val id: String?,
         @SerializedName("attributionText") val attributionText: String?,
         @SerializedName("attributionUrl") val attributionUrl: String?,
         @SerializedName("citations") val citations: List<WordLinkCitation>,
         @SerializedName("exampleUses") val exampleUses: List<WordLinkExampleUse>,
-//        @SerializedName("labels") val labels: List<WordLinkLabel>,
+        @SerializedName("labels") val labels: List<WordLinkLabel>,
 //        @SerializedName("notes") val notes: List<Any>,
         @SerializedName("partOfSpeech") val partOfSpeech: String?,
         @SerializedName("relatedWords") val relatedWords: List<WordLinkRelatedWords>,
