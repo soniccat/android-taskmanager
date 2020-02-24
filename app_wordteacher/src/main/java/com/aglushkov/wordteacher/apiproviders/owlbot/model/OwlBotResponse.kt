@@ -27,11 +27,8 @@ fun OwlBotResponse.asWordTeacherWord(): WordTeacherWord? {
         }
     }
 
-    return object : WordTeacherWord {
-        override val word: String = this@asWordTeacherWord.word
-        override val transcription = this@asWordTeacherWord.pronunciation
-        override val definitions = map
-
-        override val originalSources = listOf(this@asWordTeacherWord)
-    }
+    return WordTeacherWord(word,
+            pronunciation,
+            map,
+            listOf(this@asWordTeacherWord))
 }

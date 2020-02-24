@@ -1,9 +1,16 @@
 package com.aglushkov.wordteacher.model
 
+import android.os.Parcelable
 import android.util.Log
+import kotlinx.android.parcel.Parcelize
 import java.util.*
 
-interface WordTeacherWord {
+@Parcelize
+data class WordTeacherWord(val word: String,
+                           val transcription: String?,
+                           val definitions: Map<PartOfSpeech, List<WordTeacherWordDefinition>>,
+
+                           val originalSources: List<Parcelable>): Parcelable {
     enum class PartOfSpeech {
         Noun,
         Verb,
@@ -20,12 +27,6 @@ interface WordTeacherWord {
     }
 
     companion object
-
-    val word: String
-    val transcription: String?
-    val definitions: Map<PartOfSpeech, List<WordTeacherWordDefinition>>
-
-    val originalSources: List<Any>
 }
 
 fun WordTeacherWord.PartOfSpeech.Companion.fromString(string: String?): WordTeacherWord.PartOfSpeech {

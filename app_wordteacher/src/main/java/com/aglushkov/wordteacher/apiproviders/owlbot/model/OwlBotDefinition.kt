@@ -18,15 +18,14 @@ data class OwlBotDefinition(
 fun OwlBotDefinition.asWordTeacherWordDefinition(): WordTeacherWordDefinition? {
     if (definition == null) return null
 
-    return object : WordTeacherWordDefinition {
-        override val definition: String = this@asWordTeacherWordDefinition.definition
-        override val imageUrl = this@asWordTeacherWordDefinition.imageUrl
-        override val examples = example?.let {
-                listOf(it)
-            } ?: run {
-                emptyList<String>()
-            }
-
-        override val originalSources = listOf(this@asWordTeacherWordDefinition)
+    val resultExamples = example?.let {
+        listOf(it)
+    } ?: run {
+        emptyList<String>()
     }
+
+    return WordTeacherWordDefinition(definition,
+            resultExamples,
+            imageUrl,
+            listOf(this@asWordTeacherWordDefinition))
 }

@@ -1,9 +1,13 @@
 package com.aglushkov.wordteacher.model
 
-interface WordTeacherWordDefinition {
-    val definition: String
-    val imageUrl: String?
-    val examples: List<String>
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
-    val originalSources: List<Any>
-}
+@Parcelize
+data class WordTeacherWordDefinition(
+    val definition: String,
+    val examples: List<String>,
+    val imageUrl: String?,
+
+    val originalSources: List<Parcelable>
+): Parcelable
