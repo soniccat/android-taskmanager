@@ -5,21 +5,21 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 import android.os.Parcelable
 import com.aglushkov.wordteacher.model.WordTeacherWord
-import com.aglushkov.wordteacher.model.WordTeacherWordDefinition
+import com.aglushkov.wordteacher.model.WordTeacherDefinition
 import com.aglushkov.wordteacher.model.fromString
 import java.util.*
 
 @Parcelize
-data class OwlBotResponse(
+data class OwlBotWord(
     @SerializedName("definitions") val definitions: List<OwlBotDefinition>,
     @SerializedName("pronunciation") val pronunciation: String?,
     @SerializedName("word") val word: String?
 ) : Parcelable
 
-fun OwlBotResponse.asWordTeacherWord(): WordTeacherWord? {
+fun OwlBotWord.asWordTeacherWord(): WordTeacherWord? {
     if (word == null) return null
 
-    val map: MutableMap<WordTeacherWord.PartOfSpeech, List<WordTeacherWordDefinition>> = EnumMap(WordTeacherWord.PartOfSpeech::class.java)
+    val map: MutableMap<WordTeacherWord.PartOfSpeech, List<WordTeacherDefinition>> = EnumMap(WordTeacherWord.PartOfSpeech::class.java)
     for (definition in definitions) {
         val partOfSpeech = WordTeacherWord.PartOfSpeech.fromString(definition.type)
         definition.asWordTeacherWordDefinition()?.let {

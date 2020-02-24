@@ -4,9 +4,10 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class WordTeacherWordDefinition(
+data class WordTeacherDefinition(
     val definition: String,
     val examples: List<String>,
+    val synonyms: List<String>,
     val imageUrl: String?,
 
     val originalSources: List<Parcelable>

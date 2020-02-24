@@ -7,7 +7,7 @@ import android.os.Parcelable
 
 @Parcelize
 data class YandexExample(
-    @SerializedName("tr") val translations: List<YandexTranslation>?,
+//    @SerializedName("tr") val definitions: List<YandexDefinition>?,
 
     // Universal attributes
     @SerializedName("text") val text: String,

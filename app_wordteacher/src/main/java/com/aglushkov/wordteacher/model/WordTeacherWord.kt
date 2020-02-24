@@ -8,7 +8,7 @@ import java.util.*
 @Parcelize
 data class WordTeacherWord(val word: String,
                            val transcription: String?,
-                           val definitions: Map<PartOfSpeech, List<WordTeacherWordDefinition>>,
+                           val definitions: Map<PartOfSpeech, List<WordTeacherDefinition>>,
 
                            val originalSources: List<Parcelable>): Parcelable {
     enum class PartOfSpeech {

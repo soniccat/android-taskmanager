@@ -6,6 +6,6 @@ import kotlinx.android.parcel.Parcelize
 import android.os.Parcelable
 
 @Parcelize
-data class YandexDefinitions(
-    @SerializedName("def") val definitions: List<YandexDefinition>
+data class YandexWords(
+    @SerializedName("def") val words: List<YandexWord>
 ) : Parcelable

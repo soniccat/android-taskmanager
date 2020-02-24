@@ -2,7 +2,7 @@ package com.aglushkov.wordteacher.apiproviders.yandex.service
 
 import android.content.Context
 import com.aglushkov.wordteacher.R
-import com.aglushkov.wordteacher.apiproviders.yandex.model.YandexDefinitions
+import com.aglushkov.wordteacher.apiproviders.yandex.model.YandexWords
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import retrofit2.Retrofit
@@ -17,7 +17,7 @@ interface YandexService {
     suspend fun definitions(@Query("text") word: String,
                             @Query("lang") languages: String,
                             @Query("ui") uiLang: String,
-                            @Query("flags") flags: Int): YandexDefinitions
+                            @Query("flags") flags: Int): YandexWords
 }
 
 fun YandexService.Companion.create(context: Context): YandexService =

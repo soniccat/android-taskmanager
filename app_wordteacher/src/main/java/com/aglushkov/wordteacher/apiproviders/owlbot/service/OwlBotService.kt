@@ -2,7 +2,7 @@ package com.aglushkov.wordteacher.apiproviders.owlbot.service
 
 import android.content.Context
 import com.aglushkov.wordteacher.R
-import com.aglushkov.wordteacher.apiproviders.owlbot.model.OwlBotResponse
+import com.aglushkov.wordteacher.apiproviders.owlbot.model.OwlBotWord
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import retrofit2.Retrofit
@@ -14,7 +14,7 @@ interface OwlBotService {
     companion object
 
     @GET("api/v4/dictionary/{word}")
-    suspend fun definitions(@Path("word") word: String): OwlBotResponse
+    suspend fun definitions(@Path("word") word: String): OwlBotWord
 }
 
 fun OwlBotService.Companion.create(context: Context): OwlBotService =

@@ -4,7 +4,7 @@ package com.aglushkov.wordteacher.apiproviders.owlbot.model
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 import android.os.Parcelable
-import com.aglushkov.wordteacher.model.WordTeacherWordDefinition
+import com.aglushkov.wordteacher.model.WordTeacherDefinition
 
 @Parcelize
 data class OwlBotDefinition(
@@ -15,7 +15,7 @@ data class OwlBotDefinition(
     @SerializedName("type") val type: String?
 ) : Parcelable
 
-fun OwlBotDefinition.asWordTeacherWordDefinition(): WordTeacherWordDefinition? {
+fun OwlBotDefinition.asWordTeacherWordDefinition(): WordTeacherDefinition? {
     if (definition == null) return null
 
     val resultExamples = example?.let {
@@ -24,8 +24,9 @@ fun OwlBotDefinition.asWordTeacherWordDefinition(): WordTeacherWordDefinition? {
         emptyList<String>()
     }
 
-    return WordTeacherWordDefinition(definition,
+    return WordTeacherDefinition(definition,
             resultExamples,
+            emptyList(),
             imageUrl,
             listOf(this@asWordTeacherWordDefinition))
 }
