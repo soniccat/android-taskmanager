@@ -1,6 +1,6 @@
 package com.aglushkov.wordteacher.apiproviders.google.service
 
-import com.aglushkov.wordteacher.apiproviders.google.model.GoogleDefinition
+import com.aglushkov.wordteacher.apiproviders.google.model.GoogleWord
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -11,7 +11,7 @@ interface GoogleService {
 
     @GET("api/v1/entries/{lang}/{word}")
     suspend fun definitions(@Path("word") word: String,
-                            @Path("lang") lang: String): List<GoogleDefinition>
+                            @Path("lang") lang: String): List<GoogleWord>
 }
 
 fun GoogleService.Companion.create(): GoogleService =

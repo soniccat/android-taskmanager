@@ -21,8 +21,8 @@ data class YandexDefinition(
 ) : Parcelable
 
 fun YandexDefinition.asWordTeacherWordDefinition(): WordTeacherDefinition? {
-    val resultExamples = examples?.map { it.text } ?: emptyList()
-    val resultSynonyms = synonyms?.map { it.text } ?: emptyList()
+    val resultExamples = examples.orEmpty().map { it.text }
+    val resultSynonyms = synonyms.orEmpty().map { it.text }
     // TODO: support meanings for non english definitions
 
     return WordTeacherDefinition(text,

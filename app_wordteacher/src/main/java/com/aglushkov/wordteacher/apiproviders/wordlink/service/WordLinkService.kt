@@ -2,7 +2,7 @@ package com.aglushkov.wordteacher.apiproviders.wordlink.service
 
 import android.content.Context
 import com.aglushkov.wordteacher.R
-import com.aglushkov.wordteacher.apiproviders.wordlink.model.WordLinkDefinition
+import com.aglushkov.wordteacher.apiproviders.wordlink.model.WordLinkWord
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import retrofit2.Retrofit
@@ -21,7 +21,7 @@ interface WordLinkService {
                             @Query("partOfSpeech") partOfSpeech: String?,
                             @Query("includeRelated") includeRelated: Boolean,
                             @Query("useCanonical") useCanonical: Boolean,
-                            @Query("includeTags") includeTags: Boolean): List<WordLinkDefinition>
+                            @Query("includeTags") includeTags: Boolean): List<WordLinkWord>
 }
 
 fun WordLinkService.Companion.create(context: Context): WordLinkService =
