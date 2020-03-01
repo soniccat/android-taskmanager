@@ -13,6 +13,7 @@ import com.aglushkov.wordteacher.apiproviders.wordlink.service.WordLinkService
 import com.aglushkov.wordteacher.apiproviders.wordlink.service.create
 import com.aglushkov.wordteacher.apiproviders.yandex.service.YandexService
 import com.aglushkov.wordteacher.apiproviders.yandex.service.create
+import com.aglushkov.wordteacher.apiproviders.yandex.service.createWordTeacherWordService
 import com.aglushkov.wordteacher.repository.ServiceConfig
 import com.aglushkov.wordteacher.repository.ServiceMethodParams
 import kotlinx.coroutines.CoroutineScope
@@ -31,13 +32,23 @@ class MainActivity : AppCompatActivity() {
 //                listOf(getString(R.string.owlbot_token)))
 //        val service = OwlBotService.createWordTeacherWordService(owlBotConfig.baseUrls.first(), owlBotConfig.keys.first())
 
-        val googleConfig = ServiceConfig(listOf(getString(R.string.goolge_base_url)),
-                emptyList(),
-                ServiceMethodParams(mapOf(GoogleService.EntriesMethod to mapOf(GoogleService.EntriesMethodLang to "en"))))
-        val service = GoogleService.createWordTeacherWordService(googleConfig.baseUrls.first(), googleConfig.methodOptions)
+//        val googleConfig = ServiceConfig(listOf(getString(R.string.goolge_base_url)),
+//                emptyList(),
+//                ServiceMethodParams(mapOf(GoogleService.EntriesMethod to mapOf(GoogleService.EntriesMethodLang to "en"))))
+//        val service = GoogleService.createWordTeacherWordService(googleConfig.baseUrls.first(), googleConfig.methodOptions)
 
         val wordLinkService = WordLinkService.create(this)
-        val yandexService = YandexService.create(this)
+
+        val yandexConfig = ServiceConfig(listOf(getString(R.string.yandex_base_url)),
+                listOf(getString(R.string.yandex_key)),
+                ServiceMethodParams(mapOf(YandexService.LookupMethod to
+                        mapOf(YandexService.LookupMethodLang to "en-en",
+                              YandexService.LookupMethodUi to "en",
+                              YandexService.LookupMethodFlags to "4"
+                            ))))
+        val service = YandexService.createWordTeacherWordService(yandexConfig.baseUrls.first(),
+                yandexConfig.keys.first(),
+                yandexConfig.methodOptions)
         testScope.launch {
             val response = service.define("owl")
             //Log.d("owlbot", "response : $response")
