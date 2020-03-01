@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import com.aglushkov.wordteacher.apiproviders.google.service.GoogleService
 import com.aglushkov.wordteacher.apiproviders.google.service.create
+import com.aglushkov.wordteacher.apiproviders.google.service.createWordTeacherWordService
 import com.aglushkov.wordteacher.apiproviders.owlbot.service.OwlBotService
 import com.aglushkov.wordteacher.apiproviders.owlbot.service.create
 import com.aglushkov.wordteacher.apiproviders.owlbot.service.createWordTeacherWordService
@@ -26,12 +27,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val owlBotConfig = ServiceConfig(listOf(getString(R.string.owlbot_base_url)),
-                listOf(getString(R.string.owlbot_token)))
-        val service = OwlBotService.createWordTeacherWordService(owlBotConfig.baseUrls.first(), owlBotConfig.keys.first())
+//        val owlBotConfig = ServiceConfig(listOf(getString(R.string.owlbot_base_url)),
+//                listOf(getString(R.string.owlbot_token)))
+//        val service = OwlBotService.createWordTeacherWordService(owlBotConfig.baseUrls.first(), owlBotConfig.keys.first())
+
+        val googleConfig = ServiceConfig(listOf(getString(R.string.goolge_base_url)),
+                emptyList(),
+                ServiceMethodParams(mapOf(GoogleService.EntriesMethod to mapOf(GoogleService.EntriesMethodLang to "en"))))
+        val service = GoogleService.createWordTeacherWordService(googleConfig.baseUrls.first(), googleConfig.methodOptions)
+
         val wordLinkService = WordLinkService.create(this)
         val yandexService = YandexService.create(this)
-        val googleService = GoogleService.create()
         testScope.launch {
             val response = service.define("owl")
             //Log.d("owlbot", "response : $response")

@@ -1,7 +1,5 @@
 package com.aglushkov.wordteacher.apiproviders.owlbot.service
 
-import android.content.Context
-import com.aglushkov.wordteacher.R
 import com.aglushkov.wordteacher.apiproviders.owlbot.model.OwlBotWord
 import com.aglushkov.wordteacher.apiproviders.owlbot.model.asWordTeacherWord
 import com.aglushkov.wordteacher.model.WordTeacherWord
@@ -10,7 +8,6 @@ import com.aglushkov.wordteacher.service.WordTeacherWordService
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -20,7 +17,7 @@ interface OwlBotService {
     companion object
 
     @GET("api/v4/dictionary/{word}")
-    suspend fun definitions(@Path("word") word: String): OwlBotWord
+    suspend fun definition(@Path("word") word: String): OwlBotWord
 }
 
 fun OwlBotService.Companion.createRetrofit(baseUrl: String, authInterceptor: Interceptor): Retrofit {
@@ -40,7 +37,7 @@ fun OwlBotService.Companion.createWordTeacherWordService(aBaseUrl: String,
     return object : WordTeacherWordService {
         override var key = aKey
         override var baseUrl = aBaseUrl
-        override var options = ServiceMethodParams(emptyMap())
+        override var methodParams = ServiceMethodParams(emptyMap())
 
         private val authInterceptor = Interceptor { chain ->
             val newRequest: Request = chain.request().newBuilder()
@@ -52,7 +49,7 @@ fun OwlBotService.Companion.createWordTeacherWordService(aBaseUrl: String,
         private val service = OwlBotService.create(aBaseUrl, authInterceptor)
 
         override suspend fun define(word: String): List<WordTeacherWord> {
-            return service.definitions(word).asWordTeacherWord()?.let {
+            return service.definition(word).asWordTeacherWord()?.let {
                 listOf(it)
             } ?: emptyList()
         }
