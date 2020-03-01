@@ -7,6 +7,7 @@ import com.aglushkov.wordteacher.apiproviders.google.service.GoogleService
 import com.aglushkov.wordteacher.apiproviders.google.service.create
 import com.aglushkov.wordteacher.apiproviders.owlbot.service.OwlBotService
 import com.aglushkov.wordteacher.apiproviders.owlbot.service.create
+import com.aglushkov.wordteacher.apiproviders.owlbot.service.createWordTeacherWordService
 import com.aglushkov.wordteacher.apiproviders.wordlink.service.WordLinkService
 import com.aglushkov.wordteacher.apiproviders.wordlink.service.create
 import com.aglushkov.wordteacher.apiproviders.yandex.service.YandexService
@@ -23,12 +24,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val service = OwlBotService.create(this)
+        val key = getString(R.string.owlbot_token)
+        val service = OwlBotService.createWordTeacherWordService(key)
         val wordLinkService = WordLinkService.create(this)
         val yandexService = YandexService.create(this)
         val googleService = GoogleService.create()
         testScope.launch {
-            //val response = service.definitions("owl")
+            val response = service.define("owl")
             //Log.d("owlbot", "response : $response")
 
 //            val response = wordLinkService.definitions("owl",
@@ -43,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 //            val response = yandexService.definitions("owl", "en-en", "en", 4)
 //            Log.d("yandex", "response : $response")
 
-            val response = googleService.definitions("hello", "en")
+            //val response = googleService.definitions("hello", "en")
             Log.d("google", "response : $response")
         }
     }
