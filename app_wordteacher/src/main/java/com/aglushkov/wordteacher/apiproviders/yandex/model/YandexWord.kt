@@ -26,7 +26,7 @@ fun YandexWord.asWordTeacherWord(): WordTeacherWord? {
     val map: MutableMap<WordTeacherWord.PartOfSpeech, List<WordTeacherDefinition>> = EnumMap(WordTeacherWord.PartOfSpeech::class.java)
     for (definition in definitions) {
         val partOfSpeech = WordTeacherWord.PartOfSpeech.fromString(definition.pos)
-        definition.asWordTeacherWordDefinition()?.let {
+        definition.asWordTeacherDefinition()?.let {
             map[partOfSpeech] = listOf(it)
         }
     }

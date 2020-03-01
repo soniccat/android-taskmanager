@@ -61,7 +61,7 @@ fun GoogleDefinitions.asMap(): Map<WordTeacherWord.PartOfSpeech, List<WordTeache
                             partOfSpeech: WordTeacherWord.PartOfSpeech,
                             googleDefinitions: List<GoogleDefinition>?) {
         googleDefinitions?.runIfNotEmpty {
-            map[partOfSpeech] = googleDefinitions.map { d -> d.asWordTeacherWordDefinition()!! }
+            map[partOfSpeech] = googleDefinitions.map { d -> d.asWordTeacherDefinition()!! }
         }
     }
 

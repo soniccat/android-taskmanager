@@ -15,7 +15,7 @@ data class OwlBotDefinition(
     @SerializedName("type") val type: String?
 ) : Parcelable
 
-fun OwlBotDefinition.asWordTeacherWordDefinition(): WordTeacherDefinition? {
+fun OwlBotDefinition.asWordTeacherDefinition(): WordTeacherDefinition? {
     if (definition == null) return null
 
     val resultExamples = example?.let {
@@ -28,5 +28,5 @@ fun OwlBotDefinition.asWordTeacherWordDefinition(): WordTeacherDefinition? {
             resultExamples,
             emptyList(),
             imageUrl,
-            listOf(this@asWordTeacherWordDefinition))
+            listOf(this@asWordTeacherDefinition))
 }

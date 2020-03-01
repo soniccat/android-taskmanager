@@ -13,10 +13,10 @@ data class GoogleDefinition(
     @SerializedName("synonyms") val synonyms: List<String>?
 ) : Parcelable
 
-fun GoogleDefinition.asWordTeacherWordDefinition(): WordTeacherDefinition? {
+fun GoogleDefinition.asWordTeacherDefinition(): WordTeacherDefinition? {
     return WordTeacherDefinition(definition,
             if (example != null) listOf(example) else emptyList(),
             synonyms.orEmpty(),
             null,
-            listOf(this@asWordTeacherWordDefinition))
+            listOf(this@asWordTeacherDefinition))
 }

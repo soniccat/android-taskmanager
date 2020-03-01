@@ -20,7 +20,7 @@ data class YandexDefinition(
     @SerializedName("asp") val asp: String?
 ) : Parcelable
 
-fun YandexDefinition.asWordTeacherWordDefinition(): WordTeacherDefinition? {
+fun YandexDefinition.asWordTeacherDefinition(): WordTeacherDefinition? {
     val resultExamples = examples.orEmpty().map { it.text }
     val resultSynonyms = synonyms.orEmpty().map { it.text }
     // TODO: support meanings for non english definitions
@@ -29,5 +29,5 @@ fun YandexDefinition.asWordTeacherWordDefinition(): WordTeacherDefinition? {
             resultExamples,
             resultSynonyms,
             null,
-            listOf(this@asWordTeacherWordDefinition))
+            listOf(this@asWordTeacherDefinition))
 }
