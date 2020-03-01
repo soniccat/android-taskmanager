@@ -12,6 +12,8 @@ import com.aglushkov.wordteacher.apiproviders.wordlink.service.WordLinkService
 import com.aglushkov.wordteacher.apiproviders.wordlink.service.create
 import com.aglushkov.wordteacher.apiproviders.yandex.service.YandexService
 import com.aglushkov.wordteacher.apiproviders.yandex.service.create
+import com.aglushkov.wordteacher.repository.ServiceConfig
+import com.aglushkov.wordteacher.repository.ServiceMethodParams
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -24,8 +26,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val key = getString(R.string.owlbot_token)
-        val service = OwlBotService.createWordTeacherWordService(key)
+        val owlBotConfig = ServiceConfig(listOf(getString(R.string.owlbot_base_url)),
+                listOf(getString(R.string.owlbot_token)))
+        val service = OwlBotService.createWordTeacherWordService(owlBotConfig.baseUrls.first(), owlBotConfig.keys.first())
         val wordLinkService = WordLinkService.create(this)
         val yandexService = YandexService.create(this)
         val googleService = GoogleService.create()

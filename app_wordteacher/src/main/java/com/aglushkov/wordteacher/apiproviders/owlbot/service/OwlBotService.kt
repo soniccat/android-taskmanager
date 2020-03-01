@@ -23,21 +23,23 @@ interface OwlBotService {
     suspend fun definitions(@Path("word") word: String): OwlBotWord
 }
 
-fun OwlBotService.Companion.create(authInterceptor: Interceptor): OwlBotService =
-        createRetrofit(authInterceptor).create(OwlBotService::class.java)
-
-fun OwlBotService.Companion.createRetrofit(authInterceptor: Interceptor): Retrofit {
+fun OwlBotService.Companion.createRetrofit(baseUrl: String, authInterceptor: Interceptor): Retrofit {
     val client = OkHttpClient.Builder().addInterceptor(authInterceptor).build()
     return Retrofit.Builder()
             .client(client)
-            .baseUrl("https://owlbot.info/")
+            .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 }
 
-fun OwlBotService.Companion.createWordTeacherWordService(aKey: String): WordTeacherWordService {
+fun OwlBotService.Companion.create(baseUrl: String, authInterceptor: Interceptor): OwlBotService =
+        createRetrofit(baseUrl, authInterceptor).create(OwlBotService::class.java)
+
+fun OwlBotService.Companion.createWordTeacherWordService(aBaseUrl: String,
+                                                         aKey: String): WordTeacherWordService {
     return object : WordTeacherWordService {
-        override var key: String = aKey
+        override var key = aKey
+        override var baseUrl = aBaseUrl
         override var options = ServiceMethodParams(emptyMap())
 
         private val authInterceptor = Interceptor { chain ->
@@ -47,7 +49,7 @@ fun OwlBotService.Companion.createWordTeacherWordService(aKey: String): WordTeac
             chain.proceed(newRequest)
         }
 
-        private val service = OwlBotService.create(authInterceptor)
+        private val service = OwlBotService.create(aBaseUrl, authInterceptor)
 
         override suspend fun define(word: String): List<WordTeacherWord> {
             return service.definitions(word).asWordTeacherWord()?.let {
