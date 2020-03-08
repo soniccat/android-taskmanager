@@ -39,10 +39,14 @@ fun List<WordLinkWord>.asWordTeacherWords(): List<WordTeacherWord> {
 
         val partOfSpeech = WordTeacherWord.PartOfSpeech.fromString(word.partOfSpeech)
         val definition = word.asDefinition() ?: continue
-        val wordTeacherWord = map[word.word] ?: WordTeacherWord(word.word,
-                null,
-                mutableMapOf(partOfSpeech to mutableListOf()),
-                mutableListOf())
+        val wordTeacherWord = map[word.word] ?: run {
+            val word = WordTeacherWord(word.word,
+                    null,
+                    mutableMapOf(partOfSpeech to mutableListOf()),
+                    mutableListOf())
+            map[word.word] = word
+            word
+        }
 
         (wordTeacherWord.originalSources as MutableList).add(word)
 

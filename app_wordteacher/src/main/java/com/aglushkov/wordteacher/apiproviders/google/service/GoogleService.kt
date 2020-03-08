@@ -15,8 +15,8 @@ import retrofit2.http.Path
 
 interface GoogleService {
     companion object {
-        val EntriesMethod = "GoogleEntries"
-        val EntriesMethodLang = "GoogleEntries_lang"
+        val Entries = "google_entries"
+        val EntriesLang = "google_entries_lang"
     }
 
     @GET("api/v1/entries/{lang}/{word}")
@@ -44,7 +44,7 @@ fun GoogleService.Companion.createWordTeacherWordService(aBaseUrl: String,
         private val service = GoogleService.create(aBaseUrl)
 
         override suspend fun define(word: String): List<WordTeacherWord> {
-            val lang: String = params.value[EntriesMethod]?.get(EntriesMethodLang) ?: "en"
+            val lang: String = params.value[Entries]?.get(EntriesLang) ?: "en"
             return service.definitions(word, lang).mapNotNull { it.asWordTeacherWord() }
         }
     }

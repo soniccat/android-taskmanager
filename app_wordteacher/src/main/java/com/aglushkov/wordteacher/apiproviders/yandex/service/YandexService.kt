@@ -15,10 +15,10 @@ import retrofit2.http.Query
 
 interface YandexService {
     companion object {
-        val LookupMethod = "YandexLookup"
-        val LookupMethodLang = "YandexLookup_lang"
-        val LookupMethodUi = "YandexLookup_ui"
-        val LookupMethodFlags = "YandexLookup_flags"
+        val Lookup = "yandex_lookup"
+        val LookupLang = "yandex_lookup_lang"
+        val LookupUi = "yandex_lookup_ui"
+        val LookupFlags = "yandex_lookup_flags"
     }
 
     @GET("api/v1/dicservice.json/lookup")
@@ -61,10 +61,10 @@ fun YandexService.Companion.createWordTeacherWordService(aBaseUrl: String,
         private val service = YandexService.create(aBaseUrl, authInterceptor)
 
         override suspend fun define(word: String): List<WordTeacherWord> {
-            val lookup = methodParams.value[LookupMethod]
-            val lang = lookup?.get(LookupMethodLang) ?: "en"
-            val ui = lookup?.get(LookupMethodUi) ?: "en"
-            val flags = lookup?.get(LookupMethodFlags)?.toIntOrNull() ?: 4
+            val lookup = methodParams.value[Lookup]
+            val lang = lookup?.get(LookupLang) ?: "en"
+            val ui = lookup?.get(LookupUi) ?: "en"
+            val flags = lookup?.get(LookupFlags)?.toIntOrNull() ?: 4
             return service.definitions(word, lang, ui, flags).words.mapNotNull { it.asWordTeacherWord() }
         }
     }

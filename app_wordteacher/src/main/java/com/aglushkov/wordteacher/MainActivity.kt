@@ -11,6 +11,7 @@ import com.aglushkov.wordteacher.apiproviders.owlbot.service.create
 import com.aglushkov.wordteacher.apiproviders.owlbot.service.createWordTeacherWordService
 import com.aglushkov.wordteacher.apiproviders.wordlink.service.WordLinkService
 import com.aglushkov.wordteacher.apiproviders.wordlink.service.create
+import com.aglushkov.wordteacher.apiproviders.wordlink.service.createWordTeacherWordService
 import com.aglushkov.wordteacher.apiproviders.yandex.service.YandexService
 import com.aglushkov.wordteacher.apiproviders.yandex.service.create
 import com.aglushkov.wordteacher.apiproviders.yandex.service.createWordTeacherWordService
@@ -20,6 +21,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
     val testScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -37,21 +39,35 @@ class MainActivity : AppCompatActivity() {
 //                ServiceMethodParams(mapOf(GoogleService.EntriesMethod to mapOf(GoogleService.EntriesMethodLang to "en"))))
 //        val service = GoogleService.createWordTeacherWordService(googleConfig.baseUrls.first(), googleConfig.methodOptions)
 
-        val wordLinkService = WordLinkService.create(this)
+        val wordLinkConfig = ServiceConfig(
+                listOf(getString(R.string.wordlink_base_url)),
+                listOf(getString(R.string.wordlink_key)),
+                ServiceMethodParams(mapOf(WordLinkService.Definitions to mapOf(
+                        WordLinkService.DefinitionsSourceDictionaries to WordLinkService.Dictionary.Ahd5.value,
+                        WordLinkService.DefinitionsIncludeRelated to true.toString(),
+                        WordLinkService.DefinitionsIncludeTags to true.toString(),
+                        WordLinkService.DefinitionsLimit to 11.toString(),
+                        WordLinkService.DefinitionsUseCanonical to true.toString()
+                ))))
+        val service = WordLinkService.createWordTeacherWordService(
+                wordLinkConfig.baseUrls.first(),
+                wordLinkConfig.keys.first(),
+                wordLinkConfig.methodOptions)
 
-        val yandexConfig = ServiceConfig(listOf(getString(R.string.yandex_base_url)),
-                listOf(getString(R.string.yandex_key)),
-                ServiceMethodParams(mapOf(YandexService.LookupMethod to
-                        mapOf(YandexService.LookupMethodLang to "en-en",
-                              YandexService.LookupMethodUi to "en",
-                              YandexService.LookupMethodFlags to "4"
-                            ))))
-        val service = YandexService.createWordTeacherWordService(yandexConfig.baseUrls.first(),
-                yandexConfig.keys.first(),
-                yandexConfig.methodOptions)
+//        val yandexConfig = ServiceConfig(listOf(getString(R.string.yandex_base_url)),
+//                listOf(getString(R.string.yandex_key)),
+//                ServiceMethodParams(mapOf(YandexService.Lookup to
+//                        mapOf(YandexService.LookupLang to "en-en",
+//                              YandexService.LookupUi to "en",
+//                              YandexService.LookupFlags to "4"
+//                            ))))
+//        val service = YandexService.createWordTeacherWordService(yandexConfig.baseUrls.first(),
+//                yandexConfig.keys.first(),
+//                yandexConfig.methodOptions)
         testScope.launch {
-            val response = service.define("owl")
-            //Log.d("owlbot", "response : $response")
+            try {
+                val response = service.define("owl")
+//            Log.d("owlbot", "response : $response")
 
 //            val response = wordLinkService.definitions("owl",
 //                    "wiktionary,century",
@@ -65,8 +81,12 @@ class MainActivity : AppCompatActivity() {
 //            val response = yandexService.definitions("owl", "en-en", "en", 4)
 //            Log.d("yandex", "response : $response")
 
-            //val response = googleService.definitions("hello", "en")
-            Log.d("google", "response : $response")
+//            val response = googleService.definitions("hello", "en")
+                Log.d("google", "response : $response")
+            } catch (ex: Exception) {
+                Log.d("abc", ex.message)
+                ex.printStackTrace()
+            }
         }
     }
 }

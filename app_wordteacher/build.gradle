@@ -7,8 +7,8 @@ android {
 
     defaultConfig {
         applicationId "com.aglushkov.wordteacher"
-        minSdkVersion rootProject.ext.targetSdkVersion
-        targetSdkVersion rootProject.ext.compileSdkVersion
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
 
