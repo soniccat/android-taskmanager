@@ -3,32 +3,37 @@ package com.aglushkov.wordteacher
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import com.aglushkov.wordteacher.apiproviders.google.service.GoogleService
-import com.aglushkov.wordteacher.apiproviders.google.service.create
-import com.aglushkov.wordteacher.apiproviders.google.service.createWordTeacherWordService
-import com.aglushkov.wordteacher.apiproviders.owlbot.service.OwlBotService
-import com.aglushkov.wordteacher.apiproviders.owlbot.service.create
-import com.aglushkov.wordteacher.apiproviders.owlbot.service.createWordTeacherWordService
 import com.aglushkov.wordteacher.apiproviders.wordlink.service.WordLinkService
-import com.aglushkov.wordteacher.apiproviders.wordlink.service.create
 import com.aglushkov.wordteacher.apiproviders.wordlink.service.createWordTeacherWordService
-import com.aglushkov.wordteacher.apiproviders.yandex.service.YandexService
-import com.aglushkov.wordteacher.apiproviders.yandex.service.create
-import com.aglushkov.wordteacher.apiproviders.yandex.service.createWordTeacherWordService
-import com.aglushkov.wordteacher.repository.ServiceConfig
+import com.aglushkov.wordteacher.repository.Config
+import com.aglushkov.wordteacher.repository.ConfigRepository
 import com.aglushkov.wordteacher.repository.ServiceMethodParams
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
+import com.aglushkov.wordteacher.service.ConfigService
+import com.aglushkov.wordteacher.service.create
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
 import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
     val testScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    val mainScope = CoroutineScope(Dispatchers.Main) + SupervisorJob()
+
+    lateinit var configRepository: ConfigRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val baseUrl = getString(R.string.config_base_url)
+        val configService = ConfigService.create(baseUrl)
+
+        configRepository = ConfigRepository(configService, testScope)
+
+        mainScope.launch {
+            configRepository.flow.collect {
+                Log.d("Config", "" + it)
+            }
+        }
 
 //        val owlBotConfig = ServiceConfig(listOf(getString(R.string.owlbot_base_url)),
 //                listOf(getString(R.string.owlbot_token)))
@@ -39,7 +44,8 @@ class MainActivity : AppCompatActivity() {
 //                ServiceMethodParams(mapOf(GoogleService.EntriesMethod to mapOf(GoogleService.EntriesMethodLang to "en"))))
 //        val service = GoogleService.createWordTeacherWordService(googleConfig.baseUrls.first(), googleConfig.methodOptions)
 
-        val wordLinkConfig = ServiceConfig(
+        val wordLinkConfig = Config(
+                Config.Type.Wordlink,
                 listOf(getString(R.string.wordlink_base_url)),
                 listOf(getString(R.string.wordlink_key)),
                 ServiceMethodParams(mapOf(WordLinkService.Definitions to mapOf(
@@ -66,7 +72,7 @@ class MainActivity : AppCompatActivity() {
 //                yandexConfig.methodOptions)
         testScope.launch {
             try {
-                val response = service.define("owl")
+//                val response = service.define("owl")
 //            Log.d("owlbot", "response : $response")
 
 //            val response = wordLinkService.definitions("owl",
@@ -82,7 +88,7 @@ class MainActivity : AppCompatActivity() {
 //            Log.d("yandex", "response : $response")
 
 //            val response = googleService.definitions("hello", "en")
-                Log.d("google", "response : $response")
+//                Log.d("google", "response : $response")
             } catch (ex: Exception) {
                 Log.d("abc", ex.message)
                 ex.printStackTrace()
