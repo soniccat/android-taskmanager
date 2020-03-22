@@ -4,13 +4,10 @@ import com.aglushkov.wordteacher.model.Resource
 import com.aglushkov.wordteacher.model.isNotLoadedAndNotLoading
 import com.aglushkov.wordteacher.service.ConfigService
 import com.aglushkov.wordteacher.service.decodeConfigs
+import com.aglushkov.wordteacher.tools.forward
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
-import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
@@ -31,11 +28,11 @@ class ConfigRepository(val service: ConfigService,
 
     private fun load() {
         scope.launch {
-            loadFlow().forward(channel)
+            loadConfigFlow().forward(channel)
         }
     }
 
-    private fun loadFlow() = flow<Resource<List<Config>>> {
+    private fun loadConfigFlow() = flow<Resource<List<Config>>> {
         emit(channel.value.toLoading())
 
         try {
@@ -49,11 +46,5 @@ class ConfigRepository(val service: ConfigService,
 
     fun clear() {
         channel.cancel()
-    }
-}
-
-suspend fun <T> Flow<T>.forward(channel: SendChannel<T>) {
-    collect {
-        channel.offer(it)
     }
 }

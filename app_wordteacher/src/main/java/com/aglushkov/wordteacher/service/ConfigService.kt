@@ -7,7 +7,6 @@ import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import retrofit2.Retrofit
 import retrofit2.http.GET
-import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 
 
@@ -35,12 +34,14 @@ fun ConfigService.Companion.decodeConfigs(body: ResponseBody): List<Config> {
 }
 
 fun ConfigService.Companion.decodeConfigs(byteArray: ByteArray): List<Config> {
+    // TODO: decipher the content
     val gson = GsonBuilder().create()
     val type = object : TypeToken<List<Config>>() {}.type
     return gson.fromJson(byteArray.toString(StandardCharsets.UTF_8), type)
 }
 
 fun ConfigService.Companion.encodeConfigs(configs: List<Config>): ByteArray {
+    // TODO: cipher the content
     val gson = GsonBuilder().create()
     return gson.toJson(configs).toByteArray()
 }

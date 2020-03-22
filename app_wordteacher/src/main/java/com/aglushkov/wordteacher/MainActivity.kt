@@ -5,13 +5,12 @@ import android.os.Bundle
 import android.util.Log
 import com.aglushkov.wordteacher.apiproviders.wordlink.service.WordLinkService
 import com.aglushkov.wordteacher.apiproviders.wordlink.service.createWordTeacherWordService
-import com.aglushkov.wordteacher.repository.Config
-import com.aglushkov.wordteacher.repository.ConfigRepository
-import com.aglushkov.wordteacher.repository.ServiceMethodParams
+import com.aglushkov.wordteacher.repository.*
 import com.aglushkov.wordteacher.service.ConfigService
 import com.aglushkov.wordteacher.service.create
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flowOn
 import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
@@ -19,6 +18,8 @@ class MainActivity : AppCompatActivity() {
     val mainScope = CoroutineScope(Dispatchers.Main) + SupervisorJob()
 
     lateinit var configRepository: ConfigRepository
+    lateinit var serviceRepository: ServiceRepository
+    lateinit var configConnectParamsStatRepository: ConfigConnectParamsStatRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,10 +29,24 @@ class MainActivity : AppCompatActivity() {
         val configService = ConfigService.create(baseUrl)
 
         configRepository = ConfigRepository(configService, testScope)
+        configConnectParamsStatRepository = ConfigConnectParamsStatRepository(applicationContext)
+        serviceRepository = ServiceRepository(configRepository, configConnectParamsStatRepository)
 
         mainScope.launch {
             configRepository.flow.collect {
                 Log.d("Config", "" + it)
+            }
+        }
+
+        mainScope.launch {
+            serviceRepository.services.collect {
+                Log.d("Services", "" + it)
+            }
+        }
+
+        mainScope.launch {
+            serviceRepository.services.flowOn(Dispatchers.IO).collect {
+                Log.d("Services", "" + it)
             }
         }
 
@@ -44,21 +59,21 @@ class MainActivity : AppCompatActivity() {
 //                ServiceMethodParams(mapOf(GoogleService.EntriesMethod to mapOf(GoogleService.EntriesMethodLang to "en"))))
 //        val service = GoogleService.createWordTeacherWordService(googleConfig.baseUrls.first(), googleConfig.methodOptions)
 
-        val wordLinkConfig = Config(
-                Config.Type.Wordlink,
-                listOf(getString(R.string.wordlink_base_url)),
-                listOf(getString(R.string.wordlink_key)),
-                ServiceMethodParams(mapOf(WordLinkService.Definitions to mapOf(
-                        WordLinkService.DefinitionsSourceDictionaries to WordLinkService.Dictionary.Ahd5.value,
-                        WordLinkService.DefinitionsIncludeRelated to true.toString(),
-                        WordLinkService.DefinitionsIncludeTags to true.toString(),
-                        WordLinkService.DefinitionsLimit to 11.toString(),
-                        WordLinkService.DefinitionsUseCanonical to true.toString()
-                ))))
-        val service = WordLinkService.createWordTeacherWordService(
-                wordLinkConfig.baseUrls.first(),
-                wordLinkConfig.keys.first(),
-                wordLinkConfig.methodOptions)
+//        val wordLinkConfig = Config(
+//                Config.Type.Wordlink,
+//                listOf(getString(R.string.wordlink_base_url)),
+//                listOf(getString(R.string.wordlink_key)),
+//                ServiceMethodParams(mapOf(WordLinkService.Definitions to mapOf(
+//                        WordLinkService.DefinitionsSourceDictionaries to WordLinkService.Dictionary.Ahd5.value,
+//                        WordLinkService.DefinitionsIncludeRelated to true.toString(),
+//                        WordLinkService.DefinitionsIncludeTags to true.toString(),
+//                        WordLinkService.DefinitionsLimit to 11.toString(),
+//                        WordLinkService.DefinitionsUseCanonical to true.toString()
+//                ))))
+//        val service = WordLinkService.createWordTeacherWordService(
+//                wordLinkConfig.baseUrls.first(),
+//                wordLinkConfig.keys.first(),
+//                wordLinkConfig.methodOptions)
 
 //        val yandexConfig = ServiceConfig(listOf(getString(R.string.yandex_base_url)),
 //                listOf(getString(R.string.yandex_key)),
