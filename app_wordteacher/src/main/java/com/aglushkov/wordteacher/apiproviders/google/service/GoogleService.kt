@@ -37,6 +37,7 @@ fun GoogleService.Companion.create(baseUrl: String): GoogleService =
 fun GoogleService.Companion.createWordTeacherWordService(aBaseUrl: String,
                                                          params: ServiceMethodParams): WordTeacherWordService {
     return object : WordTeacherWordService {
+        override var name = "Google"
         override var key = ""
         override var baseUrl = aBaseUrl
         override var methodParams = params

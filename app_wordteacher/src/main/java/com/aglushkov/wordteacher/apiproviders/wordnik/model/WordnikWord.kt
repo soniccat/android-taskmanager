@@ -1,4 +1,4 @@
-package com.aglushkov.wordteacher.apiproviders.wordlink.model
+package com.aglushkov.wordteacher.apiproviders.wordnik.model
 
 
 import com.google.gson.annotations.SerializedName
@@ -8,30 +8,30 @@ import com.aglushkov.wordteacher.model.WordTeacherDefinition
 import com.aglushkov.wordteacher.model.WordTeacherWord
 import com.aglushkov.wordteacher.model.fromString
 
-// TODO: check possible values of WordLinkRelatedWords.relationshipType
+// TODO: check possible values of WordnikLinkRelatedWords.relationshipType
 @Parcelize
-data class WordLinkWord(
-    @SerializedName("id") val id: String?,
-    @SerializedName("attributionText") val attributionText: String?,
-    @SerializedName("attributionUrl") val attributionUrl: String?,
-    @SerializedName("citations") val citations: List<WordLinkCitation>,
-    @SerializedName("exampleUses") val exampleUses: List<WordLinkExampleUse>,
-    @SerializedName("labels") val labels: List<WordLinkLabel>,
+data class WordnikWord(
+        @SerializedName("id") val id: String?,
+        @SerializedName("attributionText") val attributionText: String?,
+        @SerializedName("attributionUrl") val attributionUrl: String?,
+        @SerializedName("citations") val citations: List<WordnikCitation>,
+        @SerializedName("exampleUses") val exampleUses: List<WordnikExampleUse>,
+        @SerializedName("labels") val labels: List<WordnikLabel>,
 //        @SerializedName("notes") val notes: List<Any>,
-    @SerializedName("partOfSpeech") val partOfSpeech: String?,
-    @SerializedName("relatedWords") val relatedWords: List<WordLinkRelatedWords>,
-    @SerializedName("sourceDictionary") val sourceDictionary: String?,
-    @SerializedName("text") val text: String?,
+        @SerializedName("partOfSpeech") val partOfSpeech: String?,
+        @SerializedName("relatedWords") val relatedWords: List<WordnikRelatedWords>,
+        @SerializedName("sourceDictionary") val sourceDictionary: String?,
+        @SerializedName("text") val text: String?,
 //        @SerializedName("textProns") val textProns: List<Any>,
-    @SerializedName("word") val word: String?,
-    @SerializedName("wordnikUrl") val wordnikUrl: String?
+        @SerializedName("word") val word: String?,
+        @SerializedName("wordnikUrl") val wordnikUrl: String?
 ) : Parcelable {
     fun exampleUsesTexts() = exampleUses.mapNotNull { it.text } + (citations.mapNotNull { it.cite })
     fun synonyms() = relatedWords.filter { it.relationshipType == "synonym" }.map { it.words }.flatten()
     fun related() = relatedWords.filter { it.relationshipType != "synonym" }.map { it.words }.flatten()
 }
 
-fun List<WordLinkWord>.asWordTeacherWords(): List<WordTeacherWord> {
+fun List<WordnikWord>.asWordTeacherWords(): List<WordTeacherWord> {
     val map: MutableMap<String, WordTeacherWord> = mutableMapOf()
 
     for (word in this) {
@@ -58,7 +58,7 @@ fun List<WordLinkWord>.asWordTeacherWords(): List<WordTeacherWord> {
     return map.values.toList()
 }
 
-fun WordLinkWord.asDefinition(): WordTeacherDefinition? {
+fun WordnikWord.asDefinition(): WordTeacherDefinition? {
     if (text == null) return null
 
     return WordTeacherDefinition(

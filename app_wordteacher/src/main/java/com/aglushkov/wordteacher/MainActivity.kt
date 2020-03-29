@@ -3,8 +3,6 @@ package com.aglushkov.wordteacher
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import com.aglushkov.wordteacher.apiproviders.wordlink.service.WordLinkService
-import com.aglushkov.wordteacher.apiproviders.wordlink.service.createWordTeacherWordService
 import com.aglushkov.wordteacher.repository.*
 import com.aglushkov.wordteacher.service.ConfigService
 import com.aglushkov.wordteacher.service.create
@@ -20,6 +18,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var configRepository: ConfigRepository
     lateinit var serviceRepository: ServiceRepository
     lateinit var configConnectParamsStatRepository: ConfigConnectParamsStatRepository
+    lateinit var wordRepository: WordRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         configRepository = ConfigRepository(configService, testScope)
         configConnectParamsStatRepository = ConfigConnectParamsStatRepository(applicationContext)
         serviceRepository = ServiceRepository(configRepository, configConnectParamsStatRepository, WordTeacherWordServiceFactory())
+        wordRepository = WordRepository(serviceRepository)
 
         mainScope.launch {
             configRepository.flow.collect {
@@ -39,15 +39,20 @@ class MainActivity : AppCompatActivity() {
         }
 
         mainScope.launch {
-            serviceRepository.services.collect {
+            serviceRepository.flow.collect {
                 Log.d("Services", "" + it)
             }
         }
 
         mainScope.launch {
-            serviceRepository.services.flowOn(Dispatchers.IO).collect {
+            serviceRepository.flow.flowOn(Dispatchers.IO).collect {
                 Log.d("Services", "" + it)
             }
+        }
+
+        mainScope.launch {
+            val defs = wordRepository.define("owl")
+            Log.d("Definitions", "" + defs)
         }
 
 //        val owlBotConfig = ServiceConfig(listOf(getString(R.string.owlbot_base_url)),

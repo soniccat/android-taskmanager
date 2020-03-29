@@ -1,7 +1,7 @@
-package com.aglushkov.wordteacher.apiproviders.wordlink.service
+package com.aglushkov.wordteacher.apiproviders.wordnik.service
 
-import com.aglushkov.wordteacher.apiproviders.wordlink.model.WordLinkWord
-import com.aglushkov.wordteacher.apiproviders.wordlink.model.asWordTeacherWords
+import com.aglushkov.wordteacher.apiproviders.wordnik.model.WordnikWord
+import com.aglushkov.wordteacher.apiproviders.wordnik.model.asWordTeacherWords
 import com.aglushkov.wordteacher.model.WordTeacherWord
 import com.aglushkov.wordteacher.repository.ServiceMethodParams
 import com.aglushkov.wordteacher.service.WordTeacherWordService
@@ -14,7 +14,7 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-interface WordLinkService {
+interface WordnikService {
     enum class Dictionary(val value: String) {
         All("all"),
         Ahd5("ahd-5"),
@@ -56,13 +56,13 @@ interface WordLinkService {
     }
 
     companion object {
-        val Definitions = "wordlink_definitions"
-        val DefinitionsSourceDictionaries = "wordlink_definitions_sourceDictionaries"
-        val DefinitionsLimit = "wordlink_definitions_limit"
-        val DefinitionsPartOfSpeech = "wordlink_definitions_partOfSpeech"
-        val DefinitionsIncludeRelated = "wordlink_definitions_includeRelated"
-        val DefinitionsUseCanonical = "wordlink_definitions_useCanonical"
-        val DefinitionsIncludeTags = "wordlink_definitions_includeTags"
+        val Definitions = "wordnik_definitions"
+        val DefinitionsSourceDictionaries = "wordnik_definitions_sourceDictionaries"
+        val DefinitionsLimit = "wordnik_definitions_limit"
+        val DefinitionsPartOfSpeech = "wordnik_definitions_partOfSpeech"
+        val DefinitionsIncludeRelated = "wordnik_definitions_includeRelated"
+        val DefinitionsUseCanonical = "wordnik_definitions_useCanonical"
+        val DefinitionsIncludeTags = "wordnik_definitions_includeTags"
     }
 
     @GET("v4/word.json/{word}/definitions")
@@ -72,10 +72,10 @@ interface WordLinkService {
                             @Query("partOfSpeech") partOfSpeech: String?,
                             @Query("includeRelated") includeRelated: Boolean,
                             @Query("useCanonical") useCanonical: Boolean,
-                            @Query("includeTags") includeTags: Boolean): List<WordLinkWord>
+                            @Query("includeTags") includeTags: Boolean): List<WordnikWord>
 }
 
-fun WordLinkService.Companion.createRetrofit(baseUrl: String, authInterceptor: Interceptor): Retrofit {
+fun WordnikService.Companion.createRetrofit(baseUrl: String, authInterceptor: Interceptor): Retrofit {
     val client = OkHttpClient.Builder().addInterceptor(authInterceptor).build()
     return Retrofit.Builder()
             .baseUrl(baseUrl)
@@ -84,13 +84,14 @@ fun WordLinkService.Companion.createRetrofit(baseUrl: String, authInterceptor: I
             .build()
 }
 
-fun WordLinkService.Companion.create(baseUrl: String, authInterceptor: Interceptor): WordLinkService =
-        createRetrofit(baseUrl, authInterceptor).create(WordLinkService::class.java)
+fun WordnikService.Companion.create(baseUrl: String, authInterceptor: Interceptor): WordnikService =
+        createRetrofit(baseUrl, authInterceptor).create(WordnikService::class.java)
 
-fun WordLinkService.Companion.createWordTeacherWordService(aBaseUrl: String,
-                                                         aKey: String,
-                                                         methodParams: ServiceMethodParams): WordTeacherWordService {
+fun WordnikService.Companion.createWordTeacherWordService(aBaseUrl: String,
+                                                          aKey: String,
+                                                          methodParams: ServiceMethodParams): WordTeacherWordService {
     return object : WordTeacherWordService {
+        override var name = "Wordnik"
         override var key = aKey
         override var baseUrl = aBaseUrl
         override var methodParams = methodParams
@@ -104,11 +105,11 @@ fun WordLinkService.Companion.createWordTeacherWordService(aBaseUrl: String,
             chain.proceed(newRequest)
         }
 
-        private val service = WordLinkService.create(aBaseUrl, authInterceptor)
+        private val service = WordnikService.create(aBaseUrl, authInterceptor)
 
         override suspend fun define(word: String): List<WordTeacherWord> {
             val definitions = methodParams.value[Definitions]
-            val dictionaries = definitions?.get(DefinitionsSourceDictionaries) ?: WordLinkService.Dictionary.Wikitionary.value
+            val dictionaries = definitions?.get(DefinitionsSourceDictionaries) ?: WordnikService.Dictionary.Wikitionary.value
             val limit = definitions?.get(DefinitionsLimit)?.toIntOrNull() ?: 20
             val partOfSpeech = definitions?.get(DefinitionsPartOfSpeech)
             val includeRelated = definitions?.get(DefinitionsIncludeRelated)?.toBoolean() ?: false

@@ -14,7 +14,7 @@ data class Config(
     enum class Type {
         @SerializedName("google") Google,
         @SerializedName("owlbot") OwlBot,
-        @SerializedName("wordlink") Wordlink,
+        @SerializedName("wordnik") Wordnik,
         @SerializedName("yandex") Yandex
     }
 }

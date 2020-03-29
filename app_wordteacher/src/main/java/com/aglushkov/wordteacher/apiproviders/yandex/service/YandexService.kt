@@ -45,6 +45,7 @@ fun YandexService.Companion.createWordTeacherWordService(aBaseUrl: String,
                                                          aKey: String,
                                                          methodParams: ServiceMethodParams): WordTeacherWordService {
     return object : WordTeacherWordService {
+        override var name = "Yandex"
         override var key = aKey
         override var baseUrl = aBaseUrl
         override var methodParams = methodParams

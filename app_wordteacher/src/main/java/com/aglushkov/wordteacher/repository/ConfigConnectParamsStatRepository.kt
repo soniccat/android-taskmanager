@@ -1,15 +1,12 @@
 package com.aglushkov.wordteacher.repository
 
 import android.content.Context
-import android.content.Context.MODE_PRIVATE
 import com.aglushkov.wordteacher.model.Resource
 import com.aglushkov.wordteacher.model.isNotLoadedAndNotLoading
-import com.aglushkov.wordteacher.service.decodeConfigs
+import com.aglushkov.wordteacher.tools.CustomStateFlow
 import com.aglushkov.wordteacher.tools.forward
 import com.aglushkov.wordteacher.tools.safeClose
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
-import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
 import java.io.InputStream
 import java.io.OutputStream
@@ -17,8 +14,13 @@ import java.lang.Exception
 
 class ConfigConnectParamsStatRepository(val context: Context) {
     private val fileName = "ConfigConnectParamsStats"
-    private val channel =  ConflatedBroadcastChannel<Resource<List<ConfigConnectParamsStat>>>(Resource.Uninitialized())
-    val flow = channel.asFlow()
+
+    private val stateFlow = CustomStateFlow<Resource<List<ConfigConnectParamsStat>>>(Resource.Uninitialized())
+    val flow = stateFlow.flow
+    val value: Resource<List<ConfigConnectParamsStat>>?
+        get() {
+            return stateFlow.value
+        }
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
@@ -27,26 +29,26 @@ class ConfigConnectParamsStatRepository(val context: Context) {
     }
 
     fun loadIfNeeded() {
-        if (channel.value.isNotLoadedAndNotLoading()) {
+        if (value.isNotLoadedAndNotLoading()) {
             load()
         }
     }
 
     private fun load() {
         scope.launch {
-            loadConfigConnectParamsStatFlow().forward(channel)
+            loadConfigConnectParamsStatFlow().forward(stateFlow)
         }
     }
 
     fun addStat(stat: ConfigConnectParamsStat) {
-        val list: MutableList<ConfigConnectParamsStat> = channel.value?.data()?.toMutableList() ?: mutableListOf()
+        val list: MutableList<ConfigConnectParamsStat> = stateFlow.value?.data()?.toMutableList() ?: mutableListOf()
         list.add(stat)
-        channel.offer(Resource.Loaded(list))
+        stateFlow.offer(Resource.Loaded(list))
         saveConfigConnectParamsStat()
     }
 
     private fun loadConfigConnectParamsStatFlow() = flow {
-        emit(channel.value.toLoading())
+        emit(stateFlow.value.toLoading())
 
         var stream: InputStream? = null
         try {
@@ -63,7 +65,7 @@ class ConfigConnectParamsStatRepository(val context: Context) {
     }
 
     private fun saveConfigConnectParamsStat() = scope.launch {
-        val value = channel.value.data() ?: return@launch
+        val value = stateFlow.value.data() ?: return@launch
         var stream: OutputStream? = null
         try {
             withContext(Dispatchers.IO) {
@@ -78,6 +80,6 @@ class ConfigConnectParamsStatRepository(val context: Context) {
     }
 
     fun clear() {
-        channel.cancel()
+        stateFlow.cancel()
     }
 }

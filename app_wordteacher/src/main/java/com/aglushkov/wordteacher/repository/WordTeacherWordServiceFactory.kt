@@ -4,8 +4,8 @@ import com.aglushkov.wordteacher.apiproviders.google.service.GoogleService
 import com.aglushkov.wordteacher.apiproviders.google.service.createWordTeacherWordService
 import com.aglushkov.wordteacher.apiproviders.owlbot.service.OwlBotService
 import com.aglushkov.wordteacher.apiproviders.owlbot.service.createWordTeacherWordService
-import com.aglushkov.wordteacher.apiproviders.wordlink.service.WordLinkService
-import com.aglushkov.wordteacher.apiproviders.wordlink.service.createWordTeacherWordService
+import com.aglushkov.wordteacher.apiproviders.wordnik.service.WordnikService
+import com.aglushkov.wordteacher.apiproviders.wordnik.service.createWordTeacherWordService
 import com.aglushkov.wordteacher.apiproviders.yandex.service.YandexService
 import com.aglushkov.wordteacher.apiproviders.yandex.service.createWordTeacherWordService
 import com.aglushkov.wordteacher.service.WordTeacherWordService
@@ -24,8 +24,8 @@ class WordTeacherWordServiceFactory {
             Config.Type.Yandex -> {
                 YandexService.createWordTeacherWordService(baseUrl, key, methodParams)
             }
-            Config.Type.Wordlink -> {
-                WordLinkService.createWordTeacherWordService(baseUrl, key, methodParams)
+            Config.Type.Wordnik -> {
+                WordnikService.createWordTeacherWordService(baseUrl, key, methodParams)
             }
             Config.Type.Google -> {
                 GoogleService.createWordTeacherWordService(baseUrl, methodParams)
