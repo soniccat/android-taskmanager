@@ -20,7 +20,7 @@ class ConfigConnectParamsStatRepository(val context: Context) {
     private val channel =  ConflatedBroadcastChannel<Resource<List<ConfigConnectParamsStat>>>(Resource.Uninitialized())
     val flow = channel.asFlow()
 
-    val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     init {
         loadIfNeeded()

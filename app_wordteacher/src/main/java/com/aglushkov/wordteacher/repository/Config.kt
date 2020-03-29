@@ -20,7 +20,7 @@ data class Config(
 }
 
 data class ConfigConnectParams(
-    @SerializedName("baseUrl") val baseUrls: String,
+    @SerializedName("baseUrl") val baseUrl: String,
     @SerializedName("key") val key: String
 )
 

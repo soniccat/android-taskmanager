@@ -3,6 +3,8 @@ package com.aglushkov.wordteacher.apiproviders.owlbot.service
 import com.aglushkov.wordteacher.apiproviders.owlbot.model.OwlBotWord
 import com.aglushkov.wordteacher.apiproviders.owlbot.model.asWordTeacherWord
 import com.aglushkov.wordteacher.model.WordTeacherWord
+import com.aglushkov.wordteacher.repository.Config
+import com.aglushkov.wordteacher.repository.ConfigConnectParams
 import com.aglushkov.wordteacher.repository.ServiceMethodParams
 import com.aglushkov.wordteacher.service.WordTeacherWordService
 import okhttp3.Interceptor

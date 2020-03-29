@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
 
         configRepository = ConfigRepository(configService, testScope)
         configConnectParamsStatRepository = ConfigConnectParamsStatRepository(applicationContext)
-        serviceRepository = ServiceRepository(configRepository, configConnectParamsStatRepository)
+        serviceRepository = ServiceRepository(configRepository, configConnectParamsStatRepository, WordTeacherWordServiceFactory())
 
         mainScope.launch {
             configRepository.flow.collect {

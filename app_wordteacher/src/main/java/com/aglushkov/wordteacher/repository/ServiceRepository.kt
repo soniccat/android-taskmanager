@@ -1,22 +1,19 @@
 package com.aglushkov.wordteacher.repository
 
-import com.aglushkov.wordteacher.apiproviders.owlbot.service.OwlBotService
-import com.aglushkov.wordteacher.apiproviders.owlbot.service.createWordTeacherWordService
 import com.aglushkov.wordteacher.model.Resource
-import com.aglushkov.wordteacher.model.isLoaded
 import com.aglushkov.wordteacher.model.merge
 import com.aglushkov.wordteacher.service.WordTeacherWordService
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.combineLatest
 import kotlinx.coroutines.flow.map
 
 class ServiceRepository(val configRepository: ConfigRepository,
-                        val connectParamsStatRepository: ConfigConnectParamsStatRepository) {
+                        val connectParamsStatRepository: ConfigConnectParamsStatRepository,
+                        val serviceFactory: WordTeacherWordServiceFactory) {
 
-
-    val services = configRepository.flow.combine(connectParamsStatRepository.flow, { a, b ->
+    val services = configRepository.flow
+            .combine(connectParamsStatRepository.flow) { a, b ->
         a.merge(b)
-    }).map {
+    }.map {
         val services: MutableList<WordTeacherWordService> = mutableListOf()
         if (it is Resource.Loaded) {
             val config = it.data.first
@@ -24,14 +21,7 @@ class ServiceRepository(val configRepository: ConfigRepository,
 
             if (config != null && connectParamsStat != null) {
                 val filteredServices = config.mapNotNull {
-                    when (it.type) {
-                        Config.Type.OwlBot -> {
-                            // TODO: filter connectParams with connectParamsStat
-                            val connectParams = it.connectParams.first()
-                            OwlBotService.createWordTeacherWordService(connectParams.baseUrls, connectParams.key)
-                        }
-                        else -> null
-                    }
+                    createWordTeacherWordService(it)
                 }
                 services.addAll(filteredServices)
                 it.copyWith(services)
@@ -41,6 +31,12 @@ class ServiceRepository(val configRepository: ConfigRepository,
         } else {
             it.copyWith(services)
         }
+    }
+
+    private fun createWordTeacherWordService(it: Config): WordTeacherWordService? {
+        // TODO: filter connectParams with connectParamsStat
+        val connectParams = it.connectParams.first()
+        return serviceFactory.createService(it.type, connectParams, it.methods)
     }
 
     init {
