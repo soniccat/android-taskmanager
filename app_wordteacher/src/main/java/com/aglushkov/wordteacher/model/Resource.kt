@@ -52,11 +52,11 @@ sealed class Resource<T>(needShowNext: Boolean) {
 
 
 fun <T> Resource<T>?.data(): T? {
-    return if (this == null) null else this.data()
+    return this?.data()
 }
 
 fun Resource<*>?.isUninitialized(): Boolean {
-    return if (this == null) true else this.isUninitialized()
+    return this?.isUninitialized() ?: true
 }
 
 fun Resource<*>?.isError(): Boolean {
@@ -72,7 +72,7 @@ fun Resource<*>?.isLoading(): Boolean {
 }
 
 fun <T> Resource<T>?.toLoading(): Resource.Loading<T> {
-    return if (this != null) toLoading() else Resource.Loading()
+    return this?.toLoading() ?: Resource.Loading()
 }
 
 fun Resource<*>?.isNotLoadedAndNotLoading(): Boolean {

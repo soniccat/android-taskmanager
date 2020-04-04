@@ -3,11 +3,13 @@ package com.aglushkov.wordteacher
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import com.aglushkov.wordteacher.model.isLoaded
 import com.aglushkov.wordteacher.repository.*
 import com.aglushkov.wordteacher.service.ConfigService
 import com.aglushkov.wordteacher.service.create
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import java.lang.Exception
 
@@ -51,7 +53,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         mainScope.launch {
-            val defs = wordRepository.define("owl")
+            //serviceRepository.flow.first { it.isLoaded() }
+            val defs = wordRepository.define("owl").flow.first { it.isLoaded() }
             Log.d("Definitions", "" + defs)
         }
 

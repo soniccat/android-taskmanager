@@ -7,7 +7,6 @@ import com.aglushkov.wordteacher.service.decodeConfigs
 import com.aglushkov.wordteacher.tools.CustomStateFlow
 import com.aglushkov.wordteacher.tools.forward
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.lang.Exception

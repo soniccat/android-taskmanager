@@ -3,8 +3,10 @@ package com.aglushkov.wordteacher.repository
 import com.aglushkov.wordteacher.model.Resource
 import com.aglushkov.wordteacher.model.WordTeacherWord
 import com.aglushkov.wordteacher.model.isLoaded
+import com.aglushkov.wordteacher.model.isNotLoadedAndNotLoading
 import com.aglushkov.wordteacher.service.WordTeacherWordService
 import com.aglushkov.wordteacher.tools.CustomStateFlow
+import com.aglushkov.wordteacher.tools.isUninitialized
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collect
@@ -19,18 +21,31 @@ class WordRepository(val serviceRepository: ServiceRepository) {
         scope.launch {
             serviceRepository.flow.collect {
                 if (it.isLoaded()) {
-                    // TODO: handle services changes
+                    defineUninitializedFlows()
                 }
             }
         }
     }
 
-    suspend fun define(word: String) {
+    private fun defineUninitializedFlows() {
+        for (flowEntry in stateFlows) {
+            if (flowEntry.value.isUninitialized()) {
+                scope.launch {
+                    define(flowEntry.key)
+                }
+            }
+        }
+    }
+
+    suspend fun define(word: String): CustomStateFlow<Resource<List<WordTeacherWord>>> {
         val services = serviceRepository.services?.data()
-        if (services != null && services.isNotEmpty()) {
-            val stateFlow = obtainStateFlow(word)
+        val stateFlow = obtainStateFlow(word)
+
+        if (services != null && services.isNotEmpty() && stateFlow.value.isNotLoadedAndNotLoading()) {
             defineFlow(word, services, stateFlow)
         }
+
+        return stateFlow
     }
 
     private fun obtainStateFlow(word: String): CustomStateFlow<Resource<List<WordTeacherWord>>> {
@@ -43,9 +58,9 @@ class WordRepository(val serviceRepository: ServiceRepository) {
         return stateFlow
     }
 
-    suspend fun defineFlow(word: String,
-                           services: List<WordTeacherWordService>,
-                           stateFlow: CustomStateFlow<Resource<List<WordTeacherWord>>>) {
+    private suspend fun defineFlow(word: String,
+                                   services: List<WordTeacherWordService>,
+                                   stateFlow: CustomStateFlow<Resource<List<WordTeacherWord>>>) {
         stateFlow.offer(stateFlow.value.toLoading())
 
         try {

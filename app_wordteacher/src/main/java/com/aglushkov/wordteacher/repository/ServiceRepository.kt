@@ -1,12 +1,10 @@
 package com.aglushkov.wordteacher.repository
 
-import android.app.Service
 import com.aglushkov.wordteacher.model.Resource
 import com.aglushkov.wordteacher.model.merge
 import com.aglushkov.wordteacher.service.WordTeacherWordService
-import com.aglushkov.wordteacher.tools.collect
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
-import kotlinx.coroutines.flow.asFlow
+import com.aglushkov.wordteacher.tools.CustomStateFlow
+import com.aglushkov.wordteacher.tools.forward
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -16,16 +14,17 @@ class ServiceRepository(val configRepository: ConfigRepository,
                         val serviceFactory: WordTeacherWordServiceFactory) {
 
     val scope = configRepository.scope
-    private val serviceChannel = ConflatedBroadcastChannel<Resource<List<WordTeacherWordService>>>()
-    val flow = serviceChannel.asFlow()
+    private val stateFlow = CustomStateFlow<Resource<List<WordTeacherWordService>>>(Resource.Uninitialized())
+    val flow = stateFlow.flow
+
     val services: Resource<List<WordTeacherWordService>>?
         get() {
-            return serviceChannel.valueOrNull
+            return stateFlow.value
         }
 
     init {
         scope.launch {
-            serviceChannel.collect(configRepository.flow
+            configRepository.flow
                 .combine(connectParamsStatRepository.flow) { a, b ->
                     a.merge(b)
                 }.map {
@@ -39,14 +38,11 @@ class ServiceRepository(val configRepository: ConfigRepository,
                                 createWordTeacherWordService(it)
                             }
                             services.addAll(filteredServices)
-                            it.copyWith(services.toList())
-                        } else {
-                            it.copyWith(services.toList())
                         }
-                    } else {
-                        it.copyWith(services.toList())
                     }
-                })
+
+                    it.copyWith(services.toList())
+                }.forward(stateFlow)
         }
     }
 
