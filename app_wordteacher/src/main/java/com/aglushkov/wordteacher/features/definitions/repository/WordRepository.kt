@@ -1,9 +1,10 @@
-package com.aglushkov.wordteacher.repository
+package com.aglushkov.wordteacher.features.definitions.repository
 
 import com.aglushkov.wordteacher.model.Resource
 import com.aglushkov.wordteacher.model.WordTeacherWord
 import com.aglushkov.wordteacher.model.isLoaded
 import com.aglushkov.wordteacher.model.isNotLoadedAndNotLoading
+import com.aglushkov.wordteacher.repository.ServiceRepository
 import com.aglushkov.wordteacher.service.WordTeacherWordService
 import com.aglushkov.wordteacher.tools.CustomStateFlow
 import com.aglushkov.wordteacher.tools.isUninitialized
@@ -42,13 +43,13 @@ class WordRepository(val serviceRepository: ServiceRepository) {
         val stateFlow = obtainStateFlow(word)
 
         if (services != null && services.isNotEmpty() && stateFlow.value.isNotLoadedAndNotLoading()) {
-            defineFlow(word, services, stateFlow)
+            loadDefinitions(word, services, stateFlow)
         }
 
         return stateFlow
     }
 
-    private fun obtainStateFlow(word: String): CustomStateFlow<Resource<List<WordTeacherWord>>> {
+    fun obtainStateFlow(word: String): CustomStateFlow<Resource<List<WordTeacherWord>>> {
         var stateFlow = stateFlows[word]
         if (stateFlow == null) {
             stateFlow = CustomStateFlow(Resource.Uninitialized())
@@ -58,9 +59,9 @@ class WordRepository(val serviceRepository: ServiceRepository) {
         return stateFlow
     }
 
-    private suspend fun defineFlow(word: String,
-                                   services: List<WordTeacherWordService>,
-                                   stateFlow: CustomStateFlow<Resource<List<WordTeacherWord>>>) {
+    private suspend fun loadDefinitions(word: String,
+                                        services: List<WordTeacherWordService>,
+                                        stateFlow: CustomStateFlow<Resource<List<WordTeacherWord>>>) {
         stateFlow.offer(stateFlow.value.toLoading())
 
         try {

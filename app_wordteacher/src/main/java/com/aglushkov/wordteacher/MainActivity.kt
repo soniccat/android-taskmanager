@@ -3,6 +3,11 @@ package com.aglushkov.wordteacher
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentFactory
+import com.aglushkov.wordteacher.databinding.ActivityMainBinding
+import com.aglushkov.wordteacher.features.definitions.repository.WordRepository
+import com.aglushkov.wordteacher.features.definitions.view.DefinitionsFragment
 import com.aglushkov.wordteacher.model.isLoaded
 import com.aglushkov.wordteacher.repository.*
 import com.aglushkov.wordteacher.service.ConfigService
@@ -14,49 +19,55 @@ import kotlinx.coroutines.flow.flowOn
 import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
-    val testScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    val mainScope = CoroutineScope(Dispatchers.Main) + SupervisorJob()
-
-    lateinit var configRepository: ConfigRepository
-    lateinit var serviceRepository: ServiceRepository
-    lateinit var configConnectParamsStatRepository: ConfigConnectParamsStatRepository
-    lateinit var wordRepository: WordRepository
+    lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        val baseUrl = getString(R.string.config_base_url)
-        val configService = ConfigService.create(baseUrl)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        configRepository = ConfigRepository(configService, testScope)
-        configConnectParamsStatRepository = ConfigConnectParamsStatRepository(applicationContext)
-        serviceRepository = ServiceRepository(configRepository, configConnectParamsStatRepository, WordTeacherWordServiceFactory())
-        wordRepository = WordRepository(serviceRepository)
+        supportFragmentManager.fragmentFactory = object : FragmentFactory() {
+            override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
+                if (DefinitionsFragment::class.java.name == className) {
+                    return DefinitionsFragment()
+                }
 
-        mainScope.launch {
-            configRepository.flow.collect {
-                Log.d("Config", "" + it)
+                return super.instantiate(classLoader, className)
             }
         }
 
-        mainScope.launch {
-            serviceRepository.flow.collect {
-                Log.d("Services", "" + it)
-            }
+        if (supportFragmentManager.findFragmentByTag("definitions") == null) {
+            val fragment = supportFragmentManager.fragmentFactory.instantiate(classLoader, DefinitionsFragment::class.java.name)
+            supportFragmentManager.beginTransaction()
+                    .setReorderingAllowed(true)
+                    .add(binding.fragmentContainer.id, fragment, "definitions")
+                    .commitAllowingStateLoss()
         }
 
-        mainScope.launch {
-            serviceRepository.flow.flowOn(Dispatchers.IO).collect {
-                Log.d("Services", "" + it)
-            }
-        }
-
-        mainScope.launch {
-            //serviceRepository.flow.first { it.isLoaded() }
-            val defs = wordRepository.define("owl").flow.first { it.isLoaded() }
-            Log.d("Definitions", "" + defs)
-        }
+//        mainScope.launch {
+//            configRepository.flow.collect {
+//                Log.d("Config", "" + it)
+//            }
+//        }
+//
+//        mainScope.launch {
+//            serviceRepository.flow.collect {
+//                Log.d("Services", "" + it)
+//            }
+//        }
+//
+//        mainScope.launch {
+//            serviceRepository.flow.flowOn(Dispatchers.IO).collect {
+//                Log.d("Services", "" + it)
+//            }
+//        }
+//
+//        mainScope.launch {
+//            //serviceRepository.flow.first { it.isLoaded() }
+//            val defs = wordRepository.define("owl").flow.first { it.isLoaded() }
+//            Log.d("Definitions", "" + defs)
+//        }
 
 //        val owlBotConfig = ServiceConfig(listOf(getString(R.string.owlbot_base_url)),
 //                listOf(getString(R.string.owlbot_token)))
@@ -93,8 +104,9 @@ class MainActivity : AppCompatActivity() {
 //        val service = YandexService.createWordTeacherWordService(yandexConfig.baseUrls.first(),
 //                yandexConfig.keys.first(),
 //                yandexConfig.methodOptions)
-        testScope.launch {
-            try {
+
+//        testScope.launch {
+//            try {
 //                val response = service.define("owl")
 //            Log.d("owlbot", "response : $response")
 
@@ -112,10 +124,10 @@ class MainActivity : AppCompatActivity() {
 
 //            val response = googleService.definitions("hello", "en")
 //                Log.d("google", "response : $response")
-            } catch (ex: Exception) {
-                Log.d("abc", ex.message)
-                ex.printStackTrace()
-            }
-        }
+//            } catch (ex: Exception) {
+//                Log.d("abc", ex.message)
+//                ex.printStackTrace()
+//            }
+//        }
     }
 }
