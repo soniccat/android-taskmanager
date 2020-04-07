@@ -1,13 +1,9 @@
 package com.aglushkov.wordteacher.features.definitions.repository
 
-import com.aglushkov.wordteacher.model.Resource
+import com.aglushkov.wordteacher.general.resource.*
 import com.aglushkov.wordteacher.model.WordTeacherWord
-import com.aglushkov.wordteacher.model.isLoaded
-import com.aglushkov.wordteacher.model.isNotLoadedAndNotLoading
 import com.aglushkov.wordteacher.repository.ServiceRepository
 import com.aglushkov.wordteacher.service.WordTeacherWordService
-import com.aglushkov.wordteacher.tools.CustomStateFlow
-import com.aglushkov.wordteacher.tools.isUninitialized
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collect
@@ -23,6 +19,9 @@ class WordRepository(val serviceRepository: ServiceRepository) {
             serviceRepository.flow.collect {
                 if (it.isLoaded()) {
                     defineUninitializedFlows()
+                    // TODO: consider to handle adding new services
+                } else if (it.isError()) {
+                    // TODO: put loading words to error
                 }
             }
         }

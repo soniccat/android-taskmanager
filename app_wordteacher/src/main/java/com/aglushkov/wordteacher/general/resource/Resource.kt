@@ -1,4 +1,7 @@
-package com.aglushkov.wordteacher.model
+package com.aglushkov.wordteacher.general.resource
+
+import android.content.Context
+import com.aglushkov.wordteacher.R
 
 
 sealed class Resource<T>(needShowNext: Boolean) {
@@ -97,6 +100,20 @@ fun <T> Resource<T>?.isLoadedAndNotEmpty(): Boolean where T : Collection<*> {
 
 fun Resource<*>?.isLoadedOrError(): Boolean {
     return if (this == null) false else (this is Resource.Loaded || this is Resource.Error)
+}
+
+fun Resource<*>?.getErrorString(context: Context, hasConnection: Boolean, hasResponse: Boolean): String? {
+    if (this is Resource.Error) {
+        if (!hasConnection) {
+            return context.getString(R.string.error_no_connection)
+        } else if (!hasResponse) {
+            return context.getString(R.string.error_bad_connection)
+        } else {
+            return context.getString(R.string.error_bad_response)
+        }
+    }
+
+    return null
 }
 
 fun <T, D> Resource<T>.merge(res2: Resource<D>): Resource<Pair<T?, D?>> {

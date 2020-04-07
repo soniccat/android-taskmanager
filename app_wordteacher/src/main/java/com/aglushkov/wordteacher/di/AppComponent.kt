@@ -1,6 +1,8 @@
 package com.aglushkov.wordteacher.di
 
 import com.aglushkov.wordteacher.features.definitions.repository.WordRepository
+import com.aglushkov.wordteacher.general.networkstatus.ConnectivityManager
+import com.aglushkov.wordteacher.general.networkstatus.NetworkReceiver
 import com.aglushkov.wordteacher.repository.ConfigConnectParamsStatRepository
 import com.aglushkov.wordteacher.repository.ConfigRepository
 import com.aglushkov.wordteacher.repository.ServiceRepository
@@ -10,7 +12,7 @@ import dagger.Component
 
 
 @AppComp
-@Component(modules = [AppModule::class, AppContextModule::class] )
+@Component(modules = [AppModule::class, GeneralModule::class] )
 public interface AppComponent {
     fun getConfigService(): ConfigService
     fun getConfigRepository(): ConfigRepository
@@ -18,4 +20,7 @@ public interface AppComponent {
     fun getServiceRepository(): ServiceRepository
     fun getWordTeacherWordServiceFactory(): WordTeacherWordServiceFactory
     fun getWordRepository(): WordRepository
+
+    fun getConnectivityManager(): ConnectivityManager
+    fun getNetworkReceiver(): NetworkReceiver
 }

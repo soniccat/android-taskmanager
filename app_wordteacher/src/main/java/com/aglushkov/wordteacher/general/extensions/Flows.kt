@@ -1,6 +1,6 @@
-package com.aglushkov.wordteacher.tools
+package com.aglushkov.wordteacher.general.extensions
 
-import kotlinx.coroutines.channels.SendChannel
+import com.aglushkov.wordteacher.general.resource.CustomStateFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 

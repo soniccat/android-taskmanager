@@ -83,13 +83,13 @@ fun <T> MutableLiveData<Resource<T>>.load(scope: CoroutineScope,
             }
         } catch (e: CancellationException) {
             if (value == loadingRes) {
-                value = initialValue
+                postValue(initialValue)
             }
             throw e
         } catch (e: Exception) {
             if (value == loadingRes) {
                 val errorRes = initialValue?.toError(e, true) ?: Resource.Error(e, true)
-                value = errorRes
+                postValue(errorRes)
             }
         }
     }

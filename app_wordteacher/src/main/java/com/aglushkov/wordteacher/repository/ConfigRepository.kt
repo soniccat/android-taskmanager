@@ -1,11 +1,11 @@
 package com.aglushkov.wordteacher.repository
 
-import com.aglushkov.wordteacher.model.Resource
-import com.aglushkov.wordteacher.model.isNotLoadedAndNotLoading
+import com.aglushkov.wordteacher.general.resource.Resource
+import com.aglushkov.wordteacher.general.resource.isNotLoadedAndNotLoading
 import com.aglushkov.wordteacher.service.ConfigService
 import com.aglushkov.wordteacher.service.decodeConfigs
-import com.aglushkov.wordteacher.tools.CustomStateFlow
-import com.aglushkov.wordteacher.tools.forward
+import com.aglushkov.wordteacher.general.resource.CustomStateFlow
+import com.aglushkov.wordteacher.general.extensions.forward
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

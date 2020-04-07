@@ -1,10 +1,10 @@
 package com.aglushkov.wordteacher.repository
 
-import com.aglushkov.wordteacher.model.Resource
-import com.aglushkov.wordteacher.model.merge
+import com.aglushkov.wordteacher.general.resource.Resource
+import com.aglushkov.wordteacher.general.resource.merge
 import com.aglushkov.wordteacher.service.WordTeacherWordService
-import com.aglushkov.wordteacher.tools.CustomStateFlow
-import com.aglushkov.wordteacher.tools.forward
+import com.aglushkov.wordteacher.general.resource.CustomStateFlow
+import com.aglushkov.wordteacher.general.extensions.forward
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch

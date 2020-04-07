@@ -1,11 +1,11 @@
 package com.aglushkov.wordteacher.repository
 
 import android.content.Context
-import com.aglushkov.wordteacher.model.Resource
-import com.aglushkov.wordteacher.model.isNotLoadedAndNotLoading
-import com.aglushkov.wordteacher.tools.CustomStateFlow
-import com.aglushkov.wordteacher.tools.forward
-import com.aglushkov.wordteacher.tools.safeClose
+import com.aglushkov.wordteacher.general.resource.Resource
+import com.aglushkov.wordteacher.general.resource.isNotLoadedAndNotLoading
+import com.aglushkov.wordteacher.general.resource.CustomStateFlow
+import com.aglushkov.wordteacher.general.extensions.forward
+import com.aglushkov.wordteacher.general.extensions.safeClose
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.flow
 import java.io.InputStream

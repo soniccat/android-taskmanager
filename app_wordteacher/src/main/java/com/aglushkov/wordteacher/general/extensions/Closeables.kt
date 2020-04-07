@@ -1,4 +1,4 @@
-package com.aglushkov.wordteacher.tools
+package com.aglushkov.wordteacher.general.extensions
 
 import java.io.Closeable
 

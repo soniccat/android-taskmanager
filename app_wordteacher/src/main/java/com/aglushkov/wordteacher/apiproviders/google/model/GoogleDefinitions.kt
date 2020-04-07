@@ -4,10 +4,10 @@ package com.aglushkov.wordteacher.apiproviders.google.model
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 import android.os.Parcelable
+import com.aglushkov.wordteacher.general.extensions.merge
+import com.aglushkov.wordteacher.general.extensions.runIfNotEmpty
 import com.aglushkov.wordteacher.model.WordTeacherDefinition
 import com.aglushkov.wordteacher.model.WordTeacherWord
-import com.aglushkov.wordteacher.tools.merge
-import com.aglushkov.wordteacher.tools.runIfNotEmpty
 
 // All possible types were found on https://github.com/meetDeveloper/googleDictionaryAPI/issues/32
 // TODO: add types not added here

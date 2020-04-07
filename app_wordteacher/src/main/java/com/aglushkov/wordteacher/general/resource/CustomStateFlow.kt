@@ -1,8 +1,6 @@
-package com.aglushkov.wordteacher.tools
+package com.aglushkov.wordteacher.general.resource
 
-import com.aglushkov.wordteacher.model.Resource
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 
 class CustomStateFlow<T>(v: T) {

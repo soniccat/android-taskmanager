@@ -51,4 +51,10 @@ class AppModule {
     fun createWordRepository(serviceRepository: ServiceRepository): WordRepository {
         return WordRepository(serviceRepository)
     }
+
+    @AppComp
+    @Provides
+    fun getWordTeacherWordServiceFactory(): WordTeacherWordServiceFactory {
+        return WordTeacherWordServiceFactory()
+    }
 }
