@@ -3,13 +3,10 @@ package com.aglushkov.wordteacher.features.definitions.vm
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
+import com.aglushkov.general.resource.*
 import com.aglushkov.wordteacher.di.AppComponentOwner
 import com.aglushkov.wordteacher.features.definitions.repository.WordRepository
 import com.aglushkov.general.view.BaseViewItem
-import com.aglushkov.general.resource.Resource
-import com.aglushkov.general.resource.getErrorString
-import com.aglushkov.general.resource.isLoaded
-import com.aglushkov.general.resource.load
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -35,6 +32,10 @@ class DefinitionsVM(app: Application,
     private fun load(word: String) {
         innerDefinitions.load(wordRepository.scope, true) {
             wordRepository.define(word).flow.first {
+                if (it is Resource.Error) {
+                    throw it.throwable
+                }
+
                 it.isLoaded()
             }.data()!!.map {
                 WordViewItem(it)
