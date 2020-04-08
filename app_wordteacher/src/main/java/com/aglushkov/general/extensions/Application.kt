@@ -1,4 +1,4 @@
-package com.aglushkov.wordteacher.general.extensions
+package com.aglushkov.general.extensions
 
 import android.app.Application
 import androidx.annotation.StringRes

@@ -1,4 +1,4 @@
-package com.aglushkov.wordteacher.general.extensions
+package com.aglushkov.general.extensions
 
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.Flow

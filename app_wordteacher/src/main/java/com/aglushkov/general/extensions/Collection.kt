@@ -1,4 +1,4 @@
-package com.aglushkov.wordteacher.general.extensions
+package com.aglushkov.general.extensions
 
 inline fun <T: Collection<*>> T.runIfNotEmpty(func: (it: T) -> Unit) {
     if (this.isNotEmpty()) {

@@ -1,4 +1,4 @@
-package com.aglushkov.wordteacher.general.view
+package com.aglushkov.general.view
 
 import android.content.Context
 import android.util.AttributeSet
@@ -8,10 +8,10 @@ import androidx.core.content.withStyledAttributes
 import androidx.core.view.isVisible
 import com.aglushkov.wordteacher.R
 import com.aglushkov.wordteacher.databinding.LoadingStatusViewBinding
-import com.aglushkov.wordteacher.general.extensions.getLayoutInflater
-import com.aglushkov.wordteacher.general.resource.Resource
-import com.aglushkov.wordteacher.general.resource.isLoadedAndEmpty
-import com.aglushkov.wordteacher.general.resource.isLoading
+import com.aglushkov.general.extensions.getLayoutInflater
+import com.aglushkov.general.resource.Resource
+import com.aglushkov.general.resource.isLoadedAndEmpty
+import com.aglushkov.general.resource.isLoading
 
 class LoadingStatusView: FrameLayout {
     private var binding: LoadingStatusViewBinding

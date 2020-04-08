@@ -1,6 +1,6 @@
-package com.aglushkov.wordteacher.general.extensions
+package com.aglushkov.general.extensions
 
-import com.aglushkov.wordteacher.general.resource.CustomStateFlow
+import com.aglushkov.general.resource.CustomStateFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 

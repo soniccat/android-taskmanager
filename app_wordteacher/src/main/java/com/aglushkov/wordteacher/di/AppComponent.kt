@@ -1,8 +1,7 @@
 package com.aglushkov.wordteacher.di
 
 import com.aglushkov.wordteacher.features.definitions.repository.WordRepository
-import com.aglushkov.wordteacher.general.networkstatus.ConnectivityManager
-import com.aglushkov.wordteacher.general.networkstatus.NetworkReceiver
+import com.aglushkov.general.networkstatus.ConnectivityManager
 import com.aglushkov.wordteacher.repository.ConfigConnectParamsStatRepository
 import com.aglushkov.wordteacher.repository.ConfigRepository
 import com.aglushkov.wordteacher.repository.ServiceRepository
@@ -22,5 +21,4 @@ public interface AppComponent {
     fun getWordRepository(): WordRepository
 
     fun getConnectivityManager(): ConnectivityManager
-    fun getNetworkReceiver(): NetworkReceiver
 }

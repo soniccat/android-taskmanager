@@ -2,7 +2,7 @@
 buildscript {
     ext {
         compileSdkVersion = 28
-        minSdkVersion = 14
+        minSdkVersion = 21
         targetSdkVersion = 28
         minifyEnabled = false
 

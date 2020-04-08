@@ -1,18 +1,18 @@
 package com.aglushkov.wordteacher.features.definitions.vm
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
+import android.util.Log
+import androidx.lifecycle.*
 import com.aglushkov.wordteacher.di.AppComponentOwner
 import com.aglushkov.wordteacher.features.definitions.repository.WordRepository
-import com.aglushkov.wordteacher.general.view.BaseViewItem
-import com.aglushkov.wordteacher.general.resource.Resource
-import com.aglushkov.wordteacher.general.resource.getErrorString
-import com.aglushkov.wordteacher.general.resource.isLoaded
-import com.aglushkov.wordteacher.general.resource.load
+import com.aglushkov.general.view.BaseViewItem
+import com.aglushkov.general.resource.Resource
+import com.aglushkov.general.resource.getErrorString
+import com.aglushkov.general.resource.isLoaded
+import com.aglushkov.general.resource.load
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 class DefinitionsVM(app: Application,
                     private val state: SavedStateHandle): AndroidViewModel(app) {
@@ -24,6 +24,12 @@ class DefinitionsVM(app: Application,
 
     init {
         load("owl")
+
+        viewModelScope.launch {
+            appComponent.getConnectivityManager().flow.collect {
+                Log.d("a", "b" + it)
+            }
+        }
     }
 
     private fun load(word: String) {

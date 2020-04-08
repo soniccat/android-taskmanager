@@ -1,8 +1,7 @@
 package com.aglushkov.wordteacher.di
 
 import android.content.Context
-import com.aglushkov.wordteacher.general.networkstatus.ConnectivityManager
-import com.aglushkov.wordteacher.general.networkstatus.NetworkReceiver
+import com.aglushkov.general.networkstatus.ConnectivityManager
 import dagger.Module
 import dagger.Provides
 
@@ -18,11 +17,5 @@ class GeneralModule(private val aContext: Context) {
     @Provides
     fun getConnectivityManager(context: Context): ConnectivityManager {
         return ConnectivityManager(context)
-    }
-
-    @AppComp
-    @Provides
-    fun getNetworkReceiver(): NetworkReceiver {
-        return NetworkReceiver()
     }
 }

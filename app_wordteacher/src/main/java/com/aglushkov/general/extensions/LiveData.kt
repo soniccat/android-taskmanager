@@ -1,8 +1,7 @@
-package com.aglushkov.wordteacher.general.extensions
+package com.aglushkov.general.extensions
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.Transformations
 
 /*
     Merge the current LiveData value with a related LiveData value and get a result LiveData

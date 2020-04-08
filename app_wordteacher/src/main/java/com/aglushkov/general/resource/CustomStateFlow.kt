@@ -1,4 +1,4 @@
-package com.aglushkov.wordteacher.general.resource
+package com.aglushkov.general.resource
 
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.asFlow
@@ -18,4 +18,8 @@ class CustomStateFlow<T>(v: T) {
 
 fun <T> CustomStateFlow<Resource<T>>?.isUninitialized(): Boolean {
     return this?.value?.isUninitialized() ?: true
+}
+
+fun <T> CustomStateFlow<Resource<T>>?.isLoading(): Boolean {
+    return this?.value?.isLoading() ?: false
 }

@@ -1,6 +1,6 @@
 package com.aglushkov.wordteacher.features.definitions.repository
 
-import com.aglushkov.wordteacher.general.resource.*
+import com.aglushkov.general.resource.*
 import com.aglushkov.wordteacher.model.WordTeacherWord
 import com.aglushkov.wordteacher.repository.ServiceRepository
 import com.aglushkov.wordteacher.service.WordTeacherWordService
@@ -20,8 +20,8 @@ class WordRepository(val serviceRepository: ServiceRepository) {
                 if (it.isLoaded()) {
                     defineUninitializedFlows()
                     // TODO: consider to handle adding new services
-                } else if (it.isError()) {
-                    // TODO: put loading words to error
+                } else if (it is Resource.Error) {
+                    setNotLoadedFlowsToError(it.throwable)
                 }
             }
         }
@@ -33,6 +33,14 @@ class WordRepository(val serviceRepository: ServiceRepository) {
                 scope.launch {
                     define(flowEntry.key)
                 }
+            }
+        }
+    }
+
+    private fun setNotLoadedFlowsToError(throwable: Throwable) {
+        for (flowEntry in stateFlows) {
+            if (flowEntry.value.isUninitialized() || flowEntry.value.isLoading()) {
+                flowEntry.value.offer(flowEntry.value.value.toError(throwable, true))
             }
         }
     }

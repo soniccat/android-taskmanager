@@ -2,6 +2,7 @@ package com.aglushkov.wordteacher
 
 import android.app.Application
 import android.content.IntentFilter
+import com.aglushkov.general.app.ActivityVisibilityResolver
 import com.aglushkov.wordteacher.di.AppComponent
 import com.aglushkov.wordteacher.di.AppComponentOwner
 import com.aglushkov.wordteacher.di.DaggerAppComponent
@@ -16,7 +17,7 @@ class GApp: Application(), AppComponentOwner, ActivityVisibilityResolver.Listene
     override fun onCreate() {
         super.onCreate()
         appComponent = DaggerAppComponent.builder().generalModule(GeneralModule(this)).build()
-        appComponent.getConnectivityManager().updateConnectivityState()
+        appComponent.getConnectivityManager().checkNetworkState()
 
         initActivityVisibilityResolver()
     }
@@ -28,22 +29,10 @@ class GApp: Application(), AppComponentOwner, ActivityVisibilityResolver.Listene
     }
 
     override fun onFirstActivityStarted() {
-        registerConnectivityReceiver()
+        appComponent.getConnectivityManager().register()
     }
 
     override fun onLastActivityStopped() {
-        unregisterConnectivetyReceiver()
-    }
-
-    private fun registerConnectivityReceiver() {
-        registerReceiver(appComponent.getNetworkReceiver(), IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"))
-    }
-
-    private fun unregisterConnectivetyReceiver() {
-        try {
-            unregisterReceiver(appComponent.getNetworkReceiver())
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        appComponent.getConnectivityManager().unregister()
     }
 }

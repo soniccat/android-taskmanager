@@ -1,4 +1,4 @@
-package com.aglushkov.wordteacher.general.resource
+package com.aglushkov.general.resource
 
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CancellationException

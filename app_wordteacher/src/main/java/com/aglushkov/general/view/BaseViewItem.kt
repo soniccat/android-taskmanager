@@ -1,4 +1,4 @@
-package com.aglushkov.wordteacher.general.view
+package com.aglushkov.general.view
 
 import androidx.recyclerview.widget.DiffUtil
 import java.util.*

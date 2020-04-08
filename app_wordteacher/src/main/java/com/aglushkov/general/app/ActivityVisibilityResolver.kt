@@ -1,4 +1,4 @@
-package com.aglushkov.wordteacher
+package com.aglushkov.general.app
 
 import android.app.Activity
 import android.app.Application

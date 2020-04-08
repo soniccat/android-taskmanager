@@ -5,12 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
-import com.aglushkov.wordteacher.R
 import com.aglushkov.wordteacher.databinding.FragmentDefinitionsBinding
 import com.aglushkov.wordteacher.features.definitions.vm.DefinitionsVM
-import com.aglushkov.wordteacher.general.view.bind
+import com.aglushkov.general.view.bind
 
 class DefinitionsFragment: Fragment() {
     private lateinit var vm: DefinitionsVM
