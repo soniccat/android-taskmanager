@@ -1,4 +1,4 @@
-package com.aglushkov.general.resource
+package com.aglushkov.modelcore.resource
 
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.asFlow

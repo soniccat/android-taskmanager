@@ -42,6 +42,8 @@ android {
 }
 
 dependencies {
+    implementation project(':modelcore')
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     implementation "androidx.core:core-ktx:$ktxCore"
     implementation "androidx.activity:activity-ktx:1.1.0"

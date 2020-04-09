@@ -1,13 +1,11 @@
 package com.aglushkov.wordteacher.repository
 
-import com.aglushkov.general.resource.Resource
-import com.aglushkov.general.resource.isNotLoadedAndNotLoading
+import com.aglushkov.modelcore.resource.Resource
+import com.aglushkov.modelcore.resource.isNotLoadedAndNotLoading
 import com.aglushkov.wordteacher.service.ConfigService
 import com.aglushkov.wordteacher.service.decodeConfigs
-import com.aglushkov.general.resource.CustomStateFlow
-import com.aglushkov.general.extensions.forward
+import com.aglushkov.modelcore.resource.CustomStateFlow
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.lang.Exception
 

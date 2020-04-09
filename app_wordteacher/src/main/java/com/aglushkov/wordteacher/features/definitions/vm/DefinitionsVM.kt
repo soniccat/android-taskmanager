@@ -3,12 +3,10 @@ package com.aglushkov.wordteacher.features.definitions.vm
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
-import com.aglushkov.general.resource.*
+import com.aglushkov.modelcore.resource.*
 import com.aglushkov.wordteacher.di.AppComponentOwner
 import com.aglushkov.wordteacher.features.definitions.repository.WordRepository
 import com.aglushkov.general.view.BaseViewItem
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class DefinitionsVM(app: Application,

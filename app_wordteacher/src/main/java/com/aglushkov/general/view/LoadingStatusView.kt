@@ -9,9 +9,9 @@ import androidx.core.view.isVisible
 import com.aglushkov.wordteacher.R
 import com.aglushkov.wordteacher.databinding.LoadingStatusViewBinding
 import com.aglushkov.general.extensions.getLayoutInflater
-import com.aglushkov.general.resource.Resource
-import com.aglushkov.general.resource.isLoadedAndEmpty
-import com.aglushkov.general.resource.isLoading
+import com.aglushkov.modelcore.resource.Resource
+import com.aglushkov.modelcore.resource.isLoadedAndEmpty
+import com.aglushkov.modelcore.resource.isLoading
 
 class LoadingStatusView: FrameLayout {
     private var binding: LoadingStatusViewBinding

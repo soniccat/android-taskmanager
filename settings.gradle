@@ -1,3 +1,4 @@
+include ':modelcore'
 include ':app_wordteacher',
         ':app_demo',
         ':app_wordteacher_old',

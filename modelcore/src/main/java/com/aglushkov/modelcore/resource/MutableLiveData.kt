@@ -1,4 +1,4 @@
-package com.aglushkov.general.resource
+package com.aglushkov.modelcore.resource
 
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CancellationException

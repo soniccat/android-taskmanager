@@ -6,7 +6,7 @@ import android.net.NetworkCapabilities
 import android.net.NetworkInfo
 import android.net.NetworkRequest
 import android.os.Build
-import com.aglushkov.general.resource.CustomStateFlow
+import com.aglushkov.modelcore.resource.CustomStateFlow
 
 class ConnectivityManager constructor(val context: Context) {
     private var connectivityManager = getConnectivityManager()

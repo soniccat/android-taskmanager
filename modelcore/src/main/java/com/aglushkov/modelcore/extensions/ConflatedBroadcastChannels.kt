@@ -1,4 +1,4 @@
-package com.aglushkov.general.extensions
+package com.aglushkov.modelcore.extensions
 
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.Flow

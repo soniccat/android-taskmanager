@@ -1,4 +1,4 @@
-package com.aglushkov.general.resource
+package com.aglushkov.modelcore.resource
 
 import android.content.Context
 import com.aglushkov.wordteacher.R

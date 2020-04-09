@@ -1,4 +1,4 @@
-package com.aglushkov.general.extensions
+package com.aglushkov.modelcore.extensions
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

@@ -1,12 +1,9 @@
 package com.aglushkov.wordteacher.repository
 
-import com.aglushkov.general.resource.Resource
-import com.aglushkov.general.resource.merge
+import com.aglushkov.modelcore.resource.Resource
+import com.aglushkov.modelcore.resource.merge
 import com.aglushkov.wordteacher.service.WordTeacherWordService
-import com.aglushkov.general.resource.CustomStateFlow
-import com.aglushkov.general.extensions.forward
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
+import com.aglushkov.modelcore.resource.CustomStateFlow
 import kotlinx.coroutines.launch
 
 class ServiceRepository(val configRepository: ConfigRepository,

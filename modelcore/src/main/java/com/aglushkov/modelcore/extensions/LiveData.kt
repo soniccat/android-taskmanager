@@ -1,4 +1,4 @@
-package com.aglushkov.general.extensions
+package com.aglushkov.modelcore.extensions
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData

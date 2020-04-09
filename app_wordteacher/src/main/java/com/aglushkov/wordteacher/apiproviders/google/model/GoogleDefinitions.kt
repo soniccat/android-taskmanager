@@ -4,7 +4,7 @@ package com.aglushkov.wordteacher.apiproviders.google.model
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 import android.os.Parcelable
-import com.aglushkov.general.extensions.merge
+import com.aglushkov.modelcore.extensions.merge
 import com.aglushkov.general.extensions.runIfNotEmpty
 import com.aglushkov.wordteacher.model.WordTeacherDefinition
 import com.aglushkov.wordteacher.model.WordTeacherWord

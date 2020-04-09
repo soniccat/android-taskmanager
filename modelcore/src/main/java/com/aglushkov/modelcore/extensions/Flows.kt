@@ -1,6 +1,6 @@
-package com.aglushkov.general.extensions
+package com.aglushkov.modelcore.extensions
 
-import com.aglushkov.general.resource.CustomStateFlow
+import com.aglushkov.modelcore.resource.CustomStateFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 
