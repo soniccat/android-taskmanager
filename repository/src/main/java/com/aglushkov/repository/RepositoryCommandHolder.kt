@@ -18,6 +18,7 @@ import java.util.*
     WeakHashMap is used not to retain your LiveData. Only ViewModel is allowed to retain them. That will
     release LiveData objects after leaving screens.
  */
+@Deprecated("Use CustomStateFlow instead in a repository layer")
 class RepositoryCommandHolder<R> {
     private val liveDataIdMap = WeakHashMap<LiveData<*>, R>()
     private val liveDataCommandMap = WeakHashMap<LiveData<*>, RepositoryCommand<*, R>>()
