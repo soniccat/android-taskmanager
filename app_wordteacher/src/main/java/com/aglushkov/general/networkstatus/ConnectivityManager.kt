@@ -14,12 +14,10 @@ class ConnectivityManager constructor(val context: Context) {
     private val stateFlow = CustomStateFlow<Boolean>(false)
     val flow = stateFlow.flow
 
-    @Volatile
-    var isDeviceOnline = false
+    @Volatile var isDeviceOnline = false
         private set
 
-    @Volatile
-    var isWifiMode = false
+    @Volatile var isWifiMode = false
         private set
 
     private var networkCallback = object : android.net.ConnectivityManager.NetworkCallback() {
@@ -44,8 +42,7 @@ class ConnectivityManager constructor(val context: Context) {
 
     private fun registerNetworkCallback() {
         val builder = NetworkRequest.Builder()
-                .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
-                .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
         connectivityManager.registerNetworkCallback(builder.build(), networkCallback)
     }
 
@@ -54,7 +51,7 @@ class ConnectivityManager constructor(val context: Context) {
             val network = connectivityManager.activeNetwork
             updateCapabilities(network)
         } else {
-            updateCapabilities(connectivityManager.activeNetworkInfo)
+            updateCapabilitiesLegacy(connectivityManager.activeNetworkInfo)
         }
 
         if (stateFlow.value != isDeviceOnline) {
@@ -73,8 +70,8 @@ class ConnectivityManager constructor(val context: Context) {
         }
     }
 
-    private fun updateCapabilities(networkInfo: NetworkInfo?) {
-        if (networkInfo?.isConnected == true) {
+    private fun updateCapabilitiesLegacy(networkInfo: NetworkInfo?) {
+        if (networkInfo?.isConnected == true && networkInfo?.isAvailable) {
             isDeviceOnline = true
             val isWifi = networkInfo.type == android.net.ConnectivityManager.TYPE_WIFI
             val isWiMax = networkInfo.type == android.net.ConnectivityManager.TYPE_WIMAX
