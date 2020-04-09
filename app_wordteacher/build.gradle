@@ -27,6 +27,7 @@ android {
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
+        freeCompilerArgs += ["-Xinline-classes"]
     }
 
     buildTypes {
@@ -34,10 +35,6 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-    }
-
-    kotlinOptions {
-        freeCompilerArgs += ["-Xinline-classes"]
     }
 }
 

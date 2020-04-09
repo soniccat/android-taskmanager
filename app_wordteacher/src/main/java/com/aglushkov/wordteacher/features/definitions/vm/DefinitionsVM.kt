@@ -6,7 +6,8 @@ import androidx.lifecycle.*
 import com.aglushkov.modelcore.resource.*
 import com.aglushkov.wordteacher.di.AppComponentOwner
 import com.aglushkov.wordteacher.features.definitions.repository.WordRepository
-import com.aglushkov.general.view.BaseViewItem
+import com.aglushkov.modelcore.view.BaseViewItem
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class DefinitionsVM(app: Application,

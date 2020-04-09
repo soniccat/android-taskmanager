@@ -1,4 +1,4 @@
-package com.rssclient.vm
+package com.rssclient
 
 import androidx.recyclerview.widget.DiffUtil
 import com.rssclient.model.RssFeed

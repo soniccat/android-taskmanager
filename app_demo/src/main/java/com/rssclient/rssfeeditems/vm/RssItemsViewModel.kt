@@ -3,8 +3,7 @@ package com.rssclient.rssfeeditems.vm
 import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.lifecycle.*
-import com.aglushkov.repository.livedata.Resource
-import com.aglushkov.taskmanager_http.image.Image
+import com.aglushkov.modelcore.resource.Resource
 import com.aglushkov.taskmanager_http.image.ImageTask
 import com.example.alexeyglushkov.streamlib.progress.ProgressInfo
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener
@@ -17,10 +16,9 @@ import com.example.alexeyglushkov.tools.Range
 import com.main.MainApplication
 import com.rssclient.model.RssFeed
 import com.rssclient.model.RssItem
-import com.rssclient.vm.RssViewItem
+import com.rssclient.RssViewItem
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
-import org.junit.Assert
 import java.lang.NullPointerException
 import kotlin.math.abs
 

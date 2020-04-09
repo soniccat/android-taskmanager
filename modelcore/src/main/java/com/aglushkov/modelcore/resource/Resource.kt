@@ -1,7 +1,7 @@
 package com.aglushkov.modelcore.resource
 
 import android.content.Context
-import com.aglushkov.wordteacher.R
+import com.aglushkov.modelcore.R
 
 
 sealed class Resource<T>(needShowNext: Boolean) {

@@ -7,8 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.alexeyglushkov.ext.getLayoutInflater
 import com.rssclient.controllers.databinding.FeedCellBinding
-import com.rssclient.vm.RssViewItem
-import kotlinx.android.synthetic.main.feed_cell.view.*
+import com.rssclient.RssViewItem
 
 class RssItemsAdapter(private val itemBinder: RssItemBinder)
     : ListAdapter<RssViewItem<*>, RecyclerView.ViewHolder>(RssViewItem.DiffCallback) {

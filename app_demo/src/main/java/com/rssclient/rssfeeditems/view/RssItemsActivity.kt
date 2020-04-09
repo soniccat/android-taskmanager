@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.aglushkov.repository.livedata.Resource
+import com.aglushkov.modelcore.resource.Resource
 import com.aglushkov.taskmanager_http.image.Image
 import com.aglushkov.taskmanager_http.image.ImageBinder
 import com.example.alexeyglushkov.taskmanager.ui.TaskManagerView
@@ -23,7 +23,7 @@ import com.rssclient.model.RssItem
 import com.rssclient.rssfeed.view.RssFeedsAdapter
 import com.rssclient.rssfeeditems.vm.RssItemsViewModel
 import com.rssclient.rssfeeditems.vm.RssItemsViewModelContract
-import com.rssclient.vm.RssViewItem
+import com.rssclient.RssViewItem
 import java.lang.Exception
 import java.lang.NullPointerException
 

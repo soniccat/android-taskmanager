@@ -1,4 +1,4 @@
-package com.rssclient.vm
+package com.aglushkov.modelcore.vm
 
 import android.app.AlertDialog
 import android.content.Context

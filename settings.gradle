@@ -1,9 +1,9 @@
-include ':modelcore'
 include ':app_wordteacher',
         ':app_demo',
         ':app_wordteacher_old',
 
         ':ui',
+        ':modelcore',
 
         // Repositories
         ':quizlet_repository',

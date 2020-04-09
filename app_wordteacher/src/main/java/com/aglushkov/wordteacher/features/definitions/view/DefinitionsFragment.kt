@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import com.aglushkov.wordteacher.databinding.FragmentDefinitionsBinding
 import com.aglushkov.wordteacher.features.definitions.vm.DefinitionsVM
-import com.aglushkov.general.view.bind
+import com.aglushkov.modelcore.view.bind
 
 class DefinitionsFragment: Fragment() {
     private lateinit var vm: DefinitionsVM

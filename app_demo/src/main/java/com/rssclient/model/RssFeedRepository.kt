@@ -1,11 +1,11 @@
 package com.rssclient.model
 
 import androidx.lifecycle.MutableLiveData
+import com.aglushkov.modelcore.resource.Resource
+import com.aglushkov.modelcore.resource.load
 import com.aglushkov.repository.RepositoryCommandHolder
 import com.aglushkov.repository.command.CancellableRepositoryCommand
 import com.aglushkov.repository.command.RepositoryCommand
-import com.aglushkov.repository.livedata.Resource
-import com.aglushkov.repository.livedata.load
 import com.example.alexeyglushkov.cachemanager.ScopeStorageAdapter
 import com.example.alexeyglushkov.cachemanager.Storage
 import com.example.alexeyglushkov.streamlib.progress.ProgressListener
@@ -40,7 +40,7 @@ class RssFeedRepository(val service: RssFeedService, storage: Storage) {
 
     fun loadRssFeeds(progressListener: ProgressListener?): RepositoryCommand<Resource<List<RssFeed>>, String> {
         val liveData = getFeedsLiveData()
-        val job = liveData.load(scope) {
+        val job = liveData.load(scope, true) {
             storage.getValue("feeds") as? List<RssFeed>
         }
 
@@ -56,7 +56,7 @@ class RssFeedRepository(val service: RssFeedService, storage: Storage) {
 
     fun loadRssFeed(url: URL, progressListener: ProgressListener?): CancellableRepositoryCommand<Resource<RssFeed>, String> {
         val liveData = getFeedLiveData(url)
-        val job = liveData.load(scope) {
+        val job = liveData.load(scope, true) {
             service.loadRss(url, progressListener)
         }
 

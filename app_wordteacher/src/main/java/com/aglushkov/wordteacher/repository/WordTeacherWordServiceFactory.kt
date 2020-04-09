@@ -11,7 +11,7 @@ import com.aglushkov.wordteacher.apiproviders.yandex.service.createWordTeacherWo
 import com.aglushkov.wordteacher.service.WordTeacherWordService
 import javax.inject.Inject
 
-class WordTeacherWordServiceFactory constructor() {
+class WordTeacherWordServiceFactory {
     fun createService(type: Config.Type,
                       connectParams: ConfigConnectParams,
                       methodParams: ServiceMethodParams): WordTeacherWordService? {

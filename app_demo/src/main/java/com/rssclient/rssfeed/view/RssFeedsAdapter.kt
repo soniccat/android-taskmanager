@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.alexeyglushkov.ext.getLayoutInflater
 import com.rssclient.controllers.databinding.FeedCellBinding
-import com.rssclient.vm.RssViewItem
+import com.rssclient.RssViewItem
 
 class RssFeedsAdapter(private val feedBinder: RssFeedBinder)
     : ListAdapter<RssViewItem<*>, RecyclerView.ViewHolder>(RssViewItem.DiffCallback) {

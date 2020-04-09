@@ -1,4 +1,4 @@
-package com.rssclient.vm
+package com.aglushkov.modelcore.vm
 
 open class Event {
     var isHandled: Boolean = false

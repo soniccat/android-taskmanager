@@ -45,6 +45,7 @@ android {
 }
 
 dependencies {
+    implementation project(':modelcore')
     implementation project(':tools')
     implementation project(':taskmanager')
     implementation project(':taskmanager_httptask')

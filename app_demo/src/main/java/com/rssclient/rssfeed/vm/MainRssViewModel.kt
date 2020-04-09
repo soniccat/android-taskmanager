@@ -5,7 +5,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.annotation.StringRes
 import androidx.lifecycle.*
-import com.aglushkov.repository.livedata.Resource
+import com.aglushkov.modelcore.resource.Resource
 import com.aglushkov.taskmanager_http.image.Image
 import com.aglushkov.taskmanager_http.image.ImageTask
 import com.example.alexeyglushkov.ext.getResString
@@ -18,8 +18,8 @@ import java.lang.Exception
 import java.net.URL
 import com.rssclient.controllers.R
 import com.rssclient.rssfeeditems.vm.RssItemsViewModel
-import com.rssclient.vm.ErrorViewModelContract
-import com.rssclient.vm.RssViewItem
+import com.aglushkov.modelcore.vm.ErrorViewModelContract
+import com.rssclient.RssViewItem
 
 class MainRssViewModel(application: MainApplication): AndroidViewModel(application), MainRssViewModelContract {
     private var taskManager = application.taskManager

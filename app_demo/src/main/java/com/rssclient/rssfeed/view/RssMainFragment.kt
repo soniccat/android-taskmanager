@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.aglushkov.repository.livedata.Resource
+import com.aglushkov.modelcore.resource.Resource
 import com.aglushkov.taskmanager_http.image.Image
 import com.aglushkov.taskmanager_http.image.ImageBinder
 import com.main.MainApplication
@@ -23,8 +23,8 @@ import com.rssclient.rssfeeditems.view.RssItemsActivity
 import com.rssclient.model.RssFeed
 import com.rssclient.rssfeed.vm.MainRssViewModel
 import com.rssclient.rssfeed.vm.MainRssViewModelContract
-import com.rssclient.vm.RssViewItem
-import com.rssclient.vm.showErrorDialog
+import com.rssclient.RssViewItem
+import com.aglushkov.modelcore.vm.showErrorDialog
 import java.lang.Exception
 import java.lang.NullPointerException
 import java.net.URL

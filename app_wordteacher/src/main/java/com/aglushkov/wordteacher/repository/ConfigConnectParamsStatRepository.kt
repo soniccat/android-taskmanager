@@ -5,7 +5,9 @@ import com.aglushkov.modelcore.resource.Resource
 import com.aglushkov.modelcore.resource.isNotLoadedAndNotLoading
 import com.aglushkov.modelcore.resource.CustomStateFlow
 import com.aglushkov.general.extensions.safeClose
+import com.aglushkov.modelcore.extensions.forward
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.flow
 import java.io.InputStream
 import java.io.OutputStream
 import java.lang.Exception

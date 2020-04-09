@@ -4,13 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import com.aglushkov.modelcore.resource.Resource
 import com.aglushkov.repository.RepositoryCommandHolder
 import com.aglushkov.repository.command.CancellableRepositoryCommand
 import com.aglushkov.repository.command.DisposableRepositoryCommand
 import com.aglushkov.repository.command.RepositoryCommand
 import com.aglushkov.repository.livedata.NonNullMutableLiveData
-import com.aglushkov.repository.livedata.Resource
-import com.aglushkov.repository.livedata.Resource.Uninitialized
 import com.aglushkov.repository.livedata.ResourceLiveDataProvider
 import com.example.alexeyglushkov.authtaskmanager.BaseServiceTask
 import com.example.alexeyglushkov.cachemanager.Storage
@@ -112,7 +111,7 @@ class QuizletRepository(private val service: QuizletService, storage: Storage) :
         get() {
             var liveData = commandHolder.getLiveData<NonNullMutableLiveData<Resource<List<QuizletSet>>>>(LOAD_SETS_COMMAND_ID)
             if (liveData == null) {
-                liveData = NonNullMutableLiveData(Uninitialized<List<QuizletSet>>() as Resource<List<QuizletSet>>)
+                liveData = NonNullMutableLiveData(Resource.Uninitialized<List<QuizletSet>>() as Resource<List<QuizletSet>>)
                 commandHolder.putLiveData(LOAD_SETS_COMMAND_ID, liveData)
             }
             return liveData
@@ -124,7 +123,7 @@ class QuizletRepository(private val service: QuizletService, storage: Storage) :
         override val liveData: MutableLiveData<Resource<List<QuizletTerm>>>
             get() {
                 val mediatorLiveData = MediatorLiveData<Resource<List<QuizletTerm>>>()
-                mediatorLiveData.setValue(Uninitialized())
+                mediatorLiveData.setValue(Resource.Uninitialized())
                 mediatorLiveData.addSource<Resource<List<QuizletSet>>>(this@QuizletRepository.liveData, object : Observer<Resource<List<QuizletSet>>> {
                     override fun onChanged(listResource: Resource<List<QuizletSet>>) {
                         mediatorLiveData.setValue(buildFinalResource(listResource))
