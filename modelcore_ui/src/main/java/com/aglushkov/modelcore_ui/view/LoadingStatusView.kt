@@ -61,6 +61,10 @@ class LoadingStatusView: FrameLayout {
         binding.text.text = null
         binding.tryAgainButton.isVisible = false
     }
+
+    fun setOnTryAgainListener(callback: (View) -> Unit) {
+        binding.tryAgainButton.setOnClickListener(callback)
+    }
 }
 
 fun <T> Resource<T>.bind(view: LoadingStatusView?,

@@ -19,17 +19,33 @@ class DefinitionsVM(app: Application,
     private val innerDefinitions = MutableLiveData<Resource<List<BaseViewItem<*>>>>(Resource.Uninitialized())
     val definitions: LiveData<Resource<List<BaseViewItem<*>>>> = innerDefinitions
 
-    init {
-        load("owl")
+    // State
+    var word: String?
+        get() {
+            return state["word"]
+        }
+        set(value) {
+            state["word"] = value
+        }
 
-        viewModelScope.launch {
-            appComponent.getConnectivityManager().flow.collect {
-                Log.d("a", "b" + it)
-            }
+    init {
+        word?.let {
+            load(it)
+        } ?: run {
+            load("owl")
         }
     }
 
+    // Events
+
+    fun onTryAgainClicked() {
+        load(word!!)
+    }
+
+    // Actions
+
     private fun load(word: String) {
+        this.word = word
         innerDefinitions.load(wordRepository.scope, true) {
             wordRepository.define(word).flow.first {
                 if (it is Resource.Error) {

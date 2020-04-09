@@ -19,7 +19,10 @@ class DefinitionsFragment: Fragment() {
 
         vm = ViewModelProviders.of(this, SavedStateViewModelFactory(requireActivity().application, this))
                 .get(DefinitionsVM::class.java)
+        observeViewModel()
+    }
 
+    private fun observeViewModel() {
         viewLifecycleOwnerLiveData.observe(this, Observer {
             if (it == null) return@Observer
             onViewLifecycleOwnerReady(it)
@@ -29,6 +32,17 @@ class DefinitionsFragment: Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentDefinitionsBinding.inflate(inflater, container, false)
         return binding!!.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        bindView()
+    }
+
+    private fun bindView() {
+        binding!!.loadingStatusView.setOnTryAgainListener {
+            vm.onTryAgainClicked()
+        }
     }
 
     override fun onDestroyView() {
