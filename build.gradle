@@ -21,7 +21,7 @@ buildscript {
         coordinatorLayout = "1.1.0"
         appRecyclerViewVersion = "1.1.0"
         cardViewVersion = "1.0.0"
-        materialVersion = "1.0.0"
+        materialVersion = "1.1.0"
         legacySupportVersion = "1.0.0"
         appCompatVersion = "1.1.0"
         lifecycleVersion = "2.2.0"

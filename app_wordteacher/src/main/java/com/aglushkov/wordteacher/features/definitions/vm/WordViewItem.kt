@@ -1,6 +1,6 @@
 package com.aglushkov.wordteacher.features.definitions.vm
 
-import com.aglushkov.modelcore.view.BaseViewItem
+import com.aglushkov.modelcore_ui.view.BaseViewItem
 import com.aglushkov.wordteacher.model.WordTeacherWord
 
 class WordViewItem(word: WordTeacherWord): BaseViewItem<WordTeacherWord>(word, 10) {

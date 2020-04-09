@@ -4,9 +4,10 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
 import com.aglushkov.modelcore.resource.*
+import com.aglushkov.modelcore_ui.extensions.getErrorString
 import com.aglushkov.wordteacher.di.AppComponentOwner
 import com.aglushkov.wordteacher.features.definitions.repository.WordRepository
-import com.aglushkov.modelcore.view.BaseViewItem
+import com.aglushkov.modelcore_ui.view.BaseViewItem
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 

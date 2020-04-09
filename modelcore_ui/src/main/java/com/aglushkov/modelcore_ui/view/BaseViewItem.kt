@@ -1,4 +1,4 @@
-package com.aglushkov.modelcore.view
+package com.aglushkov.modelcore_ui.view
 
 import androidx.recyclerview.widget.DiffUtil
 import java.util.*

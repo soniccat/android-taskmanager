@@ -1,4 +1,4 @@
-package com.aglushkov.modelcore.view
+package com.aglushkov.modelcore_ui.view
 
 import android.content.Context
 import android.util.AttributeSet
@@ -6,12 +6,12 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.core.content.withStyledAttributes
 import androidx.core.view.isVisible
-import com.aglushkov.modelcore.R
-import com.aglushkov.modelcore.databinding.LoadingStatusViewBinding
 import com.aglushkov.modelcore.extensions.getLayoutInflater
 import com.aglushkov.modelcore.resource.Resource
 import com.aglushkov.modelcore.resource.isLoadedAndEmpty
 import com.aglushkov.modelcore.resource.isLoading
+import com.aglushkov.modelcore_ui.R
+import com.aglushkov.modelcore_ui.databinding.LoadingStatusViewBinding
 
 class LoadingStatusView: FrameLayout {
     private var binding: LoadingStatusViewBinding

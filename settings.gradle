@@ -3,6 +3,9 @@ include ':app_wordteacher',
         ':app_wordteacher_old',
 
         ':ui',
+
+        // MVVM helpers
+        ':modelcore_ui',
         ':modelcore',
 
         // Repositories
