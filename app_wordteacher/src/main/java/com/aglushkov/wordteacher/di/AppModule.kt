@@ -1,6 +1,7 @@
 package com.aglushkov.wordteacher.di
 
 import android.content.Context
+import com.aglushkov.general.networkstatus.ConnectivityManager
 import com.aglushkov.wordteacher.R
 import com.aglushkov.wordteacher.features.definitions.repository.WordRepository
 import com.aglushkov.wordteacher.repository.ConfigConnectParamsStatRepository
@@ -28,8 +29,8 @@ class AppModule {
 
     @AppComp
     @Provides
-    fun createConfigRepository(configService: ConfigService): ConfigRepository {
-        return ConfigRepository(configService, ioScope)
+    fun createConfigRepository(configService: ConfigService, connectivityManager: ConnectivityManager): ConfigRepository {
+        return ConfigRepository(configService, ioScope, connectivityManager)
     }
 
     @AppComp

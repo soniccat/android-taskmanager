@@ -22,6 +22,7 @@ class ServiceRepository(val configRepository: ConfigRepository,
         }
 
     init {
+        // update on configRepository or connectParamsStatRepository change
         scope.launch {
             configRepository.flow
                 .combine(connectParamsStatRepository.flow) { a, b ->

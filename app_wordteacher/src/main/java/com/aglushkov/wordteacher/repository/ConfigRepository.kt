@@ -1,5 +1,6 @@
 package com.aglushkov.wordteacher.repository
 
+import com.aglushkov.general.networkstatus.ConnectivityManager
 import com.aglushkov.modelcore.extensions.forward
 import com.aglushkov.modelcore.resource.Resource
 import com.aglushkov.modelcore.resource.isNotLoadedAndNotLoading
@@ -12,16 +13,26 @@ import kotlinx.coroutines.flow.*
 import java.lang.Exception
 
 class ConfigRepository(val service: ConfigService,
-                       val scope: CoroutineScope) {
+                       val scope: CoroutineScope,
+                       private val connectivityManager: ConnectivityManager) {
     private val stateFlow = CustomStateFlow<Resource<List<Config>>>(Resource.Uninitialized())
     val flow = stateFlow.flow
-    val value: Resource<List<Config>>?
+    val value: Resource<List<Config>>
         get() {
             return stateFlow.value
         }
 
     init {
         loadIfNeeded()
+
+        // load a config on connecting to the internet
+        scope.launch {
+            connectivityManager.flow.collect {
+                if (it) {
+                    loadIfNeeded()
+                }
+            }
+        }
     }
 
     fun loadIfNeeded() {
