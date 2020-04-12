@@ -85,6 +85,7 @@ class WordRepository(val serviceRepository: ServiceRepository) {
             asyncs.forEach {
                 try {
                     words.addAll(it.await())
+                    stateFlow.offer(stateFlow.value.toLoading(words.toList()))
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -94,6 +95,16 @@ class WordRepository(val serviceRepository: ServiceRepository) {
             stateFlow.offer(stateFlow.value.toLoaded(words.toList()))
         } catch (e: Exception) {
             stateFlow.offer(stateFlow.value.toError(e, true))
+        }
+    }
+
+    fun clear(word: String) {
+        for (flowEntry in stateFlows) {
+            if (flowEntry.key == word) {
+                flowEntry.value.offer(Resource.Uninitialized())
+                stateFlows.remove(flowEntry.key)
+                return
+            }
         }
     }
 }

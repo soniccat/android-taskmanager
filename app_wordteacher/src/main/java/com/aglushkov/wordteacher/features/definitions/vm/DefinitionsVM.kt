@@ -43,6 +43,17 @@ class DefinitionsVM(app: Application,
 
     // Events
 
+    fun onWordSubmitted(word: String) {
+        this.word?.let {
+            wordRepository.clear(it)
+        }
+
+        if (word.isNotEmpty()) {
+            innerDefinitions.value = Resource.Uninitialized()
+            load(word)
+        }
+    }
+
     fun onTryAgainClicked() {
         load(word!!)
     }
@@ -52,6 +63,7 @@ class DefinitionsVM(app: Application,
     private fun load(word: String) {
         this.word = word
         innerDefinitions.load(wordRepository.scope, true) {
+            // TODO: handle Loading to show intermediate results
             buildViewItems(wordRepository.define(word).flow.first {
                 if (it is Resource.Error) {
                     throw it.throwable
