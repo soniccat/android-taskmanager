@@ -45,7 +45,7 @@ fun GoogleService.Companion.createWordTeacherWordService(aBaseUrl: String,
         private val service = GoogleService.create(aBaseUrl)
 
         override suspend fun define(word: String): List<WordTeacherWord> {
-            val lang: String = params.value[Entries]?.get(EntriesLang) ?: "en"
+            val lang: String = methodParams.value[Entries]?.get(EntriesLang) ?: "en"
             return service.definitions(word, lang).mapNotNull { it.asWordTeacherWord() }
         }
     }

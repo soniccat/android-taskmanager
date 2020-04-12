@@ -43,12 +43,12 @@ fun YandexService.Companion.create(aBaseUrl: String,
 
 fun YandexService.Companion.createWordTeacherWordService(aBaseUrl: String,
                                                          aKey: String,
-                                                         methodParams: ServiceMethodParams): WordTeacherWordService {
+                                                         params: ServiceMethodParams): WordTeacherWordService {
     return object : WordTeacherWordService {
         override var name = "Yandex"
         override var key = aKey
         override var baseUrl = aBaseUrl
-        override var methodParams = methodParams
+        override var methodParams = params
 
         private val authInterceptor = Interceptor { chain ->
             val request = chain.request()
@@ -63,7 +63,7 @@ fun YandexService.Companion.createWordTeacherWordService(aBaseUrl: String,
 
         override suspend fun define(word: String): List<WordTeacherWord> {
             val lookup = methodParams.value[Lookup]
-            val lang = lookup?.get(LookupLang) ?: "en"
+            val lang = lookup?.get(LookupLang) ?: "en-en"
             val ui = lookup?.get(LookupUi) ?: "en"
             val flags = lookup?.get(LookupFlags)?.toIntOrNull() ?: 4
             return service.definitions(word, lang, ui, flags).words.mapNotNull { it.asWordTeacherWord() }

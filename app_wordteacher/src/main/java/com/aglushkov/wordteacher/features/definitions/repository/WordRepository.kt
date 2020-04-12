@@ -1,5 +1,6 @@
 package com.aglushkov.wordteacher.features.definitions.repository
 
+import android.util.Log
 import com.aglushkov.modelcore.resource.*
 import com.aglushkov.wordteacher.model.WordTeacherWord
 import com.aglushkov.wordteacher.repository.ServiceRepository
@@ -85,6 +86,7 @@ class WordRepository(val serviceRepository: ServiceRepository) {
                 try {
                     words.addAll(it.await())
                 } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
 
