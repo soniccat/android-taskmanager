@@ -1,14 +1,22 @@
 package com.aglushkov.wordteacher.features.definitions.view
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
+import com.aglushkov.modelcore.resource.Resource
+import com.aglushkov.modelcore_ui.view.BaseViewItem
 import com.aglushkov.wordteacher.databinding.FragmentDefinitionsBinding
 import com.aglushkov.wordteacher.features.definitions.vm.DefinitionsVM
 import com.aglushkov.modelcore_ui.view.bind
+import com.aglushkov.wordteacher.features.definitions.adapter.DefinitionsAdapter
+import com.aglushkov.wordteacher.features.definitions.adapter.DefinitionsBinder
 
 class DefinitionsFragment: Fragment() {
     private lateinit var vm: DefinitionsVM
@@ -16,9 +24,10 @@ class DefinitionsFragment: Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        
         vm = ViewModelProviders.of(this, SavedStateViewModelFactory(requireActivity().application, this))
                 .get(DefinitionsVM::class.java)
+        Configuration.SCREENLAYOUT_SIZE_LARGE
         observeViewModel()
     }
 
@@ -40,7 +49,13 @@ class DefinitionsFragment: Fragment() {
     }
 
     private fun bindView() {
-        binding!!.loadingStatusView.setOnTryAgainListener {
+        val binding = this.binding!!
+
+        binding.list.apply {
+            layoutManager = LinearLayoutManager(binding.root.context, RecyclerView.VERTICAL, false)
+        }
+
+        binding.loadingStatusView.setOnTryAgainListener {
             vm.onTryAgainClicked()
         }
     }
@@ -52,8 +67,29 @@ class DefinitionsFragment: Fragment() {
 
     private fun onViewLifecycleOwnerReady(viewLifecycleOwner: LifecycleOwner) {
         vm.definitions.observe(viewLifecycleOwner, Observer {
-            val errorText = vm.getErrorText(it)
-            it.bind(binding!!.loadingStatusView, errorText)
+            showDefinitions(it)
         })
+    }
+
+    private fun showDefinitions(it: Resource<List<BaseViewItem<*>>>) {
+        val binding = this.binding!!
+
+        val errorText = vm.getErrorText(it)
+        it.bind(binding.loadingStatusView, errorText)
+
+        updateListAdapter(it)
+    }
+
+    private fun updateListAdapter(it: Resource<List<BaseViewItem<*>>>) {
+        val binding = this.binding!!
+
+        if (binding.list.adapter != null) {
+            (binding.list.adapter as DefinitionsAdapter).submitList(it.data())
+        } else {
+            val binder = DefinitionsBinder()
+            binding.list.adapter = DefinitionsAdapter(binder).apply {
+                submitList(it.data())
+            }
+        }
     }
 }
