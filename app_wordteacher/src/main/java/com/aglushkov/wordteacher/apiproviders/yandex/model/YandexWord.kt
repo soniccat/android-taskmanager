@@ -27,7 +27,13 @@ fun YandexWord.asWordTeacherWord(): WordTeacherWord? {
     for (definition in definitions) {
         val partOfSpeech = WordTeacherWord.PartOfSpeech.fromString(definition.pos)
         definition.asWordTeacherDefinition()?.let {
-            map[partOfSpeech] = listOf(it)
+            var list = map[partOfSpeech] as? MutableList<WordTeacherDefinition>
+            if (list == null) {
+                list = mutableListOf()
+                map[partOfSpeech] = list
+            }
+
+            list.add(it)
         }
     }
 

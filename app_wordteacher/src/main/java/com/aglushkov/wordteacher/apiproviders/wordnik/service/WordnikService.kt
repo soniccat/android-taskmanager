@@ -89,12 +89,12 @@ fun WordnikService.Companion.create(baseUrl: String, authInterceptor: Intercepto
 
 fun WordnikService.Companion.createWordTeacherWordService(aBaseUrl: String,
                                                           aKey: String,
-                                                          methodParams: ServiceMethodParams): WordTeacherWordService {
+                                                          params: ServiceMethodParams): WordTeacherWordService {
     return object : WordTeacherWordService {
         override var name = "Wordnik"
         override var key = aKey
         override var baseUrl = aBaseUrl
-        override var methodParams = methodParams
+        override var methodParams = params
 
         private val authInterceptor = Interceptor { chain ->
             val request = chain.request()
