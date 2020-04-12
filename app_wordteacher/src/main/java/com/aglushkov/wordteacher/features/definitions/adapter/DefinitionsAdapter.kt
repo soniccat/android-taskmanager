@@ -5,7 +5,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.aglushkov.general.extensions.resolveThemeDrawable
+import com.aglushkov.general.extensions.pxToDp
 import com.aglushkov.modelcore_ui.view.BaseViewItem
+import com.aglushkov.wordteacher.R
 import com.aglushkov.wordteacher.features.definitions.vm.*
 
 class DefinitionsAdapter(val binder: DefinitionsBinder): ListAdapter<BaseViewItem<*>, DefinitionsAdapter.ViewHolder>(BaseViewItem.DiffCallback) {
@@ -15,14 +18,16 @@ class DefinitionsAdapter(val binder: DefinitionsBinder): ListAdapter<BaseViewIte
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val lp = RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT)
         val view = when (viewType) {
-            WordTitleViewItem.Type -> createTitleView(parent)
-            WordTranscriptionViewItem.Type -> createTranscriptionView(parent)
-            WordPartOfSpeechViewItem.Type -> createPartOfSpeechView(parent)
-            WordDefinitionViewItem.Type -> createDefinitionView(parent)
-            WordExampleViewItem.Type -> createExampleView(parent)
-            WordSynonymViewItem.Type -> createSynonymView(parent)
-            WordSubHeaderViewItem.Type -> createSubHeaderView(parent)
+            WordTitleViewItem.Type -> createTitleView(parent, lp)
+            WordTranscriptionViewItem.Type -> createTranscriptionView(parent, lp)
+            WordPartOfSpeechViewItem.Type -> createPartOfSpeechView(parent, lp)
+            WordDefinitionViewItem.Type -> createDefinitionView(parent, lp)
+            WordExampleViewItem.Type -> createExampleView(parent, lp)
+            WordSynonymViewItem.Type -> createSynonymView(parent, lp)
+            WordSubHeaderViewItem.Type -> createSubHeaderView(parent, lp)
+            WordDividerViewItem.Type -> createDividerView(parent, lp)
             else -> throw IllegalArgumentException("Unexpected viewType: $viewType")
         }
 
@@ -62,32 +67,58 @@ class DefinitionsAdapter(val binder: DefinitionsBinder): ListAdapter<BaseViewIte
         }
     }
 
-    private fun createTitleView(parent: ViewGroup): View {
-        return createTextView(parent)
+    private fun createTitleView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
+        return createTextView(parent).apply {
+            layoutParams = lp
+        }
     }
 
-    private fun createTranscriptionView(parent: ViewGroup): View {
-        return createTextView(parent)
+    private fun createTranscriptionView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
+        return createTextView(parent).apply {
+            layoutParams = lp
+        }
     }
 
-    private fun createPartOfSpeechView(parent: ViewGroup): View {
-        return createTextView(parent)
+    private fun createPartOfSpeechView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
+        return createTextView(parent).apply {
+            layoutParams = lp
+        }
     }
 
-    private fun createExampleView(parent: ViewGroup): View {
-        return createTextView(parent)
+    private fun createDefinitionView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
+        return createTextView(parent).apply {
+            layoutParams = lp
+        }
     }
 
-    private fun createSynonymView(parent: ViewGroup): View {
-        return createTextView(parent)
+    private fun createExampleView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
+        return createTextView(parent).apply {
+            layoutParams = lp
+        }
     }
 
-    private fun createSubHeaderView(parent: ViewGroup): View {
-        return createTextView(parent)
+    private fun createSynonymView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
+        return createTextView(parent).apply {
+            layoutParams = lp
+        }
     }
 
-    private fun createDefinitionView(parent: ViewGroup): View {
-        return createTextView(parent)
+    private fun createSubHeaderView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
+        return createTextView(parent).apply {
+            layoutParams = lp
+        }
+    }
+
+    private fun createDividerView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
+        val context = parent.context
+        return View(context).apply {
+            background = context.resolveThemeDrawable(R.attr.dividerHorizontal)
+
+            lp.height = 1.pxToDp(context)
+            lp.topMargin = context.resources.getDimensionPixelOffset(R.dimen.word_divider_top_margin)
+            lp.bottomMargin = context.resources.getDimensionPixelOffset(R.dimen.word_divider_bottom_margin)
+            layoutParams = lp
+        }
     }
 
     private fun createTextView(parent: ViewGroup): TextView {

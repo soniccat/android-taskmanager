@@ -65,13 +65,14 @@ class DefinitionsVM(app: Application,
     private fun buildViewItems(words: List<WordTeacherWord>): List<BaseViewItem<*>> {
         val items = mutableListOf<BaseViewItem<*>>()
         for (word in words) {
-            addWord(word, items)
+            addWordViewItems(word, items)
+            items.add(WordDividerViewItem())
         }
 
         return items
     }
 
-    private fun addWord(word: WordTeacherWord, items: MutableList<BaseViewItem<*>>) {
+    private fun addWordViewItems(word: WordTeacherWord, items: MutableList<BaseViewItem<*>>) {
         items.add(WordTitleViewItem(word.word))
         word.transcription?.let {
             items.add(WordTranscriptionViewItem(it))
