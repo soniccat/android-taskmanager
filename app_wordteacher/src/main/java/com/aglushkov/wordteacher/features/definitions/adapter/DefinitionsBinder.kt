@@ -12,4 +12,24 @@ class DefinitionsBinder {
     fun bindTranscription(view: TextView, transcription: String) {
         view.text = transcription
     }
+
+    fun bindPartOfSpeech(view: TextView, partOfSpeech: String) {
+        view.text = partOfSpeech
+    }
+
+    fun bindDefinition(view: TextView, definition: String) {
+        view.text = definition
+    }
+
+    fun bindExample(view: TextView, example: String) {
+        view.text = example
+    }
+
+    fun bindSynonym(view: TextView, synonym: String) {
+        view.text = synonym
+    }
+
+    fun bindSubHeader(view: TextView, text: String) {
+        view.text = text
+    }
 }

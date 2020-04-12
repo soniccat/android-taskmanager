@@ -1,7 +1,9 @@
 package com.aglushkov.wordteacher.model
 
+import android.content.Context
 import android.os.Parcelable
 import android.util.Log
+import com.aglushkov.wordteacher.R
 import kotlinx.android.parcel.Parcelize
 import java.util.*
 
@@ -51,5 +53,13 @@ fun WordTeacherWord.PartOfSpeech.Companion.fromString(string: String?): WordTeac
             }
             WordTeacherWord.PartOfSpeech.Undefined
         }
+    }
+}
+
+fun WordTeacherWord.PartOfSpeech.toString(context: Context): String {
+    return when(this) {
+        WordTeacherWord.PartOfSpeech.Noun -> context.getString(R.string.word_partofspeech_noun)
+        WordTeacherWord.PartOfSpeech.Verb -> context.getString(R.string.word_partofspeech_verb)
+        else -> context.getString(R.string.word_partofspeech_unknown)
     }
 }

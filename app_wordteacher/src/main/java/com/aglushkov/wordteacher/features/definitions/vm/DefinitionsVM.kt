@@ -1,16 +1,20 @@
 package com.aglushkov.wordteacher.features.definitions.vm
 
 import android.app.Application
-import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
+import com.aglushkov.modelcore.extensions.getString
 import com.aglushkov.modelcore.resource.*
 import com.aglushkov.modelcore_ui.extensions.getErrorString
 import com.aglushkov.wordteacher.di.AppComponentOwner
 import com.aglushkov.wordteacher.features.definitions.repository.WordRepository
 import com.aglushkov.modelcore_ui.view.BaseViewItem
+import com.aglushkov.wordteacher.R
 import com.aglushkov.wordteacher.model.WordTeacherWord
+import com.aglushkov.wordteacher.model.toString
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 
 class DefinitionsVM(app: Application,
                     private val state: SavedStateHandle): AndroidViewModel(app) {
@@ -61,13 +65,39 @@ class DefinitionsVM(app: Application,
     private fun buildViewItems(words: List<WordTeacherWord>): List<BaseViewItem<*>> {
         val items = mutableListOf<BaseViewItem<*>>()
         for (word in words) {
-            items.add(WordTitleViewItem(word.word))
-            word.transcription?.let {
-                items.add(WordTranscriptionViewItem(it))
-            }
+            addWord(word, items)
         }
 
         return items
+    }
+
+    private fun addWord(word: WordTeacherWord, items: MutableList<BaseViewItem<*>>) {
+        items.add(WordTitleViewItem(word.word))
+        word.transcription?.let {
+            items.add(WordTranscriptionViewItem(it))
+        }
+
+        for (partOfSpeech in word.definitions.keys) {
+            items.add(WordPartOfSpeechViewItem(partOfSpeech.toString(getApplication())))
+
+            for (def in word.definitions[partOfSpeech].orEmpty()) {
+                items.add(WordDefinitionViewItem(def.definition))
+
+                if (def.examples.isNotEmpty()) {
+                    items.add(WordSubHeaderViewItem(getString(R.string.word_section_examples)))
+                    for (ex in def.examples) {
+                        items.add(WordExampleViewItem(ex))
+                    }
+                }
+
+                if (def.synonyms.isNotEmpty()) {
+                    items.add(WordSubHeaderViewItem(getString(R.string.word_section_synonyms)))
+                    for (synonym in def.synonyms) {
+                        items.add(WordSynonymViewItem(synonym))
+                    }
+                }
+            }
+        }
     }
 
     fun getErrorText(res: Resource<*>): String? {
