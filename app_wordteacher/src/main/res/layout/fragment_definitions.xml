@@ -12,12 +12,15 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:contentInsetStart="0dp">
             <SearchView
                 android:id="@+id/searchview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:iconifiedByDefault="false"/>
+                android:iconifiedByDefault="false"
+                android:background="@drawable/search_bg"
+                android:layout_margin="8dp"/>
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
