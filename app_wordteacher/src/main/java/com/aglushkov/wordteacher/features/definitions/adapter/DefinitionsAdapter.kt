@@ -3,6 +3,7 @@ package com.aglushkov.wordteacher.features.definitions.adapter
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.aglushkov.general.extensions.resolveThemeDrawable
@@ -69,61 +70,78 @@ class DefinitionsAdapter(val binder: DefinitionsBinder): ListAdapter<BaseViewIte
 
     private fun createTitleView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
         return createTextView(parent).apply {
+            setTextAppearance(parent.context, R.style.TextAppearance_MaterialComponents_Headline5)
             layoutParams = lp
         }
     }
 
     private fun createTranscriptionView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
         return createTextView(parent).apply {
+            setTextAppearance(parent.context, R.style.TextAppearance_MaterialComponents_Body2)
             layoutParams = lp
         }
     }
 
     private fun createPartOfSpeechView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
         return createTextView(parent).apply {
+            setTextAppearance(context, R.style.TextAppearance_MaterialComponents_Headline6)
+            lp.topMargin = context.resources.getDimensionPixelOffset(R.dimen.word_partOfSpeech_top_margin)
             layoutParams = lp
         }
     }
 
     private fun createDefinitionView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
         return createTextView(parent).apply {
+            setTextAppearance(parent.context, R.style.TextAppearance_MaterialComponents_Body2)
             layoutParams = lp
         }
     }
 
     private fun createExampleView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
         return createTextView(parent).apply {
+            setTextAppearance(parent.context, R.style.TextAppearance_MaterialComponents_Body2)
             layoutParams = lp
         }
     }
 
     private fun createSynonymView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
         return createTextView(parent).apply {
+            setTextAppearance(parent.context, R.style.TextAppearance_MaterialComponents_Body2)
             layoutParams = lp
         }
     }
 
     private fun createSubHeaderView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
         return createTextView(parent).apply {
+            setTextAppearance(parent.context, R.style.TextAppearance_MaterialComponents_Subtitle2)
+            lp.topMargin = context.resources.getDimensionPixelOffset(R.dimen.word_subheader_top_margin)
             layoutParams = lp
         }
     }
 
     private fun createDividerView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
         val context = parent.context
-        return View(context).apply {
-            background = context.resolveThemeDrawable(R.attr.dividerHorizontal)
+        val view = View(context)
+        view.background = context.resolveThemeDrawable(R.attr.dividerHorizontal)
+        setWordHorizontalPadding(view)
 
-            lp.height = 1.pxToDp(context)
-            lp.topMargin = context.resources.getDimensionPixelOffset(R.dimen.word_divider_top_margin)
-            lp.bottomMargin = context.resources.getDimensionPixelOffset(R.dimen.word_divider_bottom_margin)
-            layoutParams = lp
-        }
+        lp.height = 1.pxToDp(context)
+        lp.topMargin = context.resources.getDimensionPixelOffset(R.dimen.word_divider_top_margin)
+        lp.bottomMargin = context.resources.getDimensionPixelOffset(R.dimen.word_divider_bottom_margin)
+        view.layoutParams = lp
+
+        return view
     }
 
     private fun createTextView(parent: ViewGroup): TextView {
         val textView = TextView(parent.context)
+        setWordHorizontalPadding(textView)
         return textView
+    }
+
+    private fun setWordHorizontalPadding(view: View) {
+        val horizontalPadding = view.resources.getDimensionPixelOffset(R.dimen.word_horizontal_padding)
+        view.updatePadding(left = horizontalPadding, right = horizontalPadding)
     }
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
