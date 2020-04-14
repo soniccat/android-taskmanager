@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.aglushkov.general.extensions.resolveThemeDrawable
 import com.aglushkov.general.extensions.pxToDp
+import com.aglushkov.general.extensions.resolveThemeStyle
 import com.aglushkov.modelcore_ui.view.BaseViewItem
 import com.aglushkov.wordteacher.R
 import com.aglushkov.wordteacher.features.definitions.vm.*
@@ -70,21 +71,21 @@ class DefinitionsAdapter(val binder: DefinitionsBinder): ListAdapter<BaseViewIte
 
     private fun createTitleView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
         return createTextView(parent).apply {
-            setTextAppearance(parent.context, R.style.TextAppearance_MaterialComponents_Headline5)
+            setTextAppearance(parent.context, parent.context.resolveThemeStyle(R.attr.wordTitleTextAppearance))
             layoutParams = lp
         }
     }
 
     private fun createTranscriptionView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
         return createTextView(parent).apply {
-            setTextAppearance(parent.context, R.style.TextAppearance_MaterialComponents_Body2)
+            setTextAppearance(parent.context, parent.context.resolveThemeStyle(R.attr.wordTranscriptionTextAppearance))
             layoutParams = lp
         }
     }
 
     private fun createPartOfSpeechView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
         return createTextView(parent).apply {
-            setTextAppearance(context, R.style.TextAppearance_MaterialComponents_Headline6)
+            setTextAppearance(context, parent.context.resolveThemeStyle(R.attr.wordPartOfSpeechTextAppearance))
             lp.topMargin = context.resources.getDimensionPixelOffset(R.dimen.word_partOfSpeech_top_margin)
             layoutParams = lp
         }
@@ -92,28 +93,28 @@ class DefinitionsAdapter(val binder: DefinitionsBinder): ListAdapter<BaseViewIte
 
     private fun createDefinitionView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
         return createTextView(parent).apply {
-            setTextAppearance(parent.context, R.style.TextAppearance_MaterialComponents_Body2)
+            setTextAppearance(parent.context, parent.context.resolveThemeStyle(R.attr.wordDefinitionTextAppearance))
             layoutParams = lp
         }
     }
 
     private fun createExampleView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
         return createTextView(parent).apply {
-            setTextAppearance(parent.context, R.style.TextAppearance_MaterialComponents_Body2)
+            setTextAppearance(parent.context, parent.context.resolveThemeStyle(R.attr.wordDefinitionTextAppearance))
             layoutParams = lp
         }
     }
 
     private fun createSynonymView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
         return createTextView(parent).apply {
-            setTextAppearance(parent.context, R.style.TextAppearance_MaterialComponents_Body2)
+            setTextAppearance(parent.context, parent.context.resolveThemeStyle(R.attr.wordDefinitionTextAppearance))
             layoutParams = lp
         }
     }
 
     private fun createSubHeaderView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
         return createTextView(parent).apply {
-            setTextAppearance(parent.context, R.style.TextAppearance_MaterialComponents_Subtitle2)
+            setTextAppearance(parent.context, parent.context.resolveThemeStyle(R.attr.wordSubHeaderTextAppearance))
             lp.topMargin = context.resources.getDimensionPixelOffset(R.dimen.word_subheader_top_margin)
             layoutParams = lp
         }

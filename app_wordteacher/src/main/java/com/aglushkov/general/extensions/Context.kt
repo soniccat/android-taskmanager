@@ -16,3 +16,8 @@ fun Context.resolveThemeDrawable(@AttrRes attribute: Int) = TypedValue().let {
     theme.resolveAttribute(attribute, it, true);
     getDrawableCompat(it.resourceId)
 }
+
+fun Context.resolveThemeStyle(@AttrRes attribute: Int) = TypedValue().let {
+    theme.resolveAttribute(attribute, it, true);
+    it.resourceId
+}
