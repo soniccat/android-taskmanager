@@ -12,6 +12,7 @@ data class WordTeacherWord(val word: String,
                            val transcription: String?,
                            val definitions: Map<PartOfSpeech, List<WordTeacherDefinition>>,
 
+                           // TODO: remove originalSources
                            val originalSources: List<Parcelable>): Parcelable {
     enum class PartOfSpeech {
         Noun,

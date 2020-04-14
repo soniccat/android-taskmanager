@@ -18,6 +18,7 @@ import com.aglushkov.wordteacher.features.definitions.vm.DefinitionsVM
 import com.aglushkov.modelcore_ui.view.bind
 import com.aglushkov.wordteacher.features.definitions.adapter.DefinitionsAdapter
 import com.aglushkov.wordteacher.features.definitions.adapter.DefinitionsBinder
+import com.aglushkov.wordteacher.features.definitions.vm.DefinitionsDisplayMode
 
 class DefinitionsFragment: Fragment() {
     private lateinit var vm: DefinitionsVM
@@ -99,6 +100,12 @@ class DefinitionsFragment: Fragment() {
             (binding.list.adapter as DefinitionsAdapter).submitList(it.data())
         } else {
             val binder = DefinitionsBinder()
+            binder.listener = object : DefinitionsBinder.Listener {
+                override fun onDisplayModeChanged(mode: DefinitionsDisplayMode) {
+
+                }
+            }
+
             binding.list.adapter = DefinitionsAdapter(binder).apply {
                 submitList(it.data())
             }

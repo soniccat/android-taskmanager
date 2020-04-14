@@ -12,9 +12,11 @@ import com.aglushkov.wordteacher.di.AppComponentOwner
 import com.aglushkov.wordteacher.features.definitions.repository.WordRepository
 import com.aglushkov.modelcore_ui.view.BaseViewItem
 import com.aglushkov.wordteacher.R
+import com.aglushkov.wordteacher.model.WordTeacherDefinition
 import com.aglushkov.wordteacher.model.WordTeacherWord
 import com.aglushkov.wordteacher.model.toString
 import kotlinx.coroutines.flow.*
+import java.lang.StringBuilder
 
 class DefinitionsVM(app: Application,
                     private val state: SavedStateHandle): AndroidViewModel(app) {
@@ -25,6 +27,7 @@ class DefinitionsVM(app: Application,
     val definitions: LiveData<Resource<List<BaseViewItem<*>>>> = innerDefinitions
 
     // State
+    var displayMode = DefinitionsDisplayMode.Merged
     var word: String?
         get() {
             return state["word"]
@@ -79,12 +82,26 @@ class DefinitionsVM(app: Application,
         items.add(DefinitionsDisplayModeViewItem(listOf(DefinitionsDisplayMode.BySource, DefinitionsDisplayMode.Merged), 0))
         items.add(WordDividerViewItem())
 
+        when (displayMode) {
+            DefinitionsDisplayMode.Merged -> addMergedWords(words, items)
+            else -> addWordsGroupedBySource(words, items)
+        }
+
+        return items
+    }
+
+    private fun addMergedWords(words: List<WordTeacherWord>, items: MutableList<BaseViewItem<*>>) {
+        val word = mergeWords(words)
+
+        addWordViewItems(word, items)
+        items.add(WordDividerViewItem())
+    }
+
+    private fun addWordsGroupedBySource(words: List<WordTeacherWord>, items: MutableList<BaseViewItem<*>>) {
         for (word in words) {
             addWordViewItems(word, items)
             items.add(WordDividerViewItem())
         }
-
-        return items
     }
 
     private fun addWordViewItems(word: WordTeacherWord, items: MutableList<BaseViewItem<*>>) {
@@ -114,6 +131,75 @@ class DefinitionsVM(app: Application,
                 }
             }
         }
+    }
+
+    private fun mergeWords(words: List<WordTeacherWord>): WordTeacherWord {
+        if (words.size == 1) return words.first()
+
+        val allWords = mutableListOf<String>()
+        val allTranscriptions = mutableListOf<String>()
+        val allDefinitions = mutableMapOf<WordTeacherWord.PartOfSpeech, List<WordTeacherDefinition>>()
+
+        words.forEach {
+            if (!allWords.contains(it.word)) {
+                allWords.add(it.word)
+            }
+
+            it.transcription?.let {
+                if (!allTranscriptions.contains(it)) {
+                    allTranscriptions.add(it)
+                }
+            }
+
+            for (partOfSpeech in it.definitions) {
+                val originalDefs = it.definitions[partOfSpeech.key] as? MutableList ?: continue
+                var list = allDefinitions[partOfSpeech.key] as? MutableList
+                if (list == null) {
+                    list = mutableListOf()
+                    allDefinitions[partOfSpeech.key] = list
+                }
+
+                list.addAll(originalDefs)
+            }
+        }
+
+        val resultWord = allWords.joinToString()
+        val resultTranscription = if (allTranscriptions.isEmpty())
+                null
+            else
+                allTranscriptions.joinToString()
+        val resultDefinitions = allDefinitions.mapValues {
+            listOf(mergeDefinitions(it.value))
+        }
+
+        return WordTeacherWord(resultWord, resultTranscription, resultDefinitions, emptyList())
+    }
+
+    private fun mergeDefinitions(defs: List<WordTeacherDefinition>): WordTeacherDefinition {
+        val allDefs = mutableListOf<String>()
+        val allExamples = mutableListOf<String>()
+        val allSynonyms = mutableListOf<String>()
+
+        defs.forEach {
+            if (!allDefs.contains(it.definition)) {
+                allDefs.add(it.definition)
+            }
+
+            for (example in it.examples) {
+                if (!allExamples.contains(example)) {
+                    allExamples.add(example)
+                }
+            }
+
+            for (synonym in it.synonyms) {
+                if (!allSynonyms.contains(synonym)) {
+                    allSynonyms.add(synonym)
+                }
+            }
+        }
+
+        val resultDef = allDefs.joinToString()
+        return WordTeacherDefinition(resultDef, allExamples, allSynonyms, null, emptyList())
     }
 
     fun getErrorText(res: Resource<*>): String? {
