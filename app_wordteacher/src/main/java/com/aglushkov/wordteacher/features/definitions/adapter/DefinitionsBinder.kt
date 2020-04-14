@@ -2,9 +2,16 @@ package com.aglushkov.wordteacher.features.definitions.adapter
 
 import android.view.View
 import android.widget.TextView
+import com.aglushkov.wordteacher.R
+import com.aglushkov.wordteacher.features.definitions.vm.DefinitionsDisplayMode
 import com.aglushkov.wordteacher.features.definitions.vm.WordViewItem
+import com.google.android.material.chip.ChipGroup
 
 class DefinitionsBinder {
+    fun bindDisplayMode(chipGroup: ChipGroup, modes: List<DefinitionsDisplayMode>) {
+        chipGroup.check(R.id.definitions_displayMode_bySource)
+    }
+
     fun bindTitle(view: TextView, title: String) {
         view.text = title
     }

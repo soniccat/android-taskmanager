@@ -15,7 +15,6 @@ import com.aglushkov.wordteacher.R
 import com.aglushkov.wordteacher.model.WordTeacherWord
 import com.aglushkov.wordteacher.model.toString
 import kotlinx.coroutines.flow.*
-import java.util.*
 
 class DefinitionsVM(app: Application,
                     private val state: SavedStateHandle): AndroidViewModel(app) {
@@ -77,6 +76,9 @@ class DefinitionsVM(app: Application,
 
     private fun buildViewItems(words: List<WordTeacherWord>): List<BaseViewItem<*>> {
         val items = mutableListOf<BaseViewItem<*>>()
+        items.add(DefinitionsDisplayModeViewItem(listOf(DefinitionsDisplayMode.BySource, DefinitionsDisplayMode.Merged), 0))
+        items.add(WordDividerViewItem())
+
         for (word in words) {
             addWordViewItems(word, items)
             items.add(WordDividerViewItem())

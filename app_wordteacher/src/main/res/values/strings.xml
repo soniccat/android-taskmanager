@@ -2,4 +2,7 @@
 <resources>
     <string name="app_name">WordTeacher</string>
     <string name="search">Search</string>
+
+    <string name="definitions_displayMode_bySource">Grouped By Source</string>
+    <string name="definitions_displayMode_merge">Merged</string>
 </resources>

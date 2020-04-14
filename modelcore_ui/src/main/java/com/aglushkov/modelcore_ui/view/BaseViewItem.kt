@@ -19,7 +19,9 @@ abstract class BaseViewItem<T> {
 
     fun firstItem() = items.first()
 
-    abstract fun equalsByIds(item: BaseViewItem<*>): Boolean
+    open fun equalsByIds(item: BaseViewItem<*>): Boolean {
+        return this.javaClass == item.javaClass && type == item.type
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
