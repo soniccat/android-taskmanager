@@ -3,6 +3,7 @@ package com.aglushkov.wordteacher.apiproviders.yandex.service
 import com.aglushkov.wordteacher.apiproviders.yandex.model.YandexWords
 import com.aglushkov.wordteacher.apiproviders.yandex.model.asWordTeacherWord
 import com.aglushkov.wordteacher.model.WordTeacherWord
+import com.aglushkov.wordteacher.repository.Config
 import com.aglushkov.wordteacher.repository.ServiceMethodParams
 import com.aglushkov.wordteacher.service.WordTeacherWordService
 import okhttp3.Interceptor
@@ -45,7 +46,7 @@ fun YandexService.Companion.createWordTeacherWordService(aBaseUrl: String,
                                                          aKey: String,
                                                          params: ServiceMethodParams): WordTeacherWordService {
     return object : WordTeacherWordService {
-        override var name = "Yandex"
+        override var type: Config.Type = Config.Type.Yandex
         override var key = aKey
         override var baseUrl = aBaseUrl
         override var methodParams = params

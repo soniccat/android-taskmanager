@@ -3,6 +3,7 @@ package com.aglushkov.wordteacher.apiproviders.wordnik.service
 import com.aglushkov.wordteacher.apiproviders.wordnik.model.WordnikWord
 import com.aglushkov.wordteacher.apiproviders.wordnik.model.asWordTeacherWords
 import com.aglushkov.wordteacher.model.WordTeacherWord
+import com.aglushkov.wordteacher.repository.Config
 import com.aglushkov.wordteacher.repository.ServiceMethodParams
 import com.aglushkov.wordteacher.service.WordTeacherWordService
 import okhttp3.Interceptor
@@ -91,7 +92,7 @@ fun WordnikService.Companion.createWordTeacherWordService(aBaseUrl: String,
                                                           aKey: String,
                                                           params: ServiceMethodParams): WordTeacherWordService {
     return object : WordTeacherWordService {
-        override var name = "Wordnik"
+        override var type: Config.Type = Config.Type.Wordnik
         override var key = aKey
         override var baseUrl = aBaseUrl
         override var methodParams = params

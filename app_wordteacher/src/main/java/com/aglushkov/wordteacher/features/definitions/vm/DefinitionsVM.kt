@@ -15,6 +15,7 @@ import com.aglushkov.wordteacher.R
 import com.aglushkov.wordteacher.model.WordTeacherDefinition
 import com.aglushkov.wordteacher.model.WordTeacherWord
 import com.aglushkov.wordteacher.model.toString
+import com.aglushkov.wordteacher.repository.Config
 import kotlinx.coroutines.flow.*
 
 class DefinitionsVM(app: Application,
@@ -115,7 +116,7 @@ class DefinitionsVM(app: Application,
     }
 
     private fun addWordViewItems(word: WordTeacherWord, items: MutableList<BaseViewItem<*>>) {
-        items.add(WordTitleViewItem(word.word))
+        items.add(WordTitleViewItem(word.word, word.types))
         word.transcription?.let {
             items.add(WordTranscriptionViewItem(it))
         }
@@ -151,6 +152,7 @@ class DefinitionsVM(app: Application,
         val allWords = mutableListOf<String>()
         val allTranscriptions = mutableListOf<String>()
         val allDefinitions = mutableMapOf<WordTeacherWord.PartOfSpeech, List<WordTeacherDefinition>>()
+        val allTypes = mutableListOf<Config.Type>()
 
         words.forEach {
             if (!allWords.contains(it.word)) {
@@ -173,6 +175,12 @@ class DefinitionsVM(app: Application,
 
                 list.addAll(originalDefs)
             }
+
+            for (type in it.types) {
+                if (!allTypes.contains(type)) {
+                    allTypes.add(type)
+                }
+            }
         }
 
         val resultWord = allWords.joinToString()
@@ -184,7 +192,7 @@ class DefinitionsVM(app: Application,
             listOf(mergeDefinitions(it.value))
         }
 
-        return WordTeacherWord(resultWord, resultTranscription, resultDefinitions, emptyList())
+        return WordTeacherWord(resultWord, resultTranscription, resultDefinitions, allTypes)
     }
 
     private fun mergeDefinitions(defs: List<WordTeacherDefinition>): WordTeacherDefinition {
@@ -212,7 +220,7 @@ class DefinitionsVM(app: Application,
             }
         }
 
-        return WordTeacherDefinition(allDefs, allExamples, allSynonyms, null, emptyList())
+        return WordTeacherDefinition(allDefs, allExamples, allSynonyms, null)
     }
 
     fun getErrorText(res: Resource<*>): String? {

@@ -17,6 +17,5 @@ fun GoogleDefinition.asWordTeacherDefinition(): WordTeacherDefinition? {
     return WordTeacherDefinition(listOf(definition),
             if (example != null) listOf(example) else emptyList(),
             synonyms.orEmpty(),
-            null,
-            listOf(this@asWordTeacherDefinition))
+            null)
 }

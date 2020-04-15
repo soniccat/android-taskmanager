@@ -5,6 +5,7 @@ import com.aglushkov.wordteacher.R
 import com.aglushkov.wordteacher.features.definitions.view.WordTitleView
 import com.aglushkov.wordteacher.features.definitions.vm.DefinitionsDisplayMode
 import com.aglushkov.wordteacher.features.definitions.vm.DefinitionsDisplayModeViewItem
+import com.aglushkov.wordteacher.features.definitions.vm.WordTitleViewItem
 import com.google.android.material.chip.ChipGroup
 
 class DefinitionsBinder {
@@ -26,9 +27,9 @@ class DefinitionsBinder {
         }
     }
 
-    fun bindTitle(view: WordTitleView, title: String) {
-        view.title.text = title
-        view.providedBy.text = "aa"
+    fun bindTitle(view: WordTitleView, titleViewItem: WordTitleViewItem) {
+        view.title.text = titleViewItem.firstItem()
+        view.providedBy.text = view.context.getString(R.string.word_providedBy_template, titleViewItem.providers.joinToString())
     }
 
     fun bindTranscription(view: TextView, transcription: String) {

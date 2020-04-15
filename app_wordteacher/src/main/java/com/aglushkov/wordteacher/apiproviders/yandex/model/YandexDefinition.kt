@@ -28,6 +28,5 @@ fun YandexDefinition.asWordTeacherDefinition(): WordTeacherDefinition? {
     return WordTeacherDefinition(listOf(text),
             resultExamples,
             resultSynonyms,
-            null,
-            listOf(this@asWordTeacherDefinition))
+            null)
 }

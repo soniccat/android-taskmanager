@@ -52,7 +52,7 @@ class DefinitionsAdapter(val binder: DefinitionsBinder): ListAdapter<BaseViewIte
             // Word Card Items
             is WordTitleViewItem -> {
                 val view = holder.itemView as WordTitleView
-                binder.bindTitle(view, item.firstItem())
+                binder.bindTitle(view, item)
             }
             is WordTranscriptionViewItem -> {
                 val view = holder.itemView as TextView

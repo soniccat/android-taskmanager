@@ -4,7 +4,6 @@ import com.aglushkov.wordteacher.apiproviders.owlbot.model.OwlBotWord
 import com.aglushkov.wordteacher.apiproviders.owlbot.model.asWordTeacherWord
 import com.aglushkov.wordteacher.model.WordTeacherWord
 import com.aglushkov.wordteacher.repository.Config
-import com.aglushkov.wordteacher.repository.ConfigConnectParams
 import com.aglushkov.wordteacher.repository.ServiceMethodParams
 import com.aglushkov.wordteacher.service.WordTeacherWordService
 import okhttp3.Interceptor
@@ -37,7 +36,7 @@ fun OwlBotService.Companion.create(baseUrl: String, authInterceptor: Interceptor
 fun OwlBotService.Companion.createWordTeacherWordService(aBaseUrl: String,
                                                          aKey: String): WordTeacherWordService {
     return object : WordTeacherWordService {
-        override var name = "OwlBot"
+        override var type: Config.Type = Config.Type.OwlBot
         override var key = aKey
         override var baseUrl = aBaseUrl
         override var methodParams = ServiceMethodParams(emptyMap())

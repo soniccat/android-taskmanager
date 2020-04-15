@@ -7,6 +7,7 @@ import android.os.Parcelable
 import com.aglushkov.wordteacher.model.WordTeacherDefinition
 import com.aglushkov.wordteacher.model.WordTeacherWord
 import com.aglushkov.wordteacher.model.fromString
+import com.aglushkov.wordteacher.repository.Config
 
 // TODO: check possible values of WordnikLinkRelatedWords.relationshipType
 @Parcelize
@@ -43,15 +44,18 @@ fun List<WordnikWord>.asWordTeacherWords(): List<WordTeacherWord> {
             val word = WordTeacherWord(word.word,
                     null,
                     mutableMapOf(partOfSpeech to mutableListOf()),
-                    mutableListOf())
+                    listOf(Config.Type.Wordnik))
             map[word.word] = word
             word
         }
 
-        (wordTeacherWord.originalSources as MutableList).add(word)
-
         val definitionsMap = wordTeacherWord.definitions as MutableMap
-        val definitionsList = definitionsMap[partOfSpeech] as MutableList
+        val definitionsList = definitionsMap[partOfSpeech] as? MutableList ?: run {
+            val def = mutableListOf<WordTeacherDefinition>()
+            definitionsMap[partOfSpeech] = def
+            def
+        }
+
         definitionsList.add(definition)
     }
 
@@ -65,7 +69,6 @@ fun WordnikWord.asDefinition(): WordTeacherDefinition? {
             listOf(text),
             exampleUsesTexts(),
             synonyms(),
-            null,
-            listOf(this)
+            null
     )
 }

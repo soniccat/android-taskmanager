@@ -27,6 +27,5 @@ fun OwlBotDefinition.asWordTeacherDefinition(): WordTeacherDefinition? {
     return WordTeacherDefinition(listOf(definition),
             resultExamples,
             emptyList(),
-            imageUrl,
-            listOf(this@asWordTeacherDefinition))
+            imageUrl)
 }

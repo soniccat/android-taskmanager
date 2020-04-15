@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Parcelable
 import android.util.Log
 import com.aglushkov.wordteacher.R
+import com.aglushkov.wordteacher.repository.Config
 import kotlinx.android.parcel.Parcelize
 import java.util.*
 
@@ -11,9 +12,7 @@ import java.util.*
 data class WordTeacherWord(val word: String,
                            val transcription: String?,
                            val definitions: Map<PartOfSpeech, List<WordTeacherDefinition>>,
-
-                           // TODO: remove originalSources
-                           val originalSources: List<Parcelable>): Parcelable {
+                           val types: List<Config.Type>): Parcelable {
     enum class PartOfSpeech {
         Noun,
         Verb,

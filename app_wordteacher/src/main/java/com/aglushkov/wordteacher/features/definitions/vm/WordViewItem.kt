@@ -2,6 +2,7 @@ package com.aglushkov.wordteacher.features.definitions.vm
 
 import com.aglushkov.modelcore_ui.view.BaseViewItem
 import com.aglushkov.wordteacher.model.WordTeacherWord
+import com.aglushkov.wordteacher.repository.Config
 
 class WordViewItem(word: WordTeacherWord): BaseViewItem<WordTeacherWord>(word, Type) {
     companion object {
@@ -9,9 +10,14 @@ class WordViewItem(word: WordTeacherWord): BaseViewItem<WordTeacherWord>(word, T
     }
 }
 
-class WordTitleViewItem(title: String): BaseViewItem<String>(title, Type) {
+class WordTitleViewItem(title: String,
+                        val providers: List<Config.Type>): BaseViewItem<String>(title, Type) {
     companion object {
         const val Type = 101
+    }
+
+    override fun equalsByIds(item: BaseViewItem<*>): Boolean {
+        return super.equalsByIds(item) && item is WordTitleViewItem && providers == item.providers
     }
 }
 

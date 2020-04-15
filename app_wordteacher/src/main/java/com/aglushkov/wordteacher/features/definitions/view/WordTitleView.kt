@@ -3,15 +3,10 @@ package com.aglushkov.wordteacher.features.definitions.view
 import android.content.Context
 import android.util.AttributeSet
 import android.view.Gravity
-import android.view.View
-import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.view.updatePadding
-import com.aglushkov.general.extensions.resolveThemeColor
+import com.aglushkov.general.extensions.pxToDp
 import com.aglushkov.general.extensions.resolveThemeStyle
-import com.aglushkov.modelcore.extensions.getColorCompat
-import com.aglushkov.modelcore.extensions.getLayoutInflater
 import com.aglushkov.wordteacher.R
 import com.aglushkov.wordteacher.features.definitions.adapter.DefinitionsAdapter
 
@@ -39,6 +34,8 @@ class WordTitleView: LinearLayout {
         }
 
         providedBy = TextView(context).apply {
+            maxWidth = 150.pxToDp(context)
+            textAlignment = TEXT_ALIGNMENT_TEXT_END
             setTextAppearance(context, context.resolveThemeStyle(R.attr.wordProvidedByTextAppearance))
             layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
                 gravity = Gravity.TOP

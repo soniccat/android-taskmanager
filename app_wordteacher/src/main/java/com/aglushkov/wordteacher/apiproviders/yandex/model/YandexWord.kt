@@ -7,6 +7,7 @@ import android.os.Parcelable
 import com.aglushkov.wordteacher.model.WordTeacherDefinition
 import com.aglushkov.wordteacher.model.WordTeacherWord
 import com.aglushkov.wordteacher.model.fromString
+import com.aglushkov.wordteacher.repository.Config
 import java.util.*
 
 @Parcelize
@@ -40,5 +41,5 @@ fun YandexWord.asWordTeacherWord(): WordTeacherWord? {
     return WordTeacherWord(text,
             transcription,
             map,
-            listOf(this@asWordTeacherWord))
+            listOf(Config.Type.Yandex))
 }

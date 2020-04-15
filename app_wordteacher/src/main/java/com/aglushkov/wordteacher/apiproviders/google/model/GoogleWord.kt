@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 import android.os.Parcelable
 import com.aglushkov.wordteacher.model.WordTeacherWord
+import com.aglushkov.wordteacher.repository.Config
 import java.util.*
 
 @Parcelize
@@ -19,5 +20,5 @@ fun GoogleWord.asWordTeacherWord(): WordTeacherWord? {
     return WordTeacherWord(word,
             phonetic,
             definitions.asMap(),
-            listOf(this@asWordTeacherWord))
+            listOf(Config.Type.Google))
 }
