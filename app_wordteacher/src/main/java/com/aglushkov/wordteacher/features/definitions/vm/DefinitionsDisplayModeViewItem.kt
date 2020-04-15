@@ -7,9 +7,4 @@ class DefinitionsDisplayModeViewItem(modes: List<DefinitionsDisplayMode>,
     companion object {
         const val Type = 200
     }
-
-    override fun equals(other: Any?): Boolean {
-        return super.equals(other) &&
-                other is DefinitionsDisplayModeViewItem && selected == other.selected
-    }
 }

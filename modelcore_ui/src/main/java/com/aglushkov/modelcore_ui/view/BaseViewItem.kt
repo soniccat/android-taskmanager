@@ -20,7 +20,17 @@ abstract class BaseViewItem<T> {
     fun firstItem() = items.first()
 
     open fun equalsByIds(item: BaseViewItem<*>): Boolean {
-        return this.javaClass == item.javaClass && type == item.type
+        // by default we compare the content as we don't have ids here
+        // if an id is available in a subclass this check should be used:
+        //     this.javaClass == item.javaClass && type == item.type && id == item.id
+        // and equalsByContent should be overridden too
+        return equals(item)
+    }
+
+    open fun equalsByContent(other: Any?): Boolean {
+        // as we check the content in equalsByIds we can return true here
+        // this should be overridden if equalsByIds is overridden
+        return true
     }
 
     override fun equals(other: Any?): Boolean {
@@ -49,7 +59,7 @@ abstract class BaseViewItem<T> {
             }
 
             override fun areContentsTheSame(oldCellInfo: BaseViewItem<*>, newCellInfo: BaseViewItem<*>): Boolean {
-                return oldCellInfo == newCellInfo
+                return oldCellInfo.equalsByContent(newCellInfo)
             }
         }
     }
