@@ -62,7 +62,7 @@ fun WordnikWord.asDefinition(): WordTeacherDefinition? {
     if (text == null) return null
 
     return WordTeacherDefinition(
-            text,
+            listOf(text),
             exampleUsesTexts(),
             synonyms(),
             null,

@@ -5,7 +5,7 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class WordTeacherDefinition(
-    val definition: String, // TODO: support list for merged display mode
+    val definitions: List<String>,
     val examples: List<String>,
     val synonyms: List<String>,
     val imageUrl: String?,

@@ -16,7 +16,6 @@ import com.aglushkov.wordteacher.model.WordTeacherDefinition
 import com.aglushkov.wordteacher.model.WordTeacherWord
 import com.aglushkov.wordteacher.model.toString
 import kotlinx.coroutines.flow.*
-import java.lang.StringBuilder
 
 class DefinitionsVM(app: Application,
                     private val state: SavedStateHandle): AndroidViewModel(app) {
@@ -125,7 +124,9 @@ class DefinitionsVM(app: Application,
             items.add(WordPartOfSpeechViewItem(partOfSpeech.toString(getApplication())))
 
             for (def in word.definitions[partOfSpeech].orEmpty()) {
-                items.add(WordDefinitionViewItem(def.definition))
+                for (d in def.definitions) {
+                    items.add(WordDefinitionViewItem(d))
+                }
 
                 if (def.examples.isNotEmpty()) {
                     items.add(WordSubHeaderViewItem(getString(R.string.word_section_examples)))
@@ -192,8 +193,10 @@ class DefinitionsVM(app: Application,
         val allSynonyms = mutableListOf<String>()
 
         defs.forEach {
-            if (!allDefs.contains(it.definition)) {
-                allDefs.add(it.definition)
+            for (d in it.definitions) {
+                if (!allDefs.contains(d)) {
+                    allDefs.add(d)
+                }
             }
 
             for (example in it.examples) {
@@ -209,8 +212,7 @@ class DefinitionsVM(app: Application,
             }
         }
 
-        val resultDef = allDefs.joinToString()
-        return WordTeacherDefinition(resultDef, allExamples, allSynonyms, null, emptyList())
+        return WordTeacherDefinition(allDefs, allExamples, allSynonyms, null, emptyList())
     }
 
     fun getErrorText(res: Resource<*>): String? {

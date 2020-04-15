@@ -106,7 +106,6 @@ class DefinitionsAdapter(val binder: DefinitionsBinder): ListAdapter<BaseViewIte
         chip.id = id
         chip.text = text
         chip.isCheckable = true
-        chip.isCheckedIconVisible = false
 
         return chip
     }
