@@ -19,6 +19,7 @@
 
         <!-- Word Card Style -->
         <item name="wordTitleTextAppearance">@style/TextAppearance.MaterialComponents.Headline5</item>
+        <item name="wordProvidedByTextAppearance">@style/TextAppearance.MaterialComponents.Body2</item>
         <item name="wordTranscriptionTextAppearance">@style/TextAppearance.MaterialComponents.Body2</item>
         <item name="wordPartOfSpeechTextAppearance">@style/TextAppearance.MaterialComponents.Headline6</item>
         <item name="wordDefinitionTextAppearance">@style/TextAppearance.MaterialComponents.Body2</item>

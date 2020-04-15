@@ -2,6 +2,7 @@ package com.aglushkov.wordteacher.features.definitions.adapter
 
 import android.widget.TextView
 import com.aglushkov.wordteacher.R
+import com.aglushkov.wordteacher.features.definitions.view.WordTitleView
 import com.aglushkov.wordteacher.features.definitions.vm.DefinitionsDisplayMode
 import com.aglushkov.wordteacher.features.definitions.vm.DefinitionsDisplayModeViewItem
 import com.google.android.material.chip.ChipGroup
@@ -25,8 +26,9 @@ class DefinitionsBinder {
         }
     }
 
-    fun bindTitle(view: TextView, title: String) {
-        view.text = title
+    fun bindTitle(view: WordTitleView, title: String) {
+        view.title.text = title
+        view.providedBy.text = "aa"
     }
 
     fun bindTranscription(view: TextView, transcription: String) {

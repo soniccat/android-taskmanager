@@ -13,6 +13,7 @@ import com.aglushkov.general.extensions.pxToDp
 import com.aglushkov.general.extensions.resolveThemeStyle
 import com.aglushkov.modelcore_ui.view.BaseViewItem
 import com.aglushkov.wordteacher.R
+import com.aglushkov.wordteacher.features.definitions.view.WordTitleView
 import com.aglushkov.wordteacher.features.definitions.vm.*
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -50,7 +51,7 @@ class DefinitionsAdapter(val binder: DefinitionsBinder): ListAdapter<BaseViewIte
             }
             // Word Card Items
             is WordTitleViewItem -> {
-                val view = holder.itemView as TextView
+                val view = holder.itemView as WordTitleView
                 binder.bindTitle(view, item.firstItem())
             }
             is WordTranscriptionViewItem -> {
@@ -113,8 +114,11 @@ class DefinitionsAdapter(val binder: DefinitionsBinder): ListAdapter<BaseViewIte
     // Word View Item
 
     private fun createTitleView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
-        return createTextView(parent).apply {
-            setTextAppearance(parent.context, parent.context.resolveThemeStyle(R.attr.wordTitleTextAppearance))
+//        return createTextView(parent).apply {
+//            setTextAppearance(parent.context, parent.context.resolveThemeStyle(R.attr.wordTitleTextAppearance))
+//            layoutParams = lp
+//        }
+        return WordTitleView(parent.context).apply {
             layoutParams = lp
         }
     }
@@ -183,9 +187,11 @@ class DefinitionsAdapter(val binder: DefinitionsBinder): ListAdapter<BaseViewIte
         return textView
     }
 
-    private fun setWordHorizontalPadding(view: View) {
-        val horizontalPadding = view.resources.getDimensionPixelOffset(R.dimen.word_horizontalPadding)
-        view.updatePadding(left = horizontalPadding, right = horizontalPadding)
+    companion object {
+        fun setWordHorizontalPadding(view: View) {
+            val horizontalPadding = view.resources.getDimensionPixelOffset(R.dimen.word_horizontalPadding)
+            view.updatePadding(left = horizontalPadding, right = horizontalPadding)
+        }
     }
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
