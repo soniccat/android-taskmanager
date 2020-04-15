@@ -46,7 +46,7 @@ class DefinitionsAdapter(val binder: DefinitionsBinder): ListAdapter<BaseViewIte
         when (val item = getItem(position)) {
             is DefinitionsDisplayModeViewItem -> {
                 val view = holder.itemView as ChipGroup
-                binder.bindDisplayMode(view, item.items)
+                binder.bindDisplayMode(view, item)
             }
             // Word Card Items
             is WordTitleViewItem -> {

@@ -27,7 +27,7 @@ class DefinitionsVM(app: Application,
     val definitions: LiveData<Resource<List<BaseViewItem<*>>>> = innerDefinitions
 
     // State
-    var displayMode = DefinitionsDisplayMode.Merged
+    var displayMode = DefinitionsDisplayMode.BySource
     var word: String?
         get() {
             return state["word"]
@@ -57,6 +57,16 @@ class DefinitionsVM(app: Application,
         }
     }
 
+    fun onDisplayModeChanged(mode: DefinitionsDisplayMode) {
+        if (this.displayMode == mode) return
+
+        val words = wordRepository.obtainStateFlow(this.word!!).value
+        if (words.isLoaded()) {
+            this.displayMode = mode
+            innerDefinitions.value = Resource.Loaded(buildViewItems(words.data()!!))
+        }
+    }
+
     fun onTryAgainClicked() {
         load(word!!)
     }
@@ -67,19 +77,20 @@ class DefinitionsVM(app: Application,
         this.word = word
         innerDefinitions.load(wordRepository.scope, true) {
             // TODO: handle Loading to show intermediate results
-            buildViewItems(wordRepository.define(word).flow.first {
+            val words = wordRepository.define(word).flow.first {
                 if (it is Resource.Error) {
                     throw it.throwable
                 }
 
                 it.isLoaded()
-            }.data()!!)
+            }.data()!!
+            buildViewItems(words)
         }
     }
 
     private fun buildViewItems(words: List<WordTeacherWord>): List<BaseViewItem<*>> {
         val items = mutableListOf<BaseViewItem<*>>()
-        items.add(DefinitionsDisplayModeViewItem(listOf(DefinitionsDisplayMode.BySource, DefinitionsDisplayMode.Merged), 0))
+        items.add(DefinitionsDisplayModeViewItem(listOf(DefinitionsDisplayMode.BySource, DefinitionsDisplayMode.Merged), displayMode))
         items.add(WordDividerViewItem())
 
         when (displayMode) {

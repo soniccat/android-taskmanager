@@ -3,13 +3,18 @@ package com.aglushkov.wordteacher.features.definitions.adapter
 import android.widget.TextView
 import com.aglushkov.wordteacher.R
 import com.aglushkov.wordteacher.features.definitions.vm.DefinitionsDisplayMode
+import com.aglushkov.wordteacher.features.definitions.vm.DefinitionsDisplayModeViewItem
 import com.google.android.material.chip.ChipGroup
 
 class DefinitionsBinder {
     var listener: Listener? = null
 
-    fun bindDisplayMode(chipGroup: ChipGroup, modes: List<DefinitionsDisplayMode>) {
-        chipGroup.check(R.id.definitions_displayMode_bySource)
+    fun bindDisplayMode(chipGroup: ChipGroup, item: DefinitionsDisplayModeViewItem) {
+        val chipId = when (item.selected) {
+            DefinitionsDisplayMode.Merged -> R.id.definitions_displayMode_merged
+            else -> R.id.definitions_displayMode_bySource
+        }
+        chipGroup.check(chipId)
 
         chipGroup.setOnCheckedChangeListener { group, checkedId ->
             val mode = when (checkedId) {

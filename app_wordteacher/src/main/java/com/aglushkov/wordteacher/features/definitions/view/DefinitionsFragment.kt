@@ -102,7 +102,7 @@ class DefinitionsFragment: Fragment() {
             val binder = DefinitionsBinder()
             binder.listener = object : DefinitionsBinder.Listener {
                 override fun onDisplayModeChanged(mode: DefinitionsDisplayMode) {
-
+                    vm.onDisplayModeChanged(mode)
                 }
             }
 
