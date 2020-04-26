@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.aglushkov.general.extensions.resolveThemeDrawable
 import com.aglushkov.general.extensions.pxToDp
 import com.aglushkov.general.extensions.resolveThemeStyle
+import com.aglushkov.general.extensions.setTextAppearanceCompat
 import com.aglushkov.modelcore_ui.view.BaseViewItem
 import com.aglushkov.wordteacher.R
 import com.aglushkov.wordteacher.features.definitions.view.WordTitleView
@@ -83,41 +84,35 @@ class DefinitionsAdapter(val binder: DefinitionsBinder): ListAdapter<BaseViewIte
 
     private fun createWordDisplayView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
         val context = parent.context
-        val group = ChipGroup(context)
+        return ChipGroup(context).apply {
+            val byCardChip = createChip(context,
+                    R.id.definitions_displayMode_bySource,
+                    context.getString(R.string.definitions_displayMode_bySource))
+            val mergedChip = createChip(context,
+                    R.id.definitions_displayMode_merged,
+                    context.getString(R.string.definitions_displayMode_merge))
 
-        val byCardChip = createChip(context,
-                R.id.definitions_displayMode_bySource,
-                context.getString(R.string.definitions_displayMode_bySource))
-        val mergedChip = createChip(context,
-                R.id.definitions_displayMode_merged,
-                context.getString(R.string.definitions_displayMode_merge))
+            val padding = context.resources.getDimensionPixelSize(R.dimen.definitions_displayMode_padding)
+            updatePadding(left = padding, top = padding, right = padding)
+            addView(byCardChip)
+            addView(mergedChip)
 
-        val padding = context.resources.getDimensionPixelSize(R.dimen.definitions_displayMode_padding)
-        group.updatePadding(left = padding, top = padding, right = padding)
-        group.addView(byCardChip)
-        group.addView(mergedChip)
-
-        group.isSingleSelection = true
-        group.layoutParams = lp
-        return group
+            isSingleSelection = true
+            layoutParams = lp
+        }
     }
 
-    private fun createChip(context: Context, id: Int, text: String): Chip {
-        val chip = Chip(context)
-        chip.id = id
-        chip.text = text
-        chip.isCheckable = true
-
-        return chip
+    private fun createChip(context: Context, anId: Int, aText: String): Chip {
+        return Chip(context).apply {
+            id = anId
+            text = aText
+            isCheckable = true
+        }
     }
 
     // Word View Item
 
     private fun createTitleView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
-//        return createTextView(parent).apply {
-//            setTextAppearance(parent.context, parent.context.resolveThemeStyle(R.attr.wordTitleTextAppearance))
-//            layoutParams = lp
-//        }
         return WordTitleView(parent.context).apply {
             layoutParams = lp
         }
@@ -125,44 +120,44 @@ class DefinitionsAdapter(val binder: DefinitionsBinder): ListAdapter<BaseViewIte
 
     private fun createTranscriptionView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
         return createTextView(parent).apply {
-            setTextAppearance(parent.context, parent.context.resolveThemeStyle(R.attr.wordTranscriptionTextAppearance))
+            setTextAppearanceCompat(parent.context.resolveThemeStyle(R.attr.wordTranscriptionTextAppearance))
             layoutParams = lp
         }
     }
 
     private fun createPartOfSpeechView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
         return createTextView(parent).apply {
-            setTextAppearance(context, parent.context.resolveThemeStyle(R.attr.wordPartOfSpeechTextAppearance))
-            lp.topMargin = context.resources.getDimensionPixelOffset(R.dimen.word_partOfSpeech_topMargin)
+            setTextAppearanceCompat(parent.context.resolveThemeStyle(R.attr.wordPartOfSpeechTextAppearance))
+            lp.topMargin = context.resources.getDimensionPixelSize(R.dimen.word_partOfSpeech_topMargin)
             layoutParams = lp
         }
     }
 
     private fun createDefinitionView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
         return createTextView(parent).apply {
-            setTextAppearance(parent.context, parent.context.resolveThemeStyle(R.attr.wordDefinitionTextAppearance))
+            setTextAppearanceCompat(parent.context.resolveThemeStyle(R.attr.wordDefinitionTextAppearance))
             layoutParams = lp
         }
     }
 
     private fun createExampleView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
         return createTextView(parent).apply {
-            setTextAppearance(parent.context, parent.context.resolveThemeStyle(R.attr.wordDefinitionTextAppearance))
+            setTextAppearanceCompat(parent.context.resolveThemeStyle(R.attr.wordDefinitionTextAppearance))
             layoutParams = lp
         }
     }
 
     private fun createSynonymView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
         return createTextView(parent).apply {
-            setTextAppearance(parent.context, parent.context.resolveThemeStyle(R.attr.wordDefinitionTextAppearance))
+            setTextAppearanceCompat(parent.context.resolveThemeStyle(R.attr.wordDefinitionTextAppearance))
             layoutParams = lp
         }
     }
 
     private fun createSubHeaderView(parent: ViewGroup, lp: RecyclerView.LayoutParams): View {
         return createTextView(parent).apply {
-            setTextAppearance(parent.context, parent.context.resolveThemeStyle(R.attr.wordSubHeaderTextAppearance))
-            lp.topMargin = context.resources.getDimensionPixelOffset(R.dimen.word_subheader_topMargin)
+            setTextAppearanceCompat(parent.context.resolveThemeStyle(R.attr.wordSubHeaderTextAppearance))
+            lp.topMargin = context.resources.getDimensionPixelSize(R.dimen.word_subHeader_topMargin)
             layoutParams = lp
         }
     }
@@ -173,9 +168,9 @@ class DefinitionsAdapter(val binder: DefinitionsBinder): ListAdapter<BaseViewIte
         view.background = context.resolveThemeDrawable(R.attr.dividerHorizontal)
         setWordHorizontalPadding(view)
 
-        lp.height = 1.pxToDp(context)
-        lp.topMargin = context.resources.getDimensionPixelOffset(R.dimen.word_divider_topMargin)
-        lp.bottomMargin = context.resources.getDimensionPixelOffset(R.dimen.word_divider_bottomMargin)
+        lp.height = context.resources.getDimensionPixelSize(R.dimen.word_divider_height)
+        lp.topMargin = context.resources.getDimensionPixelSize(R.dimen.word_divider_topMargin)
+        lp.bottomMargin = context.resources.getDimensionPixelSize(R.dimen.word_divider_bottomMargin)
         view.layoutParams = lp
 
         return view
@@ -189,7 +184,7 @@ class DefinitionsAdapter(val binder: DefinitionsBinder): ListAdapter<BaseViewIte
 
     companion object {
         fun setWordHorizontalPadding(view: View) {
-            val horizontalPadding = view.resources.getDimensionPixelOffset(R.dimen.word_horizontalPadding)
+            val horizontalPadding = view.resources.getDimensionPixelSize(R.dimen.word_horizontalPadding)
             view.updatePadding(left = horizontalPadding, right = horizontalPadding)
         }
     }

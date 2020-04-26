@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">WordTeacher</string>
+    <string name="tab_definitions">Words</string>
+    <string name="tab_articles">Articles</string>
     <string name="search">Search</string>
 
     <string name="definitions_displayMode_bySource">Grouped By Source</string>

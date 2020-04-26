@@ -5,8 +5,10 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.widget.TextViewCompat
 import com.aglushkov.general.extensions.pxToDp
 import com.aglushkov.general.extensions.resolveThemeStyle
+import com.aglushkov.general.extensions.setTextAppearanceCompat
 import com.aglushkov.wordteacher.R
 import com.aglushkov.wordteacher.features.definitions.adapter.DefinitionsAdapter
 
@@ -27,16 +29,16 @@ class WordTitleView: LinearLayout {
         isBaselineAligned = false
 
         title = TextView(context).apply {
-            setTextAppearance(context, context.resolveThemeStyle(R.attr.wordTitleTextAppearance))
+            setTextAppearanceCompat(context.resolveThemeStyle(R.attr.wordTitleTextAppearance))
             layoutParams = LayoutParams(0, LayoutParams.WRAP_CONTENT).apply {
                 weight = 1.0f
             }
         }
 
         providedBy = TextView(context).apply {
-            maxWidth = 150.pxToDp(context)
+            maxWidth = context.resources.getDimensionPixelSize(R.dimen.word_providedBy_maxWidth)
             textAlignment = TEXT_ALIGNMENT_TEXT_END
-            setTextAppearance(context, context.resolveThemeStyle(R.attr.wordProvidedByTextAppearance))
+            setTextAppearanceCompat(context.resolveThemeStyle(R.attr.wordProvidedByTextAppearance))
             layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
                 gravity = Gravity.TOP
             }

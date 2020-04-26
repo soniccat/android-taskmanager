@@ -1,12 +1,15 @@
 package com.aglushkov.wordteacher.features.definitions.adapter
 
 import android.widget.TextView
+import com.aglushkov.general.extensions.updateChildClickable
 import com.aglushkov.wordteacher.R
 import com.aglushkov.wordteacher.features.definitions.view.WordTitleView
 import com.aglushkov.wordteacher.features.definitions.vm.DefinitionsDisplayMode
 import com.aglushkov.wordteacher.features.definitions.vm.DefinitionsDisplayModeViewItem
 import com.aglushkov.wordteacher.features.definitions.vm.WordTitleViewItem
+import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+
 
 class DefinitionsBinder {
     var listener: Listener? = null
@@ -16,9 +19,12 @@ class DefinitionsBinder {
             DefinitionsDisplayMode.Merged -> R.id.definitions_displayMode_merged
             else -> R.id.definitions_displayMode_bySource
         }
+
         chipGroup.check(chipId)
+        chipGroup.updateChildClickable()
 
         chipGroup.setOnCheckedChangeListener { group, checkedId ->
+            chipGroup.updateChildClickable()
             val mode = when (checkedId) {
                 R.id.definitions_displayMode_merged -> DefinitionsDisplayMode.Merged
                 else -> DefinitionsDisplayMode.BySource
